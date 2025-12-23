@@ -5,6 +5,8 @@ import { sanitizeHTML } from '@/utils/sanitize';
 import { Check } from 'lucide-react';
 import { useTextEditorRegistration } from './TextEditorContext';
 import { cleanDirectionalMarkers, isTextEmpty } from '@/utils/textDirection';
+import { useTextHistory } from './hooks/useTextHistory';
+import { FormatIndicator } from './FormatIndicator';
 
 interface TextEditorProps {
   element: CanvasElement;
@@ -23,6 +25,20 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
   
   // ✅ تخزين المحتوى الأصلي للتراجع عند Escape
   const originalContentRef = useRef<string>(element.content || '');
+  
+  // ✅ إدارة Undo/Redo باستخدام History Stack
+  const {
+    pushState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    undoCount,
+    redoCount
+  } = useTextHistory({
+    initialContent: element.content || '',
+    maxHistorySize: 50
+  });
   
   // حساب موضع الـ toolbar - مع هامش كافٍ فوق النص
   const updateToolbarPosition = useCallback(() => {
@@ -287,6 +303,39 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       return;
     }
     
+    // ✅ Cmd/Ctrl+Z = Undo (التراجع)
+    if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === 'z') {
+      e.preventDefault();
+      const previousContent = undo();
+      if (previousContent !== null && editorRef.current) {
+        editorRef.current.innerHTML = sanitizeHTML(previousContent);
+        onUpdate(previousContent);
+      }
+      return;
+    }
+    
+    // ✅ Cmd/Ctrl+Shift+Z = Redo (الإعادة)
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'z') {
+      e.preventDefault();
+      const nextContent = redo();
+      if (nextContent !== null && editorRef.current) {
+        editorRef.current.innerHTML = sanitizeHTML(nextContent);
+        onUpdate(nextContent);
+      }
+      return;
+    }
+    
+    // ✅ Cmd/Ctrl+Y = Redo (الإعادة - بديل)
+    if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
+      e.preventDefault();
+      const nextContent = redo();
+      if (nextContent !== null && editorRef.current) {
+        editorRef.current.innerHTML = sanitizeHTML(nextContent);
+        onUpdate(nextContent);
+      }
+      return;
+    }
+    
     // Cmd/Ctrl+B = Bold
     if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
       e.preventDefault();
@@ -426,6 +475,9 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
             const newContent = sanitizeHTML(e.currentTarget.innerHTML || '');
             onUpdate(newContent);
             
+            // ✅ حفظ في History Stack للـ Undo/Redo
+            pushState(newContent);
+            
             // ✅ تحديث حالة isEmpty للـ placeholder
             const textContent = e.currentTarget.textContent?.trim() || '';
             setIsEmpty(textContent.length === 0);
@@ -487,6 +539,30 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
             wordWrap: hasLists || element.data?.textType === 'box' ? 'break-word' : 'normal',
             overflow: element.data?.textType === 'box' ? 'auto' : 'visible'
           }}
+        />
+        
+        {/* ✅ مؤشر التنسيق + Undo/Redo */}
+        <FormatIndicator
+          editorRef={editorRef as React.RefObject<HTMLDivElement>}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          onUndo={() => {
+            const previousContent = undo();
+            if (previousContent !== null && editorRef.current) {
+              editorRef.current.innerHTML = sanitizeHTML(previousContent);
+              onUpdate(previousContent);
+            }
+          }}
+          onRedo={() => {
+            const nextContent = redo();
+            if (nextContent !== null && editorRef.current) {
+              editorRef.current.innerHTML = sanitizeHTML(nextContent);
+              onUpdate(nextContent);
+            }
+          }}
+          undoCount={undoCount}
+          redoCount={redoCount}
+          position="bottom"
         />
       </div>
     </>
