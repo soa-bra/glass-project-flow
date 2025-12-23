@@ -3,4 +3,4 @@
  * @module engine/canvas/math
  */
 
-export * from '@/core/snapEngine';
+export * from '@/engine/canvas/interaction/snapEngine';
