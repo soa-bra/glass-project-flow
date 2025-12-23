@@ -9,8 +9,6 @@ export {
   enhancedApprovalsService,
   createApprovalRequest,
   type ApprovalRequestInput,
-  type ApprovalRequest,
-  type ApprovalEvent,
 } from './approvals';
 
 // Feature Store Service

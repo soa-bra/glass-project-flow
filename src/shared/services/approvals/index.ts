@@ -8,6 +8,4 @@ export {
   enhancedApprovalsService,
   createApprovalRequest,
   type ApprovalRequestInput,
-  type ApprovalRequest,
-  type ApprovalEvent,
 } from './approvals.service';
