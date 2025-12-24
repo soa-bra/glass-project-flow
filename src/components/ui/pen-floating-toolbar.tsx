@@ -15,6 +15,7 @@ interface PenFloatingToolbarProps {
   isVisible: boolean;
 }
 
+
 // أحجام الفرشاة
 const BRUSH_SIZES = [1, 2, 4, 6, 8, 12, 16, 20];
 interface ToolbarButtonProps {
@@ -196,7 +197,11 @@ const CompactColorPicker = ({
   hideTooltip: () => void;
 }) => {
   return (
-    <div className="relative" onMouseEnter={() => showTooltip("لون الفرشاة")} onMouseLeave={hideTooltip}>
+    <div
+      className="relative"
+      onMouseEnter={() => showTooltip("لون الفرشاة")}
+      onMouseLeave={hideTooltip}
+    >
       <ColorPickerInput
         value={value}
         onChange={onChange}
@@ -246,6 +251,25 @@ export const PenFloatingToolbar = ({ position, isVisible }: PenFloatingToolbarPr
     };
   }, [position.x, position.y]);
   const safePos = getSafePosition();
+
+  // التحكم اليدوي في حدود السحب
+  const handleDrag = useCallback(
+    (event: any, info: { offset: { x: number; y: number } }) => {
+      const minX = PADDING;
+      const maxX = window.innerWidth - TOOLBAR_WIDTH - PADDING;
+      const minY = TOP_OFFSET;
+      const maxY = window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET;
+      let newX = safePos.left + info.offset.x;
+      let newY = safePos.top + info.offset.y;
+      newX = Math.max(minX, Math.min(newX, maxX));
+      newY = Math.max(minY, Math.min(newY, maxY));
+      setDragOffset({
+        x: newX - safePos.left,
+        y: newY - safePos.top,
+      });
+    },
+    [safePos.left, safePos.top],
+  );
 
   const handleStrokeWidthChange = (width: number) => {
     setPenSettings({ strokeWidth: width });
