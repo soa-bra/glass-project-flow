@@ -243,7 +243,7 @@ export const PenFloatingToolbar = ({ isVisible }: PenFloatingToolbarProps) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 400 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1"
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1"
           data-pen-toolbar
           onMouseDown={(e) => e.stopPropagation()}
         >
