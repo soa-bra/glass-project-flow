@@ -20,7 +20,7 @@ import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKer
 import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { toast } from 'sonner';
-import { PenFloatingToolbar } from '@/components/ui/pen-floating-toolbar';
+import { PenFloatingToolbar } from '@/components/ui/penToolbar';
 import { CanvasGridLayer } from '@/features/planning/canvas/viewport/CanvasGridLayer';
 import { RealtimeSyncManager } from '@/features/planning/integration/collaboration';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
@@ -733,7 +733,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       
       {/* Pen Floating Toolbar */}
       <PenFloatingToolbar
-        position={{ x: window.innerWidth / 2, y: 80 }}
         isVisible={activeTool === 'smart_pen'}
       />
       
