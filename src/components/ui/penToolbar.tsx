@@ -1,4 +1,3 @@
-// PenFloatingToolbar v3 - force reload
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,10 +7,6 @@ import { useCanvasStore } from "@/stores/canvasStore";
 import { ColorPickerInput } from "@/components/ui/color-picker";
 
 interface PenFloatingToolbarProps {
-  position: {
-    x: number;
-    y: number;
-  };
   isVisible: boolean;
 }
 
@@ -219,57 +214,13 @@ const CompactColorPicker = ({
     </div>
   );
 };
-export const PenFloatingToolbar = ({ position, isVisible }: PenFloatingToolbarProps) => {
+export const PenFloatingToolbar = ({ isVisible }: PenFloatingToolbarProps) => {
   const [tooltip, setTooltip] = useState<string | null>(null);
-  const [isAIOpen, setIsAIOpen] = useState(false);
   const [isEraserMode, setIsEraserMode] = useState(false);
-  const { toolSettings, setPenSettings, toggleSmartMode, clearAllStrokes } = useCanvasStore();
+  const { toolSettings, setPenSettings, clearAllStrokes } = useCanvasStore();
   const penSettings = toolSettings.pen;
   const showTooltip = useCallback((label: string) => setTooltip(label), []);
   const hideTooltip = useCallback(() => setTooltip(null), []);
-
-  // ثوابت الحجم والحدود
-  const TOOLBAR_WIDTH = 280;
-  const TOOLBAR_HEIGHT = 32;
-  const PADDING = 16;
-  const TOP_OFFSET = 60;
-  const BOTTOM_OFFSET = 100;
-
-  // حالة موضع السحب
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-
-  // حساب الموضع الآمن داخل حدود النافذة
-  const getSafePosition = useCallback(() => {
-    const minX = PADDING;
-    const maxX = window.innerWidth - TOOLBAR_WIDTH - PADDING;
-    const minY = TOP_OFFSET;
-    const maxY = window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET;
-    const centeredX = position.x - TOOLBAR_WIDTH / 2;
-    return {
-      left: Math.max(minX, Math.min(centeredX, maxX)),
-      top: Math.max(minY, Math.min(position.y, maxY)),
-    };
-  }, [position.x, position.y]);
-  const safePos = getSafePosition();
-
-  // التحكم اليدوي في حدود السحب
-  const handleDrag = useCallback(
-    (event: any, info: { offset: { x: number; y: number } }) => {
-      const minX = PADDING;
-      const maxX = window.innerWidth - TOOLBAR_WIDTH - PADDING;
-      const minY = TOP_OFFSET;
-      const maxY = window.innerHeight - TOOLBAR_HEIGHT - BOTTOM_OFFSET;
-      let newX = safePos.left + info.offset.x;
-      let newY = safePos.top + info.offset.y;
-      newX = Math.max(minX, Math.min(newX, maxX));
-      newY = Math.max(minY, Math.min(newY, maxY));
-      setDragOffset({
-        x: newX - safePos.left,
-        y: newY - safePos.top,
-      });
-    },
-    [safePos.left, safePos.top],
-  );
 
   const handleStrokeWidthChange = (width: number) => {
     setPenSettings({ strokeWidth: width });
@@ -288,23 +239,12 @@ export const PenFloatingToolbar = ({ position, isVisible }: PenFloatingToolbarPr
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          drag
-          dragMomentum={false}
-          dragElastic={0}
-          dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-          onDrag={handleDrag}
           initial={{ opacity: 0, y: 10, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 400 }}
-          className="fixed z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1 cursor-grab active:cursor-grabbing"
-          style={{
-            left: safePos.left,
-            top: safePos.top,
-            x: dragOffset.x,
-            y: dragOffset.y,
-          }}
-          data-pen-floating-toolbar
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1"
+          data-pen-toolbar
           onMouseDown={(e) => e.stopPropagation()}
         >
           {/* حجم الفرشاة */}
