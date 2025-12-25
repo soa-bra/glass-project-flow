@@ -82,6 +82,17 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
+      const selection = window.getSelection();
+      const node = selection?.anchorNode;
+      
+      // Check if we're inside a list item
+      const listItem = node?.parentElement?.closest('li');
+      if (listItem) {
+        // Let the browser handle list item creation naturally
+        return;
+      }
+      
+      // For regular text, insert a line break
       e.preventDefault();
       document.execCommand('insertLineBreak');
       handleContentChange();
