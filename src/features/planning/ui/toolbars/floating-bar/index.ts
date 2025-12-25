@@ -2,6 +2,10 @@
  * Floating Bar - تصدير المجلد
  */
 
+// Main Component
+export { FloatingBar } from './FloatingBar';
+export { default } from './FloatingBar';
+
 // Types
 export * from './types';
 
