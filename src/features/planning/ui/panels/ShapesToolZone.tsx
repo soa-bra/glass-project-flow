@@ -10,7 +10,7 @@ import { useCanvasStore, type ShapeType } from '@/stores/canvasStore';
 import { toast } from 'sonner';
 import { ColorPickerInput, InlineColorPicker } from '@/components/ui/color-picker';
 
-type TabType = 'shapes' | 'icons' | 'arrows' | 'sticky';
+type TabType = 'shapes' | 'icons' | 'arrows';
 
 const ShapesPanel: React.FC = () => {
   const { toolSettings, updateToolSettings, setActiveTool } = useCanvasStore();
@@ -23,7 +23,6 @@ const ShapesPanel: React.FC = () => {
     { id: 'shapes' as TabType, label: 'أشكال هندسية', icon: <Shapes size={16} /> },
     { id: 'icons' as TabType, label: 'مكتبة الأيقونات', icon: <Settings size={16} /> },
     { id: 'arrows' as TabType, label: 'الأسهم', icon: <ArrowRight size={16} /> },
-    { id: 'sticky' as TabType, label: 'ستيكي نوت', icon: <StickyNote size={16} /> },
   ];
 
   const geometricShapes: Array<{ icon: React.ReactNode; name: string; type: ShapeType }> = [
@@ -362,59 +361,6 @@ const ShapesPanel: React.FC = () => {
                 );
               })}
             </div>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'sticky' && (
-        <div className="space-y-5">
-          <h4 className="text-[13px] font-semibold text-[hsl(var(--ink))] text-right">
-            ستيكي نوت
-          </h4>
-
-          {/* Sticky Color Selection */}
-          <div>
-            <label className="text-[13px] font-semibold text-[hsl(var(--ink))] mb-3 block text-right">
-              اختر اللون ثم انقر على الكانفس
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {stickyColors.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => {
-                    setSelectedStickyColor(color);
-                    updateToolSettings('shapes', { 
-                      shapeType: 'sticky' as ShapeType,
-                      fillColor: color
-                    });
-                    setActiveTool('shapes_tool');
-                    toast.success('انقر على الكانفس لإضافة ستيكي نوت');
-                  }}
-                  className={`w-9 h-9 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center`}
-                  style={{
-                    backgroundColor: color,
-                    border: selectedStickyColor === color ? "3px solid hsl(var(--ink))" : "2px solid #F0F0F0",
-                  }}
-                >
-                  {selectedStickyColor === color && (
-                    <div className="w-2 h-2 rounded-full bg-white" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Instructions */}
-          <div className="bg-[hsl(var(--accent-yellow))]/10 rounded-[12px] p-4 space-y-2">
-            <p className="text-[12px] text-[hsl(var(--ink-80))] text-center">
-              ✨ <strong>نقرة واحدة</strong> على الكانفس = ستيكي نوت جديد
-            </p>
-            <p className="text-[12px] text-[hsl(var(--ink-80))] text-center">
-              ✏️ <strong>نقرة مزدوجة</strong> على الستيكي نوت = تحرير النص
-            </p>
-            <p className="text-[12px] text-[hsl(var(--ink-80))] text-center">
-              📐 الحجم الافتراضي: 200×200 بكسل
-            </p>
           </div>
         </div>
       )}

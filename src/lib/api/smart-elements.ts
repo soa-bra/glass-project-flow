@@ -54,6 +54,7 @@ const DEFAULT_SIZES: Record<SmartElementType, Size> = {
   crm_card: { width: 320, height: 200 },
   root_connector: { width: 200, height: 100 },
   visual_diagram: { width: 600, height: 500 },
+  smart_text_doc: { width: 500, height: 400 },
 };
 
 export const smartElementsApi = {

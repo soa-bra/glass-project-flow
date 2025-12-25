@@ -32,6 +32,7 @@ export const SmartElementTypes = [
   'csr_card',
   'crm_card',
   'root_connector',
+  'smart_text_doc',
 ] as const;
 
 export const SmartElementTypeSchema = z.enum(SmartElementTypes);
@@ -712,6 +713,30 @@ export type ConnectorEndpoint = z.infer<typeof ConnectorEndpointSchema>;
 export type AISuggestion = z.infer<typeof AISuggestionSchema>;
 export type RootConnectorData = z.infer<typeof RootConnectorDataSchema>;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 15. Smart Text Document - مستند نصي ذكي
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const SmartTextDocDataSchema = z.object({
+  title: z.string().default('مستند جديد'),
+  content: z.string().default(''),
+  format: z.enum(['plain', 'rich', 'markdown']).default('rich'),
+  aiAssist: z.boolean().default(true),
+  readOnly: z.boolean().default(false),
+  showToolbar: z.boolean().default(true),
+  autoSave: z.boolean().default(true),
+  lastEditedAt: z.string().datetime().optional(),
+  wordCount: z.number().default(0),
+  sections: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    content: z.string(),
+    order: z.number(),
+  })).default([]),
+});
+
+export type SmartTextDocData = z.infer<typeof SmartTextDocDataSchema>;
+
 // ═══════════════════════════════════════════════════════════════════════════
 // UNIFIED TYPE MAP & HELPERS
 // خريطة الأنواع الموحدة والمساعدات
@@ -737,6 +762,7 @@ export const SmartElementDataSchemaMap = {
   csr_card: CsrCardDataSchema,
   crm_card: CrmCardDataSchema,
   root_connector: RootConnectorDataSchema,
+  smart_text_doc: SmartTextDocDataSchema,
 } as const;
 
 /**
@@ -762,7 +788,8 @@ export type AnySmartElementData =
   | FinanceCardData
   | CsrCardData
   | CrmCardData
-  | RootConnectorData;
+  | RootConnectorData
+  | SmartTextDocData;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Validation Helpers
@@ -840,12 +867,13 @@ export const SmartElementLabels: Record<SmartElementType, string> = {
   csr_card: 'بطاقة CSR',
   crm_card: 'بطاقة CRM',
   root_connector: 'رابط ذكي',
+  smart_text_doc: 'مستند نصي ذكي',
 };
 
 /**
  * Get category for a smart element type
  */
-export const SmartElementCategories: Record<SmartElementType, 'collaboration' | 'planning' | 'analysis' | 'cards' | 'connectors'> = {
+export const SmartElementCategories: Record<SmartElementType, 'collaboration' | 'planning' | 'analysis' | 'cards' | 'connectors' | 'documents'> = {
   thinking_board: 'collaboration',
   kanban: 'collaboration',
   voting: 'collaboration',
@@ -861,4 +889,5 @@ export const SmartElementCategories: Record<SmartElementType, 'collaboration' | 
   csr_card: 'cards',
   crm_card: 'cards',
   root_connector: 'connectors',
+  smart_text_doc: 'documents',
 };

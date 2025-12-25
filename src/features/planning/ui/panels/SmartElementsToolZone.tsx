@@ -161,35 +161,6 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
   
   // Analysis Elements
   {
-    id: 'interactive_sheet',
-    name: 'Interactive Sheet',
-    nameAr: 'ورقة تفاعلية',
-    icon: <FileSpreadsheet size={20} />,
-    category: 'analysis',
-    description: 'إدارة بيانات مركبة داخل جدول تفاعلي',
-    settings: [
-      { key: 'rows', label: 'عدد الصفوف', type: 'number', defaultValue: 10 },
-      { key: 'columns', label: 'عدد الأعمدة', type: 'number', defaultValue: 5 },
-      { key: 'enableFormulas', label: 'تفعيل الصيغ', type: 'checkbox', defaultValue: true },
-    ]
-  },
-  {
-    id: 'mind_map',
-    name: 'Mind Map',
-    nameAr: 'خريطة ذهنية',
-    icon: <Network size={20} />,
-    category: 'analysis',
-    description: 'تنظيم وربط الأفكار بصرياً',
-    settings: [
-      { key: 'layout', label: 'التخطيط', type: 'select', options: [
-        { value: 'radial', label: 'شعاعي' },
-        { value: 'tree', label: 'شجري' },
-        { value: 'org', label: 'هيكلي' },
-      ], defaultValue: 'radial' },
-      { key: 'autoLayout', label: 'ترتيب تلقائي', type: 'checkbox', defaultValue: true },
-    ]
-  },
-  {
     id: 'visual_diagram' as SmartElementType,
     name: 'Visual Diagram',
     nameAr: 'مخطط بصري',
@@ -201,17 +172,6 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
         { value: 'horizontal', label: 'أفقي' },
         { value: 'vertical', label: 'عمودي' },
       ], defaultValue: 'horizontal' },
-    ]
-  },
-  {
-    id: 'root_connector',
-    name: 'Root Connector',
-    nameAr: 'رابط الجذر',
-    icon: <Link size={20} />,
-    category: 'analysis',
-    description: 'ربط المكونات بعلاقات بصرية ووظيفية',
-    settings: [
-      { key: 'showAISuggestions', label: 'اقتراحات AI', type: 'checkbox', defaultValue: true },
     ]
   },
   
