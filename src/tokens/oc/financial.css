@@ -1,0 +1,62 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Financial Tokens
+ * توكنات خاصة بالمالية - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Financial Status Colors
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-financial-profit: var(--ds-color-positive);
+  --oc-financial-loss: var(--ds-color-negative);
+  --oc-financial-neutral: var(--ds-color-neutral);
+  --oc-financial-pending: var(--ds-color-warning);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Budget Tracker
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-budget-spent: var(--ds-color-ink-60);
+  --oc-budget-remaining: var(--ds-color-positive-muted);
+  --oc-budget-overrun: var(--ds-color-negative);
+  --oc-budget-track-bg: var(--ds-color-surface-subtle);
+  --oc-budget-track-height: 12px;
+  --oc-budget-track-radius: var(--ds-radius-full);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Invoice Card
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-invoice-card-bg: var(--ds-color-surface);
+  --oc-invoice-card-radius: var(--ds-radius-xl);
+  --oc-invoice-card-shadow: var(--ds-elevation-2);
+  --oc-invoice-card-padding: var(--ds-space-4);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Expense Card
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-expense-card-bg: var(--ds-color-surface);
+  --oc-expense-card-radius: var(--ds-radius-lg);
+  --oc-expense-category-icon-size: 32px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Revenue Chart
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-revenue-line-color: var(--ds-color-positive);
+  --oc-revenue-fill-color: rgba(16, 185, 129, 0.1);
+  --oc-expense-line-color: var(--ds-color-negative);
+  --oc-expense-fill-color: rgba(239, 68, 68, 0.1);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Currency Display
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-currency-positive: var(--ds-color-positive);
+  --oc-currency-negative: var(--ds-color-negative);
+  --oc-currency-neutral: var(--ds-color-ink);
+  --oc-currency-font-size: var(--ds-font-size-lg);
+  --oc-currency-font-weight: var(--ds-font-weight-semibold);
+}

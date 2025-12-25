@@ -1,0 +1,75 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * DS Spacing - 4px Base Unit
+ * نظام المسافات الموحد
+ * 
+ * @layer Design System
+ * @version 1.0.0
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Base Unit: 4px
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-space-unit: 4px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Spacing Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-space-0: 0;
+  --ds-space-px: 1px;
+  --ds-space-0-5: 2px;      /* 0.5 × 4px */
+  --ds-space-1: 4px;        /* 1 × 4px */
+  --ds-space-1-5: 6px;      /* 1.5 × 4px */
+  --ds-space-2: 8px;        /* 2 × 4px */
+  --ds-space-2-5: 10px;     /* 2.5 × 4px */
+  --ds-space-3: 12px;       /* 3 × 4px */
+  --ds-space-3-5: 14px;     /* 3.5 × 4px */
+  --ds-space-4: 16px;       /* 4 × 4px */
+  --ds-space-5: 20px;       /* 5 × 4px */
+  --ds-space-6: 24px;       /* 6 × 4px */
+  --ds-space-7: 28px;       /* 7 × 4px */
+  --ds-space-8: 32px;       /* 8 × 4px */
+  --ds-space-9: 36px;       /* 9 × 4px */
+  --ds-space-10: 40px;      /* 10 × 4px */
+  --ds-space-11: 44px;      /* 11 × 4px */
+  --ds-space-12: 48px;      /* 12 × 4px */
+  --ds-space-14: 56px;      /* 14 × 4px */
+  --ds-space-16: 64px;      /* 16 × 4px */
+  --ds-space-20: 80px;      /* 20 × 4px */
+  --ds-space-24: 96px;      /* 24 × 4px */
+  --ds-space-28: 112px;     /* 28 × 4px */
+  --ds-space-32: 128px;     /* 32 × 4px */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Semantic Spacing
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-space-xs: var(--ds-space-1);     /* 4px - extra small */
+  --ds-space-sm: var(--ds-space-2);     /* 8px - small */
+  --ds-space-md: var(--ds-space-3);     /* 12px - medium */
+  --ds-space-lg: var(--ds-space-4);     /* 16px - large */
+  --ds-space-xl: var(--ds-space-6);     /* 24px - extra large */
+  --ds-space-2xl: var(--ds-space-8);    /* 32px - 2x large */
+  --ds-space-3xl: var(--ds-space-10);   /* 40px - 3x large */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Component Spacing
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-space-input-x: var(--ds-space-3);      /* 12px - input horizontal */
+  --ds-space-input-y: var(--ds-space-2);      /* 8px - input vertical */
+  --ds-space-button-x: var(--ds-space-4);     /* 16px - button horizontal */
+  --ds-space-button-y: var(--ds-space-2);     /* 8px - button vertical */
+  --ds-space-card: var(--ds-space-4);         /* 16px - card padding */
+  --ds-space-modal: var(--ds-space-6);        /* 24px - modal padding */
+  --ds-space-section: var(--ds-space-8);      /* 32px - section gap */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Gap Scale (for flex/grid)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-gap-xs: var(--ds-space-1);     /* 4px */
+  --ds-gap-sm: var(--ds-space-2);     /* 8px */
+  --ds-gap-md: var(--ds-space-3);     /* 12px */
+  --ds-gap-lg: var(--ds-space-4);     /* 16px */
+  --ds-gap-xl: var(--ds-space-6);     /* 24px */
+}

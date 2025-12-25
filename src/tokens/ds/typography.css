@@ -1,0 +1,105 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * DS Typography - Font System
+ * نظام الخطوط الموحد
+ * 
+ * @layer Design System
+ * @version 1.0.0
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Font Family
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --ds-font-family-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', 'Source Code Pro', monospace;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Font Weight
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-font-weight-regular: 400;
+  --ds-font-weight-medium: 500;
+  --ds-font-weight-semibold: 600;
+  --ds-font-weight-bold: 700;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Font Size Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-font-size-xs: 10px;
+  --ds-font-size-sm: 12px;
+  --ds-font-size-base: 14px;
+  --ds-font-size-md: 16px;
+  --ds-font-size-lg: 18px;
+  --ds-font-size-xl: 20px;
+  --ds-font-size-2xl: 24px;
+  --ds-font-size-3xl: 32px;
+  --ds-font-size-4xl: 40px;
+  --ds-font-size-5xl: 48px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Line Height Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-line-height-none: 1;
+  --ds-line-height-tight: 1.25;
+  --ds-line-height-snug: 1.375;
+  --ds-line-height-normal: 1.5;
+  --ds-line-height-relaxed: 1.625;
+  --ds-line-height-loose: 2;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Letter Spacing
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-tracking-tighter: -0.05em;
+  --ds-tracking-tight: -0.025em;
+  --ds-tracking-normal: 0;
+  --ds-tracking-wide: 0.025em;
+  --ds-tracking-wider: 0.05em;
+  --ds-tracking-widest: 0.1em;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Text Styles (Composite)
+     ───────────────────────────────────────────────────────────────────────── */
+  
+  /* Display Styles */
+  --ds-text-display-l-size: 40px;
+  --ds-text-display-l-line: 48px;
+  --ds-text-display-l-weight: var(--ds-font-weight-bold);
+  
+  --ds-text-display-m-size: 32px;
+  --ds-text-display-m-line: 40px;
+  --ds-text-display-m-weight: var(--ds-font-weight-bold);
+
+  /* Title Styles */
+  --ds-text-title-size: 20px;
+  --ds-text-title-line: 28px;
+  --ds-text-title-weight: var(--ds-font-weight-bold);
+
+  /* Subtitle Styles */
+  --ds-text-subtitle-size: 16px;
+  --ds-text-subtitle-line: 24px;
+  --ds-text-subtitle-weight: var(--ds-font-weight-semibold);
+
+  /* Body Styles */
+  --ds-text-body-size: 14px;
+  --ds-text-body-line: 22px;
+  --ds-text-body-weight: var(--ds-font-weight-regular);
+
+  /* Label Styles */
+  --ds-text-label-size: 12px;
+  --ds-text-label-line: 18px;
+  --ds-text-label-weight: var(--ds-font-weight-medium);
+
+  /* Caption Styles */
+  --ds-text-caption-size: 10px;
+  --ds-text-caption-line: 14px;
+  --ds-text-caption-weight: var(--ds-font-weight-regular);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     KPI/Number Styles
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-text-kpi-number-size: 44px;
+  --ds-text-kpi-number-weight: var(--ds-font-weight-bold);
+  --ds-text-kpi-unit-size: 14px;
+  --ds-text-kpi-unit-weight: var(--ds-font-weight-medium);
+}

@@ -1,0 +1,100 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * DS Colors - Design System Only
+ * ألوان محايدة - لا تعرف شيء عن المنتج
+ * 
+ * @layer Design System
+ * @version 1.0.0
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Ink (Text Colors)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-ink: #000000;
+  --ds-color-ink-90: rgba(0, 0, 0, 0.9);
+  --ds-color-ink-80: rgba(0, 0, 0, 0.8);
+  --ds-color-ink-70: rgba(0, 0, 0, 0.7);
+  --ds-color-ink-60: rgba(0, 0, 0, 0.6);
+  --ds-color-ink-40: rgba(0, 0, 0, 0.4);
+  --ds-color-ink-30: rgba(0, 0, 0, 0.3);
+  --ds-color-ink-20: rgba(0, 0, 0, 0.2);
+  --ds-color-ink-10: rgba(0, 0, 0, 0.1);
+  --ds-color-ink-08: rgba(0, 0, 0, 0.08);
+  --ds-color-ink-05: rgba(0, 0, 0, 0.05);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     White (Inverse Text)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-white: #FFFFFF;
+  --ds-color-white-90: rgba(255, 255, 255, 0.9);
+  --ds-color-white-80: rgba(255, 255, 255, 0.8);
+  --ds-color-white-70: rgba(255, 255, 255, 0.7);
+  --ds-color-white-60: rgba(255, 255, 255, 0.6);
+  --ds-color-white-40: rgba(255, 255, 255, 0.4);
+  --ds-color-white-20: rgba(255, 255, 255, 0.2);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Surface (Backgrounds)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-surface: #FFFFFF;
+  --ds-color-surface-muted: #F8F9FA;
+  --ds-color-surface-subtle: #F1F5F9;
+  --ds-color-surface-elevated: #FFFFFF;
+  --ds-color-surface-overlay: rgba(0, 0, 0, 0.2);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Panel (Secondary Backgrounds)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-panel: #d9e7ed;
+  --ds-color-panel-muted: #E3E3E3;
+  --ds-color-panel-subtle: #EBEFF2;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Border
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-border: #DADCE0;
+  --ds-color-border-subtle: rgba(218, 220, 224, 0.5);
+  --ds-color-border-focus: #3B82F6;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Brand Palette (Semantic-Free)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-mint: #BDEED3;
+  --ds-color-mint-muted: #96D8D0;
+  --ds-color-sky: #A4E2F6;
+  --ds-color-lilac: #D9D2FE;
+  --ds-color-rose: #F1B5B9;
+  --ds-color-amber: #FBE2AA;
+  --ds-color-muted-blue: #D1E1EA;
+  --ds-color-cream: #DFECF2;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Feedback Colors (Generic)
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-positive: #10B981;
+  --ds-color-positive-muted: #34D399;
+  --ds-color-warning: #F59E0B;
+  --ds-color-warning-muted: #FBBF24;
+  --ds-color-negative: #EF4444;
+  --ds-color-negative-muted: #F87171;
+  --ds-color-info: #3B82F6;
+  --ds-color-info-muted: #60A5FA;
+  --ds-color-neutral: #6B7280;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Interactive States
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-hover: rgba(0, 0, 0, 0.04);
+  --ds-color-active: rgba(0, 0, 0, 0.08);
+  --ds-color-disabled: rgba(0, 0, 0, 0.12);
+  --ds-color-focus-ring: rgba(59, 130, 246, 0.5);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Glass Effects
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-color-glass-bg: rgba(255, 255, 255, 0.65);
+  --ds-color-glass-border: rgba(255, 255, 255, 0.6);
+  --ds-color-glass-backdrop: rgba(255, 255, 255, 0.30);
+}

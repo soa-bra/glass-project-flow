@@ -1,0 +1,103 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Canvas Tokens
+ * توكنات خاصة بالكانفس - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Z-Index Layers
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-z-base: 1;
+  --oc-canvas-z-element: 10;
+  --oc-canvas-z-selected: 100;
+  --oc-canvas-z-bounding: 500;
+  --oc-canvas-z-handles: 1001;
+  --oc-canvas-z-overlay: 998;
+  --oc-canvas-z-toolbar: 10000;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Backgrounds
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-bg: var(--ds-color-surface-muted);
+  --oc-canvas-grid-color: var(--ds-color-ink-08);
+  --oc-canvas-grid-size: 20px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Elements
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-element-bg: var(--ds-color-surface);
+  --oc-canvas-element-border: var(--ds-color-border);
+  --oc-canvas-element-radius: var(--ds-radius-lg);
+  --oc-canvas-element-shadow: var(--ds-elevation-2);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Sticky Notes
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-sticky-bg: #FEF08A;
+  --oc-canvas-sticky-shadow: var(--ds-elevation-2);
+  --oc-canvas-sticky-radius: var(--ds-radius-md);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Annotations
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-annotation-bg: #FFF3CD;
+  --oc-canvas-annotation-border: #FFE69C;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Selection
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-selection-border: var(--ds-color-info);
+  --oc-canvas-selection-border-width: 2px;
+  --oc-canvas-selection-fill: rgba(59, 130, 246, 0.1);
+  --oc-canvas-selection-dash: 4px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Handles (Resize)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-handle-size: 8px;
+  --oc-canvas-handle-size-hover: 10px;
+  --oc-canvas-handle-bg: var(--ds-color-info);
+  --oc-canvas-handle-border: var(--ds-color-surface);
+  --oc-canvas-handle-border-width: 2px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Connectors
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-connector-color: var(--ds-color-ink-40);
+  --oc-canvas-connector-width: 2px;
+  --oc-canvas-connector-hover-color: var(--ds-color-info);
+  --oc-canvas-connector-arrow-size: 8px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Toolbar
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-toolbar-bg: var(--ds-color-surface);
+  --oc-canvas-toolbar-shadow: var(--ds-elevation-3);
+  --oc-canvas-toolbar-radius: var(--ds-radius-xl);
+  --oc-canvas-toolbar-padding: var(--ds-space-2);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Zoom Control
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-zoom-min: 0.1;
+  --oc-canvas-zoom-max: 4;
+  --oc-canvas-zoom-default: 1;
+  --oc-canvas-zoom-step: 0.1;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Canvas Cursors
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-canvas-cursor-default: default;
+  --oc-canvas-cursor-grab: grab;
+  --oc-canvas-cursor-grabbing: grabbing;
+  --oc-canvas-cursor-crosshair: crosshair;
+  --oc-canvas-cursor-text: text;
+  --oc-canvas-cursor-move: move;
+  --oc-canvas-cursor-pointer: pointer;
+}

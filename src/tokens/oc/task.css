@@ -1,0 +1,58 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Task Tokens
+ * توكنات خاصة بالمهام - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task Card
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-task-card-bg: var(--ds-color-surface-muted);
+  --oc-task-card-radius: var(--ds-radius-3xl);
+  --oc-task-card-shadow: var(--ds-elevation-card);
+  --oc-task-card-border: var(--ds-color-border);
+  --oc-task-card-padding: var(--ds-space-3);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task List
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-task-list-bg: #EAECEF;
+  --oc-task-list-radius: var(--ds-radius-2xl);
+  --oc-task-list-gap: var(--ds-space-2);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task Board (Kanban)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-task-board-column-width: 320px;
+  --oc-task-board-column-bg: var(--ds-color-surface-subtle);
+  --oc-task-board-column-radius: var(--ds-radius-xl);
+  --oc-task-board-gap: var(--ds-space-4);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task Checkbox
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-task-checkbox-size: 20px;
+  --oc-task-checkbox-radius: var(--ds-radius-sm);
+  --oc-task-checkbox-border: var(--ds-color-border);
+  --oc-task-checkbox-checked-bg: var(--ds-color-positive);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task Due Date
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-task-due-normal: var(--ds-color-neutral);
+  --oc-task-due-soon: var(--ds-color-warning);
+  --oc-task-due-overdue: var(--ds-color-negative);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task Dependencies
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-task-dependency-line-color: var(--ds-color-border);
+  --oc-task-dependency-line-width: 2px;
+  --oc-task-dependency-arrow-color: var(--ds-color-ink-40);
+}

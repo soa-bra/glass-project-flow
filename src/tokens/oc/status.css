@@ -1,0 +1,70 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Status Tokens
+ * توكنات الحالات الدلالية - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project/Task Status Colors
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-on-plan: var(--ds-color-mint);
+  --oc-status-in-preparation: var(--ds-color-sky);
+  --oc-status-in-progress: var(--ds-color-lilac);
+  --oc-status-delayed: var(--ds-color-amber);
+  --oc-status-stopped: var(--ds-color-rose);
+  --oc-status-todo: var(--ds-color-cream);
+  --oc-status-completed: var(--ds-color-positive);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Status Indicator Sizes
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-dot-size-sm: 6px;
+  --oc-status-dot-size-md: 8px;
+  --oc-status-dot-size-lg: 10px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Task Status (Kanban)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-task-todo: var(--ds-color-cream);
+  --oc-status-task-in-progress: var(--ds-color-lilac);
+  --oc-status-task-review: var(--ds-color-amber);
+  --oc-status-task-completed: var(--ds-color-mint);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Health/Risk Status
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-health-good: var(--ds-color-positive);
+  --oc-status-health-warning: var(--ds-color-warning);
+  --oc-status-health-critical: var(--ds-color-negative);
+  --oc-status-health-neutral: var(--ds-color-neutral);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Online/Activity Status
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-online: var(--ds-color-positive);
+  --oc-status-away: var(--ds-color-warning);
+  --oc-status-busy: var(--ds-color-negative);
+  --oc-status-offline: var(--ds-color-neutral);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Approval Status
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-approved: var(--ds-color-positive);
+  --oc-status-pending: var(--ds-color-warning);
+  --oc-status-rejected: var(--ds-color-negative);
+  --oc-status-draft: var(--ds-color-neutral);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Invoice Status
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-status-invoice-draft: var(--ds-color-neutral);
+  --oc-status-invoice-pending: var(--ds-color-warning);
+  --oc-status-invoice-paid: var(--ds-color-positive);
+  --oc-status-invoice-overdue: var(--ds-color-negative);
+}

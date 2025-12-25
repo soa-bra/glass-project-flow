@@ -1,0 +1,68 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Project Tokens
+ * توكنات خاصة بالمشاريع - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Card
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-card-bg: var(--ds-color-surface-subtle);
+  --oc-project-card-radius: var(--ds-radius-3xl);
+  --oc-project-card-shadow: var(--ds-elevation-card);
+  --oc-project-card-border: var(--ds-color-border);
+  --oc-project-card-padding: var(--ds-space-4);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Column (Archive View)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-column-bg: #EBEFF2;
+  --oc-project-column-radius: var(--ds-radius-3xl);
+  --oc-project-column-padding: var(--ds-space-4);
+  --oc-project-column-gap: var(--ds-space-3);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Sidebar
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-sidebar-width-collapsed: 80px;
+  --oc-project-sidebar-width-expanded: 280px;
+  --oc-project-sidebar-bg: var(--ds-color-panel);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Elements
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-days-bubble-bg: transparent;
+  --oc-project-tasks-bubble-bg: var(--ds-color-muted-blue);
+  --oc-project-capsule-bg: var(--ds-color-surface);
+  --oc-project-capsule-radius: var(--ds-radius-full);
+  --oc-project-capsule-padding-x: var(--ds-space-3);
+  --oc-project-capsule-padding-y: var(--ds-space-1);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Header
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-header-height: 64px;
+  --oc-project-header-bg: var(--ds-color-surface);
+  --oc-project-header-border: var(--ds-color-border);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Timeline
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-timeline-line-color: var(--ds-color-border);
+  --oc-project-timeline-dot-size: 12px;
+  --oc-project-timeline-dot-color: var(--ds-color-info);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Project Milestone
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-project-milestone-size: 36px;
+  --oc-project-milestone-bg: var(--ds-color-panel);
+  --oc-project-milestone-ring: var(--ds-color-border);
+  --oc-project-milestone-icon: var(--ds-color-ink);
+}

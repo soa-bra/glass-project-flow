@@ -1,0 +1,119 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Visual Data Tokens (Charts & Data Visualization)
+ * توكنات البيانات البصرية - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Chart Colors (Primary Palette)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-chart-primary: var(--ds-color-ink);
+  --oc-chart-1: var(--ds-color-mint);
+  --oc-chart-2: var(--ds-color-rose);
+  --oc-chart-3: var(--ds-color-lilac);
+  --oc-chart-4: var(--ds-color-sky);
+  --oc-chart-5: var(--ds-color-amber);
+  --oc-chart-6: var(--ds-color-muted-blue);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Chart Grid & Axes
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-chart-grid-color: var(--ds-color-ink-08);
+  --oc-chart-axis-color: var(--ds-color-ink-30);
+  --oc-chart-axis-width: 1px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Chart Elements
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-chart-stroke-width: 2px;
+  --oc-chart-dot-size: 6px;
+  --oc-chart-bar-radius: var(--ds-radius-md);
+  --oc-chart-bar-gap: var(--ds-space-1);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Chart Tooltip
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-chart-tooltip-bg: var(--ds-color-ink);
+  --oc-chart-tooltip-text: var(--ds-color-white);
+  --oc-chart-tooltip-muted: var(--ds-color-white-70);
+  --oc-chart-tooltip-radius: var(--ds-radius-lg);
+  --oc-chart-tooltip-padding-x: var(--ds-space-3);
+  --oc-chart-tooltip-padding-y: var(--ds-space-2);
+  --oc-chart-tooltip-shadow: var(--ds-elevation-tooltip);
+  --oc-chart-tooltip-value-size: 16px;
+  --oc-chart-tooltip-sub-value-size: 12px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Chart Pointer Line
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-chart-pointer-color: var(--ds-color-ink-40);
+  --oc-chart-pointer-dash: 2px 4px;
+  --oc-chart-pointer-width: 2px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Progress Indicators
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-progress-active: var(--ds-color-positive-muted);
+  --oc-progress-inactive: var(--ds-color-ink-10);
+  --oc-progress-bg: var(--ds-color-muted-blue);
+  --oc-progress-height: 8px;
+  --oc-progress-radius: var(--ds-radius-full);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Progress Tape (Tick-based)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-progress-tape-tick-width: 6px;
+  --oc-progress-tape-tick-gap: 6px;
+  --oc-progress-tape-tick-radius: 3px;
+  --oc-progress-tape-tick-done: var(--oc-progress-active);
+  --oc-progress-tape-tick-todo: var(--ds-color-ink-10);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     KPI Cards
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-kpi-number-size: 44px;
+  --oc-kpi-unit-size: 14px;
+  --oc-kpi-gap-vertical: var(--ds-space-2);
+  --oc-kpi-icon-circle-size: 36px;
+  --oc-kpi-icon-stroke: 1.5px;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Financial Glance (Budget Visualization)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-financial-ticks-count: 72;
+  --oc-financial-tick-width: 6px;
+  --oc-financial-tick-gap: 6px;
+  --oc-financial-tick-radius: 3px;
+  --oc-financial-tick-base: var(--ds-color-ink-08);
+  --oc-financial-tick-fill: var(--ds-color-ink-60);
+  
+  /* Budget Status Backgrounds */
+  --oc-financial-bg-good: #BFE7D5;     /* < 70% spent */
+  --oc-financial-bg-warning: #FFF4CC;  /* >= 70% spent */
+  --oc-financial-bg-danger: #FFE1E0;   /* = 100% spent */
+
+  /* Income vs Expense */
+  --oc-financial-income-tick: var(--ds-color-positive);
+  --oc-financial-expense-tick: var(--ds-color-negative);
+  --oc-financial-profit-bg: #96D8D0;
+  --oc-financial-loss-bg: var(--ds-color-rose);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Scroll Indicator
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-scroll-capsule-width: 6px;
+  --oc-scroll-capsule-height: 20px;
+  --oc-scroll-capsule-radius: 3px;
+  --oc-scroll-capsule-color: var(--ds-color-ink);
+  --oc-scroll-capsule-idle-opacity: 0.4;
+  --oc-scroll-capsule-active-opacity: 1;
+  --oc-scroll-dot-size: 6px;
+  --oc-scroll-dot-gap: var(--ds-space-2);
+  --oc-scroll-dot-color: var(--ds-color-ink-30);
+}
