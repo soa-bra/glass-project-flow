@@ -67,8 +67,58 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const handleFontSizeChange = useCallback((size: string) => {
     const newSize = parseInt(size);
     setFontSize(newSize);
-    onUpdate({ fontSize: newSize });
-  }, [onUpdate]);
+    
+    // Apply font size to current selection or line
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      
+      // If there's a selection, apply to selected text
+      if (!range.collapsed) {
+        // Use execCommand with a temporary size, then replace with actual px
+        document.execCommand('fontSize', false, '7');
+        
+        // Find all font elements with size 7 and replace with span with actual size
+        if (editorRef.current) {
+          const fontElements = editorRef.current.querySelectorAll('font[size="7"]');
+          fontElements.forEach((font) => {
+            const span = document.createElement('span');
+            span.style.fontSize = `${newSize}px`;
+            span.innerHTML = font.innerHTML;
+            font.parentNode?.replaceChild(span, font);
+          });
+        }
+      } else {
+        // No selection - wrap the current line/block with the new size
+        const node = selection.anchorNode;
+        if (node) {
+          // Find the parent block element
+          let blockElement: HTMLElement | null = null;
+          if (node.nodeType === Node.TEXT_NODE) {
+            blockElement = node.parentElement;
+          } else {
+            blockElement = node as HTMLElement;
+          }
+          
+          // Walk up to find the block-level parent within editor
+          while (blockElement && blockElement !== editorRef.current) {
+            const display = window.getComputedStyle(blockElement).display;
+            if (display === 'block' || display === 'list-item' || blockElement.tagName === 'DIV' || blockElement.tagName === 'P' || blockElement.tagName === 'LI') {
+              break;
+            }
+            blockElement = blockElement.parentElement;
+          }
+          
+          if (blockElement && blockElement !== editorRef.current) {
+            blockElement.style.fontSize = `${newSize}px`;
+          }
+        }
+      }
+      
+      editorRef.current?.focus();
+      handleContentChange();
+    }
+  }, [handleContentChange]);
 
   const toggleDirection = useCallback(() => {
     const newDirection = direction === 'rtl' ? 'ltr' : 'rtl';
@@ -205,12 +255,11 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           onKeyDown={handleKeyDown}
           dir={direction}
           style={{ 
-            fontSize: `${fontSize}px`,
             textAlign: direction === 'rtl' ? 'right' : 'left',
           }}
           className={cn(
             "w-full h-full min-h-[200px] outline-none",
-            "text-foreground leading-relaxed whitespace-pre-wrap",
+            "text-foreground leading-relaxed whitespace-pre-wrap text-sm",
             "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground [&:empty]:before:pointer-events-none",
             direction === 'rtl' ? "text-right" : "text-left"
           )}
