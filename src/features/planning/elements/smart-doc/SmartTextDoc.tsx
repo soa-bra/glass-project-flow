@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   FileText, Bold, Italic, Underline, AlignRight, AlignCenter, AlignLeft, 
-  Sparkles, List, ListOrdered, Pilcrow, Wand2
+  Sparkles, List, ListOrdered, TextCursorInput, Pilcrow
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -13,61 +13,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Arabic Unicode range for detection
-const ARABIC_REGEX = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
-const LATIN_REGEX = /[A-Za-z]/;
-
-// Detect text direction based on first significant character
-const detectTextDirection = (text: string): 'rtl' | 'ltr' | null => {
-  // Strip HTML tags for detection
-  const plainText = text.replace(/<[^>]*>/g, '').trim();
-  
-  for (const char of plainText) {
-    if (ARABIC_REGEX.test(char)) return 'rtl';
-    if (LATIN_REGEX.test(char)) return 'ltr';
-  }
-  return null;
-};
-
-// Wrap paragraphs with appropriate direction
-const wrapWithBidiSupport = (html: string): string => {
-  // If it's just plain text without HTML structure, return as is
-  if (!html.includes('<')) return html;
-  
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  
-  // Process text nodes and paragraphs
-  const processNode = (node: Node) => {
-    if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-      const direction = detectTextDirection(node.textContent);
-      if (direction && node.parentElement) {
-        const span = document.createElement('span');
-        span.dir = direction;
-        span.style.unicodeBidi = 'isolate';
-        span.textContent = node.textContent;
-        node.parentElement.replaceChild(span, node);
-      }
-    } else if (node.nodeType === Node.ELEMENT_NODE) {
-      const element = node as HTMLElement;
-      // Process block elements
-      if (['P', 'DIV', 'LI'].includes(element.tagName)) {
-        const textContent = element.textContent || '';
-        const direction = detectTextDirection(textContent);
-        if (direction) {
-          element.dir = direction;
-          element.style.textAlign = direction === 'rtl' ? 'right' : 'left';
-        }
-      }
-      // Recurse into children
-      Array.from(node.childNodes).forEach(processNode);
-    }
-  };
-  
-  Array.from(tempDiv.childNodes).forEach(processNode);
-  return tempDiv.innerHTML;
-};
-
 interface SmartTextDocData {
   title: string;
   content: string;
@@ -77,7 +22,6 @@ interface SmartTextDocData {
   showToolbar: boolean;
   fontSize?: number;
   direction?: 'rtl' | 'ltr';
-  autoDetectDirection?: boolean;
 }
 
 interface SmartTextDocProps {
@@ -92,21 +36,7 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const [content, setContent] = useState(data.content || '');
   const [fontSize, setFontSize] = useState(data.fontSize || 14);
   const [direction, setDirection] = useState<'rtl' | 'ltr'>(data.direction || 'rtl');
-  const [autoDetect, setAutoDetect] = useState(data.autoDetectDirection !== false);
   const editorRef = useRef<HTMLDivElement>(null);
-  const isInitialMount = useRef(true);
-
-  // Auto-detect direction on content change
-  useEffect(() => {
-    if (autoDetect && content && !isInitialMount.current) {
-      const detected = detectTextDirection(content);
-      if (detected && detected !== direction) {
-        setDirection(detected);
-        onUpdate({ direction: detected });
-      }
-    }
-    isInitialMount.current = false;
-  }, [content, autoDetect]);
 
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent);
@@ -133,37 +63,12 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const toggleDirection = useCallback(() => {
     const newDirection = direction === 'rtl' ? 'ltr' : 'rtl';
     setDirection(newDirection);
-    setAutoDetect(false); // Disable auto-detect when manually toggled
-    onUpdate({ direction: newDirection, autoDetectDirection: false });
+    onUpdate({ direction: newDirection });
   }, [direction, onUpdate]);
-
-  const toggleAutoDetect = useCallback(() => {
-    const newAutoDetect = !autoDetect;
-    setAutoDetect(newAutoDetect);
-    onUpdate({ autoDetectDirection: newAutoDetect });
-    
-    // If enabling, detect current content direction
-    if (newAutoDetect && content) {
-      const detected = detectTextDirection(content);
-      if (detected) {
-        setDirection(detected);
-        onUpdate({ direction: detected });
-      }
-    }
-  }, [autoDetect, content, onUpdate]);
 
   const insertList = useCallback((ordered: boolean) => {
     applyFormat(ordered ? 'insertOrderedList' : 'insertUnorderedList');
   }, [applyFormat]);
-
-  // Apply Bidi support to existing content
-  const applyBidiSupport = useCallback(() => {
-    if (editorRef.current) {
-      const processed = wrapWithBidiSupport(editorRef.current.innerHTML);
-      editorRef.current.innerHTML = processed;
-      handleContentChange(processed);
-    }
-  }, [handleContentChange]);
 
   return (
     <div className="w-full h-full flex flex-col bg-background rounded-lg border border-border overflow-hidden" dir="rtl">
@@ -229,17 +134,6 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
             title={direction === 'rtl' ? 'تبديل إلى اليسار لليمين' : 'تبديل إلى اليمين لليسار'}
           >
             <Pilcrow className={cn("h-4 w-4", direction === 'rtl' && "transform scale-x-[-1]")} />
-          </Button>
-
-          {/* Auto-detect Direction Toggle */}
-          <Button 
-            variant={autoDetect ? 'secondary' : 'ghost'} 
-            size="icon" 
-            className="h-7 w-7"
-            onClick={toggleAutoDetect}
-            title={autoDetect ? 'الكشف التلقائي مفعّل' : 'تفعيل الكشف التلقائي للاتجاه'}
-          >
-            <Wand2 className="h-4 w-4" />
           </Button>
 
           <div className="w-px h-5 bg-border mx-1" />
