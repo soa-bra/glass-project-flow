@@ -335,9 +335,9 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
             "text-foreground leading-relaxed whitespace-pre-wrap text-sm",
             "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground [&:empty]:before:pointer-events-none",
             direction === 'rtl' ? "text-right" : "text-left",
-            // List alignment styles - bullets/numbers follow text alignment with padding
-            "[&_ul]:list-inside [&_ol]:list-inside",
-            "[&_ul]:ps-12 [&_ol]:ps-12",
+            // List alignment styles - padding before bullets/numbers
+            "[&_ul]:list-outside [&_ol]:list-outside",
+            "[&_ul]:ms-12 [&_ol]:ms-12",
             "[&_li]:my-1"
           )}
         />
