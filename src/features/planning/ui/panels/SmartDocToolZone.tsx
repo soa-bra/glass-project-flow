@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import { FileText, FileSpreadsheet, Sparkles } from "lucide-react";
-import { useSmartElementsStore } from "@/stores/smartElementsStore";
+import { FileText, FileSpreadsheet } from "lucide-react";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import type { SmartElementType } from "@/types/smart-elements";
 
@@ -34,47 +31,15 @@ const SMART_DOC_OPTIONS: SmartDocOption[] = [
 
 const SmartDocToolZone: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState<SmartDocOption | null>(null);
-  const [docTitle, setDocTitle] = useState("");
-
-  const { addSmartElement } = useSmartElementsStore();
-  const { viewport } = useCanvasStore();
 
   const handleSelectOption = (option: SmartDocOption) => {
     setSelectedOption(option);
-    setDocTitle("");
 
     // ✅ استخدام المتغير المنفصل للمستندات الذكية
     useCanvasStore.getState().setSelectedSmartDoc(option.id);
     useCanvasStore.getState().setActiveTool("smart_doc_tool");
-  };
-
-  const handleAddDocument = () => {
-    if (!selectedOption) return;
-
-    // حساب مركز الـ viewport
-    const centerX = (-viewport.pan.x + window.innerWidth / 2) / viewport.zoom;
-    const centerY = (-viewport.pan.y + window.innerHeight / 2) / viewport.zoom;
-
-    const initialData: Record<string, any> = {
-      title: docTitle || selectedOption.nameAr,
-    };
-
-    // إعدادات خاصة بكل نوع
-    if (selectedOption.id === "interactive_sheet") {
-      initialData.rows = 10;
-      initialData.columns = 5;
-      initialData.enableFormulas = true;
-    } else if (selectedOption.id === "smart_text_doc") {
-      initialData.content = "";
-      initialData.format = "rich";
-      initialData.aiAssist = true;
-    }
-
-    addSmartElement(selectedOption.id, { x: centerX, y: centerY }, initialData);
-
-    toast.success(`تم إضافة ${selectedOption.nameAr}`);
-    setSelectedOption(null);
-    setDocTitle("");
+    
+    toast.info(`انقر على الكانفس لإضافة ${option.nameAr}`);
   };
 
   return (
@@ -123,41 +88,14 @@ const SmartDocToolZone: React.FC = () => {
         ))}
       </div>
 
-      {/* Settings Panel (when option selected) */}
-      {selectedOption && (
-        <div className="space-y-4 p-4 bg-[hsl(var(--panel))] rounded-[16px]">
-          <div className="flex items-center gap-2 text-[hsl(var(--accent-green))]">
-            <Sparkles size={18} />
-            <h4 className="text-[13px] font-semibold">إعدادات {selectedOption.nameAr}</h4>
-          </div>
-
-          {/* Title Input */}
-          <div>
-            <label className="text-[12px] text-[hsl(var(--ink-60))] mb-2 block">عنوان المستند</label>
-            <Input
-              value={docTitle}
-              onChange={(e) => setDocTitle(e.target.value)}
-              placeholder={selectedOption.nameAr}
-              className="text-right"
-            />
-          </div>
-
-          {/* Add Button */}
-          <Button
-            onClick={handleAddDocument}
-            className="w-full bg-[hsl(var(--accent-blue))] hover:bg-[hsl(var(--accent-blue))]/90 text-white"
-          >
-            إضافة على الكانفس
-          </Button>
-        </div>
-      )}
-
       {/* Instructions */}
-      {!selectedOption && (
-        <div className="p-4 bg-[hsl(var(--panel))] rounded-[12px] text-center">
-          <p className="text-[11px] text-[hsl(var(--ink-60))]">انقر على أحد الخيارات أعلاه لإضافته إلى الكانفس</p>
-        </div>
-      )}
+      <div className="p-4 bg-[hsl(var(--panel))] rounded-[12px] text-center">
+        <p className="text-[11px] text-[hsl(var(--ink-60))]">
+          {selectedOption 
+            ? `انقر على الكانفس لإضافة ${selectedOption.nameAr}`
+            : 'انقر على أحد الخيارات أعلاه ثم انقر على الكانفس'}
+        </p>
+      </div>
     </div>
   );
 };
