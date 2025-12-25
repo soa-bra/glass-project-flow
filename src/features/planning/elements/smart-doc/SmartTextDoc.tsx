@@ -334,7 +334,11 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
             "w-full h-full min-h-[200px] outline-none",
             "text-foreground leading-relaxed whitespace-pre-wrap text-sm",
             "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground [&:empty]:before:pointer-events-none",
-            direction === 'rtl' ? "text-right" : "text-left"
+            direction === 'rtl' ? "text-right" : "text-left",
+            // List alignment styles - bullets/numbers follow text alignment
+            "[&_ul]:list-inside [&_ol]:list-inside",
+            "[&_ul]:ps-0 [&_ol]:ps-0",
+            "[&_li]:ps-0"
           )}
         />
       </div>
