@@ -81,14 +81,35 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   }, [applyFormat]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    const selection = window.getSelection();
+    const node = selection?.anchorNode;
+    
+    // Find if we're inside a list item
+    const listItem = node?.nodeType === Node.TEXT_NODE 
+      ? node.parentElement?.closest('li')
+      : (node as Element)?.closest?.('li');
+    
     if (e.key === 'Enter' && !e.shiftKey) {
-      const selection = window.getSelection();
-      const node = selection?.anchorNode;
-      
-      // Check if we're inside a list item
-      const listItem = node?.parentElement?.closest('li');
       if (listItem) {
-        // Let the browser handle list item creation naturally
+        // Check if current list item is empty - exit list
+        const itemText = listItem.textContent?.trim() || '';
+        if (itemText === '') {
+          e.preventDefault();
+          const list = listItem.closest('ul, ol');
+          if (list) {
+            // Remove the empty list item
+            listItem.remove();
+            // If list is now empty, remove it too
+            if (list.children.length === 0) {
+              list.remove();
+            }
+            // Insert a new paragraph after the list or at cursor
+            document.execCommand('insertParagraph');
+          }
+          handleContentChange();
+          return;
+        }
+        // Non-empty list item - let browser handle normally
         return;
       }
       
@@ -96,6 +117,65 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
       e.preventDefault();
       document.execCommand('insertLineBreak');
       handleContentChange();
+      return;
+    }
+    
+    if (e.key === 'Backspace' && listItem) {
+      // Check if cursor is at the beginning of the list item
+      const range = selection?.getRangeAt(0);
+      if (range && range.startOffset === 0) {
+        const isAtStart = range.startContainer === listItem || 
+          (range.startContainer.nodeType === Node.TEXT_NODE && 
+           range.startContainer === listItem.firstChild);
+        
+        if (isAtStart || range.startOffset === 0) {
+          e.preventDefault();
+          const list = listItem.closest('ul, ol');
+          const itemContent = listItem.innerHTML;
+          
+          // Get previous sibling or parent context
+          const prevItem = listItem.previousElementSibling;
+          
+          if (prevItem) {
+            // Merge with previous item
+            prevItem.innerHTML += itemContent;
+            listItem.remove();
+            // Move cursor to the merge point
+            const sel = window.getSelection();
+            if (sel && prevItem.lastChild) {
+              const newRange = document.createRange();
+              newRange.selectNodeContents(prevItem);
+              newRange.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(newRange);
+            }
+          } else if (list) {
+            // First item - convert to paragraph
+            listItem.remove();
+            if (list.children.length === 0) {
+              // Replace empty list with content
+              const p = document.createElement('div');
+              p.innerHTML = itemContent || '<br>';
+              list.parentNode?.replaceChild(p, list);
+              // Move cursor to the new element
+              const sel = window.getSelection();
+              if (sel) {
+                const newRange = document.createRange();
+                newRange.selectNodeContents(p);
+                newRange.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+              }
+            } else {
+              // Insert content before list
+              const p = document.createElement('div');
+              p.innerHTML = itemContent || '<br>';
+              list.parentNode?.insertBefore(p, list);
+            }
+          }
+          handleContentChange();
+        }
+      }
     }
   }, [handleContentChange]);
 
