@@ -31,12 +31,32 @@ interface SmartTextDocProps {
 
 const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
 
+interface ActiveFormats {
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+}
+
 export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) => {
   const [content, setContent] = useState(data.content || '');
   const [currentFontSize, setCurrentFontSize] = useState(data.fontSize || 14);
   const [direction, setDirection] = useState<'rtl' | 'ltr'>(data.direction || 'rtl');
+  const [activeFormats, setActiveFormats] = useState<ActiveFormats>({
+    bold: false,
+    italic: false,
+    underline: false,
+  });
   const editorRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
+
+  // Detect active formats at current cursor position
+  const detectActiveFormats = useCallback(() => {
+    setActiveFormats({
+      bold: document.queryCommandState('bold'),
+      italic: document.queryCommandState('italic'),
+      underline: document.queryCommandState('underline'),
+    });
+  }, []);
 
   // Detect font size at current cursor position
   const detectCurrentFontSize = useCallback(() => {
@@ -87,7 +107,8 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const handleSelectionChange = useCallback(() => {
     detectCurrentFontSize();
-  }, [detectCurrentFontSize]);
+    detectActiveFormats();
+  }, [detectCurrentFontSize, detectActiveFormats]);
 
   const handleTitleChange = useCallback((title: string) => {
     onUpdate({ title });
@@ -233,13 +254,28 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           <div className="w-px h-5 bg-border mx-1" />
 
           {/* Text Formatting */}
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('bold')}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={cn("h-7 w-7", activeFormats.bold && "bg-accent text-accent-foreground")} 
+            onClick={() => applyFormat('bold')}
+          >
             <Bold className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('italic')}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={cn("h-7 w-7", activeFormats.italic && "bg-accent text-accent-foreground")} 
+            onClick={() => applyFormat('italic')}
+          >
             <Italic className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('underline')}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={cn("h-7 w-7", activeFormats.underline && "bg-accent text-accent-foreground")} 
+            onClick={() => applyFormat('underline')}
+          >
             <Underline className="h-4 w-4" />
           </Button>
 
