@@ -192,6 +192,10 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
         setActiveTool('smart_element_tool');
       }
+      if (e.key === 'd' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        setActiveTool('smart_doc_tool');
+      }
 
       // Group/Ungroup (Ctrl+G / Ctrl+Shift+G)
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g' && !e.shiftKey && selectedElementIds.length > 1) {

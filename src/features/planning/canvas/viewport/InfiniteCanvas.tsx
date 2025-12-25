@@ -381,7 +381,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       activeTool === 'text_tool' || 
       activeTool === 'smart_element_tool' ||
       activeTool === 'sticky_tool' ||
-      activeTool === 'mindmap_tool'
+      activeTool === 'mindmap_tool' ||
+      activeTool === 'smart_doc_tool'
     )) {
       handleCanvasMouseDown(e);
       return;
@@ -603,6 +604,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       case 'file_uploader':
         return 'copy';
       case 'smart_element_tool':
+        return 'crosshair';
+      case 'smart_doc_tool':
         return 'crosshair';
       default:
         return 'default';
