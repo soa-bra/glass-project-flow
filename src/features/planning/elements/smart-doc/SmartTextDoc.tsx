@@ -81,14 +81,51 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   }, [applyFormat]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    const selection = window.getSelection();
+    const node = selection?.anchorNode;
+    const listItem = node?.parentElement?.closest('li') || (node?.nodeType === Node.ELEMENT_NODE && (node as Element).closest('li'));
+    
+    // Handle Backspace on empty list item
+    if (e.key === 'Backspace' && listItem) {
+      const listItemText = listItem.textContent || '';
+      if (listItemText.trim() === '') {
+        e.preventDefault();
+        const list = listItem.closest('ul, ol');
+        listItem.remove();
+        
+        // If list is now empty, remove it too
+        if (list && list.children.length === 0) {
+          list.remove();
+        }
+        
+        handleContentChange();
+        return;
+      }
+    }
+    
+    // Handle Enter key
     if (e.key === 'Enter' && !e.shiftKey) {
-      const selection = window.getSelection();
-      const node = selection?.anchorNode;
-      
-      // Check if we're inside a list item
-      const listItem = node?.parentElement?.closest('li');
       if (listItem) {
-        // Let the browser handle list item creation naturally
+        const listItemText = listItem.textContent || '';
+        
+        // If list item is empty, exit the list
+        if (listItemText.trim() === '') {
+          e.preventDefault();
+          const list = listItem.closest('ul, ol');
+          listItem.remove();
+          
+          // If list is now empty, remove it
+          if (list && list.children.length === 0) {
+            list.remove();
+          }
+          
+          // Insert a line break to continue typing outside the list
+          document.execCommand('insertParagraph');
+          handleContentChange();
+          return;
+        }
+        
+        // Let browser handle creating new list item
         return;
       }
       
