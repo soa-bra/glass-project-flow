@@ -219,6 +219,7 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'smart_element_tool':
+      case 'smart_doc_tool':
         handleSmartElementClick(snappedPoint);
         break;
 
