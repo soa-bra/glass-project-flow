@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   FileText, Bold, Italic, Underline, AlignRight, AlignCenter, AlignLeft, 
-  Sparkles, List, ListOrdered, Pilcrow
+  Sparkles, List, ListOrdered, Pilcrow, IndentIncrease, IndentDecrease
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -78,6 +78,10 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const insertList = useCallback((ordered: boolean) => {
     applyFormat(ordered ? 'insertOrderedList' : 'insertUnorderedList');
+  }, [applyFormat]);
+
+  const indentList = useCallback((increase: boolean) => {
+    applyFormat(increase ? 'indent' : 'outdent');
   }, [applyFormat]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -177,6 +181,19 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
         }
       }
     }
+    
+    // Tab for indent, Shift+Tab for outdent in lists
+    if (e.key === 'Tab' && listItem) {
+      e.preventDefault();
+      if (e.shiftKey) {
+        // Outdent - move to parent list level
+        document.execCommand('outdent');
+      } else {
+        // Indent - create nested list
+        document.execCommand('indent');
+      }
+      handleContentChange();
+    }
   }, [handleContentChange]);
 
   const getWordCount = useCallback(() => {
@@ -272,6 +289,12 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           </Button>
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertList(true)} title="قائمة رقمية">
             <ListOrdered className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => indentList(true)} title="زيادة المسافة البادئة">
+            <IndentIncrease className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => indentList(false)} title="تقليل المسافة البادئة">
+            <IndentDecrease className="h-4 w-4" />
           </Button>
         </div>
       )}
