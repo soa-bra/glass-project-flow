@@ -233,11 +233,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({
       {/* Navigation Bar */}
       <NavigationBar />
       
-      {/* Floating Edit Bar */}
-      <FloatingBar />
-      
-      {/* Minimap */}
-      <Minimap />
+      {/* Contextual Toolbar Manager - يدير الأشرطة الطافية حسب السياق */}
+      <ContextualToolbarManager />
       
       {/* Smart Command Bar */}
       <SmartCommandBar
