@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Trash2, Table, Download, Calculator } from 'lucide-react';
+import { Plus, Trash2, Table, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CellData {

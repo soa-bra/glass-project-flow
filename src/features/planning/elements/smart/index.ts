@@ -19,7 +19,6 @@ export { GanttChart } from './GanttChart';
 export { TimelineView } from './TimelineView';
 export { MindMap } from './MindMap';
 export { VisualDiagram } from './VisualDiagram';
-export { InteractiveSheet } from './InteractiveSheet';
 export { DecisionsMatrix } from './DecisionsMatrix';
 
 // Cards
