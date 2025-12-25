@@ -293,10 +293,10 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
             "text-foreground leading-relaxed whitespace-pre-wrap",
             "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground [&:empty]:before:pointer-events-none",
             direction === 'rtl' ? "text-right" : "text-left",
-            // List indentation styles
-            "[&_ul]:pr-6 [&_ul]:mr-2 [&_ol]:pr-6 [&_ol]:mr-2",
+            // List indentation styles - padding before bullet/number
             "[&_ul]:list-disc [&_ol]:list-decimal",
-            "[&_li]:pr-2 [&_li]:my-1"
+            "[&_ul]:ps-8 [&_ol]:ps-8",
+            "[&_li]:my-1"
           )}
         />
       </div>
