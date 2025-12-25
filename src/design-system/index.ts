@@ -6,6 +6,7 @@
  * Usage:
  * ```typescript
  * import { DS, OC, DS_COLORS, OC_PROJECT } from '@/design-system';
+ * import { DatePicker, LineChart, Rating } from '@/design-system';
  * ```
  * 
  * @version 1.0.0
@@ -16,8 +17,24 @@
 // Token Exports
 // ─────────────────────────────────────────────────────────────────────────────
 export * from './tokens';
+export { default as TOKENS } from './tokens';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Re-export defaults
+// Primitive Components
 // ─────────────────────────────────────────────────────────────────────────────
-export { default as TOKENS } from './tokens';
+export * from './primitives';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Navigation Components
+// ─────────────────────────────────────────────────────────────────────────────
+export * from './navigation';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Feedback Components
+// ─────────────────────────────────────────────────────────────────────────────
+export * from './feedback';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Data Display Components (Charts)
+// ─────────────────────────────────────────────────────────────────────────────
+export * from './data-display';
