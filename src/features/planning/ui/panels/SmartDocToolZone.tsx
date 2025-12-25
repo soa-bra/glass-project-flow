@@ -43,8 +43,8 @@ const SmartDocToolZone: React.FC = () => {
     setSelectedOption(option);
     setDocTitle("");
 
-    // تفعيل الأداة في canvasStore
-    useCanvasStore.getState().setSelectedSmartElement(option.id);
+    // ✅ استخدام المتغير المنفصل للمستندات الذكية
+    useCanvasStore.getState().setSelectedSmartDoc(option.id);
     useCanvasStore.getState().setActiveTool("smart_doc_tool");
   };
 

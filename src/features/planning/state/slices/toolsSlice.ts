@@ -16,6 +16,9 @@ export interface ToolsSlice {
   tempElement: CanvasElement | null;
   selectedSmartElement: string | null;
   
+  // ✅ متغير منفصل للمستندات الذكية (interactive_sheet, smart_text_doc)
+  selectedSmartDoc: string | null;
+  
   // Text Management
   editingTextId: string | null;
   typingMode: boolean;
@@ -30,6 +33,7 @@ export interface ToolsSlice {
   setDrawStartPoint: (point: { x: number; y: number } | null) => void;
   setTempElement: (element: CanvasElement | null) => void;
   setSelectedSmartElement: (elementType: string | null) => void;
+  setSelectedSmartDoc: (docType: string | null) => void;
   setLastSmartSelectedMindMapNode: (nodeId: string | null) => void;
   
   // Text Actions
@@ -54,12 +58,21 @@ export const createToolsSlice: StateCreator<
   drawStartPoint: null,
   tempElement: null,
   selectedSmartElement: null,
+  selectedSmartDoc: null,
   editingTextId: null,
   typingMode: false,
   lastSmartSelectedMindMapNode: null,
   
   setActiveTool: (tool) => {
-    set({ activeTool: tool, isDrawing: false, drawStartPoint: null, tempElement: null });
+    set((state: any) => ({ 
+      activeTool: tool, 
+      isDrawing: false, 
+      drawStartPoint: null, 
+      tempElement: null,
+      // ✅ إعادة تعيين المتغيرات حسب الأداة
+      selectedSmartElement: tool !== 'smart_element_tool' ? null : state.selectedSmartElement,
+      selectedSmartDoc: tool !== 'smart_doc_tool' ? null : state.selectedSmartDoc,
+    }));
   },
   
   updateToolSettings: (tool, settings) => {
@@ -75,6 +88,7 @@ export const createToolsSlice: StateCreator<
   setDrawStartPoint: (point) => set({ drawStartPoint: point }),
   setTempElement: (element) => set({ tempElement: element }),
   setSelectedSmartElement: (elementType) => set({ selectedSmartElement: elementType }),
+  setSelectedSmartDoc: (docType) => set({ selectedSmartDoc: docType }),
   setLastSmartSelectedMindMapNode: (nodeId) => set({ lastSmartSelectedMindMapNode: nodeId }),
   
   addText: (textData) => {
