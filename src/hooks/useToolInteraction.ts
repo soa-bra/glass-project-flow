@@ -501,8 +501,17 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
   const handleSmartElementClick = (point: { x: number; y: number }) => {
     const { selectedSmartElement, addElement: addCanvasElement } = useCanvasStore.getState();
     
+    // ✅ قائمة أنواع المستندات الذكية (يجب إضافتها عبر أداة D وليس S)
+    const SMART_DOC_TYPES = ['interactive_sheet', 'smart_text_doc'];
+    
     if (!selectedSmartElement) {
       toast.info('اختر عنصراً ذكياً من اللوحة الجانبية أولاً');
+      return;
+    }
+
+    // ✅ منع إضافة المستندات الذكية عبر أداة العناصر الذكية
+    if (SMART_DOC_TYPES.includes(selectedSmartElement)) {
+      toast.info('استخدم أداة المستند الذكي (D) لإضافة هذا العنصر');
       return;
     }
 
@@ -546,15 +555,16 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
    * أداة المستند الذكي: إنشاء interactive_sheet أو smart_text_doc
    */
   const handleSmartDocClick = (point: { x: number; y: number }) => {
-    const { selectedSmartElement } = useCanvasStore.getState();
+    // ✅ استخدام المتغير المنفصل للمستندات الذكية
+    const { selectedSmartDoc } = useCanvasStore.getState();
     
-    if (!selectedSmartElement) {
+    if (!selectedSmartDoc) {
       toast.info('اختر نوع المستند الذكي من اللوحة الجانبية أولاً');
       return;
     }
 
     // التأكد من أن النوع المختار هو مستند ذكي
-    if (selectedSmartElement !== 'interactive_sheet' && selectedSmartElement !== 'smart_text_doc') {
+    if (selectedSmartDoc !== 'interactive_sheet' && selectedSmartDoc !== 'smart_text_doc') {
       toast.info('اختر نوع المستند الذكي من اللوحة الجانبية');
       return;
     }
@@ -564,12 +574,12 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     // إعداد البيانات الأولية بناءً على النوع
     const initialData: Record<string, any> = {};
     
-    if (selectedSmartElement === 'interactive_sheet') {
+    if (selectedSmartDoc === 'interactive_sheet') {
       initialData.title = 'جدول تفاعلي';
       initialData.rows = 10;
       initialData.columns = 5;
       initialData.enableFormulas = true;
-    } else if (selectedSmartElement === 'smart_text_doc') {
+    } else if (selectedSmartDoc === 'smart_text_doc') {
       initialData.title = 'مستند نصي ذكي';
       initialData.content = '';
       initialData.format = 'rich';
@@ -577,15 +587,15 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     }
 
     addSmartElement(
-      selectedSmartElement as SmartElementType,
+      selectedSmartDoc as SmartElementType,
       point,
       initialData
     );
     
-    toast.success(`تم إضافة ${selectedSmartElement === 'interactive_sheet' ? 'الجدول التفاعلي' : 'المستند النصي الذكي'}`);
+    toast.success(`تم إضافة ${selectedSmartDoc === 'interactive_sheet' ? 'الجدول التفاعلي' : 'المستند النصي الذكي'}`);
     
-    // إعادة تعيين العنصر المختار
-    useCanvasStore.getState().setSelectedSmartElement(null);
+    // ✅ إعادة تعيين المتغير المنفصل
+    useCanvasStore.getState().setSelectedSmartDoc(null);
   };
 
   /**
