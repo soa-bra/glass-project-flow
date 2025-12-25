@@ -11,7 +11,7 @@ const Textarea = React.forwardRef<
     return (
       <textarea
         className={cn(
-          "flex min-h-[80px] w-full rounded-2xl border border-gray-300 px-4 py-3 text-sm ring-offset-background placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-black font-arabic",
+          "flex min-h-[80px] w-full rounded-[var(--ds-radius-panel)] border border-[hsl(var(--ds-color-border))] px-4 py-3 text-sm ring-offset-background placeholder:text-[hsl(var(--ds-color-ink-30))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ds-color-ink))] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-[hsl(var(--ds-color-ink))] font-arabic",
           "bg-transparent",
           className
         )}
