@@ -4,62 +4,127 @@
 // SoaBra Design System — Full Specification v1.0.0
 // ===============================
 
+// Import new token system
+import { 
+  DS_COLORS, 
+  DS_SPACING, 
+  DS_RADIUS, 
+  DS_ELEVATION, 
+  DS_MOTION, 
+  DS_Z_INDEX,
+  DS_TYPOGRAPHY,
+  OC_PROJECT,
+  OC_TASK,
+  OC_STATUS,
+  OC_PRIORITY,
+  OC_CANVAS,
+  OC_CHART,
+  OC_FINANCIAL,
+  OC_PROGRESS
+} from '@/design-system';
+
+// Re-export tokens for backward compatibility
+export { 
+  DS_COLORS, 
+  DS_SPACING, 
+  DS_RADIUS, 
+  DS_ELEVATION, 
+  DS_MOTION, 
+  DS_Z_INDEX,
+  OC_PROJECT,
+  OC_TASK,
+  OC_STATUS,
+  OC_PRIORITY,
+  OC_CANVAS,
+  OC_CHART,
+  OC_FINANCIAL,
+  OC_PROGRESS
+} from '@/design-system';
+
 export const DESIGN_TOKENS = {
-  // Radius tokens
+  // Radius tokens - mapped to new DS tokens
   RADIUS: {
     CARD_TOP: 'rounded-t-[24px]',
     CARD_BOTTOM: 'rounded-b-[6px]',
     CARD_FULL: 'rounded-[24px]',
     ICON_CONTAINER: 'rounded-full',
+    // New DS references
+    GLOBAL: DS_RADIUS['3XL'],
+    SM: DS_RADIUS.SM,
+    MD: DS_RADIUS.MD,
+    LG: DS_RADIUS.LG,
   },
   
-  // Spacing tokens (4px base unit)
+  // Spacing tokens (4px base unit) - mapped to new DS tokens
   SPACING: {
     XS: 'p-1', // 4px
     SM: 'p-2', // 8px
     MD: 'p-3', // 12px
     LG: 'p-4', // 16px
     XL: 'p-6', // 24px
+    // New DS references
+    ...DS_SPACING,
   },
   
-  // Colors from specification - Updated according to requirements
+  // Colors from specification - Updated to use new tokens
   COLORS: {
-    INK: '#000000',
-    INK_60: 'rgba(11,15,18,0.6)',
-    INK_30: 'rgba(11,15,18,0.3)',
-    SURFACE: '#FFFFFF',
-    SURFACE_MUTED: '#F6F7F8',
-    BORDER: '#DADCE0',
+    // DS Colors
+    INK: DS_COLORS.INK,
+    INK_60: DS_COLORS.INK_60,
+    INK_30: DS_COLORS.INK_30,
+    SURFACE: DS_COLORS.SURFACE,
+    SURFACE_MUTED: DS_COLORS.SURFACE_MUTED,
+    BORDER: DS_COLORS.BORDER,
     
-    // Main background colors
-    PANEL_BG: '#F8F9FA',          // خلفية اللوحات
-    BOX_BG: '#FFFFFF',            // خلفية الصناديق
+    // Main background colors - using OC tokens
+    PANEL_BG: '#F8F9FA',
+    BOX_BG: '#FFFFFF',
     
-    // Project layouts
-    PROJECT_COLUMN_BG: '#ebeff2',     // خلفية عامود المشاريع
-    PROJECT_CARD_BG: '#F1F5F9',       // خلفية بطاقات المشاريع
-    PROJECT_CARD_CAPSULE_BG: '#FFFFFF', // خلفية كبسولات بطاقات المشاريع
+    // Project layouts - using OC tokens
+    PROJECT_COLUMN_BG: '#ebeff2',
+    PROJECT_CARD_BG: '#F1F5F9',
+    PROJECT_CARD_CAPSULE_BG: '#FFFFFF',
     
-    // Task layouts  
-    TASK_LIST_BOX_BG: '#eaecef',      // خلفية صندوق قائمة المهام
-    TASK_CARD_BG: '#f8f9fa',          // خلفية بطاقات المهام
-    TASK_CARD_CAPSULE_BG: '#FFFFFF',  // خلفية كبسولات بطاقات المهام
+    // Task layouts - using OC tokens
+    TASK_LIST_BOX_BG: '#eaecef',
+    TASK_CARD_BG: '#f8f9fa',
+    TASK_CARD_CAPSULE_BG: '#FFFFFF',
     
-    // Financial status backgrounds
-    FINANCIAL_PROFIT_BG: '#96D8D0',   // خلفية ربح/ضمن الميزانية
-    FINANCIAL_LOSS_BG: '#F1B5B9',     // خلفية خسارة/أعلى من الميزانية
+    // Financial status backgrounds - using OC tokens
+    FINANCIAL_PROFIT_BG: '#96D8D0',
+    FINANCIAL_LOSS_BG: '#F1B5B9',
     
     // Additional sidebar background
-    ADDITIONAL_SIDEBAR_BG: '#ebeff2',  // خلفية البار الإضافي
+    ADDITIONAL_SIDEBAR_BG: '#ebeff2',
     
     // Project card elements
-    PROJECT_CARD_DAYS_CIRCLE_BG: 'transparent', // خلفية فقاعة الأيام المتبقية
-    PROJECT_CARD_TASKS_CIRCLE_BG: '#d1e1ea',    // خلفية فقاعة المهام
+    PROJECT_CARD_DAYS_CIRCLE_BG: 'transparent',
+    PROJECT_CARD_TASKS_CIRCLE_BG: '#d1e1ea',
+    
+    // Brand palette from DS
+    MINT: DS_COLORS.MINT,
+    SKY: DS_COLORS.SKY,
+    LILAC: DS_COLORS.LILAC,
+    ROSE: DS_COLORS.ROSE,
+    AMBER: DS_COLORS.AMBER,
   },
   
-  // Elevation/Shadow
+  // Elevation/Shadow - using DS tokens
   ELEVATION: {
-    CARD: 'shadow-[0_1px_1px_rgba(0,0,0,0.02),_0_8px_24px_rgba(0,0,0,0.06)]',
+    CARD: DS_ELEVATION[2],
+    MODAL: DS_ELEVATION.MODAL,
+    SOFT: DS_ELEVATION[1],
+    STRONG: DS_ELEVATION[3],
+  },
+  
+  // Z-Index - using DS tokens
+  Z_INDEX: {
+    ...DS_Z_INDEX,
+  },
+  
+  // Motion - using DS tokens
+  MOTION: {
+    ...DS_MOTION,
   },
 } as const;
 
@@ -76,60 +141,60 @@ export const SPACING = {
 } as const;
 
 export const COLORS = {
-  // SoaBra Design System Colors - Updated with new tokens
-  PANEL_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PANEL_BG}]`,
-  BOX_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.BOX_BG}]`,
+  // SoaBra Design System Colors - Using new token system
+  PANEL_BACKGROUND: `bg-[var(--ds-color-surface-muted)]`,
+  BOX_BACKGROUND: `bg-[var(--ds-color-surface)]`,
   
-  // Project layout backgrounds
-  PROJECT_COLUMN_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PROJECT_COLUMN_BG}]`,
-  PROJECT_CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PROJECT_CARD_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
-  PROJECT_CARD_CAPSULE_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.PROJECT_CARD_CAPSULE_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  // Project layout backgrounds - using OC CSS variables
+  PROJECT_COLUMN_BACKGROUND: `bg-[var(--oc-project-column-bg)]`,
+  PROJECT_CARD_BACKGROUND: `bg-[var(--oc-project-card-bg)] border border-[var(--ds-color-border)]`,
+  PROJECT_CARD_CAPSULE_BACKGROUND: `bg-[var(--oc-project-capsule-bg)] border border-[var(--ds-color-border)]`,
   
-  // Task layout backgrounds  
-  TASK_LIST_BOX_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.TASK_LIST_BOX_BG}]`,
-  TASK_CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.TASK_CARD_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
-  TASK_CARD_CAPSULE_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.TASK_CARD_CAPSULE_BG}] border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  // Task layout backgrounds - using OC CSS variables
+  TASK_LIST_BOX_BACKGROUND: `bg-[var(--oc-task-list-bg)]`,
+  TASK_CARD_BACKGROUND: `bg-[var(--oc-task-card-bg)] border border-[var(--ds-color-border)]`,
+  TASK_CARD_CAPSULE_BACKGROUND: `bg-[var(--ds-color-surface)] border border-[var(--ds-color-border)]`,
   
-  // Financial status backgrounds
-  FINANCIAL_PROFIT_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.FINANCIAL_PROFIT_BG}]`,
-  FINANCIAL_LOSS_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.FINANCIAL_LOSS_BG}]`,
+  // Financial status backgrounds - using OC CSS variables
+  FINANCIAL_PROFIT_BACKGROUND: `bg-[var(--oc-financial-profit-bg)]`,
+  FINANCIAL_LOSS_BACKGROUND: `bg-[var(--oc-financial-loss-bg)]`,
   
   TRANSPARENT_BACKGROUND: 'bg-transparent',
   
-  // Legacy compatibility - keeping CARD_BACKGROUND for existing components
-  CARD_BACKGROUND: `bg-[${DESIGN_TOKENS.COLORS.BOX_BG}]`,
+  // Legacy compatibility
+  CARD_BACKGROUND: `bg-[var(--ds-color-surface)]`,
   
   // Border colors from design system
-  BORDER_COLOR: `border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
-  RING_BORDER: `border border-[${DESIGN_TOKENS.COLORS.BORDER}]`,
+  BORDER_COLOR: `border border-[var(--ds-color-border)]`,
+  RING_BORDER: `border border-[var(--ds-color-border)]`,
   
   // Text colors from design system
-  PRIMARY_TEXT: `text-[${DESIGN_TOKENS.COLORS.INK}]`,
-  SECONDARY_TEXT: `text-[${DESIGN_TOKENS.COLORS.INK_60}]`,
-  MUTED_TEXT: `text-[${DESIGN_TOKENS.COLORS.INK_30}]`,
+  PRIMARY_TEXT: `text-[var(--ds-color-ink)]`,
+  SECONDARY_TEXT: `text-[var(--ds-color-ink-60)]`,
+  MUTED_TEXT: `text-[var(--ds-color-ink-30)]`,
   
-  // Badge colors (keeping original for brand consistency)
-  BADGE_SUCCESS: 'bg-[#bdeed3] text-[#000000]',
-  BADGE_WARNING: 'bg-[#fbe2aa] text-[#000000]',
-  BADGE_ERROR: 'bg-[#f1b5b9] text-[#000000]',
-  BADGE_INFO: 'bg-[#a4e2f6] text-[#000000]',
-  BADGE_PRIMARY: 'bg-[#d9d2fd] text-[#000000]',
+  // Badge colors - using OC status/priority tokens
+  BADGE_SUCCESS: 'bg-[var(--oc-status-on-plan)] text-[var(--ds-color-ink)]',
+  BADGE_WARNING: 'bg-[var(--oc-status-delayed)] text-[var(--ds-color-ink)]',
+  BADGE_ERROR: 'bg-[var(--oc-status-stopped)] text-[var(--ds-color-ink)]',
+  BADGE_INFO: 'bg-[var(--oc-status-in-preparation)] text-[var(--ds-color-ink)]',
+  BADGE_PRIMARY: 'bg-[var(--oc-status-in-progress)] text-[var(--ds-color-ink)]',
   
-  // Canvas and Background colors for inline style replacements
-  CANVAS_BACKGROUND: 'bg-[#f8f9fa]',
-  CANVAS_ELEMENT_BACKGROUND: 'bg-[#ffffff]',
-  CANVAS_STICKY_BACKGROUND: 'bg-[#fef08a]',
+  // Canvas and Background colors
+  CANVAS_BACKGROUND: 'bg-[var(--oc-canvas-bg)]',
+  CANVAS_ELEMENT_BACKGROUND: 'bg-[var(--oc-canvas-element-bg)]',
+  CANVAS_STICKY_BACKGROUND: 'bg-[var(--oc-canvas-sticky-bg)]',
   CANVAS_TEXT_BACKGROUND: 'bg-[#f8fafc]',
-  CANVAS_ANNOTATION_BACKGROUND: 'bg-[#fff3cd]',
+  CANVAS_ANNOTATION_BACKGROUND: 'bg-[var(--oc-canvas-annotation-bg)]',
   OVERLAY_BACKGROUND: 'bg-[rgba(255,255,255,0.9)]',
   OVERLAY_BACKGROUND_95: 'bg-[rgba(255,255,255,0.95)]',
   
-  // Canvas Style Classes for inline style replacement
-  CANVAS_CLASS_BG_F8F9FA: 'bg-[#f8f9fa]',
+  // Canvas Style Classes
+  CANVAS_CLASS_BG_F8F9FA: 'bg-[var(--oc-canvas-bg)]',
   CANVAS_CLASS_BG_FFFFFF: 'bg-white',
-  CANVAS_CLASS_BG_FEF08A: 'bg-[#fef08a]',
+  CANVAS_CLASS_BG_FEF08A: 'bg-[var(--oc-canvas-sticky-bg)]',
   CANVAS_CLASS_BG_F8FAFC: 'bg-[#f8fafc]',
-  CANVAS_CLASS_BG_FFF3CD: 'bg-[#fff3cd]',
+  CANVAS_CLASS_BG_FFF3CD: 'bg-[var(--oc-canvas-annotation-bg)]',
   CANVAS_CLASS_OVERLAY_90: 'bg-white/90',
   CANVAS_CLASS_OVERLAY_95: 'bg-white/95',
 
@@ -141,10 +206,10 @@ export const COLORS = {
   
   // Common Canvas Element Classes
   CANVAS_ELEMENT_BASE: 'absolute select-none',
-  CANVAS_SELECTION_BOX: 'absolute pointer-events-none border-2 border-blue-500 bg-blue-500/10',
-  CANVAS_RESIZE_HANDLE: 'absolute w-2 h-2 bg-blue-500 border border-white rounded-sm cursor-pointer',
+  CANVAS_SELECTION_BOX: `absolute pointer-events-none border-2 border-[var(--oc-canvas-selection-border)] bg-[var(--oc-canvas-selection-fill)]`,
+  CANVAS_RESIZE_HANDLE: `absolute w-2 h-2 bg-[var(--oc-canvas-handle-bg)] border border-white rounded-sm cursor-pointer`,
 
-  // Complete Color Palette for Canvas Elements (Phase 2 Implementation)
+  // Complete Color Palette for Canvas Elements
   CANVAS_COLOR_RED: '#FF0000',
   CANVAS_COLOR_ORANGE: '#FF8000',
   CANVAS_COLOR_YELLOW: '#FFFF00',
@@ -203,11 +268,11 @@ export const COLORS = {
   OPERATIONS_TIMELINE_BG: '#ffffff',
   OPERATIONS_PROJECT_BG: '#ffffff',
 
-  // Task Management Colors
+  // Task Management Colors - using OC tokens
   TASK_CARD_BG: '#aec2cf',
-  TASK_PRIORITY_HIGH: '#ef4444',
-  TASK_PRIORITY_MEDIUM: '#f59e0b',
-  TASK_PRIORITY_LOW: '#10b981',
+  TASK_PRIORITY_HIGH: 'var(--ds-color-negative)',
+  TASK_PRIORITY_MEDIUM: 'var(--ds-color-warning)',
+  TASK_PRIORITY_LOW: 'var(--ds-color-positive)',
   TASK_MUSTARD: '#D4A574',
 
   // Collaboration Colors
@@ -215,12 +280,12 @@ export const COLORS = {
   COLLAB_FEED_BG: 'rgba(255,255,255,0.95)',
   COLLAB_COMMENT_BG: '#f8fafc',
 
-  // Project Progress Colors
-  PROGRESS_COMPLETED: '#d9f3a8',
-  PROGRESS_INCOMPLETE: 'rgba(255, 255, 255, 0.3)',
-  PROGRESS_BACKGROUND: '#d1e1ea',
+  // Project Progress Colors - using OC tokens
+  PROGRESS_COMPLETED: 'var(--oc-progress-active)',
+  PROGRESS_INCOMPLETE: 'var(--oc-progress-inactive)',
+  PROGRESS_BACKGROUND: 'var(--oc-progress-bg)',
   
-  // Additional background colors for specific elements
+  // Additional background colors
   SHAPE_FILL_BLUE: 'bg-[#3B82F6]',
   STICKY_NOTE_YELLOW: 'bg-[#FEF3C7]',
   TEXT_EDITOR_WHITE: 'bg-[#ffffff]',
@@ -233,36 +298,35 @@ export const COLORS = {
   CANVAS_TRANSPARENT: 'transparent',
   CANVAS_COLLAB_USER_BG: 'rgba(255,255,255,0.9)',
   
-  // Task Status Colors (for UI consistency)
-  TASK_STATUS_COMPLETED: '#bdeed3',
-  TASK_STATUS_IN_PROGRESS: '#a4e2f6', 
-  TASK_STATUS_TODO: '#dfecf2',
-  TASK_STATUS_STOPPED: '#f1b5b9',
-  TASK_STATUS_TREATING: '#d9d2fd',
-  TASK_STATUS_LATE: '#fbe2aa',
+  // Task Status Colors - using OC tokens
+  TASK_STATUS_COMPLETED: 'var(--oc-status-on-plan)',
+  TASK_STATUS_IN_PROGRESS: 'var(--oc-status-in-preparation)', 
+  TASK_STATUS_TODO: 'var(--oc-status-todo)',
+  TASK_STATUS_STOPPED: 'var(--oc-status-stopped)',
+  TASK_STATUS_TREATING: 'var(--oc-status-in-progress)',
+  TASK_STATUS_LATE: 'var(--oc-status-delayed)',
   
-  // NPS Score colors
-  NPS_EXCELLENT: '#22c55e',    // Green-500
-  NPS_VERY_GOOD: '#4ade80',    // Green-400
-  NPS_GOOD: '#facc15',         // Yellow-400
-  NPS_POOR: '#ef4444',         // Red-500
+  // NPS Score colors - using DS feedback colors
+  NPS_EXCELLENT: 'var(--ds-color-positive)',
+  NPS_VERY_GOOD: '#4ade80',
+  NPS_GOOD: 'var(--ds-color-warning)',
+  NPS_POOR: 'var(--ds-color-negative)',
   
   // Common element colors for canvas
   ELEMENT_SHAPE_FILL: '#3B82F6',
   ELEMENT_STICKY_NOTE: '#FEF3C7',
   ELEMENT_TEXT_BOX: '#ffffff',
-  ELEMENT_BORDER: '#DADCE0',
+  ELEMENT_BORDER: 'var(--ds-color-border)',
   ELEMENT_USER_COLOR: 'rgba(255,255,255,0.9)',
   
-  // Notification and user interface colors
-  STATUS_SUCCESS: '#10b981',
-  STATUS_WARNING: '#f59e0b', 
-  STATUS_ERROR: '#ef4444',
-  STATUS_INFO: '#3b82f6',
-  STATUS_NEUTRAL: '#6b7280',
+  // Notification and user interface colors - using DS feedback
+  STATUS_SUCCESS: 'var(--ds-color-positive)',
+  STATUS_WARNING: 'var(--ds-color-warning)', 
+  STATUS_ERROR: 'var(--ds-color-negative)',
+  STATUS_INFO: 'var(--ds-color-info)',
+  STATUS_NEUTRAL: 'var(--ds-color-neutral)',
   
-  
-  // Color Picker Palette Colors (for dynamic styling)
+  // Color Picker Palette Colors
   PALETTE_RED: '#FF0000',
   PALETTE_ORANGE: '#FF8000',
   PALETTE_YELLOW: '#FFFF00',
@@ -298,17 +362,17 @@ export const COLORS = {
   PRESET_MINIMAL_BG: '#f9fafb',
   PRESET_MINIMAL_BORDER: '#d1d5db',
   
-  // Category Badge Colors
-  CATEGORY_EMERALD_BG: '#bdeed3',
-  CATEGORY_EMERALD_TEXT: '#000000',
-  CATEGORY_BLUE_BG: '#a4e2f6',
-  CATEGORY_BLUE_TEXT: '#000000',
-  CATEGORY_PURPLE_BG: '#d9d2fd',
-  CATEGORY_PURPLE_TEXT: '#000000',
-  CATEGORY_ORANGE_BG: '#fbe2aa',
-  CATEGORY_ORANGE_TEXT: '#000000',
-  CATEGORY_GREEN_BG: '#bdeed3',
-  CATEGORY_GREEN_TEXT: '#000000',
+  // Category Badge Colors - using brand palette
+  CATEGORY_EMERALD_BG: 'var(--ds-color-mint)',
+  CATEGORY_EMERALD_TEXT: 'var(--ds-color-ink)',
+  CATEGORY_BLUE_BG: 'var(--ds-color-sky)',
+  CATEGORY_BLUE_TEXT: 'var(--ds-color-ink)',
+  CATEGORY_PURPLE_BG: 'var(--ds-color-lilac)',
+  CATEGORY_PURPLE_TEXT: 'var(--ds-color-ink)',
+  CATEGORY_ORANGE_BG: 'var(--ds-color-amber)',
+  CATEGORY_ORANGE_TEXT: 'var(--ds-color-ink)',
+  CATEGORY_GREEN_BG: 'var(--ds-color-mint)',
+  CATEGORY_GREEN_TEXT: 'var(--ds-color-ink)',
 } as const;
 
 export const TYPOGRAPHY = {
@@ -326,9 +390,9 @@ export const TYPOGRAPHY = {
 export const LAYOUT = {
   // Card styles from design system
   CARD_ROUNDED: DESIGN_TOKENS.RADIUS.CARD_FULL,
-  CARD_SHADOW: DESIGN_TOKENS.ELEVATION.CARD,
+  CARD_SHADOW: 'shadow-[var(--ds-elevation-2)]',
   PANEL_ROUNDED: DESIGN_TOKENS.RADIUS.CARD_TOP + ' ' + DESIGN_TOKENS.RADIUS.CARD_BOTTOM,
-  PANEL_SHADOW: DESIGN_TOKENS.ELEVATION.CARD,
+  PANEL_SHADOW: 'shadow-[var(--ds-elevation-2)]',
   
   // Grid layouts
   TWO_COLUMN_GRID: 'grid grid-cols-1 lg:grid-cols-2',
@@ -340,15 +404,16 @@ export const LAYOUT = {
   FLEX_GAP: 'flex items-center gap-2',
   
   // Icon containers from specification
-  ICON_CONTAINER: `w-6 h-6 ${DESIGN_TOKENS.RADIUS.ICON_CONTAINER} bg-transparent border border-[${DESIGN_TOKENS.COLORS.INK}] border-[1.5px] flex items-center justify-center p-[6px]`, // 24px size
-  ICON_CONTAINER_MD: `w-7 h-7 ${DESIGN_TOKENS.RADIUS.ICON_CONTAINER} bg-transparent border border-[${DESIGN_TOKENS.COLORS.INK}] border-[1.5px] flex items-center justify-center p-[6px]`, // 28px size
-  ICON_CONTAINER_LG: `w-8 h-8 ${DESIGN_TOKENS.RADIUS.ICON_CONTAINER} bg-transparent border border-[${DESIGN_TOKENS.COLORS.INK}] border-[1.5px] flex items-center justify-center p-[6px]`, // 32px size
-  ICON_SIZE: `h-3 w-3 text-[${DESIGN_TOKENS.COLORS.INK}] stroke-2`, // Geometric 2D style
+  ICON_CONTAINER: `w-6 h-6 rounded-full bg-transparent border border-[var(--ds-color-ink)] border-[1.5px] flex items-center justify-center p-[6px]`,
+  ICON_CONTAINER_MD: `w-7 h-7 rounded-full bg-transparent border border-[var(--ds-color-ink)] border-[1.5px] flex items-center justify-center p-[6px]`,
+  ICON_CONTAINER_LG: `w-8 h-8 rounded-full bg-transparent border border-[var(--ds-color-ink)] border-[1.5px] flex items-center justify-center p-[6px]`,
+  ICON_SIZE: `h-3 w-3 text-[var(--ds-color-ink)] stroke-2`,
 } as const;
 
 export const TRANSITIONS = {
-  DEFAULT: 'transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
-  SHADOW: 'transition-shadow duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
+  DEFAULT: 'transition-all duration-[var(--ds-duration-slow)] ease-[var(--ds-ease-default)]',
+  SHADOW: 'transition-shadow duration-[var(--ds-duration-slow)] ease-[var(--ds-ease-default)]',
+  FAST: 'transition-all duration-[var(--ds-duration-fast)] ease-[var(--ds-ease-default)]',
 } as const;
 
 // Motion system from specification
@@ -423,7 +488,7 @@ export const CANVAS_POSITION_CLASSES = {
   HANDLE_RIGHT_CENTER: 'absolute top-1/2 right-[-6px] transform -translate-y-1/2',
   
   // Handle sizes and hover effects
-  HANDLE_BASE: 'w-3 h-3 bg-blue-500 border border-white pointer-events-auto',
+  HANDLE_BASE: 'w-3 h-3 bg-[var(--oc-canvas-handle-bg)] border border-white pointer-events-auto',
   HANDLE_HOVER: 'hover:bg-blue-600',
   
   // Cursor styles for handles
