@@ -11,15 +11,15 @@ import { DecisionsMatrix } from './DecisionsMatrix';
 import { GanttChart } from './GanttChart';
 import { MindMap } from './MindMap';
 import { VisualDiagram } from './VisualDiagram';
-import { InteractiveSheet } from './InteractiveSheet';
 import { ProjectCard as SmartProjectCard } from './SmartProjectCard';
 import { FinanceCard } from './FinanceCard';
 import { CsrCard } from './CsrCard';
 import { CrmCard } from './CrmCard';
 import { RootConnectorDisplay } from './RootConnectorDisplay';
+import { SmartDocRenderer } from '../smart-doc';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
-  BarChart3, Table, GitBranch, FolderKanban, Wallet,
+  BarChart3, GitBranch, FolderKanban, Wallet,
   HeartHandshake, Users, Link2, Share2 
 } from 'lucide-react';
 
@@ -36,7 +36,6 @@ const ICONS: Record<string, React.ElementType> = {
   timeline: Calendar,
   decisions_matrix: Grid3X3,
   gantt: BarChart3,
-  interactive_sheet: Table,
   mind_map: GitBranch,
   visual_diagram: Share2,
   project_card: FolderKanban,
@@ -149,12 +148,12 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
     );
   }
 
-  // Interactive Sheet
-  if (smartType === 'interactive_sheet') {
+  // Interactive Sheet & Smart Text Doc - delegated to SmartDocRenderer
+  if (smartType === 'interactive_sheet' || smartType === 'smart_text_doc') {
     return (
-      <InteractiveSheet 
-        data={data as any} 
-        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      <SmartDocRenderer 
+        element={element} 
+        onUpdate={onUpdate} 
       />
     );
   }
