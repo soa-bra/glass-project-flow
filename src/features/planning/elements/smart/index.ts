@@ -48,4 +48,3 @@ export {
   DEFAULT_SNAP_CONFIG,
 } from './LayoutEngine';
 export { default as LayoutManager } from './LayoutEngine';
-export { LayoutToolbar } from './LayoutToolbar';

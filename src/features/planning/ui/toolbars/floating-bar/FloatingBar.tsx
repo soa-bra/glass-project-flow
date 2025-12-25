@@ -7,9 +7,7 @@ import React, { useMemo, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { useSmartElementsStore } from "@/stores/smartElementsStore";
 import { useSmartElementAI } from "@/hooks/useSmartElementAI";
-import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 
@@ -17,7 +15,11 @@ import { Separator } from "@/components/ui/separator";
 import { useFloatingPosition, useSelectionMeta } from "./hooks";
 
 // Groups
-import { CommonActions } from "./groups";
+import { 
+  CommonActions, 
+  MindmapActions, 
+  VisualDiagramActions 
+} from "./groups";
 
 // Actions
 import { 
@@ -49,6 +51,9 @@ export const FloatingBar: React.FC = () => {
     clipboard,
     layers,
     viewport,
+    updateElement,
+    deleteElement,
+    addElement,
   } = useCanvasStore();
   
   const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
@@ -65,7 +70,15 @@ export const FloatingBar: React.FC = () => {
     areElementsLocked,
     areElementsVisible,
     selectionCount,
+    isMindmapSelection,
   } = selectionMeta;
+
+  // التحقق من نوع visual_diagram
+  const isVisualDiagramSelection = useMemo(() => {
+    return selectedElements.some(el => 
+      el.type === 'visual_node' || el.type === 'visual_connector'
+    );
+  }, [selectedElements]);
 
   // استخدام hook موضع الشريط
   const position = useFloatingPosition({
@@ -178,6 +191,19 @@ export const FloatingBar: React.FC = () => {
     }
   }, [selectedElements, transformElements]);
 
+  // === Mindmap Actions ===
+  const handleDeleteElements = useCallback((ids: string[]) => {
+    ids.forEach(id => deleteElement(id));
+  }, [deleteElement]);
+
+  const handleUpdateElement = useCallback((id: string, updates: any) => {
+    updateElement(id, updates);
+  }, [updateElement]);
+
+  const handleAddElement = useCallback((element: any) => {
+    addElement(element);
+  }, [addElement]);
+
   // إذا لم يكن هناك تحديد، لا تعرض شيء
   if (!hasSelection || selectionType === null) {
     return null;
@@ -188,6 +214,124 @@ export const FloatingBar: React.FC = () => {
     id: layer.id,
     name: layer.name,
   }));
+
+  // تحديد المحتوى بناءً على نوع التحديد
+  const renderContent = () => {
+    // الخريطة الذهنية
+    if (isMindmapSelection) {
+      return (
+        <>
+          <MindmapActions
+            selectedNodeIds={selectedElementIds}
+            elements={elements}
+            treeElements={mindmapTreeElements}
+            onUpdateElement={handleUpdateElement}
+            onDeleteElements={handleDeleteElements}
+            onAddElement={handleAddElement}
+          />
+          <Separator orientation="vertical" className="h-6 mx-1" />
+          <CommonActions
+            areElementsVisible={areElementsVisible}
+            areElementsLocked={areElementsLocked}
+            clipboardLength={clipboard.length}
+            selectedCount={selectionCount}
+            layers={layersList}
+            isAILoading={isAILoading}
+            isTransforming={isTransforming}
+            onDuplicate={handleDuplicate}
+            onToggleVisibility={handleToggleVisibility}
+            onToggleLock={handleToggleLock}
+            onComment={handleComment}
+            onDelete={handleDelete}
+            onCopy={handleCopy}
+            onCut={handleCut}
+            onPaste={handlePaste}
+            onAddText={handleAddText}
+            onChangeLayer={handleChangeLayer}
+            onBringToFront={handleBringToFront}
+            onBringForward={handleBringForward}
+            onSendBackward={handleSendBackward}
+            onSendToBack={handleSendToBack}
+            onQuickGenerate={handleQuickGenerate}
+            onTransform={handleTransform}
+            onCustomTransform={handleCustomTransform}
+          />
+        </>
+      );
+    }
+
+    // المخطط البصري
+    if (isVisualDiagramSelection) {
+      return (
+        <>
+          <VisualDiagramActions
+            selectedNodeIds={selectedElementIds}
+            elements={elements}
+            onUpdateElement={handleUpdateElement}
+            onDeleteElement={deleteElement}
+            onAddElement={handleAddElement}
+          />
+          <Separator orientation="vertical" className="h-6 mx-1" />
+          <CommonActions
+            areElementsVisible={areElementsVisible}
+            areElementsLocked={areElementsLocked}
+            clipboardLength={clipboard.length}
+            selectedCount={selectionCount}
+            layers={layersList}
+            isAILoading={isAILoading}
+            isTransforming={isTransforming}
+            onDuplicate={handleDuplicate}
+            onToggleVisibility={handleToggleVisibility}
+            onToggleLock={handleToggleLock}
+            onComment={handleComment}
+            onDelete={handleDelete}
+            onCopy={handleCopy}
+            onCut={handleCut}
+            onPaste={handlePaste}
+            onAddText={handleAddText}
+            onChangeLayer={handleChangeLayer}
+            onBringToFront={handleBringToFront}
+            onBringForward={handleBringForward}
+            onSendBackward={handleSendBackward}
+            onSendToBack={handleSendToBack}
+            onQuickGenerate={handleQuickGenerate}
+            onTransform={handleTransform}
+            onCustomTransform={handleCustomTransform}
+          />
+        </>
+      );
+    }
+
+    // الافتراضي: CommonActions فقط
+    return (
+      <CommonActions
+        areElementsVisible={areElementsVisible}
+        areElementsLocked={areElementsLocked}
+        clipboardLength={clipboard.length}
+        selectedCount={selectionCount}
+        layers={layersList}
+        isAILoading={isAILoading}
+        isTransforming={isTransforming}
+        onDuplicate={handleDuplicate}
+        onToggleVisibility={handleToggleVisibility}
+        onToggleLock={handleToggleLock}
+        onComment={handleComment}
+        onDelete={handleDelete}
+        onCopy={handleCopy}
+        onCut={handleCut}
+        onPaste={handlePaste}
+        onAddText={handleAddText}
+        onChangeLayer={handleChangeLayer}
+        onBringToFront={handleBringToFront}
+        onBringForward={handleBringForward}
+        onSendBackward={handleSendBackward}
+        onSendToBack={handleSendToBack}
+        onQuickGenerate={handleQuickGenerate}
+        onTransform={handleTransform}
+        onCustomTransform={handleCustomTransform}
+      />
+    );
+  };
 
   return createPortal(
     <AnimatePresence>
@@ -205,34 +349,9 @@ export const FloatingBar: React.FC = () => {
         }}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
+        dir="rtl"
       >
-        {/* المحتوى: CommonActions كنقطة بداية */}
-        <CommonActions
-          areElementsVisible={areElementsVisible}
-          areElementsLocked={areElementsLocked}
-          clipboardLength={clipboard.length}
-          selectedCount={selectionCount}
-          layers={layersList}
-          isAILoading={isAILoading}
-          isTransforming={isTransforming}
-          onDuplicate={handleDuplicate}
-          onToggleVisibility={handleToggleVisibility}
-          onToggleLock={handleToggleLock}
-          onComment={handleComment}
-          onDelete={handleDelete}
-          onCopy={handleCopy}
-          onCut={handleCut}
-          onPaste={handlePaste}
-          onAddText={handleAddText}
-          onChangeLayer={handleChangeLayer}
-          onBringToFront={handleBringToFront}
-          onBringForward={handleBringForward}
-          onSendBackward={handleSendBackward}
-          onSendToBack={handleSendToBack}
-          onQuickGenerate={handleQuickGenerate}
-          onTransform={handleTransform}
-          onCustomTransform={handleCustomTransform}
-        />
+        {renderContent()}
       </motion.div>
     </AnimatePresence>,
     document.body

@@ -11,7 +11,7 @@
 
 import React from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
-import FloatingBar from "./FloatingBar";
+import FloatingBar from "./floating-bar";
 import { PenFloatingToolbar } from "@/components/ui/penToolbar";
 import type { ToolbarMode } from "./floating-bar/types";
 
