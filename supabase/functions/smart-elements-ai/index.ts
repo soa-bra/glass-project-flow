@@ -343,48 +343,34 @@ serve(async (req) => {
   }
 
   try {
-    // ✅ 1. Validate JWT authentication
+    // ✅ 1. Optional JWT authentication (works without login)
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      console.error('[smart-elements-ai] No authorization header');
-      return new Response(JSON.stringify({ 
-        error: 'يجب تسجيل الدخول لاستخدام الذكاء الاصطناعي',
-        code: 'UNAUTHORIZED'
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    // ✅ 2. Verify JWT with Supabase
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    let userId = 'anonymous';
     
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('[smart-elements-ai] Missing Supabase configuration');
-      throw new Error('Server configuration error');
+    if (authHeader && authHeader !== `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`) {
+      // Try to get authenticated user if a real token is provided
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+      
+      if (supabaseUrl && supabaseAnonKey) {
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+          global: {
+            headers: { Authorization: authHeader },
+          },
+        });
+
+        const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+        
+        if (!authError && user) {
+          userId = user.id;
+          console.log(`[smart-elements-ai] Authenticated user: ${userId}`);
+        } else {
+          console.log('[smart-elements-ai] Using anonymous mode (no valid session)');
+        }
+      }
+    } else {
+      console.log('[smart-elements-ai] Using anonymous mode');
     }
-
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: {
-        headers: { Authorization: authHeader },
-      },
-    });
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    
-    if (authError || !user) {
-      console.error('[smart-elements-ai] Auth error:', authError?.message || 'No user');
-      return new Response(JSON.stringify({ 
-        error: 'جلسة غير صالحة، يرجى تسجيل الدخول مرة أخرى',
-        code: 'INVALID_TOKEN'
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    console.log(`[smart-elements-ai] Authenticated user: ${user.id}`);
 
     const { prompt, action, selectedElements, context } = await req.json();
     
