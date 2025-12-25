@@ -84,12 +84,18 @@
     --progress-stage-current: #3B82F6;
     --progress-stage-pending: #9CA3AF;
     
-    /* Z-Index Hierarchy */
-    --z-modal-backdrop: 9998;
-    --z-modal-content: 9999;
-    --z-dropdown: 10000;
-    --z-tooltip: 10001;
-    --z-toast: 10002;
+    /* Z-Index Hierarchy - Production-Ready System */
+    --z-canvas: 1;
+    --z-element: 10;
+    --z-element-selected: 100;
+    --z-bounding-box: 500;
+    --z-toolbar: 10000;
+    --z-popover: 10001;
+    --z-tooltip: 10002;
+    --z-toast: 10003;
+    --z-modal-backdrop: 10004;
+    --z-modal-content: 10005;
+    --z-dropdown: 10001;
     
     /* SoaBra Glass UI Variables */
     --sb-glass-bg: rgba(255,255,255,0.45);
