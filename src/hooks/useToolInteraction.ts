@@ -230,10 +230,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         handleMindMapToolClick(snappedPoint);
         break;
 
-      case 'smart_doc_tool':
-        handleSmartDocClick(snappedPoint);
-        break;
-
       case 'selection_tool':
         // يتم التعامل معها في InfiniteCanvas
         break;
@@ -590,57 +586,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     });
     
     toast.success('تم إنشاء عقدة - اسحب من نقاط الربط لإضافة فروع');
-  };
-
-  /**
-   * أداة المستندات الذكية: إنشاء مستند ذكي
-   */
-  const handleSmartDocClick = (point: { x: number; y: number }) => {
-    const { selectedSmartElement } = useCanvasStore.getState();
-    
-    if (!selectedSmartElement) {
-      toast.info('اختر نوع المستند من اللوحة الجانبية أولاً');
-      return;
-    }
-
-    // التحقق من أن النوع المختار هو مستند ذكي
-    if (selectedSmartElement !== 'interactive_sheet' && selectedSmartElement !== 'smart_text_doc') {
-      toast.info('اختر نوع المستند من اللوحة الجانبية أولاً');
-      return;
-    }
-
-    const { addSmartElement } = useSmartElementsStore.getState();
-    
-    // الحجم الافتراضي حسب النوع
-    const defaultSize = selectedSmartElement === 'interactive_sheet' 
-      ? { width: 600, height: 400 }
-      : { width: 400, height: 300 };
-
-    const initialData: Record<string, unknown> = {
-      title: selectedSmartElement === 'interactive_sheet' ? 'ورقة تفاعلية' : 'مستند نصي ذكي',
-    };
-
-    // إعدادات خاصة بكل نوع
-    if (selectedSmartElement === 'interactive_sheet') {
-      initialData.rows = 10;
-      initialData.columns = 5;
-      initialData.enableFormulas = true;
-    } else {
-      initialData.content = '';
-      initialData.format = 'rich';
-      initialData.aiAssist = true;
-    }
-
-    addSmartElement(
-      selectedSmartElement as SmartElementType,
-      { x: point.x - defaultSize.width / 2, y: point.y - defaultSize.height / 2 },
-      initialData
-    );
-    
-    toast.success(`تم إضافة ${initialData.title}`);
-    
-    // إعادة تعيين العنصر المختار
-    useCanvasStore.getState().setSelectedSmartElement(null);
   };
 
   return {
