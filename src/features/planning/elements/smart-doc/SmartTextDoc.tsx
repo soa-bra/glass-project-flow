@@ -33,10 +33,40 @@ const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
 
 export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) => {
   const [content, setContent] = useState(data.content || '');
-  const [fontSize, setFontSize] = useState(data.fontSize || 14);
+  const [currentFontSize, setCurrentFontSize] = useState(data.fontSize || 14);
   const [direction, setDirection] = useState<'rtl' | 'ltr'>(data.direction || 'rtl');
   const editorRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
+
+  // Detect font size at current cursor position
+  const detectCurrentFontSize = useCallback(() => {
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    let node: Node | null = selection.anchorNode;
+    if (!node) return;
+
+    // Get the element to check computed style
+    let element: HTMLElement | null = null;
+    if (node.nodeType === Node.TEXT_NODE) {
+      element = node.parentElement;
+    } else {
+      element = node as HTMLElement;
+    }
+
+    if (element && editorRef.current?.contains(element)) {
+      const computedStyle = window.getComputedStyle(element);
+      const fontSizePx = parseFloat(computedStyle.fontSize);
+      const roundedSize = Math.round(fontSizePx);
+      
+      // Find closest matching font size from our options
+      const closestSize = FONT_SIZES.reduce((prev, curr) => 
+        Math.abs(curr - roundedSize) < Math.abs(prev - roundedSize) ? curr : prev
+      );
+      
+      setCurrentFontSize(closestSize);
+    }
+  }, []);
 
   // Initialize content only once
   useEffect(() => {
@@ -52,7 +82,12 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
       setContent(newContent);
       onUpdate({ content: newContent });
     }
-  }, [onUpdate]);
+    detectCurrentFontSize();
+  }, [onUpdate, detectCurrentFontSize]);
+
+  const handleSelectionChange = useCallback(() => {
+    detectCurrentFontSize();
+  }, [detectCurrentFontSize]);
 
   const handleTitleChange = useCallback((title: string) => {
     onUpdate({ title });
@@ -66,7 +101,7 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const handleFontSizeChange = useCallback((size: string) => {
     const newSize = parseInt(size);
-    setFontSize(newSize);
+    setCurrentFontSize(newSize);
     
     // Apply font size to current selection or line
     const selection = window.getSelection();
@@ -182,7 +217,7 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
       {data.showToolbar !== false && (
         <div className="flex items-center gap-1 p-2 border-b border-border bg-muted/30 flex-wrap">
           {/* Font Size */}
-          <Select value={fontSize.toString()} onValueChange={handleFontSizeChange}>
+          <Select value={currentFontSize.toString()} onValueChange={handleFontSizeChange}>
             <SelectTrigger className="h-7 w-16 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -253,6 +288,8 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           contentEditable={!data.readOnly}
           onInput={handleContentChange}
           onKeyDown={handleKeyDown}
+          onClick={handleSelectionChange}
+          onKeyUp={handleSelectionChange}
           dir={direction}
           style={{ 
             textAlign: direction === 'rtl' ? 'right' : 'left',
