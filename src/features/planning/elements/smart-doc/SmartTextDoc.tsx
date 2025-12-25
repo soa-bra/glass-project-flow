@@ -60,10 +60,11 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
     onUpdate({ fontSize: newSize });
   }, [onUpdate]);
 
-  const handleDirectionChange = useCallback((newDirection: 'rtl' | 'ltr') => {
+  const toggleDirection = useCallback(() => {
+    const newDirection = direction === 'rtl' ? 'ltr' : 'rtl';
     setDirection(newDirection);
     onUpdate({ direction: newDirection });
-  }, [onUpdate]);
+  }, [direction, onUpdate]);
 
   const insertList = useCallback((ordered: boolean) => {
     applyFormat(ordered ? 'insertOrderedList' : 'insertUnorderedList');
@@ -124,24 +125,15 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
           <div className="w-px h-5 bg-border mx-1" />
 
-          {/* Text Direction */}
+          {/* Text Direction Toggle */}
           <Button 
-            variant={direction === 'rtl' ? 'secondary' : 'ghost'} 
+            variant="ghost" 
             size="icon" 
             className="h-7 w-7"
-            onClick={() => handleDirectionChange('rtl')}
-            title="من اليمين لليسار"
+            onClick={toggleDirection}
+            title={direction === 'rtl' ? 'تبديل إلى اليسار لليمين' : 'تبديل إلى اليمين لليسار'}
           >
-            <Pilcrow className="h-4 w-4 transform scale-x-[-1]" />
-          </Button>
-          <Button 
-            variant={direction === 'ltr' ? 'secondary' : 'ghost'} 
-            size="icon" 
-            className="h-7 w-7"
-            onClick={() => handleDirectionChange('ltr')}
-            title="من اليسار لليمين"
-          >
-            <Pilcrow className="h-4 w-4" />
+            <Pilcrow className={cn("h-4 w-4", direction === 'rtl' && "transform scale-x-[-1]")} />
           </Button>
 
           <div className="w-px h-5 bg-border mx-1" />
