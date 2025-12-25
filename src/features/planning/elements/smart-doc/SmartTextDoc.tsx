@@ -364,8 +364,8 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
             direction === "rtl" ? "text-right" : "text-left",
             // List alignment styles - bullets/numbers follow text alignment
             "[&_ul]:list-inside [&_ol]:list-inside",
-            "[&_ul]:ps-12 [&_ol]:ps-12",
-            "[&_li]:ps-12",
+            "[&_ul]:ps-6 [&_ol]:ps-6",
+            "[&_li]:ps-6",
           )}
         />
       </div>
