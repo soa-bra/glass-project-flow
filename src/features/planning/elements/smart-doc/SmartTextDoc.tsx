@@ -1,7 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { FileText, Bold, Italic, Underline, AlignRight, AlignCenter, AlignLeft, Sparkles } from 'lucide-react';
+import { 
+  FileText, Bold, Italic, Underline, AlignRight, AlignCenter, AlignLeft, 
+  Sparkles, List, ListOrdered, TextCursorInput, Pilcrow
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface SmartTextDocData {
   title: string;
@@ -10,6 +20,8 @@ interface SmartTextDocData {
   aiAssist: boolean;
   readOnly: boolean;
   showToolbar: boolean;
+  fontSize?: number;
+  direction?: 'rtl' | 'ltr';
 }
 
 interface SmartTextDocProps {
@@ -17,9 +29,14 @@ interface SmartTextDocProps {
   onUpdate: (data: Partial<SmartTextDocData>) => void;
 }
 
+const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
+
 export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(data.content || '');
+  const [fontSize, setFontSize] = useState(data.fontSize || 14);
+  const [direction, setDirection] = useState<'rtl' | 'ltr'>(data.direction || 'rtl');
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const handleContentChange = useCallback((newContent: string) => {
     setContent(newContent);
@@ -29,6 +46,28 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const handleTitleChange = useCallback((title: string) => {
     onUpdate({ title });
   }, [onUpdate]);
+
+  const applyFormat = useCallback((command: string, value?: string) => {
+    document.execCommand(command, false, value);
+    if (editorRef.current) {
+      handleContentChange(editorRef.current.innerHTML);
+    }
+  }, [handleContentChange]);
+
+  const handleFontSizeChange = useCallback((size: string) => {
+    const newSize = parseInt(size);
+    setFontSize(newSize);
+    onUpdate({ fontSize: newSize });
+  }, [onUpdate]);
+
+  const handleDirectionChange = useCallback((newDirection: 'rtl' | 'ltr') => {
+    setDirection(newDirection);
+    onUpdate({ direction: newDirection });
+  }, [onUpdate]);
+
+  const insertList = useCallback((ordered: boolean) => {
+    applyFormat(ordered ? 'insertOrderedList' : 'insertUnorderedList');
+  }, [applyFormat]);
 
   return (
     <div className="w-full h-full flex flex-col bg-background rounded-lg border border-border overflow-hidden" dir="rtl">
@@ -55,41 +94,94 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
       {/* Toolbar */}
       {data.showToolbar !== false && (
-        <div className="flex items-center gap-1 p-2 border-b border-border bg-muted/30">
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+        <div className="flex items-center gap-1 p-2 border-b border-border bg-muted/30 flex-wrap">
+          {/* Font Size */}
+          <Select value={fontSize.toString()} onValueChange={handleFontSizeChange}>
+            <SelectTrigger className="h-7 w-16 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {FONT_SIZES.map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Text Formatting */}
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('bold')}>
             <Bold className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('italic')}>
             <Italic className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('underline')}>
             <Underline className="h-4 w-4" />
           </Button>
+
           <div className="w-px h-5 bg-border mx-1" />
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+
+          {/* Text Direction */}
+          <Button 
+            variant={direction === 'rtl' ? 'secondary' : 'ghost'} 
+            size="icon" 
+            className="h-7 w-7"
+            onClick={() => handleDirectionChange('rtl')}
+            title="من اليمين لليسار"
+          >
+            <Pilcrow className="h-4 w-4 transform scale-x-[-1]" />
+          </Button>
+          <Button 
+            variant={direction === 'ltr' ? 'secondary' : 'ghost'} 
+            size="icon" 
+            className="h-7 w-7"
+            onClick={() => handleDirectionChange('ltr')}
+            title="من اليسار لليمين"
+          >
+            <Pilcrow className="h-4 w-4" />
+          </Button>
+
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Text Alignment */}
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('justifyRight')}>
             <AlignRight className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('justifyCenter')}>
             <AlignCenter className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-7 w-7">
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => applyFormat('justifyLeft')}>
             <AlignLeft className="h-4 w-4" />
+          </Button>
+
+          <div className="w-px h-5 bg-border mx-1" />
+
+          {/* Lists */}
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertList(false)} title="قائمة نقطية">
+            <List className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => insertList(true)} title="قائمة رقمية">
+            <ListOrdered className="h-4 w-4" />
           </Button>
         </div>
       )}
 
       {/* Content Area */}
       <div className="flex-1 overflow-auto p-4">
-        <textarea
-          value={content}
-          onChange={(e) => handleContentChange(e.target.value)}
-          readOnly={data.readOnly}
-          placeholder="ابدأ الكتابة هنا..."
+        <div
+          ref={editorRef}
+          contentEditable={!data.readOnly}
+          onInput={(e) => handleContentChange(e.currentTarget.innerHTML)}
+          dangerouslySetInnerHTML={{ __html: content }}
+          dir={direction}
+          style={{ fontSize: `${fontSize}px` }}
           className={cn(
-            "w-full h-full min-h-[200px] resize-none",
-            "bg-transparent border-none outline-none focus:ring-0",
-            "text-foreground text-sm leading-relaxed",
-            "placeholder:text-muted-foreground"
+            "w-full h-full min-h-[200px] outline-none",
+            "text-foreground leading-relaxed",
+            "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground"
           )}
           onClick={() => setIsEditing(true)}
           onBlur={() => setIsEditing(false)}
