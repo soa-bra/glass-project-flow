@@ -11,7 +11,8 @@ export type ToolId =
   | "mindmap_tool"
   | "smart_element_tool"
   | "research_tool"
-  | "frame_tool";
+  | "frame_tool"
+  | "smart_doc_tool";
 
 export type GridType = "dots" | "grid" | "isometric" | "hex";
 

@@ -6,6 +6,7 @@ import FileUploadPanel from './FileUploadToolZone';
 import ShapesPanel from './ShapesToolZone';
 import SmartElementsPanel from './SmartElementsToolZone';
 import ResearchToolZone from './ResearchToolZone';
+import SmartDocToolZone from './SmartDocToolZone';
 
 interface ToolZoneProps {
   activeTool: ToolId;
@@ -19,10 +20,11 @@ const panelTitles: Record<ToolId, string> = {
   text_tool: 'النص',
   file_uploader: 'رفع الملفات',
   shapes_tool: 'الأشكال',
-  mindmap_tool: 'الخريطة الذهنية',
+  mindmap_tool: 'الخارطة الذهنية',
   smart_element_tool: 'العناصر الذكية',
-  research_tool: 'أداة الريسيرش',
+  research_tool: 'البحث العلمي',
   frame_tool: 'الإطار',
+  smart_doc_tool: 'المستندات الذكية',
 };
 
 // الأدوات التي لا تحتوي على لوحة خاصة (تستخدم FloatingBar بدلاً)
@@ -64,6 +66,8 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
         return <SmartElementsPanel />;
       case 'research_tool':
         return <ResearchToolZone />;
+      case 'smart_doc_tool':
+        return <SmartDocToolZone />;
       // الأدوات بدون panel (تستخدم FloatingBar)
       case 'selection_tool':
       case 'smart_pen':
