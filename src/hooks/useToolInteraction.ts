@@ -222,6 +222,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         handleSmartElementClick(snappedPoint);
         break;
 
+      case 'smart_doc_tool':
+        handleSmartDocClick(snappedPoint);
+        break;
+
       case 'sticky_tool':
         handleStickyToolClick(snappedPoint);
         break;
@@ -533,6 +537,52 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     );
     
     toast.success('تم إضافة العنصر الذكي');
+    
+    // إعادة تعيين العنصر المختار
+    useCanvasStore.getState().setSelectedSmartElement(null);
+  };
+
+  /**
+   * أداة المستند الذكي: إنشاء interactive_sheet أو smart_text_doc
+   */
+  const handleSmartDocClick = (point: { x: number; y: number }) => {
+    const { selectedSmartElement } = useCanvasStore.getState();
+    
+    if (!selectedSmartElement) {
+      toast.info('اختر نوع المستند الذكي من اللوحة الجانبية أولاً');
+      return;
+    }
+
+    // التأكد من أن النوع المختار هو مستند ذكي
+    if (selectedSmartElement !== 'interactive_sheet' && selectedSmartElement !== 'smart_text_doc') {
+      toast.info('اختر نوع المستند الذكي من اللوحة الجانبية');
+      return;
+    }
+
+    const { addSmartElement } = useSmartElementsStore.getState();
+    
+    // إعداد البيانات الأولية بناءً على النوع
+    const initialData: Record<string, any> = {};
+    
+    if (selectedSmartElement === 'interactive_sheet') {
+      initialData.title = 'جدول تفاعلي';
+      initialData.rows = 10;
+      initialData.columns = 5;
+      initialData.enableFormulas = true;
+    } else if (selectedSmartElement === 'smart_text_doc') {
+      initialData.title = 'مستند نصي ذكي';
+      initialData.content = '';
+      initialData.format = 'rich';
+      initialData.aiAssist = true;
+    }
+
+    addSmartElement(
+      selectedSmartElement as SmartElementType,
+      point,
+      initialData
+    );
+    
+    toast.success(`تم إضافة ${selectedSmartElement === 'interactive_sheet' ? 'الجدول التفاعلي' : 'المستند النصي الذكي'}`);
     
     // إعادة تعيين العنصر المختار
     useCanvasStore.getState().setSelectedSmartElement(null);
