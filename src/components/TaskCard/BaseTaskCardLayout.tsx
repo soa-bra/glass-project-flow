@@ -19,30 +19,29 @@ const BaseTaskCardLayout = ({
   isOtherSelected = false
 }: BaseTaskCardLayoutProps) => {
   const getCardStyle = () => {
-    let backgroundColor = '#f8f9fa';
     let opacity = 1;
     
     if (isSelectionMode) {
       if (isSelected) {
-        opacity = 1; // Selected card stays normal
+        opacity = 1;
       } else {
-        opacity = 0.5; // Unselected cards are faded
+        opacity = 0.5;
       }
     }
     
     return {
       width: '100%',
       height: '120px',
-      backgroundColor,
-      borderRadius: '32px',
-      padding: '12px',
+      backgroundColor: 'hsl(var(--oc-task-card-bg))',
+      borderRadius: 'var(--ds-radius-card-top)',
+      padding: 'var(--ds-spacing-md)',
       direction: 'rtl',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      fontFamily: 'IBM Plex Sans Arabic',
+      fontFamily: 'var(--ds-font-family)',
       opacity,
-      transition: 'opacity 0.2s ease-in-out'
+      transition: 'var(--ds-transition-smooth)'
     } as CSSProperties;
   };
 

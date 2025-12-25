@@ -76,13 +76,13 @@ const sizeClasses: Record<Size, string> = {
 };
 
 const variantClasses: Record<Variant, string> = {
-  standard: 'sb-surface-box',
+  standard: 'ds-surface-card',
   exception: 'bg-transparent border-transparent shadow-none',
-  glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
+  glass: 'ds-glass-modal',
   flat: 'bg-opacity-100',
-  operations: 'bg-[var(--sb-surface-00)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)]',
-  unified: 'bg-[var(--sb-surface-00)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-300',
-  legal: 'bg-[var(--sb-surface-00)] border border-[var(--sb-border)] shadow-[var(--sb-shadow-soft)] hover:shadow-[var(--sb-shadow-strong)] transition-shadow duration-300'
+  operations: 'bg-[hsl(var(--ds-color-card-main))] border border-[hsl(var(--ds-color-border))] shadow-[var(--ds-elevation-card)]',
+  unified: 'bg-[hsl(var(--ds-color-card-main))] border border-[hsl(var(--ds-color-border))] shadow-[var(--ds-elevation-card)] hover:shadow-[var(--ds-elevation-glass)] transition-shadow duration-300',
+  legal: 'bg-[hsl(var(--ds-color-card-main))] border border-[hsl(var(--ds-color-border))] shadow-[var(--ds-elevation-card)] hover:shadow-[var(--ds-elevation-glass)] transition-shadow duration-300'
 };
 
 const roundedClasses: Record<Rounded, string> = {
@@ -94,18 +94,18 @@ const roundedClasses: Record<Rounded, string> = {
 };
 
 const colorClasses: Record<Color, string> = {
-  info: 'bg-[var(--visual-data-secondary-4)]',
-  success: 'bg-[var(--visual-data-secondary-1)]',
-  warning: 'bg-[var(--visual-data-secondary-5)]',
-  error: 'bg-[var(--visual-data-secondary-2)]',
-  crimson: 'bg-[var(--visual-data-secondary-2)]'
+  info: 'bg-[hsl(var(--ds-color-accent-blue))]',
+  success: 'bg-[hsl(var(--ds-color-accent-green))]',
+  warning: 'bg-[hsl(var(--ds-color-accent-yellow))]',
+  error: 'bg-[hsl(var(--ds-color-accent-red))]',
+  crimson: 'bg-[hsl(var(--ds-color-accent-red))]'
 };
 
 const neonRingClasses: Record<NeonRing, string> = {
-  info: 'ring-2 ring-[var(--visual-data-secondary-4)]/30 ring-offset-2',
-  success: 'ring-2 ring-[var(--visual-data-secondary-1)]/30 ring-offset-2',
-  warning: 'ring-2 ring-[var(--visual-data-secondary-5)]/30 ring-offset-2',
-  error: 'ring-2 ring-[var(--visual-data-secondary-2)]/30 ring-offset-2'
+  info: 'ring-2 ring-[hsl(var(--ds-color-accent-blue))]/30 ring-offset-2',
+  success: 'ring-2 ring-[hsl(var(--ds-color-accent-green))]/30 ring-offset-2',
+  warning: 'ring-2 ring-[hsl(var(--ds-color-accent-yellow))]/30 ring-offset-2',
+  error: 'ring-2 ring-[hsl(var(--ds-color-accent-red))]/30 ring-offset-2'
 };
 
 const overflowClasses: Record<Overflow, string> = {
