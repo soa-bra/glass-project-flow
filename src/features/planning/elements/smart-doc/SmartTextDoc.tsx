@@ -1,8 +1,8 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   FileText, Bold, Italic, Underline, AlignRight, AlignCenter, AlignLeft, 
-  Sparkles, List, ListOrdered, TextCursorInput, Pilcrow
+  Sparkles, List, ListOrdered, Pilcrow
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -32,15 +32,26 @@ interface SmartTextDocProps {
 const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
 
 export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(data.content || '');
   const [fontSize, setFontSize] = useState(data.fontSize || 14);
   const [direction, setDirection] = useState<'rtl' | 'ltr'>(data.direction || 'rtl');
   const editorRef = useRef<HTMLDivElement>(null);
+  const isInitialized = useRef(false);
 
-  const handleContentChange = useCallback((newContent: string) => {
-    setContent(newContent);
-    onUpdate({ content: newContent });
+  // Initialize content only once
+  useEffect(() => {
+    if (editorRef.current && !isInitialized.current && data.content) {
+      editorRef.current.innerHTML = data.content;
+      isInitialized.current = true;
+    }
+  }, [data.content]);
+
+  const handleContentChange = useCallback(() => {
+    if (editorRef.current) {
+      const newContent = editorRef.current.innerHTML;
+      setContent(newContent);
+      onUpdate({ content: newContent });
+    }
   }, [onUpdate]);
 
   const handleTitleChange = useCallback((title: string) => {
@@ -49,9 +60,8 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const applyFormat = useCallback((command: string, value?: string) => {
     document.execCommand(command, false, value);
-    if (editorRef.current) {
-      handleContentChange(editorRef.current.innerHTML);
-    }
+    editorRef.current?.focus();
+    handleContentChange();
   }, [handleContentChange]);
 
   const handleFontSizeChange = useCallback((size: string) => {
@@ -69,6 +79,20 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const insertList = useCallback((ordered: boolean) => {
     applyFormat(ordered ? 'insertOrderedList' : 'insertUnorderedList');
   }, [applyFormat]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      document.execCommand('insertLineBreak');
+      handleContentChange();
+    }
+  }, [handleContentChange]);
+
+  const getWordCount = useCallback(() => {
+    if (!editorRef.current) return 0;
+    const text = editorRef.current.innerText || '';
+    return text.split(/\s+/).filter(Boolean).length;
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col bg-background rounded-lg border border-border overflow-hidden" dir="rtl">
@@ -166,29 +190,26 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
         <div
           ref={editorRef}
           contentEditable={!data.readOnly}
-          onInput={(e) => handleContentChange(e.currentTarget.innerHTML)}
-          dangerouslySetInnerHTML={{ __html: content }}
+          onInput={handleContentChange}
+          onKeyDown={handleKeyDown}
           dir={direction}
           style={{ 
             fontSize: `${fontSize}px`,
             textAlign: direction === 'rtl' ? 'right' : 'left',
-            unicodeBidi: 'plaintext'
           }}
           className={cn(
             "w-full h-full min-h-[200px] outline-none",
-            "text-foreground leading-relaxed",
-            "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground",
+            "text-foreground leading-relaxed whitespace-pre-wrap",
+            "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground [&:empty]:before:pointer-events-none",
             direction === 'rtl' ? "text-right" : "text-left"
           )}
-          onClick={() => setIsEditing(true)}
-          onBlur={() => setIsEditing(false)}
         />
       </div>
 
       {/* Footer */}
       <div className="p-2 border-t border-border bg-muted/30 flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {content.split(/\s+/).filter(Boolean).length} كلمة
+          {getWordCount()} كلمة
         </p>
         <p className="text-xs text-muted-foreground">
           {data.format === 'rich' ? 'تنسيق غني' : data.format === 'markdown' ? 'Markdown' : 'نص عادي'}
