@@ -1,0 +1,45 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * DS Radius - Border Radius Scale
+ * نظام الزوايا الموحد
+ * 
+ * @layer Design System
+ * @version 1.0.0
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Base Radius Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-radius-none: 0;
+  --ds-radius-xs: 2px;
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 16px;
+  --ds-radius-2xl: 24px;
+  --ds-radius-3xl: 41px;      /* SoaBra Global Radius */
+  --ds-radius-full: 9999px;   /* Capsules/Pills */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Component-Specific Radius
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-radius-button: var(--ds-radius-md);
+  --ds-radius-input: var(--ds-radius-md);
+  --ds-radius-card: var(--ds-radius-2xl);
+  --ds-radius-card-top: var(--ds-radius-2xl);
+  --ds-radius-card-bottom: var(--ds-radius-sm);
+  --ds-radius-modal: var(--ds-radius-2xl);
+  --ds-radius-panel: var(--ds-radius-2xl);
+  --ds-radius-tooltip: var(--ds-radius-lg);
+  --ds-radius-badge: var(--ds-radius-full);
+  --ds-radius-chip: var(--ds-radius-full);
+  --ds-radius-avatar: var(--ds-radius-full);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Chart-Specific Radius
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-radius-bar: var(--ds-radius-md);
+  --ds-radius-dot: var(--ds-radius-full);
+}

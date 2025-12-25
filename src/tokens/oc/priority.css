@@ -1,0 +1,44 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Priority Tokens
+ * توكنات الأولويات - تُبنى فوق DS Tokens
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Priority Levels (Standard)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-priority-urgent: var(--ds-color-negative);
+  --oc-priority-high: var(--ds-color-rose);
+  --oc-priority-medium: var(--ds-color-amber);
+  --oc-priority-low: var(--ds-color-sky);
+  --oc-priority-none: var(--ds-color-neutral);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Eisenhower Matrix
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-priority-urgent-important: var(--ds-color-rose);           /* Do First */
+  --oc-priority-not-urgent-important: var(--ds-color-amber);      /* Schedule */
+  --oc-priority-urgent-not-important: var(--ds-color-sky);        /* Delegate */
+  --oc-priority-not-urgent-not-important: var(--ds-color-lilac);  /* Eliminate */
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Priority Badge Styles
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-priority-badge-radius: var(--ds-radius-full);
+  --oc-priority-badge-padding-x: var(--ds-space-2);
+  --oc-priority-badge-padding-y: var(--ds-space-1);
+  --oc-priority-badge-font-size: var(--ds-font-size-xs);
+  --oc-priority-badge-font-weight: var(--ds-font-weight-medium);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Priority Indicator (Dot/Flag)
+     ───────────────────────────────────────────────────────────────────────── */
+  --oc-priority-indicator-size: 8px;
+  --oc-priority-indicator-radius: var(--ds-radius-full);
+}

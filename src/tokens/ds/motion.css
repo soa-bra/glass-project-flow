@@ -1,0 +1,84 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * DS Motion - Animation Tokens
+ * نظام الحركات الموحد
+ * 
+ * @layer Design System
+ * @version 1.0.0
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     Duration Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-duration-instant: 0ms;
+  --ds-duration-fastest: 50ms;
+  --ds-duration-faster: 100ms;
+  --ds-duration-fast: 150ms;
+  --ds-duration-normal: 300ms;
+  --ds-duration-slow: 500ms;
+  --ds-duration-slower: 700ms;
+  --ds-duration-slowest: 1000ms;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Easing Functions
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-ease-linear: linear;
+  --ds-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ds-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ds-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ds-ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ds-ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* SoaBra Custom Easing */
+  --ds-ease-soabra: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Semantic Transitions
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-transition-colors: 
+    color var(--ds-duration-fast) var(--ds-ease-default),
+    background-color var(--ds-duration-fast) var(--ds-ease-default),
+    border-color var(--ds-duration-fast) var(--ds-ease-default);
+  
+  --ds-transition-opacity: 
+    opacity var(--ds-duration-fast) var(--ds-ease-default);
+  
+  --ds-transition-transform: 
+    transform var(--ds-duration-normal) var(--ds-ease-out);
+  
+  --ds-transition-all: 
+    all var(--ds-duration-normal) var(--ds-ease-default);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Animation Presets
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-motion-reveal-y: 24px;
+  --ds-motion-reveal-duration: var(--ds-duration-slower);
+  --ds-motion-reveal-delay: 0ms;
+  
+  --ds-motion-stagger-gap: 80ms;
+  --ds-motion-stagger-child-y: 24px;
+  --ds-motion-stagger-child-duration: var(--ds-duration-slower);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     Reduced Motion
+     ───────────────────────────────────────────────────────────────────────── */
+  --ds-motion-reduce-duration: 0.01ms;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-duration-instant: 0ms;
+    --ds-duration-fastest: var(--ds-motion-reduce-duration);
+    --ds-duration-faster: var(--ds-motion-reduce-duration);
+    --ds-duration-fast: var(--ds-motion-reduce-duration);
+    --ds-duration-normal: var(--ds-motion-reduce-duration);
+    --ds-duration-slow: var(--ds-motion-reduce-duration);
+    --ds-duration-slower: var(--ds-motion-reduce-duration);
+    --ds-duration-slowest: var(--ds-motion-reduce-duration);
+  }
+}

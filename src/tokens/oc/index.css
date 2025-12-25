@@ -1,0 +1,19 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════
+ * OC Tokens Index - Operating Components Entry Point
+ * نقطة الدخول الرئيسية لتوكنات المكونات التشغيلية
+ * 
+ * @layer Operating Components
+ * @version 1.0.0
+ * @depends-on DS Tokens (must be imported first)
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* Import all OC token files */
+@import './project.css';
+@import './task.css';
+@import './canvas.css';
+@import './status.css';
+@import './priority.css';
+@import './visual-data.css';
+@import './financial.css';
