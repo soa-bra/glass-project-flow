@@ -169,11 +169,16 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           onInput={(e) => handleContentChange(e.currentTarget.innerHTML)}
           dangerouslySetInnerHTML={{ __html: content }}
           dir={direction}
-          style={{ fontSize: `${fontSize}px` }}
+          style={{ 
+            fontSize: `${fontSize}px`,
+            textAlign: direction === 'rtl' ? 'right' : 'left',
+            unicodeBidi: 'plaintext'
+          }}
           className={cn(
             "w-full h-full min-h-[200px] outline-none",
             "text-foreground leading-relaxed",
-            "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground"
+            "[&:empty]:before:content-['ابدأ_الكتابة_هنا...'] [&:empty]:before:text-muted-foreground",
+            direction === 'rtl' ? "text-right" : "text-left"
           )}
           onClick={() => setIsEditing(true)}
           onBlur={() => setIsEditing(false)}
