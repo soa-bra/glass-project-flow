@@ -5,7 +5,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import type { SmartElementType } from '@/types/smart-elements';
+import type { SmartElementType } from '@/features/planning/domain/types/smart.types';
 
 interface SmartDocOption {
   id: SmartElementType;
@@ -24,7 +24,7 @@ const SMART_DOC_OPTIONS: SmartDocOption[] = [
     description: 'إدارة بيانات مركبة داخل جدول تفاعلي مع دعم الصيغ',
   },
   {
-    id: 'smart_text_doc' as SmartElementType,
+    id: 'smart_text_doc',
     name: 'Smart Text Doc',
     nameAr: 'مستند نصي ذكي',
     icon: <FileText size={24} />,
