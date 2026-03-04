@@ -2,9 +2,12 @@
  * Floating Bar - تصدير المجلد
  */
 
-// Main Component
+// Main Component (legacy - kept for backward compat)
 export { FloatingBar } from './FloatingBar';
 export { default } from './FloatingBar';
+
+// Bars (new modular architecture)
+export * from './bars';
 
 // Types
 export * from './types';

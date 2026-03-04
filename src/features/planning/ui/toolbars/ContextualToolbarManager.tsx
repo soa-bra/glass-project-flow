@@ -3,59 +3,66 @@
  * يتحكم بإظهار شريط واحد فقط في أي وقت
  * 
  * قواعد الأولوية:
- * 1. Tool Mode = Pen/Eraser → PenToolbar فقط
- * 2. Editing Text → FloatingBar (Text mode)
- * 3. Selection موجود → FloatingBar (حسب type)
+ * 1. Tool Mode = Pen/Eraser → PenToolbar فقط (مستقل)
+ * 2. Editing Text → TextEditBar
+ * 3. Selection موجود → شريط حسب نوع التحديد
  * 4. غير كذا → لا شيء
  */
 
 import React from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
-import FloatingBar from "./floating-bar";
 import { PenFloatingToolbar } from "@/components/ui/penToolbar";
-import type { ToolbarMode } from "./floating-bar/types";
+import { useSelectionMeta } from "./floating-bar/hooks/useSelectionMeta";
 
-/**
- * تحديد الشريط المناسب للعرض
- */
-function determineToolbarMode(
-  activeTool: string,
-  editingTextId: string | null,
-  selectedElementIds: string[]
-): ToolbarMode {
-  // أولوية 1: وضع القلم/الممحاة
-  if (activeTool === "smart_pen") {
-    return "pen";
-  }
-
-  // أولوية 2: تحرير النص
-  if (editingTextId) {
-    return "floating";
-  }
-
-  // أولوية 3: تحديد موجود
-  if (selectedElementIds.length > 0) {
-    return "floating";
-  }
-
-  // أولوية 4: لا شيء
-  return "none";
-}
+// Bars
+import {
+  SingleElementBar,
+  MultiSelectBar,
+  TextEditBar,
+  ImageBar,
+  MindmapBar,
+  VisualDiagramBar,
+} from "./floating-bar/bars";
 
 const ContextualToolbarManager: React.FC = () => {
   const activeTool = useCanvasStore((state) => state.activeTool);
   const editingTextId = useCanvasStore((state) => state.editingTextId);
-  const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
+  const selectionMeta = useSelectionMeta();
 
-  const toolbarMode = determineToolbarMode(activeTool, editingTextId, selectedElementIds);
+  // أولوية 1: وضع القلم
+  if (activeTool === "smart_pen") {
+    return <PenFloatingToolbar isVisible={true} />;
+  }
 
-  // شريط واحد فقط في أي وقت
-  switch (toolbarMode) {
-    case "pen":
-      return <PenFloatingToolbar isVisible={true} />;
-    case "floating":
-      return <FloatingBar />;
-    case "none":
+  // أولوية 2: تحرير النص
+  if (editingTextId) {
+    return <TextEditBar />;
+  }
+
+  // أولوية 3: تحديد موجود - حسب النوع
+  if (!selectionMeta.hasSelection || selectionMeta.selectionType === null) {
+    return null;
+  }
+
+  // الخريطة الذهنية
+  if (selectionMeta.isMindmapSelection) {
+    return <MindmapBar />;
+  }
+
+  // المخطط البصري
+  if (selectionMeta.selectionType === "visual_diagram") {
+    return <VisualDiagramBar />;
+  }
+
+  switch (selectionMeta.selectionType) {
+    case "text":
+      return <TextEditBar />;
+    case "image":
+      return <ImageBar />;
+    case "multiple":
+      return <MultiSelectBar />;
+    case "element":
+      return <SingleElementBar />;
     default:
       return null;
   }
