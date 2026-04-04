@@ -8,4 +8,3 @@ export { default as FontFamilyDropdown } from './FontFamilyDropdown';
 export { default as FontSizeInput } from './FontSizeInput';
 export { default as FontWeightDropdown } from './FontWeightDropdown';
 export { AIMenuDropdown } from './AIMenuDropdown';
-export { ToolbarShell } from './ToolbarShell';

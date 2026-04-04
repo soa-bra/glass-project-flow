@@ -3,66 +3,59 @@
  * يتحكم بإظهار شريط واحد فقط في أي وقت
  * 
  * قواعد الأولوية:
- * 1. Tool Mode = Pen/Eraser → PenToolbar فقط (مستقل)
- * 2. Editing Text → TextEditBar
- * 3. Selection موجود → شريط حسب نوع التحديد
+ * 1. Tool Mode = Pen/Eraser → PenToolbar فقط
+ * 2. Editing Text → FloatingBar (Text mode)
+ * 3. Selection موجود → FloatingBar (حسب type)
  * 4. غير كذا → لا شيء
  */
 
 import React from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
+import FloatingBar from "./floating-bar";
 import { PenFloatingToolbar } from "@/components/ui/penToolbar";
-import { useSelectionMeta } from "./floating-bar/hooks/useSelectionMeta";
+import type { ToolbarMode } from "./floating-bar/types";
 
-// Bars
-import {
-  SingleElementBar,
-  MultiSelectBar,
-  TextEditBar,
-  ImageBar,
-  MindmapBar,
-  VisualDiagramBar,
-} from "./floating-bar/bars";
-
-const ContextualToolbarManager: React.FC = () => {
-  const activeTool = useCanvasStore((state) => state.activeTool);
-  const editingTextId = useCanvasStore((state) => state.editingTextId);
-  const selectionMeta = useSelectionMeta();
-
-  // أولوية 1: وضع القلم
+/**
+ * تحديد الشريط المناسب للعرض
+ */
+function determineToolbarMode(
+  activeTool: string,
+  editingTextId: string | null,
+  selectedElementIds: string[]
+): ToolbarMode {
+  // أولوية 1: وضع القلم/الممحاة
   if (activeTool === "smart_pen") {
-    return <PenFloatingToolbar isVisible={true} />;
+    return "pen";
   }
 
   // أولوية 2: تحرير النص
   if (editingTextId) {
-    return <TextEditBar />;
+    return "floating";
   }
 
-  // أولوية 3: تحديد موجود - حسب النوع
-  if (!selectionMeta.hasSelection || selectionMeta.selectionType === null) {
-    return null;
+  // أولوية 3: تحديد موجود
+  if (selectedElementIds.length > 0) {
+    return "floating";
   }
 
-  // الخريطة الذهنية
-  if (selectionMeta.isMindmapSelection) {
-    return <MindmapBar />;
-  }
+  // أولوية 4: لا شيء
+  return "none";
+}
 
-  // المخطط البصري
-  if (selectionMeta.selectionType === "visual_diagram") {
-    return <VisualDiagramBar />;
-  }
+const ContextualToolbarManager: React.FC = () => {
+  const activeTool = useCanvasStore((state) => state.activeTool);
+  const editingTextId = useCanvasStore((state) => state.editingTextId);
+  const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
 
-  switch (selectionMeta.selectionType) {
-    case "text":
-      return <TextEditBar />;
-    case "image":
-      return <ImageBar />;
-    case "multiple":
-      return <MultiSelectBar />;
-    case "element":
-      return <SingleElementBar />;
+  const toolbarMode = determineToolbarMode(activeTool, editingTextId, selectedElementIds);
+
+  // شريط واحد فقط في أي وقت
+  switch (toolbarMode) {
+    case "pen":
+      return <PenFloatingToolbar isVisible={true} />;
+    case "floating":
+      return <FloatingBar />;
+    case "none":
     default:
       return null;
   }
