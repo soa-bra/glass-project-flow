@@ -138,9 +138,9 @@ export class EventHandlerRegistry {
 export const handlerRegistry = EventHandlerRegistry.getInstance();
 
 // Register built-in handlers
-import './handlers/cultural-handlers';
-import './handlers/project-handlers';
-import './handlers/hr-handlers';
-import './handlers/webhook-handlers';
+import './cultural-handlers';
+import './project-handlers';
+import './hr-handlers';
+import './webhook-handlers';
 
 export { handlerRegistry as registry };
