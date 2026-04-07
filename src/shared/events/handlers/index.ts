@@ -137,10 +137,10 @@ export class EventHandlerRegistry {
 // Global registry instance
 export const handlerRegistry = EventHandlerRegistry.getInstance();
 
-// Register built-in handlers
-import './handlers/cultural-handlers';
-import './handlers/project-handlers';
-import './handlers/hr-handlers';
-import './handlers/webhook-handlers';
+// Register built-in handlers (will be added when handler files are created)
+// import './handlers/cultural-handlers';
+// import './handlers/project-handlers';
+// import './handlers/hr-handlers';
+// import './handlers/webhook-handlers';
 
 export { handlerRegistry as registry };

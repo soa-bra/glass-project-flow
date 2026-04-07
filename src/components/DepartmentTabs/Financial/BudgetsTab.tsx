@@ -11,6 +11,7 @@ import { formatCurrency, getStatusColor, getStatusText } from './utils';
 import { CreateBudgetModal } from './CreateBudgetModal';
 import { BudgetManagementModal } from './BudgetManagementModal';
 import { BudgetTreeItem } from './types';
+import { toast } from 'sonner';
 
 export const BudgetsTab: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -30,9 +31,6 @@ export const BudgetsTab: React.FC = () => {
   };
 
   const handleBudgetCreated = (budgetData: any) => {
-    // Budget created successfully
-    
-    // تحويل البيانات الجديدة لتنسيق شجرة الميزانيات
     const newBudgetTreeItem = {
       id: budgetData.id,
       name: budgetData.name,
@@ -45,8 +43,6 @@ export const BudgetsTab: React.FC = () => {
         status: 'approved'
       }))
     };
-    
-    // إضافة الميزانية الجديدة إلى شجرة الميزانيات
     setBudgetTree(prev => [...prev, newBudgetTreeItem]);
   };
 
@@ -56,8 +52,29 @@ export const BudgetsTab: React.FC = () => {
   };
 
   const handleBudgetUpdate = (budgetId: number, updateData: any) => {
-    // Budget updated successfully
-    // هنا يمكن تحديث بيانات الميزانية في القاعدة
+    setBudgetTree(prev => prev.map(b => {
+      if (b.id === budgetId) {
+        const newStatus = updateData.review?.status === 'approved' ? 'approved' :
+                          updateData.review?.status === 'rejected' ? 'overbudget' : b.status;
+        return {
+          ...b,
+          status: newStatus,
+          amount: updateData.review?.approvedAmount || b.amount,
+        };
+      }
+      if (b.children) {
+        return {
+          ...b,
+          children: b.children.map(c => c.id === budgetId ? {
+            ...c,
+            status: updateData.review?.status === 'approved' ? 'approved' : c.status,
+            amount: updateData.review?.approvedAmount || c.amount,
+          } : c)
+        };
+      }
+      return b;
+    }));
+    toast.success('تم تحديث الميزانية بنجاح');
   };
 
   const toggleExpand = (itemId: number) => {
