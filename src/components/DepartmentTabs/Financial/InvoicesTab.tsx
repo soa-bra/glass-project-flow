@@ -10,9 +10,74 @@ import { cn } from '@/lib/utils';
 import { mockInvoices } from './data';
 import { formatCurrency, getStatusText } from './utils';
 import { ClientInfoBox, getClientData } from './ClientInfoBox';
+import { GenericFormModal, FormField } from '../shared/GenericFormModal';
+import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
+import { downloadAsCSV } from '../shared/downloadUtils';
+import { toast } from 'sonner';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [invoices, setInvoices] = useState(mockInvoices);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<any>(null);
+  const [viewingInvoice, setViewingInvoice] = useState<any>(null);
+
+  const createFields: FormField[] = [
+    { name: 'client', label: 'اسم العميل', type: 'text', required: true, placeholder: 'أدخل اسم العميل' },
+    { name: 'projectName', label: 'اسم المشروع', type: 'text', required: true, placeholder: 'أدخل اسم المشروع' },
+    { name: 'totalAmount', label: 'المبلغ الإجمالي', type: 'number', required: true, placeholder: '0' },
+    { name: 'paymentAmount', label: 'مبلغ الدفعة', type: 'number', required: true, placeholder: '0' },
+    { name: 'dueDate', label: 'تاريخ الاستحقاق', type: 'date', required: true },
+    { name: 'status', label: 'الحالة', type: 'select', required: true, options: [
+      { value: 'draft', label: 'مسودة' },
+      { value: 'pending', label: 'معلقة' },
+      { value: 'paid', label: 'مدفوعة' },
+    ]},
+    { name: 'notes', label: 'ملاحظات', type: 'textarea', placeholder: 'ملاحظات إضافية...' },
+  ];
+
+  const handleCreateInvoice = (data: Record<string, string>) => {
+    const newInvoice = {
+      id: `INV-${Date.now().toString().slice(-4)}`,
+      client: data.client,
+      projectId: `PRJ-${Date.now().toString().slice(-3)}`,
+      projectName: data.projectName,
+      totalAmount: Number(data.totalAmount),
+      paymentAmount: Number(data.paymentAmount),
+      paymentNumber: 1,
+      totalPayments: 1,
+      paymentPercentage: (Number(data.paymentAmount) / Number(data.totalAmount)) * 100,
+      dueDate: data.dueDate,
+      status: data.status as any,
+    };
+    setInvoices(prev => [newInvoice, ...prev]);
+  };
+
+  const handleEditInvoice = (data: Record<string, string>) => {
+    if (!editingInvoice) return;
+    setInvoices(prev => prev.map(inv => 
+      inv.id === editingInvoice.id ? {
+        ...inv,
+        client: data.client,
+        projectName: data.projectName,
+        totalAmount: Number(data.totalAmount),
+        paymentAmount: Number(data.paymentAmount),
+        dueDate: data.dueDate,
+        status: data.status as any,
+        paymentPercentage: (Number(data.paymentAmount) / Number(data.totalAmount)) * 100,
+      } : inv
+    ));
+    setEditingInvoice(null);
+  };
+
+  const handleDownloadInvoice = (invoice: any) => {
+    downloadAsCSV(
+      ['رقم الفاتورة', 'العميل', 'المشروع', 'المبلغ', 'الدفعة', 'الاستحقاق', 'الحالة'],
+      [[invoice.id, invoice.client, invoice.projectName, String(invoice.totalAmount), String(invoice.paymentAmount), invoice.dueDate, getStatusText(invoice.status)]],
+      `فاتورة-${invoice.id}`
+    );
+    toast.success(`تم تنزيل الفاتورة ${invoice.id}`);
+  };
 
   const getInvoiceStatusVariant = (status: string) => {
     switch (status) {
@@ -29,16 +94,21 @@ export const InvoicesTab: React.FC = () => {
     setSelectedClient(clientData);
   };
 
-  const handleProjectClick = (projectId: string) => {
-    // Navigate to project view
+  const handleProjectClick = (projectName: string) => {
+    toast.info(`الانتقال إلى مشروع: ${projectName}`);
   };
+
+  const editFields = editingInvoice ? createFields.map(f => ({
+    ...f,
+    defaultValue: String(editingInvoice[f.name] || ''),
+  })) : createFields;
 
   return (
     <BaseTabContent value="invoices">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
           <h3 className={buildTitleClasses()}>الفواتير والمدفوعات</h3>
-          <BaseActionButton variant="primary" icon={<Receipt className="w-4 h-4" />}>
+          <BaseActionButton variant="primary" icon={<Receipt className="w-4 h-4" />} onClick={() => setIsCreateOpen(true)}>
             إنشاء فاتورة
           </BaseActionButton>
         </div>
@@ -46,7 +116,7 @@ export const InvoicesTab: React.FC = () => {
 
       <BaseBox title="جدول الفواتير">
         <div className="grid grid-cols-2 gap-4">
-          {mockInvoices.map(invoice => (
+          {invoices.map(invoice => (
             <Reveal key={invoice.id} delay={0.1}>
               <div className={cn(
                 'flex items-center justify-between p-4 rounded-lg',
@@ -65,18 +135,13 @@ export const InvoicesTab: React.FC = () => {
                     </div>
                     <button 
                       onClick={() => handleClientClick(invoice.client)}
-                      className={cn(
-                        TYPOGRAPHY.SMALL,
-                        COLORS.PRIMARY_TEXT,
-                        TYPOGRAPHY.ARABIC_FONT,
-                        'hover:text-blue-600 hover:underline transition-colors'
-                      )}
+                      className={cn(TYPOGRAPHY.SMALL, COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT, 'hover:text-blue-600 hover:underline transition-colors')}
                     >
                       {invoice.client}
                     </button>
                     <div className="flex items-center gap-2 mt-1">
                       <button
-                        onClick={() => handleProjectClick(invoice.projectId)}
+                        onClick={() => handleProjectClick(invoice.projectName)}
                         className="text-xs text-blue-600 hover:text-blue-800 font-arabic flex items-center gap-1 hover:underline"
                       >
                         <span>{invoice.projectName}</span>
@@ -89,7 +154,6 @@ export const InvoicesTab: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-left space-y-3">
-                  {/* المبالغ الرئيسية */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>إجمالي المبلغ:</p>
@@ -104,8 +168,6 @@ export const InvoicesTab: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  
-                  {/* معلومات الدفع */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <p className={cn(TYPOGRAPHY.SMALL, 'text-gray-500')}>رقم الدفعة:</p>
@@ -120,15 +182,13 @@ export const InvoicesTab: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  
-                  {/* الحالة والإجراءات */}
                   <div className="flex items-center justify-between">
                     <BaseBadge variant={getInvoiceStatusVariant(invoice.status)} size="sm">
                       {getStatusText(invoice.status)}
                     </BaseBadge>
                     <div className="flex items-center gap-2">
-                      <BaseActionButton variant="edit" size="sm" icon={<Edit className="w-4 h-4" />} />
-                      <BaseActionButton variant="download" size="sm" icon={<Download className="w-4 h-4" />} />
+                      <BaseActionButton variant="edit" size="sm" icon={<Edit className="w-4 h-4" />} onClick={() => setEditingInvoice(invoice)} />
+                      <BaseActionButton variant="download" size="sm" icon={<Download className="w-4 h-4" />} onClick={() => handleDownloadInvoice(invoice)} />
                     </div>
                   </div>
                 </div>
@@ -140,11 +200,30 @@ export const InvoicesTab: React.FC = () => {
 
       {selectedClient && (
         <Reveal>
-          <ClientInfoBox 
-            client={selectedClient} 
-            onClose={() => setSelectedClient(null)} 
-          />
+          <ClientInfoBox client={selectedClient} onClose={() => setSelectedClient(null)} />
         </Reveal>
+      )}
+
+      <GenericFormModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="إنشاء فاتورة جديدة"
+        fields={createFields}
+        onSubmit={handleCreateInvoice}
+        submitLabel="إنشاء الفاتورة"
+        successMessage="تم إنشاء الفاتورة بنجاح"
+      />
+
+      {editingInvoice && (
+        <GenericFormModal
+          isOpen={!!editingInvoice}
+          onClose={() => setEditingInvoice(null)}
+          title={`تعديل الفاتورة ${editingInvoice.id}`}
+          fields={editFields}
+          onSubmit={handleEditInvoice}
+          submitLabel="حفظ التعديلات"
+          successMessage="تم تحديث الفاتورة بنجاح"
+        />
       )}
     </BaseTabContent>
   );
