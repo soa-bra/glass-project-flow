@@ -124,7 +124,7 @@ export const ModelsTemplatesTab: React.FC = () => {
           </div>
         </div>
 
-        <Card>
+        <BaseBox>
           <div>
             <h4>وصف المقياس</h4>
           </div>
@@ -133,7 +133,7 @@ export const ModelsTemplatesTab: React.FC = () => {
           </div>
         </BaseBox>
 
-        <Card>
+        <BaseBox>
           <div>
             <h4>مستويات التقييم</h4>
           </div>
@@ -155,7 +155,7 @@ export const ModelsTemplatesTab: React.FC = () => {
           </div>
         </BaseBox>
 
-        <Card>
+        <BaseBox>
           <div>
             <h4>معايير القياس</h4>
           </div>
@@ -188,7 +188,7 @@ export const ModelsTemplatesTab: React.FC = () => {
           </div>
         </BaseBox>
 
-        <Card>
+        <BaseBox>
           <div>
             <h4>إحصائيات الاستخدام</h4>
           </div>
@@ -246,28 +246,28 @@ export const ModelsTemplatesTab: React.FC = () => {
             <>
               {/* Metrics Overview */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card>
+                <BaseBox>
                   <div className="p-4 text-center">
                     <Calculator className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">{metrics.length}</div>
                     <div className="text-sm text-gray-600">إجمالي المقاييس</div>
                   </div>
                 </BaseBox>
-                <Card>
+                <BaseBox>
                   <div className="p-4 text-center">
                     <FileSpreadsheet className="h-8 w-8 text-green-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">{metrics.length}</div>
                     <div className="text-sm text-gray-600">ملفات Excel</div>
                   </div>
                 </BaseBox>
-                <Card>
+                <BaseBox>
                   <div className="p-4 text-center">
                     <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">{metrics.reduce((sum, m) => sum + m.usage, 0)}</div>
                     <div className="text-sm text-gray-600">إجمالي الاستخدامات</div>
                   </div>
                 </BaseBox>
-                <Card>
+                <BaseBox>
                   <div className="p-4 text-center">
                     <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">5</div>
@@ -277,7 +277,7 @@ export const ModelsTemplatesTab: React.FC = () => {
               </div>
 
               {/* Search */}
-              <Card>
+              <BaseBox>
                 <div className="p-4">
                   <div className="relative">
                     <Input
@@ -339,7 +339,7 @@ export const ModelsTemplatesTab: React.FC = () => {
               </div>
 
               {/* Instructions */}
-              <Card>
+              <BaseBox>
                 <div>
                   <h4>دليل استخدام مقاييس سوبرا</h4>
                 </div>
@@ -390,21 +390,21 @@ export const ModelsTemplatesTab: React.FC = () => {
         <TabsContent value="templates" className="space-y-6">
           {/* Templates Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
+            <BaseBox>
               <div className="p-4 text-center">
                 <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{templates.length}</div>
                 <div className="text-sm text-gray-600">إجمالي القوالب</div>
               </div>
             </BaseBox>
-            <Card>
+            <BaseBox>
               <div className="p-4 text-center">
                 <Download className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{templates.reduce((sum, t) => sum + t.downloads, 0)}</div>
                 <div className="text-sm text-gray-600">إجمالي التحميلات</div>
               </div>
             </BaseBox>
-            <Card>
+            <BaseBox>
               <div className="p-4 text-center">
                 <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold">3</div>
@@ -414,7 +414,7 @@ export const ModelsTemplatesTab: React.FC = () => {
           </div>
 
           {/* Templates List */}
-          <Card>
+          <BaseBox>
             <div>
               <h4>القوالب المتاحة</h4>
             </div>
