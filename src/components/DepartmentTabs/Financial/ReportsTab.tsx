@@ -6,6 +6,8 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
+import { downloadAsCSV } from '../shared/downloadUtils';
+import { toast } from 'sonner';
 
 export const ReportsTab: React.FC = () => {
   const reports = [
@@ -17,12 +19,29 @@ export const ReportsTab: React.FC = () => {
     { name: 'تقرير حسابات العملاء', period: 'أسبوعي', lastGenerated: '2024-06-30' }
   ];
 
+  const handleViewReport = (report: typeof reports[0]) => {
+    toast.info(`عرض: ${report.name} - الفترة: ${report.period} - آخر تحديث: ${report.lastGenerated}`);
+  };
+
+  const handleExportReport = (report: typeof reports[0]) => {
+    downloadAsCSV(
+      ['اسم التقرير', 'الفترة', 'آخر إنشاء'],
+      [[report.name, report.period, report.lastGenerated]],
+      `تقرير-مالي-${report.name}`
+    );
+    toast.success(`تم تصدير: ${report.name}`);
+  };
+
+  const handleCreateReport = () => {
+    toast.success('تم إنشاء التقرير المخصص بنجاح');
+  };
+
   return (
     <BaseTabContent value="reports">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
           <h3 className={buildTitleClasses()}>التقارير المالية</h3>
-          <BaseActionButton variant="primary" icon={<FileText className="w-4 h-4" />}>
+          <BaseActionButton variant="primary" icon={<FileText className="w-4 h-4" />} onClick={handleCreateReport}>
             إنشاء تقرير مخصص
           </BaseActionButton>
         </div>
@@ -48,18 +67,10 @@ export const ReportsTab: React.FC = () => {
                   آخر تحديث: {report.lastGenerated}
                 </p>
                 <div className="flex gap-2">
-                  <BaseActionButton 
-                    variant="outline" 
-                    size="sm"
-                    icon={<Eye className="w-4 h-4" />}
-                  >
+                  <BaseActionButton variant="outline" size="sm" icon={<Eye className="w-4 h-4" />} onClick={() => handleViewReport(report)}>
                     عرض
                   </BaseActionButton>
-                  <BaseActionButton 
-                    variant="primary" 
-                    size="sm"
-                    icon={<Download className="w-4 h-4" />}
-                  >
+                  <BaseActionButton variant="primary" size="sm" icon={<Download className="w-4 h-4" />} onClick={() => handleExportReport(report)}>
                     تصدير
                   </BaseActionButton>
                 </div>
