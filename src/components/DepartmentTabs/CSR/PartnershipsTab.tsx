@@ -4,315 +4,179 @@ import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
-  Plus, 
-  Search, 
-  Building, 
-  Users, 
-  Phone, 
-  Mail,
-  Star,
-  FileText,
-  CheckCircle,
-  Clock,
-  AlertCircle,
-  Eye,
-  Edit
+  Plus, Search, Building, Users, Phone, Mail, Star, FileText,
+  CheckCircle, Clock, AlertCircle, Eye, Edit
 } from 'lucide-react';
 import { mockCSRPartners } from './data';
 import { CSRPartner } from './types';
+import { GenericFormModal, FormField } from '../shared/GenericFormModal';
+import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
+import { toast } from 'sonner';
 
 export const PartnershipsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
+  const [partners, setPartners] = useState(mockCSRPartners);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingPartner, setEditingPartner] = useState<CSRPartner | null>(null);
+  const [viewingPartner, setViewingPartner] = useState<CSRPartner | null>(null);
 
   const getTypeColor = (type: CSRPartner['type']) => {
-    switch (type) {
-      case 'government': return 'bg-blue-100 text-blue-800';
-      case 'ngo': return 'bg-green-100 text-green-800';
-      case 'private': return 'bg-purple-100 text-purple-800';
-      case 'international': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+    switch (type) { case 'government': return 'bg-blue-100 text-blue-800'; case 'ngo': return 'bg-green-100 text-green-800'; case 'private': return 'bg-purple-100 text-purple-800'; case 'international': return 'bg-orange-100 text-orange-800'; default: return 'bg-gray-100 text-gray-800'; }
   };
-
   const getTypeText = (type: CSRPartner['type']) => {
-    switch (type) {
-      case 'government': return 'حكومي';
-      case 'ngo': return 'غير ربحي';
-      case 'private': return 'قطاع خاص';
-      case 'international': return 'دولي';
-      default: return type;
-    }
+    switch (type) { case 'government': return 'حكومي'; case 'ngo': return 'غير ربحي'; case 'private': return 'قطاع خاص'; case 'international': return 'دولي'; default: return type; }
   };
+  const getCapacityColor = (c: CSRPartner['capacity']) => ({ high: 'text-green-600', medium: 'text-yellow-600', low: 'text-red-600' }[c] || 'text-gray-600');
+  const getCapacityText = (c: CSRPartner['capacity']) => ({ high: 'عالية', medium: 'متوسطة', low: 'منخفضة' }[c] || c);
+  const getContractStatusIcon = (s?: CSRPartner['contractStatus']) => ({ signed: CheckCircle, draft: Clock, expired: AlertCircle }[s || ''] || FileText);
+  const getContractStatusColor = (s?: CSRPartner['contractStatus']) => ({ signed: 'text-green-600', draft: 'text-yellow-600', expired: 'text-red-600' }[s || ''] || 'text-gray-600');
+  const getContractStatusText = (s?: CSRPartner['contractStatus']) => ({ signed: 'موقع', draft: 'مسودة', expired: 'منتهي' }[s || ''] || 'غير محدد');
 
-  const getCapacityColor = (capacity: CSRPartner['capacity']) => {
-    switch (capacity) {
-      case 'high': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'low': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getCapacityText = (capacity: CSRPartner['capacity']) => {
-    switch (capacity) {
-      case 'high': return 'عالية';
-      case 'medium': return 'متوسطة';
-      case 'low': return 'منخفضة';
-      default: return capacity;
-    }
-  };
-
-  const getContractStatusIcon = (status?: CSRPartner['contractStatus']) => {
-    switch (status) {
-      case 'signed': return CheckCircle;
-      case 'draft': return Clock;
-      case 'expired': return AlertCircle;
-      default: return FileText;
-    }
-  };
-
-  const getContractStatusColor = (status?: CSRPartner['contractStatus']) => {
-    switch (status) {
-      case 'signed': return 'text-green-600';
-      case 'draft': return 'text-yellow-600';
-      case 'expired': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
-  };
-
-  const getContractStatusText = (status?: CSRPartner['contractStatus']) => {
-    switch (status) {
-      case 'signed': return 'موقع';
-      case 'draft': return 'مسودة';
-      case 'expired': return 'منتهي';
-      default: return 'غير محدد';
-    }
-  };
-
-  const filteredPartners = mockCSRPartners.filter(partner => {
-    const matchesSearch = partner.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         partner.contactPerson.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === 'all' || partner.type === selectedType;
-    return matchesSearch && matchesType;
+  const filteredPartners = partners.filter(p => {
+    const ms = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || p.contactPerson.toLowerCase().includes(searchTerm.toLowerCase());
+    return ms && (selectedType === 'all' || p.type === selectedType);
   });
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`h-4 w-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
-      />
-    ));
+  const renderStars = (rating: number) => Array.from({ length: 5 }, (_, i) => (
+    <Star key={i} className={`h-4 w-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} />
+  ));
+
+  const addFields: FormField[] = [
+    { name: 'name', label: 'اسم الشريك', type: 'text', required: true, placeholder: 'اسم المنظمة' },
+    { name: 'type', label: 'النوع', type: 'select', required: true, options: [
+      { value: 'government', label: 'حكومي' }, { value: 'ngo', label: 'غير ربحي' }, { value: 'private', label: 'قطاع خاص' }, { value: 'international', label: 'دولي' },
+    ]},
+    { name: 'contactPerson', label: 'جهة الاتصال', type: 'text', required: true, placeholder: 'الاسم' },
+    { name: 'email', label: 'البريد الإلكتروني', type: 'email', required: true },
+    { name: 'phone', label: 'الهاتف', type: 'tel', required: true },
+    { name: 'expertise', label: 'مجالات الخبرة (مفصولة بفاصلة)', type: 'text', placeholder: 'تعليم, بيئة, صحة' },
+  ];
+
+  const handleAddPartner = (data: Record<string, string>) => {
+    const newPartner: any = {
+      id: `p-${Date.now()}`, name: data.name, type: data.type, contactPerson: data.contactPerson,
+      email: data.email, phone: data.phone, expertise: data.expertise ? data.expertise.split(',').map(s => s.trim()) : [],
+      rating: 0, capacity: 'medium', previousProjects: 0, contractStatus: 'draft', contractId: '',
+      partnership: { startDate: new Date().toISOString().split('T')[0], type: 'strategic', scope: '' },
+    };
+    setPartners(prev => [newPartner, ...prev]);
+  };
+
+  const handleEditPartner = (data: Record<string, string>) => {
+    if (!editingPartner) return;
+    setPartners(prev => prev.map(p => p.id === editingPartner.id ? {
+      ...p, name: data.name, type: data.type as any, contactPerson: data.contactPerson, email: data.email, phone: data.phone,
+      expertise: data.expertise ? data.expertise.split(',').map(s => s.trim()) : p.expertise,
+    } : p));
+    setEditingPartner(null);
+  };
+
+  const getViewFields = (p: CSRPartner): DetailField[] => [
+    { label: 'الاسم', value: p.name }, { label: 'النوع', value: getTypeText(p.type) },
+    { label: 'جهة الاتصال', value: p.contactPerson }, { label: 'البريد', value: p.email },
+    { label: 'الهاتف', value: p.phone }, { label: 'التقييم', value: `${p.rating}/5` },
+    { label: 'القدرة', value: getCapacityText(p.capacity) }, { label: 'المشاريع السابقة', value: String(p.previousProjects) },
+    { label: 'حالة العقد', value: getContractStatusText(p.contractStatus) },
+    { label: 'مجالات الخبرة', value: p.expertise.join(', ') },
+    { label: 'بداية الشراكة', value: new Date(p.partnership.startDate).toLocaleDateString('ar-SA') },
+  ];
+
+  const handleViewContract = (p: CSRPartner) => {
+    toast.info(`عقد الشريك: ${p.name} - الحالة: ${getContractStatusText(p.contractStatus)}${p.contractId ? ` (${p.contractId})` : ''}`);
   };
 
   return (
     <div className="space-y-6">
-      {/* Header and Controls */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div className="flex items-center gap-4 w-full lg:w-auto">
           <div className="relative flex-1 lg:w-96">
             <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="البحث في الشركاء..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10"
-            />
+            <Input placeholder="البحث في الشركاء..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-10" />
           </div>
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white"
-          >
+          <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white">
             <option value="all">جميع الأنواع</option>
-            <option value="government">حكومي</option>
-            <option value="ngo">غير ربحي</option>
-            <option value="private">قطاع خاص</option>
-            <option value="international">دولي</option>
+            <option value="government">حكومي</option><option value="ngo">غير ربحي</option><option value="private">قطاع خاص</option><option value="international">دولي</option>
           </select>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
-          <Plus className="ml-2 h-4 w-4" />
-          إضافة شريك جديد
+        <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+          <Plus className="ml-2 h-4 w-4" /> إضافة شريك جديد
         </Button>
       </div>
 
-      {/* Partners Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Building className="h-6 w-6 text-blue-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCSRPartners.length}</h3>
-          <p className="text-gray-600 font-arabic">إجمالي الشركاء</p>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-2">
-            <CheckCircle className="h-6 w-6 text-green-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">
-            {mockCSRPartners.filter(p => p.contractStatus === 'signed').length}
-          </h3>
-          <p className="text-gray-600 font-arabic">عقود نشطة</p>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Star className="h-6 w-6 text-yellow-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">
-            {(mockCSRPartners.reduce((sum, p) => sum + p.rating, 0) / mockCSRPartners.length).toFixed(1)}
-          </h3>
-          <p className="text-gray-600 font-arabic">متوسط التقييم</p>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-2">
-            <Users className="h-6 w-6 text-purple-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">
-            {mockCSRPartners.filter(p => p.capacity === 'high').length}
-          </h3>
-          <p className="text-gray-600 font-arabic">قدرة عالية</p>
-        </GenericCard>
+        <GenericCard className="text-center"><Building className="h-6 w-6 text-blue-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{partners.length}</h3><p className="text-gray-600 font-arabic">إجمالي الشركاء</p></GenericCard>
+        <GenericCard className="text-center"><CheckCircle className="h-6 w-6 text-green-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{partners.filter(p => p.contractStatus === 'signed').length}</h3><p className="text-gray-600 font-arabic">عقود نشطة</p></GenericCard>
+        <GenericCard className="text-center"><Star className="h-6 w-6 text-yellow-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{(partners.reduce((s, p) => s + p.rating, 0) / partners.length).toFixed(1)}</h3><p className="text-gray-600 font-arabic">متوسط التقييم</p></GenericCard>
+        <GenericCard className="text-center"><Users className="h-6 w-6 text-purple-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{partners.filter(p => p.capacity === 'high').length}</h3><p className="text-gray-600 font-arabic">قدرة عالية</p></GenericCard>
       </div>
 
-      {/* Partners Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredPartners.map((partner) => {
           const ContractIcon = getContractStatusIcon(partner.contractStatus);
-          
           return (
             <GenericCard key={partner.id} className="hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <h4 className="font-semibold font-arabic text-gray-900">{partner.name}</h4>
-                    <span className={`px-2 py-1 text-xs rounded-full ${getTypeColor(partner.type)}`}>
-                      {getTypeText(partner.type)}
-                    </span>
+                    <span className={`px-2 py-1 text-xs rounded-full ${getTypeColor(partner.type)}`}>{getTypeText(partner.type)}</span>
                   </div>
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex items-center">
-                      {renderStars(Math.floor(partner.rating))}
-                      <span className="mr-2 text-sm text-gray-600 font-arabic">
-                        {partner.rating.toFixed(1)}
-                      </span>
-                    </div>
-                    <span className={`text-sm font-arabic ${getCapacityColor(partner.capacity)}`}>
-                      قدرة {getCapacityText(partner.capacity)}
-                    </span>
+                    <div className="flex items-center">{renderStars(Math.floor(partner.rating))}<span className="mr-2 text-sm text-gray-600 font-arabic">{partner.rating.toFixed(1)}</span></div>
+                    <span className={`text-sm font-arabic ${getCapacityColor(partner.capacity)}`}>قدرة {getCapacityText(partner.capacity)}</span>
                   </div>
                 </div>
               </div>
-
-              {/* Contact Information */}
               <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="h-4 w-4 text-gray-500" />
-                  <span className="font-arabic text-gray-700">{partner.contactPerson}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-gray-500" />
-                  <span className="font-arabic text-gray-700">{partner.email}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-gray-500" />
-                  <span className="font-arabic text-gray-700">{partner.phone}</span>
-                </div>
+                <div className="flex items-center gap-2 text-sm"><Users className="h-4 w-4 text-gray-500" /><span className="font-arabic text-gray-700">{partner.contactPerson}</span></div>
+                <div className="flex items-center gap-2 text-sm"><Mail className="h-4 w-4 text-gray-500" /><span className="font-arabic text-gray-700">{partner.email}</span></div>
+                <div className="flex items-center gap-2 text-sm"><Phone className="h-4 w-4 text-gray-500" /><span className="font-arabic text-gray-700">{partner.phone}</span></div>
               </div>
-
-              {/* Expertise Tags */}
               <div className="mb-4">
                 <p className="text-sm font-semibold font-arabic text-gray-700 mb-2">مجالات الخبرة:</p>
                 <div className="flex flex-wrap gap-1">
-                  {partner.expertise.slice(0, 3).map((skill, index) => (
-                    <span key={index} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded font-arabic">
-                      {skill}
-                    </span>
-                  ))}
-                  {partner.expertise.length > 3 && (
-                    <span className="px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded font-arabic">
-                      +{partner.expertise.length - 3}
-                    </span>
-                  )}
+                  {partner.expertise.slice(0, 3).map((skill, i) => <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded font-arabic">{skill}</span>)}
+                  {partner.expertise.length > 3 && <span className="px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded font-arabic">+{partner.expertise.length - 3}</span>}
                 </div>
               </div>
-
-              {/* Partnership Stats */}
               <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                <div>
-                  <p className="text-gray-500 font-arabic">المشاريع السابقة</p>
-                  <p className="font-semibold font-arabic">{partner.previousProjects}</p>
-                </div>
-                <div>
-                  <p className="text-gray-500 font-arabic">بداية الشراكة</p>
-                  <p className="font-semibold font-arabic">
-                    {new Date(partner.partnership.startDate).toLocaleDateString('ar-SA')}
-                  </p>
-                </div>
+                <div><p className="text-gray-500 font-arabic">المشاريع السابقة</p><p className="font-semibold font-arabic">{partner.previousProjects}</p></div>
+                <div><p className="text-gray-500 font-arabic">بداية الشراكة</p><p className="font-semibold font-arabic">{new Date(partner.partnership.startDate).toLocaleDateString('ar-SA')}</p></div>
               </div>
-
-              {/* Contract Status */}
               {partner.contractStatus && (
                 <div className="flex items-center gap-2 mb-4 p-2 bg-gray-50 rounded-lg">
                   <ContractIcon className={`h-4 w-4 ${getContractStatusColor(partner.contractStatus)}`} />
-                  <span className="text-sm font-arabic text-gray-700">
-                    حالة العقد: <span className={`font-semibold ${getContractStatusColor(partner.contractStatus)}`}>
-                      {getContractStatusText(partner.contractStatus)}
-                    </span>
-                  </span>
-                  {partner.contractId && (
-                    <span className="text-xs text-gray-500 font-arabic">
-                      ({partner.contractId})
-                    </span>
-                  )}
+                  <span className="text-sm font-arabic text-gray-700">حالة العقد: <span className={`font-semibold ${getContractStatusColor(partner.contractStatus)}`}>{getContractStatusText(partner.contractStatus)}</span></span>
                 </div>
               )}
-
-              {/* Actions */}
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 font-arabic">
-                  <Eye className="h-3 w-3 ml-1" />
-                  عرض التفاصيل
-                </Button>
-                <Button size="sm" variant="outline" className="font-arabic">
-                  <Edit className="h-3 w-3 ml-1" />
-                  تعديل
-                </Button>
-                <Button size="sm" variant="outline" className="font-arabic">
-                  <FileText className="h-3 w-3 ml-1" />
-                  العقد
-                </Button>
+                <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingPartner(partner)}><Eye className="h-3 w-3 ml-1" /> عرض التفاصيل</Button>
+                <Button size="sm" variant="outline" className="font-arabic" onClick={() => setEditingPartner(partner)}><Edit className="h-3 w-3 ml-1" /> تعديل</Button>
+                <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleViewContract(partner)}><FileText className="h-3 w-3 ml-1" /> العقد</Button>
               </div>
             </GenericCard>
           );
         })}
       </div>
 
-      {/* Resource Allocator */}
       <GenericCard>
         <h3 className="text-lg font-bold font-arabic mb-4">مخصص الموارد</h3>
-        <p className="text-gray-600 font-arabic mb-4">
-          ربط احتياجات المبادرات بالموارد المتاحة والموردين المعتمدين
-        </p>
+        <p className="text-gray-600 font-arabic mb-4">ربط احتياجات المبادرات بالموارد المتاحة والموردين المعتمدين</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button variant="outline" className="font-arabic">
-            <Building className="ml-2 h-4 w-4" />
-            إدارة الموردين
-          </Button>
-          <Button variant="outline" className="font-arabic">
-            <Users className="ml-2 h-4 w-4" />
-            تخصيص الموارد
-          </Button>
-          <Button variant="outline" className="font-arabic">
-            <FileText className="ml-2 h-4 w-4" />
-            تقارير الموارد
-          </Button>
+          <Button variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح قائمة الموردين المعتمدين')}><Building className="ml-2 h-4 w-4" /> إدارة الموردين</Button>
+          <Button variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح أداة تخصيص الموارد')}><Users className="ml-2 h-4 w-4" /> تخصيص الموارد</Button>
+          <Button variant="outline" className="font-arabic" onClick={() => toast.success('تم تصدير تقرير الموارد')}><FileText className="ml-2 h-4 w-4" /> تقارير الموارد</Button>
         </div>
       </GenericCard>
+
+      <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة شريك جديد" fields={addFields} onSubmit={handleAddPartner} submitLabel="إضافة" successMessage="تمت إضافة الشريك بنجاح" />
+      {editingPartner && (
+        <GenericFormModal isOpen={!!editingPartner} onClose={() => setEditingPartner(null)} title={`تعديل: ${editingPartner.name}`}
+          fields={addFields.map(f => ({ ...f, defaultValue: String((editingPartner as any)[f.name] || (f.name === 'expertise' ? editingPartner.expertise.join(', ') : '')) }))}
+          onSubmit={handleEditPartner} submitLabel="حفظ" successMessage="تم تحديث الشريك بنجاح" />
+      )}
+      {viewingPartner && <GenericDetailModal isOpen={!!viewingPartner} onClose={() => setViewingPartner(null)} title={viewingPartner.name} fields={getViewFields(viewingPartner)} />}
     </div>
   );
 };
