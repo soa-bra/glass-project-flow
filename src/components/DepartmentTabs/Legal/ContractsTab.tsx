@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { FileText, Plus, Search, Filter, Download, Eye } from 'lucide-react';
+import { Plus, Search, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
-import { getStatusColor, getStatusText, formatCurrency, formatDate } from './utils';
+import type { Contract } from './types';
+import { getStatusText, formatCurrency, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
