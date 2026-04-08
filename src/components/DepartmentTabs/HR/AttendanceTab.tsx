@@ -131,14 +131,14 @@ export const AttendanceTab: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <BaseActionButton
-              variant={selectedView === 'attendance' ? 'default' : 'outline'}
+              variant={selectedView === 'attendance' ? 'primary' : 'outline'}
               onClick={() => setSelectedView('attendance')}
               className="font-arabic"
             >
               سجلات الحضور
             </BaseActionButton>
             <BaseActionButton
-              variant={selectedView === 'leaves' ? 'default' : 'outline'}
+              variant={selectedView === 'leaves' ? 'primary' : 'outline'}
               onClick={() => setSelectedView('leaves')}
               className="font-arabic"
             >

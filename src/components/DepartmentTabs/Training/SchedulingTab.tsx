@@ -201,7 +201,7 @@ export const SchedulingTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <BaseActionButton
-            variant={viewMode === 'calendar' ? 'default' : 'outline'}
+            variant={viewMode === 'calendar' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => setViewMode('calendar')}
           >
@@ -209,7 +209,7 @@ export const SchedulingTab: React.FC = () => {
             التقويم
           </BaseActionButton>
           <BaseActionButton
-            variant={viewMode === 'list' ? 'default' : 'outline'}
+            variant={viewMode === 'list' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => setViewMode('list')}
           >

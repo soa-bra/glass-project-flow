@@ -275,7 +275,7 @@ export const CampaignsChannelsTab: React.FC = () => {
             ))}
           </div>
           <div className="flex justify-end mt-4">
-            <Button onClick={() => { setIsChannelSettingsOpen(false); toast.success('تم حفظ إعدادات القنوات'); }} className="bg-black text-white rounded-full font-arabic">حفظ الإعدادات</Button>
+            <BaseActionButton variant="primary" onClick={() => { setIsChannelSettingsOpen(false); toast.success("تم حفظ إعدادات القنوات"); }}>حفظ الإعدادات</BaseActionButton>
           </div>
         </DialogContent>
       </Dialog>

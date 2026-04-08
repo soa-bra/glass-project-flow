@@ -590,7 +590,7 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                       </div>
                       <BaseActionButton
                         onClick={() => removeBudgetItem(item.id)}
-                        size="icon"
+                        size="sm"
                         variant="ghost"
                         className="w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full text-white"
                       >

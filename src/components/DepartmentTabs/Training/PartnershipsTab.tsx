@@ -145,7 +145,7 @@ export const PartnershipsTab: React.FC = () => {
                     <Badge variant={partner.type === 'university' ? 'default' : 'secondary'}>
                       {partner.type === 'university' ? 'جامعة' : 'معهد'}
                     </Badge>
-                    <Badge variant={partner.status === 'active' ? 'default' : 'outline'}>
+                    <Badge variant={partner.status === 'active' ? 'primary' : 'outline'}>
                       {partner.status === 'active' ? 'نشط' : 'في الانتظار'}
                     </Badge>
                   </div>
@@ -412,7 +412,7 @@ export const PartnershipsTab: React.FC = () => {
       {/* Navigation Tabs */}
       <div className="flex gap-2">
         <BaseActionButton
-          variant={activeView === 'universities' ? 'default' : 'outline'}
+          variant={activeView === 'universities' ? 'primary' : 'outline'}
           onClick={() => setActiveView('universities')}
           className="flex items-center gap-2"
         >
@@ -420,7 +420,7 @@ export const PartnershipsTab: React.FC = () => {
           الجامعات
         </BaseActionButton>
         <BaseActionButton
-          variant={activeView === 'research' ? 'default' : 'outline'}
+          variant={activeView === 'research' ? 'primary' : 'outline'}
           onClick={() => setActiveView('research')}
           className="flex items-center gap-2"
         >
@@ -428,7 +428,7 @@ export const PartnershipsTab: React.FC = () => {
           مراكز البحث
         </BaseActionButton>
         <BaseActionButton
-          variant={activeView === 'programs' ? 'default' : 'outline'}
+          variant={activeView === 'programs' ? 'primary' : 'outline'}
           onClick={() => setActiveView('programs')}
           className="flex items-center gap-2"
         >

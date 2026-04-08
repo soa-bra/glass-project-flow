@@ -121,19 +121,19 @@ export const CulturalResearchTab: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <BaseActionButton 
-            variant={activeView === 'projects' ? 'default' : 'outline'}
+            variant={activeView === 'projects' ? 'primary' : 'outline'}
             onClick={() => setActiveView('projects')}
           >
             المشاريع البحثية
           </BaseActionButton>
           <BaseActionButton 
-            variant={activeView === 'publications' ? 'default' : 'outline'}
+            variant={activeView === 'publications' ? 'primary' : 'outline'}
             onClick={() => setActiveView('publications')}
           >
             المنشورات
           </BaseActionButton>
           <BaseActionButton 
-            variant={activeView === 'insights' ? 'default' : 'outline'}
+            variant={activeView === 'insights' ? 'primary' : 'outline'}
             onClick={() => setActiveView('insights')}
           >
             الرؤى والتحليلات

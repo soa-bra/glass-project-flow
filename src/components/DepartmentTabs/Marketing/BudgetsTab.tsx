@@ -129,8 +129,8 @@ export const BudgetsTab: React.FC = () => {
             ))}
           </div>
           <div className="flex justify-end gap-2 mt-4">
-            <Button variant="outline" onClick={() => setIsRedistributeOpen(false)} className="font-arabic rounded-full">إلغاء</Button>
-            <Button onClick={handleSaveRedistribution} className="bg-black text-white rounded-full font-arabic">حفظ التوزيع</Button>
+            <BaseActionButton variant="outline" onClick={() => setIsRedistributeOpen(false)}>إلغاء</BaseActionButton>
+            <BaseActionButton variant="primary" onClick={handleSaveRedistribution}>حفظ التوزيع</BaseActionButton>
           </div>
         </DialogContent>
       </Dialog>
