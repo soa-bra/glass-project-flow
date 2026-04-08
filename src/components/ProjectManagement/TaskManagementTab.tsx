@@ -5,9 +5,12 @@ import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
 import { Project } from '@/types/project';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
+import { MetricHeroCard } from '@/components/shared/visual-data';
+
 interface TaskManagementTabProps {
   project: Project;
 }
+
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   project
 }) => {
@@ -18,76 +21,87 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
     status: '',
     search: ''
   });
-  const {
-    tasks
-  } = useUnifiedTasks(project.id);
-  return <div className="flex-1 overflow-auto space-y-6">
-      {/* Header with view toggle and AI assistant */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-black">إدارة المهام</h3>
+  const { tasks } = useUnifiedTasks(project.id);
+
+  const completed = tasks.filter(t => t.status === 'completed').length;
+  const late = tasks.filter(t => t.status === 'late').length;
+  const avgProgress = Math.round(tasks.reduce((acc, task) => acc + task.progress, 0) / Math.max(tasks.length, 1));
+  const completionPct = Math.round(completed / Math.max(tasks.length, 1) * 100);
+
+  return (
+    <div className="flex-1 overflow-auto space-y-6">
+      {/* Header */}
+      <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">إدارة المهام</h3>
           <div className="flex items-center gap-4">
-            {/* View mode toggle */}
-            <div className="flex bg-transparent border border-black/60 rounded-full p-1">
-              <button onClick={() => setViewMode('kanban')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'kanban' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
+            <div className="flex bg-transparent ring-1 ring-[rgba(11,15,18,0.3)] rounded-full p-1">
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'kanban' ? 'bg-[#0B0F12] text-white' : 'text-[#0B0F12] hover:bg-[rgba(11,15,18,0.05)]'
+                }`}
+              >
                 لوحة كانبان
               </button>
-              <button onClick={() => setViewMode('details')} className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${viewMode === 'details' ? 'bg-black text-white' : 'text-black hover:bg-black/5'}`}>
+              <button
+                onClick={() => setViewMode('details')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  viewMode === 'details' ? 'bg-[#0B0F12] text-white' : 'text-[#0B0F12] hover:bg-[rgba(11,15,18,0.05)]'
+                }`}
+              >
                 تفاصيل المهام
               </button>
             </div>
-            
-            {/* AI Assistant Button */}
-            
           </div>
         </div>
-        
-        <p className="text-sm font-medium text-black">
+        <p className="text-sm text-[rgba(11,15,18,0.6)]">
           إدارة شاملة للمهام مع أدوات ذكية للتخطيط والمتابعة والتحليل
         </p>
       </div>
 
-      {/* Task Statistics */}
+      {/* Task Statistics - Bold Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
-          <h4 className="text-lg font-semibold text-black mb-2">إجمالي المهام</h4>
-          <p className="text-2xl font-bold text-black mb-1">{tasks.length}</p>
-          <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">نشطة</span>
-          </div>
-        </div>
-        
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
-          <h4 className="text-lg font-semibold text-black mb-2">المكتملة</h4>
-          <p className="text-2xl font-bold text-black mb-1">{tasks.filter(t => t.status === 'completed').length}</p>
-          <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">{Math.round(tasks.filter(t => t.status === 'completed').length / Math.max(tasks.length, 1) * 100)}%</span>
-          </div>
-        </div>
-        
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
-          <h4 className="text-lg font-semibold text-black mb-2">المتأخرة</h4>
-          <p className="text-2xl font-bold text-black mb-1">{tasks.filter(t => t.status === 'late').length}</p>
-          <div className="bg-[#f1b5b9] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">عاجلة</span>
-          </div>
-        </div>
-        
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
-          <h4 className="text-lg font-semibold text-black mb-2">معدل الإنجاز</h4>
-          <p className="text-2xl font-bold text-black mb-1">{Math.round(tasks.reduce((acc, task) => acc + task.progress, 0) / Math.max(tasks.length, 1))}%</p>
-          <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
-            <span className="text-sm font-medium text-black">ممتاز</span>
-          </div>
-        </div>
+        <MetricHeroCard
+          title="إجمالي المهام"
+          value={String(tasks.length)}
+          unit="مهمة"
+          badgeText="نشطة"
+          badgeColor="#bdeed3"
+        />
+        <MetricHeroCard
+          title="المكتملة"
+          value={String(completed)}
+          unit="مهمة"
+          badgeText={`${completionPct}%`}
+          badgeColor="#a4e2f6"
+        />
+        <MetricHeroCard
+          title="المتأخرة"
+          value={String(late)}
+          unit="مهمة"
+          badgeText="عاجلة"
+          badgeColor="#f1b5b9"
+        />
+        <MetricHeroCard
+          title="معدل الإنجاز"
+          value={`${avgProgress}%`}
+          badgeText="ممتاز"
+          badgeColor="#d9d2fd"
+        />
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 min-h-0">
-        {viewMode === 'kanban' ? <KanbanBox projectId={project.id} filters={filters} /> : <TaskDetailsBox projectId={project.id} filters={filters} />}
+        {viewMode === 'kanban' ? (
+          <KanbanBox projectId={project.id} filters={filters} />
+        ) : (
+          <TaskDetailsBox projectId={project.id} filters={filters} />
+        )}
       </div>
 
       {/* AI Assistant Panel */}
       <AITaskAssistant projectId={project.id} />
-    </div>;
+    </div>
+  );
 };
