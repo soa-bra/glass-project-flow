@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -72,34 +72,34 @@ export const AuthoringVersionsTab: React.FC = () => {
 
   const EditorToolbar = () => (
     <div className="flex items-center gap-2 p-2 border-b">
-      <Button size="sm" variant="outline">
+      <BaseActionButton size="sm" variant="outline">
         <Bold className="h-3 w-3" />
-      </Button>
-      <Button size="sm" variant="outline">
+      </BaseActionButton>
+      <BaseActionButton size="sm" variant="outline">
         <Italic className="h-3 w-3" />
-      </Button>
-      <Button size="sm" variant="outline">
+      </BaseActionButton>
+      <BaseActionButton size="sm" variant="outline">
         <List className="h-3 w-3" />
-      </Button>
+      </BaseActionButton>
       <div className="w-px h-6 bg-gray-300 mx-2" />
-      <Button size="sm" variant="outline">
+      <BaseActionButton size="sm" variant="outline">
         <Link className="h-3 w-3" />
-      </Button>
-      <Button size="sm" variant="outline">
+      </BaseActionButton>
+      <BaseActionButton size="sm" variant="outline">
         <Image className="h-3 w-3" />
-      </Button>
-      <Button size="sm" variant="outline">
+      </BaseActionButton>
+      <BaseActionButton size="sm" variant="outline">
         <FileText className="h-3 w-3" />
-      </Button>
+      </BaseActionButton>
       <div className="mr-auto flex gap-2">
-        <Button size="sm" variant="outline">
+        <BaseActionButton size="sm" variant="outline">
           <Save className="h-3 w-3 mr-1" />
           حفظ
-        </Button>
-        <Button size="sm">
+        </BaseActionButton>
+        <BaseActionButton size="sm">
           <Eye className="h-3 w-3 mr-1" />
           معاينة
-        </Button>
+        </BaseActionButton>
       </div>
     </div>
   );
@@ -110,31 +110,31 @@ export const AuthoringVersionsTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">التأليف والإصدارات</h3>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+          <BaseActionButton variant="outline" className="flex items-center gap-2">
             <History className="h-4 w-4" />
             تاريخ الإصدارات
-          </Button>
-          <Button className="flex items-center gap-2">
+          </BaseActionButton>
+          <BaseActionButton className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             إنشاء وثيقة جديدة
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Editor */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>محرر المحتوى</CardTitle>
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">محرر المحتوى</h3>
               <Tabs value={activeEditor} onValueChange={setActiveEditor} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="wysiwyg">محرر بصري</TabsTrigger>
                   <TabsTrigger value="markdown">Markdown</TabsTrigger>
                 </TabsList>
               </Tabs>
-            </CardHeader>
-            <CardContent className="p-0">
+            </div>
+            <div>
               <EditorToolbar />
               <TabsContent value="wysiwyg" className="m-0">
                 <div className="min-h-[400px] p-4 border-none">
@@ -156,18 +156,18 @@ export const AuthoringVersionsTab: React.FC = () => {
                   />
                 </div>
               </TabsContent>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-4">
           {/* Document Properties */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">خصائص الوثيقة</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">خصائص الوثيقة</h3>
+            </div>
+            <div>
               <div>
                 <label className="text-sm font-medium">العنوان</label>
                 <input 
@@ -202,18 +202,18 @@ export const AuthoringVersionsTab: React.FC = () => {
                   <option>جاهز للنشر</option>
                 </select>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
 
           {/* Collaboration */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 التعاون
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm">
@@ -233,23 +233,23 @@ export const AuthoringVersionsTab: React.FC = () => {
                     <div className="text-xs text-gray-600">مراجع</div>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" className="w-full">
+                <BaseActionButton size="sm" variant="outline" className="w-full">
                   <Plus className="h-3 w-3 mr-1" />
                   إضافة متعاون
-                </Button>
+                </BaseActionButton>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
 
           {/* Comments */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <MessageCircle className="h-4 w-4" />
                 التعليقات
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-3">
                 <div className="p-2 bg-gray-50 rounded-lg">
                   <div className="font-medium text-sm">د. فاطمة العلي</div>
@@ -261,21 +261,21 @@ export const AuthoringVersionsTab: React.FC = () => {
                   <div className="text-xs text-gray-600 mb-1">أمس</div>
                   <div className="text-sm">المراجع تحتاج تحديث وفقاً لأحدث الدراسات</div>
                 </div>
-                <Button size="sm" variant="outline" className="w-full">
+                <BaseActionButton size="sm" variant="outline" className="w-full">
                   إضافة تعليق
-                </Button>
+                </BaseActionButton>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </div>
       </div>
 
       {/* Recent Documents */}
-      <Card>
-        <CardHeader>
-          <CardTitle>الوثائق الحديثة</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">الوثائق الحديثة</h3>
+        </div>
+        <div>
           <div className="space-y-3">
             {recentDocuments.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg hover:shadow-md transition-shadow">
@@ -297,26 +297,26 @@ export const AuthoringVersionsTab: React.FC = () => {
                     <Users className="h-3 w-3" />
                     {doc.collaborators}
                   </div>
-                  <Button size="sm" variant="outline">
+                  <BaseActionButton size="sm" variant="outline">
                     <Edit className="h-3 w-3 mr-1" />
                     تحرير
-                  </Button>
+                  </BaseActionButton>
                 </div>
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       {/* Version History */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <GitBranch className="h-5 w-5" />
             تاريخ الإصدارات
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="space-y-4">
             {versionHistory.map((version) => (
               <div key={version.version} className="flex items-start gap-4 p-3 border rounded-lg">
@@ -333,15 +333,15 @@ export const AuthoringVersionsTab: React.FC = () => {
                   </div>
                   <div className="text-sm">{version.changes}</div>
                 </div>
-                <Button size="sm" variant="outline">
+                <BaseActionButton size="sm" variant="outline">
                   <Eye className="h-3 w-3 mr-1" />
                   عرض
-                </Button>
+                </BaseActionButton>
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 };

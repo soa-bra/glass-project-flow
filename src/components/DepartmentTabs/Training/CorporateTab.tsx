@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -46,49 +46,49 @@ export const CorporateTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">إدارة البرامج المؤسسية</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إنشاء برنامج جديد
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Programs Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
+        <BaseBox>
+          <div>
             <Building2 className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{corporatePrograms.length}</div>
             <div className="text-sm text-gray-600">برامج نشطة</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{corporatePrograms.reduce((acc, p) => acc + p.participantCount, 0)}</div>
             <div className="text-sm text-gray-600">إجمالي المشاركين</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <DollarSign className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{(corporatePrograms.reduce((acc, p) => acc + p.contractValue, 0) / 1000).toFixed(0)}k</div>
             <div className="text-sm text-gray-600">القيمة الإجمالية (ر.س)</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Calendar className="h-8 w-8 text-orange-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{corporatePrograms.filter(p => p.status === 'in_progress').length}</div>
             <div className="text-sm text-gray-600">قيد التنفيذ</div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Programs List */}
       <div className="grid grid-cols-1 gap-6">
         {corporatePrograms.map((program) => (
-          <Card key={program.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <BaseBox key={program.id} className="hover:shadow-lg transition-shadow">
+            <div>
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -146,22 +146,22 @@ export const CorporateTab: React.FC = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  <BaseActionButton size="sm" variant="outline" className="flex items-center gap-1">
                     <Eye className="h-3 w-3" />
                     عرض
-                  </Button>
-                  <Button size="sm" variant="outline" className="flex items-center gap-1">
+                  </BaseActionButton>
+                  <BaseActionButton size="sm" variant="outline" className="flex items-center gap-1">
                     <Edit className="h-3 w-3" />
                     تعديل
-                  </Button>
-                  <Button size="sm" className="flex items-center gap-1">
+                  </BaseActionButton>
+                  <BaseActionButton size="sm" className="flex items-center gap-1">
                     <FileText className="h-3 w-3" />
                     التقرير
-                  </Button>
+                  </BaseActionButton>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         ))}
       </div>
     </div>
@@ -171,17 +171,17 @@ export const CorporateTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">إدارة العملاء المؤسسيين</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إضافة عميل جديد
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Clients Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {corporateClients.map((client) => (
-          <Card key={client.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <BaseBox key={client.id} className="hover:shadow-lg transition-shadow">
+            <div>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h4 className="text-lg font-semibold mb-1">{client.name}</h4>
@@ -207,20 +207,20 @@ export const CorporateTab: React.FC = () => {
               </div>
 
               <div className="flex gap-2 mt-4">
-                <Button size="sm" variant="outline" className="flex-1">عرض</Button>
-                <Button size="sm" className="flex-1">تعديل</Button>
+                <BaseActionButton size="sm" variant="outline" className="flex-1">عرض</BaseActionButton>
+                <BaseActionButton size="sm" className="flex-1">تعديل</BaseActionButton>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         ))}
       </div>
 
       {/* Client Statistics */}
-      <Card>
-        <CardHeader>
-          <CardTitle>إحصائيات العملاء</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">إحصائيات العملاء</h3>
+        </div>
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 mb-2">
@@ -241,8 +241,8 @@ export const CorporateTab: React.FC = () => {
               <div className="text-sm text-gray-600">إجمالي الإيرادات (ر.س)</div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 
@@ -250,16 +250,16 @@ export const CorporateTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">إدارة ورش العمل المتخصصة</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           تصميم ورشة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Workshop Templates */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+        <BaseBox className="hover:shadow-lg transition-shadow">
+          <div>
             <div className="text-center">
               <Building2 className="h-12 w-12 text-blue-600 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">ورشة التسويق الرقمي</h4>
@@ -280,13 +280,13 @@ export const CorporateTab: React.FC = () => {
                   <span>15,000 ر.س</span>
                 </div>
               </div>
-              <Button className="w-full mt-4">عرض التفاصيل</Button>
+              <BaseActionButton className="w-full mt-4">عرض التفاصيل</BaseActionButton>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+        <BaseBox className="hover:shadow-lg transition-shadow">
+          <div>
             <div className="text-center">
               <Users className="h-12 w-12 text-green-600 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">ورشة القيادة التنفيذية</h4>
@@ -307,13 +307,13 @@ export const CorporateTab: React.FC = () => {
                   <span>25,000 ر.س</span>
                 </div>
               </div>
-              <Button className="w-full mt-4">عرض التفاصيل</Button>
+              <BaseActionButton className="w-full mt-4">عرض التفاصيل</BaseActionButton>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
-        <Card className="hover:shadow-lg transition-shadow">
-          <CardContent className="p-6">
+        <BaseBox className="hover:shadow-lg transition-shadow">
+          <div>
             <div className="text-center">
               <Calendar className="h-12 w-12 text-purple-600 mx-auto mb-4" />
               <h4 className="text-lg font-semibold mb-2">ورشة إدارة المشاريع</h4>
@@ -334,18 +334,18 @@ export const CorporateTab: React.FC = () => {
                   <span>18,000 ر.س</span>
                 </div>
               </div>
-              <Button className="w-full mt-4">عرض التفاصيل</Button>
+              <BaseActionButton className="w-full mt-4">عرض التفاصيل</BaseActionButton>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Custom Workshop Builder */}
-      <Card>
-        <CardHeader>
-          <CardTitle>مصمم ورش العمل المخصصة</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">مصمم ورش العمل المخصصة</h3>
+        </div>
+        <div>
           <div className="text-center py-8">
             <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-xl font-semibold mb-2">أداة تصميم ورش العمل</h3>
@@ -366,10 +366,10 @@ export const CorporateTab: React.FC = () => {
                 <p className="text-sm text-gray-600">احسب السعر بناءً على المتطلبات</p>
               </div>
             </div>
-            <Button size="lg">بدء تصميم ورشة مخصصة</Button>
+            <BaseActionButton size="lg">بدء تصميم ورشة مخصصة</BaseActionButton>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 
@@ -381,8 +381,8 @@ export const CorporateTab: React.FC = () => {
           <p className="text-gray-600">إدارة برامج التدريب الخارجي للعملاء وورش العمل المتخصصة</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">تصدير التقرير</Button>
-          <Button>إعدادات البرامج</Button>
+          <BaseActionButton variant="outline">تصدير التقرير</BaseActionButton>
+          <BaseActionButton>إعدادات البرامج</BaseActionButton>
         </div>
       </div>
 

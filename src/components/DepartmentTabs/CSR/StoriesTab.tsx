@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Eye, Share2, Heart, MessageCircle, Edit, Image, Video, Calendar, User, TrendingUp } from 'lucide-react';
 import { mockCSRStories } from './data';
@@ -76,7 +76,7 @@ export const StoriesTab: React.FC = () => {
             <option value="all">جميع الحالات</option><option value="published">منشور</option><option value="approved">معتمد</option><option value="review">قيد المراجعة</option><option value="draft">مسودة</option>
           </select>
         </div>
-        <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic"><Plus className="ml-2 h-4 w-4" /> إنشاء قصة جديدة</Button>
+        <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic"><Plus className="ml-2 h-4 w-4" /> إنشاء قصة جديدة</BaseActionButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -110,9 +110,9 @@ export const StoriesTab: React.FC = () => {
               <div className="flex items-center gap-1"><Calendar className="h-3 w-3" /><span>{new Date(story.publishDate).toLocaleDateString('ar-SA')}</span></div>
             </div>
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingStory(story)}><Eye className="h-3 w-3 ml-1" /> عرض</Button>
-              <Button size="sm" variant="outline" className="font-arabic" onClick={() => setEditingStory(story)}><Edit className="h-3 w-3 ml-1" /> تعديل</Button>
-              <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleShare(story)}><Share2 className="h-3 w-3 ml-1" /> مشاركة</Button>
+              <BaseActionButton size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingStory(story)}><Eye className="h-3 w-3 ml-1" /> عرض</BaseActionButton>
+              <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => setEditingStory(story)}><Edit className="h-3 w-3 ml-1" /> تعديل</BaseActionButton>
+              <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleShare(story)}><Share2 className="h-3 w-3 ml-1" /> مشاركة</BaseActionButton>
             </div>
           </GenericCard>
         ))}

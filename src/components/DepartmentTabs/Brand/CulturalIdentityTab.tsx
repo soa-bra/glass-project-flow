@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
@@ -44,22 +44,22 @@ export const CulturalIdentityTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Core Identity Elements */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Heart className="h-5 w-5" />
             العناصر الأساسية للهوية
-          </CardTitle>
-          <Button 
+          </h3>
+          <BaseActionButton 
             variant={isEditing ? "default" : "outline"} 
             size="sm"
             onClick={() => setIsEditing(!isEditing)}
           >
             {isEditing ? <Save className="h-4 w-4 mr-1" /> : <Edit className="h-4 w-4 mr-1" />}
             {isEditing ? "حفظ" : "تعديل"}
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-6">
+          </BaseActionButton>
+        </div>
+        <div>
           <div>
             <h3 className="font-medium mb-2">الرسالة</h3>
             {isEditing ? (
@@ -104,19 +104,19 @@ export const CulturalIdentityTab: React.FC = () => {
               </div>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Cultural Personality */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <Star className="h-5 w-5" />
               الشخصية الثقافية
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               {culturalPersonality.map((trait, index) => (
                 <div key={index} className="space-y-2">
@@ -137,18 +137,18 @@ export const CulturalIdentityTab: React.FC = () => {
                 الشخصية الثقافية لسوبرا تُظهر توازناً ممتازاً بين الأصالة والابتكار، مع تركيز قوي على التميز الأكاديمي والمسؤولية المجتمعية.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
         {/* Cultural Alignment Monitoring */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <Target className="h-5 w-5" />
               مراقبة التوافق الثقافي
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               {culturalAlignment.map((area, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
@@ -169,23 +169,23 @@ export const CulturalIdentityTab: React.FC = () => {
                 </div>
               ))}
             </div>
-            <Button className="w-full mt-4" variant="outline">
+            <BaseActionButton className="w-full mt-4" variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               تحديث القياسات
-            </Button>
-          </CardContent>
-        </Card>
+            </BaseActionButton>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Employee Cultural Engagement */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Users className="h-5 w-5" />
             مشاركة الموظفين الثقافية
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center space-y-2">
               <div className="text-3xl font-bold text-green-600">94%</div>
@@ -221,8 +221,8 @@ export const CulturalIdentityTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 };

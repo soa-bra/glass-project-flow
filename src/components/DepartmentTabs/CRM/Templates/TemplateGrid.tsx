@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Eye, Download, Copy, Edit, Calendar, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { downloadAsCSV } from '../../shared/downloadUtils';
@@ -90,18 +90,18 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
           )}
 
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => handlePreview(template)}>
+            <BaseActionButton size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => handlePreview(template)}>
               <Eye className="h-3 w-3 ml-1" />معاينة
-            </Button>
-            <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleDownload(template)}>
+            </BaseActionButton>
+            <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleDownload(template)}>
               <Download className="h-3 w-3 ml-1" />تحميل
-            </Button>
-            <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleCopy(template)}>
+            </BaseActionButton>
+            <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleCopy(template)}>
               <Copy className="h-3 w-3 ml-1" />نسخ
-            </Button>
-            <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 font-arabic" onClick={() => handleEdit(template)}>
+            </BaseActionButton>
+            <BaseActionButton size="sm" variant="outline" className="text-red-600 hover:text-red-700 font-arabic" onClick={() => handleEdit(template)}>
               <Edit className="h-3 w-3 ml-1" />تعديل
-            </Button>
+            </BaseActionButton>
           </div>
         </GenericCard>
       ))}

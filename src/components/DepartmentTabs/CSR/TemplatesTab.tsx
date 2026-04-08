@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { FileText, Plus, Search, Download, Edit, Copy, Upload, Eye, Calendar, User } from 'lucide-react';
 import { mockCSRTemplates } from './data';
@@ -93,8 +93,8 @@ export const TemplatesTab: React.FC = () => {
           </select>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setShowUploadForm(!showUploadForm)} className="font-arabic"><Upload className="ml-2 h-4 w-4" /> رفع قالب</Button>
-          <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic"><Plus className="ml-2 h-4 w-4" /> إنشاء قالب جديد</Button>
+          <BaseActionButton variant="outline" onClick={() => setShowUploadForm(!showUploadForm)} className="font-arabic"><Upload className="ml-2 h-4 w-4" /> رفع قالب</BaseActionButton>
+          <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic"><Plus className="ml-2 h-4 w-4" /> إنشاء قالب جديد</BaseActionButton>
         </div>
       </div>
 
@@ -108,8 +108,8 @@ export const TemplatesTab: React.FC = () => {
           <div className="mb-4"><label className="block text-sm font-semibold font-arabic mb-2">الوصف</label><Input placeholder="وصف مختصر" value={uploadDesc} onChange={e => setUploadDesc(e.target.value)} /></div>
           <div className="mb-4"><div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center"><Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" /><p className="text-gray-600 font-arabic">اسحب الملف هنا أو انقر للتحديد</p><p className="text-sm text-gray-500 font-arabic">يدعم: PDF, DOCX, XLSX</p></div></div>
           <div className="flex gap-2">
-            <Button onClick={handleUploadSubmit} className="bg-green-600 hover:bg-green-700 text-white font-arabic">رفع القالب</Button>
-            <Button variant="outline" onClick={() => setShowUploadForm(false)} className="font-arabic">إلغاء</Button>
+            <BaseActionButton onClick={handleUploadSubmit} className="bg-green-600 hover:bg-green-700 text-white font-arabic">رفع القالب</BaseActionButton>
+            <BaseActionButton variant="outline" onClick={() => setShowUploadForm(false)} className="font-arabic">إلغاء</BaseActionButton>
           </div>
         </GenericCard>
       )}
@@ -129,10 +129,10 @@ export const TemplatesTab: React.FC = () => {
             <div className="flex items-center justify-between text-sm text-gray-500 font-arabic mb-4"><div>استخدم {template.usageCount} مرة</div><div>{template.variables.length} متغير</div></div>
             {template.tags.length > 0 && <div className="flex flex-wrap gap-1 mb-4">{template.tags.slice(0, 3).map((tag, i) => <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-arabic">{tag}</span>)}</div>}
             <div className="flex gap-2">
-              <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingTemplate(template)}><Eye className="h-3 w-3 ml-1" /> معاينة</Button>
-              <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleDownload(template)}><Download className="h-3 w-3 ml-1" /> تحميل</Button>
-              <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleCopy(template)}><Copy className="h-3 w-3 ml-1" /> نسخ</Button>
-              <Button size="sm" variant="outline" className="text-blue-600 hover:text-blue-700 font-arabic" onClick={() => setEditingTemplate(template)}><Edit className="h-3 w-3 ml-1" /> تعديل</Button>
+              <BaseActionButton size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingTemplate(template)}><Eye className="h-3 w-3 ml-1" /> معاينة</BaseActionButton>
+              <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleDownload(template)}><Download className="h-3 w-3 ml-1" /> تحميل</BaseActionButton>
+              <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleCopy(template)}><Copy className="h-3 w-3 ml-1" /> نسخ</BaseActionButton>
+              <BaseActionButton size="sm" variant="outline" className="text-blue-600 hover:text-blue-700 font-arabic" onClick={() => setEditingTemplate(template)}><Edit className="h-3 w-3 ml-1" /> تعديل</BaseActionButton>
             </div>
           </GenericCard>
         ))}

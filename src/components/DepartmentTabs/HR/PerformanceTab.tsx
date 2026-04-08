@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { Award, Target, TrendingUp, Star, Calendar, User } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { mockPerformanceReviews, mockEmployees } from './data';
 import { PerformanceReview } from './types';
 import { getHRStatusColor, getHRStatusText } from './utils';
@@ -49,13 +49,13 @@ export const PerformanceTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة التقييمات */}
         <div className="flex items-center gap-4">
-          <Button 
+          <BaseActionButton 
             variant="outline" 
             onClick={() => setSelectedReview(null)}
             className="flex items-center gap-2"
           >
             <span>← العودة</span>
-          </Button>
+          </BaseActionButton>
           <h3 className="text-2xl font-bold text-gray-800 font-arabic">تقييم الأداء التفصيلي</h3>
         </div>
 
@@ -226,7 +226,7 @@ export const PerformanceTab: React.FC = () => {
             <Award className="h-6 w-6 text-blue-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">تقييمات الأداء</h3>
           </div>
-          <Button className="font-arabic">إضافة تقييم جديد</Button>
+          <BaseActionButton className="font-arabic">إضافة تقييم جديد</BaseActionButton>
         </div>
 
         <div className="overflow-x-auto">
@@ -269,14 +269,14 @@ export const PerformanceTab: React.FC = () => {
                     </BaseBadge>
                   </td>
                   <td className="py-3 px-4">
-                    <Button 
+                    <BaseActionButton 
                       variant="outline" 
                       size="sm"
                       onClick={() => setSelectedReview(review)}
                       className="font-arabic"
                     >
                       عرض التفاصيل
-                    </Button>
+                    </BaseActionButton>
                   </td>
                 </tr>
               ))}

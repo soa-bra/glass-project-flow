@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Calendar, Clock, Users, MapPin, Plus, Filter, Search } from 'lucide-react';
 
@@ -148,8 +148,8 @@ export const SchedulingTab: React.FC = () => {
                   </div>
                 )}
                 <div className="flex gap-2 mt-3">
-                  <Button size="sm" variant="outline">تعديل</Button>
-                  <Button size="sm">عرض</Button>
+                  <BaseActionButton size="sm" variant="outline">تعديل</BaseActionButton>
+                  <BaseActionButton size="sm">عرض</BaseActionButton>
                 </div>
               </div>
             </div>
@@ -167,10 +167,10 @@ export const SchedulingTab: React.FC = () => {
           <h3 className="text-2xl font-semibold">الجدولة والتسجيل</h3>
           <p className="text-gray-600">تقويم تفاعلي لجلسات الحضور المباشر وورش العمل مع سياسة المقاعد وقوائم الانتظار</p>
         </div>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           جدولة جلسة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Quick Stats */}
@@ -200,31 +200,31 @@ export const SchedulingTab: React.FC = () => {
       {/* Controls */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Button
+          <BaseActionButton
             variant={viewMode === 'calendar' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('calendar')}
           >
             <Calendar className="h-4 w-4 mr-1" />
             التقويم
-          </Button>
-          <Button
+          </BaseActionButton>
+          <BaseActionButton
             variant={viewMode === 'list' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('list')}
           >
             قائمة
-          </Button>
+          </BaseActionButton>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <BaseActionButton variant="outline" size="sm">
             <Search className="h-4 w-4 mr-1" />
             بحث
-          </Button>
-          <Button variant="outline" size="sm">
+          </BaseActionButton>
+          <BaseActionButton variant="outline" size="sm">
             <Filter className="h-4 w-4 mr-1" />
             فلترة
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 

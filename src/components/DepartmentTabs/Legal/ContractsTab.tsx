@@ -7,7 +7,7 @@ import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 export const ContractsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -220,10 +220,10 @@ export const ContractsTab: React.FC = () => {
           title={`تفاصيل العقد: ${viewingContract.title}`}
           fields={getViewFields(viewingContract)}
           actions={
-            <Button onClick={() => { handleDownloadContract(viewingContract); }} variant="outline" className="font-arabic rounded-full">
+            <BaseActionButton onClick={() => { handleDownloadContract(viewingContract); }} variant="outline" className="font-arabic rounded-full">
               <Download className="w-4 h-4 ml-2" />
               تنزيل
-            </Button>
+            </BaseActionButton>
           }
         />
       )}

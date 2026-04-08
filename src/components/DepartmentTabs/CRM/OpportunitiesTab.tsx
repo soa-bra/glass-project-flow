@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -144,10 +144,10 @@ export const OpportunitiesTab: React.FC = () => {
             <option value="closed-lost">مغلق - خسارة</option>
           </select>
         </div>
-        <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
+        <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" />
           إضافة فرصة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Key Metrics */}
@@ -302,9 +302,9 @@ export const OpportunitiesTab: React.FC = () => {
                     <td className="p-3 font-arabic text-sm">{opportunity.expectedCloseDate}</td>
                     <td className="p-3 font-arabic text-sm">{opportunity.assignedTo}</td>
                     <td className="p-3">
-                      <Button size="sm" variant="outline" className="font-arabic" onClick={() => setViewingOpp(opportunity)}>
+                      <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => setViewingOpp(opportunity)}>
                         عرض
-                      </Button>
+                      </BaseActionButton>
                     </td>
                   </tr>
                 );

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { Clock, Calendar, Users, TrendingUp, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { mockAttendanceRecords, mockLeaveRequests, mockEmployees } from './data';
 import { getHRStatusColor, getHRStatusText } from './utils';
 
@@ -130,20 +130,20 @@ export const AttendanceTab: React.FC = () => {
             <h3 className="text-xl font-bold text-gray-800 font-arabic">إدارة الحضور والإجازات</h3>
           </div>
           <div className="flex gap-2">
-            <Button
+            <BaseActionButton
               variant={selectedView === 'attendance' ? 'default' : 'outline'}
               onClick={() => setSelectedView('attendance')}
               className="font-arabic"
             >
               سجلات الحضور
-            </Button>
-            <Button
+            </BaseActionButton>
+            <BaseActionButton
               variant={selectedView === 'leaves' ? 'default' : 'outline'}
               onClick={() => setSelectedView('leaves')}
               className="font-arabic"
             >
               طلبات الإجازة
-            </Button>
+            </BaseActionButton>
           </div>
         </div>
 
@@ -182,7 +182,7 @@ export const AttendanceTab: React.FC = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="text-lg font-medium font-arabic">طلبات الإجازة</h4>
-              <Button className="font-arabic">طلب إجازة جديد</Button>
+              <BaseActionButton className="font-arabic">طلب إجازة جديد</BaseActionButton>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -211,12 +211,12 @@ export const AttendanceTab: React.FC = () => {
                       <td className="py-3 px-4">
                         {request.status === 'pending' && (
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="text-green-600 border-green-600">
+                            <BaseActionButton variant="outline" size="sm" className="text-green-600 border-green-600">
                               موافقة
-                            </Button>
-                            <Button variant="outline" size="sm" className="text-red-600 border-red-600">
+                            </BaseActionButton>
+                            <BaseActionButton variant="outline" size="sm" className="text-red-600 border-red-600">
                               رفض
-                            </Button>
+                            </BaseActionButton>
                           </div>
                         )}
                       </td>

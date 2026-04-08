@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
@@ -87,14 +87,14 @@ export const ContentMessagingTab: React.FC = () => {
     <div className="space-y-6">
       {/* Content Strategy Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
               ركائز المحتوى الثقافي
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               {contentPillars.map((pillar, index) => (
                 <div key={index} className="space-y-2">
@@ -117,17 +117,17 @@ export const ContentMessagingTab: React.FC = () => {
                 استراتيجية المحتوى تحقق توازناً ممتازاً بين الركائز الثقافية المختلفة، مع التركيز على التراث والابتكار.
               </p>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
               أداء المحتوى
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">15.2K</div>
@@ -150,17 +150,17 @@ export const ContentMessagingTab: React.FC = () => {
               <PenTool className="h-4 w-4 mr-2" />
               إنشاء محتوى جديد
             </UnifiedButton>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Content Library */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Eye className="h-5 w-5" />
             مكتبة المحتوى
-          </CardTitle>
+          </h3>
           <div className="flex gap-2">
             <UnifiedButton variant="outline" size="sm">تصفية</UnifiedButton>
             <UnifiedButton size="sm">
@@ -168,8 +168,8 @@ export const ContentMessagingTab: React.FC = () => {
               محتوى جديد
             </UnifiedButton>
           </div>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div>
           <div className="space-y-4">
             {recentContent.map((content) => (
               <div key={content.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -218,18 +218,18 @@ export const ContentMessagingTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       {/* Content Calendar Preview */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Calendar className="h-5 w-5" />
             جدول المحتوى القادم
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -252,8 +252,8 @@ export const ContentMessagingTab: React.FC = () => {
               <UnifiedBadge variant="info">دليل</UnifiedBadge>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 };

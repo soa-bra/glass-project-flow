@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { 
   FileText, Plus, Search, Download, Calendar, BarChart3, TrendingUp,
@@ -150,12 +150,12 @@ export const ReportsTab: React.FC = () => {
           </select>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="font-arabic" onClick={handleRefresh}>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={handleRefresh}>
             <RefreshCw className="ml-2 h-4 w-4" />تحديث
-          </Button>
-          <Button onClick={() => setShowNewReportForm(!showNewReportForm)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+          </BaseActionButton>
+          <BaseActionButton onClick={() => setShowNewReportForm(!showNewReportForm)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
             <Plus className="ml-2 h-4 w-4" />تقرير مخصص
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -195,8 +195,8 @@ export const ReportsTab: React.FC = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button onClick={handleCreateReport} className="bg-green-600 hover:bg-green-700 text-white font-arabic">إنشاء التقرير</Button>
-            <Button variant="outline" onClick={() => setShowNewReportForm(false)} className="font-arabic">إلغاء</Button>
+            <BaseActionButton onClick={handleCreateReport} className="bg-green-600 hover:bg-green-700 text-white font-arabic">إنشاء التقرير</BaseActionButton>
+            <BaseActionButton variant="outline" onClick={() => setShowNewReportForm(false)} className="font-arabic">إلغاء</BaseActionButton>
           </div>
         </GenericCard>
       )}
@@ -261,19 +261,19 @@ export const ReportsTab: React.FC = () => {
                 </ul>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingReport(report)}>
+                <BaseActionButton size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingReport(report)}>
                   <Eye className="h-3 w-3 ml-1" />عرض
-                </Button>
-                <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleDownloadReport(report)}>
+                </BaseActionButton>
+                <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleDownloadReport(report)}>
                   <Download className="h-3 w-3 ml-1" />تحميل
-                </Button>
-                <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleShareReport(report)}>
+                </BaseActionButton>
+                <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleShareReport(report)}>
                   <Share className="h-3 w-3 ml-1" />مشاركة
-                </Button>
+                </BaseActionButton>
                 {report.status === 'جاهز' && (
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-arabic" onClick={() => handleRefreshReport(report.id)}>
+                  <BaseActionButton size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-arabic" onClick={() => handleRefreshReport(report.id)}>
                     <RefreshCw className="h-3 w-3 ml-1" />تحديث
-                  </Button>
+                  </BaseActionButton>
                 )}
               </div>
             </GenericCard>
@@ -290,7 +290,7 @@ export const ReportsTab: React.FC = () => {
             <p className="text-gray-600 font-arabic text-sm mb-4">اكتب ما تريد تحليله وسيقوم الذكاء الاصطناعي بإنشاء تقرير شامل مع الرؤى والتوصيات</p>
             <div className="flex gap-2">
               <Input placeholder="مثال: أريد تحليل أداء المبيعات في الربع الأخير مع مقارنة بالمنافسين" className="flex-1" value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} />
-              <Button onClick={handleAIReport} className="bg-purple-600 hover:bg-purple-700 text-white font-arabic whitespace-nowrap">إنشاء تقرير ذكي</Button>
+              <BaseActionButton onClick={handleAIReport} className="bg-purple-600 hover:bg-purple-700 text-white font-arabic whitespace-nowrap">إنشاء تقرير ذكي</BaseActionButton>
             </div>
           </div>
         </div>

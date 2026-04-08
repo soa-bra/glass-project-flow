@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { 
   Plus, Search, Building, Users, Phone, Mail, Star, FileText,
@@ -99,9 +99,9 @@ export const PartnershipsTab: React.FC = () => {
             <option value="government">حكومي</option><option value="ngo">غير ربحي</option><option value="private">قطاع خاص</option><option value="international">دولي</option>
           </select>
         </div>
-        <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+        <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" /> إضافة شريك جديد
-        </Button>
+        </BaseActionButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -151,9 +151,9 @@ export const PartnershipsTab: React.FC = () => {
                 </div>
               )}
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingPartner(partner)}><Eye className="h-3 w-3 ml-1" /> عرض التفاصيل</Button>
-                <Button size="sm" variant="outline" className="font-arabic" onClick={() => setEditingPartner(partner)}><Edit className="h-3 w-3 ml-1" /> تعديل</Button>
-                <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleViewContract(partner)}><FileText className="h-3 w-3 ml-1" /> العقد</Button>
+                <BaseActionButton size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingPartner(partner)}><Eye className="h-3 w-3 ml-1" /> عرض التفاصيل</BaseActionButton>
+                <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => setEditingPartner(partner)}><Edit className="h-3 w-3 ml-1" /> تعديل</BaseActionButton>
+                <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleViewContract(partner)}><FileText className="h-3 w-3 ml-1" /> العقد</BaseActionButton>
               </div>
             </GenericCard>
           );
@@ -164,9 +164,9 @@ export const PartnershipsTab: React.FC = () => {
         <h3 className="text-lg font-bold font-arabic mb-4">مخصص الموارد</h3>
         <p className="text-gray-600 font-arabic mb-4">ربط احتياجات المبادرات بالموارد المتاحة والموردين المعتمدين</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح قائمة الموردين المعتمدين')}><Building className="ml-2 h-4 w-4" /> إدارة الموردين</Button>
-          <Button variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح أداة تخصيص الموارد')}><Users className="ml-2 h-4 w-4" /> تخصيص الموارد</Button>
-          <Button variant="outline" className="font-arabic" onClick={() => toast.success('تم تصدير تقرير الموارد')}><FileText className="ml-2 h-4 w-4" /> تقارير الموارد</Button>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح قائمة الموردين المعتمدين')}><Building className="ml-2 h-4 w-4" /> إدارة الموردين</BaseActionButton>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح أداة تخصيص الموارد')}><Users className="ml-2 h-4 w-4" /> تخصيص الموارد</BaseActionButton>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم تصدير تقرير الموارد')}><FileText className="ml-2 h-4 w-4" /> تقارير الموارد</BaseActionButton>
         </div>
       </GenericCard>
 

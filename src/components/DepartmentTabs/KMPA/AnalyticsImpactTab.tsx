@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -77,47 +77,47 @@ export const AnalyticsImpactTab: React.FC = () => {
             <option value="quarter">ربع سنة</option>
             <option value="year">سنة</option>
           </select>
-          <Button variant="outline">
+          <BaseActionButton variant="outline">
             تصدير التقرير
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 
       {/* Impact Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
+        <BaseBox>
+          <div>
             <Quote className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{impactMetrics.totalCitations}</div>
             <div className="text-sm text-gray-600">إجمالي الاقتباسات</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Award className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{impactMetrics.hIndex}</div>
             <div className="text-sm text-gray-600">مؤشر H</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{impactMetrics.reachScore}</div>
             <div className="text-sm text-gray-600">نقاط الوصول</div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Content Performance */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <TrendingUp className="h-5 w-5" />
               أداء المحتوى
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <Tabs defaultValue="views" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="views">المشاهدات</TabsTrigger>
@@ -182,18 +182,18 @@ export const AnalyticsImpactTab: React.FC = () => {
                 </div>
               </TabsContent>
             </Tabs>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
         {/* Geographic Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <Globe className="h-5 w-5" />
               التوزيع الجغرافي
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               {analytics.geography.map((country, index) => (
                 <div key={index} className="space-y-2">
@@ -211,19 +211,19 @@ export const AnalyticsImpactTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Content Saturation Analysis */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Brain className="h-5 w-5" />
             تحليل تشبع المحتوى
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="space-y-4">
             {contentSaturation.map((item, index) => (
               <div key={index} className="space-y-2">
@@ -248,15 +248,15 @@ export const AnalyticsImpactTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       {/* Top Performing Content */}
-      <Card>
-        <CardHeader>
-          <CardTitle>المحتوى الأكثر أداءً</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">المحتوى الأكثر أداءً</h3>
+        </div>
+        <div>
           <div className="space-y-4">
             {topPerformingContent.map((content, index) => (
               <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
@@ -284,18 +284,18 @@ export const AnalyticsImpactTab: React.FC = () => {
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       {/* AI Recommendations */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Brain className="h-5 w-5" />
             توصيات تحسين الأداء
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="space-y-3">
             <div className="p-3 border rounded-lg bg-blue-50">
               <h4 className="font-medium mb-1">زيادة المحتوى في التسويق الرقمي الثقافي</h4>
@@ -316,8 +316,8 @@ export const AnalyticsImpactTab: React.FC = () => {
               </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 };

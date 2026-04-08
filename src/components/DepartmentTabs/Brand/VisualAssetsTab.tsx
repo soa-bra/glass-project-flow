@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Input } from '@/components/ui/input';
@@ -104,9 +104,9 @@ export const VisualAssetsTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-1">
-          <Card>
-            <CardHeader><CardTitle className="text-lg">فئات الأصول</CardTitle></CardHeader>
-            <CardContent>
+          <BaseBox>
+            <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2">فئات الأصول</h3></div>
+            <div>
               <div className="space-y-2">
                 {assetCategories.map((category) => (
                   <button key={category.id} onClick={() => setSelectedCategory(category.id)} className={`w-full flex items-center justify-between p-3 rounded-lg text-right transition-colors ${selectedCategory === category.id ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'hover:bg-gray-50'}`}>
@@ -115,14 +115,14 @@ export const VisualAssetsTab: React.FC = () => {
                   </button>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </div>
 
         <div className="lg:col-span-3 space-y-6">
-          <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5" /> الأصول البصرية ({filteredAssets.length})</CardTitle></CardHeader>
-            <CardContent>
+          <BaseBox>
+            <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2"><Palette className="h-5 w-5" /> الأصول البصرية ({filteredAssets.length})</h3></div>
+            <div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredAssets.map((asset) => (
                   <div key={asset.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -151,12 +151,12 @@ export const VisualAssetsTab: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
 
-          <Card>
-            <CardHeader><CardTitle>إحصائيات الاستخدام</CardTitle></CardHeader>
-            <CardContent>
+          <BaseBox>
+            <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2">إحصائيات الاستخدام</h3></div>
+            <div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center space-y-2">
                   <div className="text-3xl font-bold text-blue-600">{assets.reduce((s, a) => s + a.downloads, 0).toLocaleString()}</div>
@@ -171,8 +171,8 @@ export const VisualAssetsTab: React.FC = () => {
                   <div className="text-sm text-gray-600">إجمالي الأصول</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </div>
       </div>
 

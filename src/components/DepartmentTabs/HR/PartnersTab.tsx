@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Users, Search, Plus, Mail, Phone, MapPin, Star, Calendar, TrendingUp, Edit, Trash2, Tag } from 'lucide-react';
 import { usePartnersStore } from '@/stores/partnersStore';
 
@@ -76,10 +76,10 @@ export const PartnersTab: React.FC = () => {
             <option value="pending">قيد المراجعة</option>
           </select>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+        <BaseActionButton className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" />
           إضافة شريك جديد
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Statistics Cards */}
@@ -197,17 +197,17 @@ export const PartnersTab: React.FC = () => {
                         {selectedPartnerData.entityName}
                       </h2>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" className="p-2 hover:bg-blue-100 text-blue-600">
+                        <BaseActionButton variant="ghost" size="sm" className="p-2 hover:bg-blue-100 text-blue-600">
                           <Edit size={16} />
-                        </Button>
-                        <Button 
+                        </BaseActionButton>
+                        <BaseActionButton 
                           variant="ghost" 
                           size="sm" 
                           className="p-2 hover:bg-red-100 text-red-600"
                           onClick={() => deletePartner(selectedPartnerData.id)}
                         >
                           <Trash2 size={16} />
-                        </Button>
+                        </BaseActionButton>
                       </div>
                     </div>
                     <p className="text-lg text-gray-600 font-arabic">{getEntityTypeText(selectedPartnerData.entityType)}</p>
@@ -294,9 +294,9 @@ export const PartnersTab: React.FC = () => {
                 <div className="text-center py-8">
                   <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500 font-arabic">لا توجد أنشطة مسجلة بعد</p>
-                  <Button className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+                  <BaseActionButton className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-arabic">
                     إضافة نشاط جديد
-                  </Button>
+                  </BaseActionButton>
                 </div>
               </GenericCard>
             </div>

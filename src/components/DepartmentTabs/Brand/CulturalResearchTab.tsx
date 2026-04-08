@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { 
@@ -87,73 +87,73 @@ export const CulturalResearchTab: React.FC = () => {
     <div className="space-y-6">
       {/* Research Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
+        <BaseBox>
+          <div>
             <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">12</div>
             <div className="text-sm text-gray-600">مشاريع بحثية</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">28</div>
             <div className="text-sm text-gray-600">باحث مشارك</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">45</div>
             <div className="text-sm text-gray-600">منشور علمي</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Award className="h-8 w-8 text-orange-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">91%</div>
             <div className="text-sm text-gray-600">متوسط الأثر الثقافي</div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* View Controls */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          <Button 
+          <BaseActionButton 
             variant={activeView === 'projects' ? 'default' : 'outline'}
             onClick={() => setActiveView('projects')}
           >
             المشاريع البحثية
-          </Button>
-          <Button 
+          </BaseActionButton>
+          <BaseActionButton 
             variant={activeView === 'publications' ? 'default' : 'outline'}
             onClick={() => setActiveView('publications')}
           >
             المنشورات
-          </Button>
-          <Button 
+          </BaseActionButton>
+          <BaseActionButton 
             variant={activeView === 'insights' ? 'default' : 'outline'}
             onClick={() => setActiveView('insights')}
           >
             الرؤى والتحليلات
-          </Button>
+          </BaseActionButton>
         </div>
-        <Button>
+        <BaseActionButton>
           <Plus className="h-4 w-4 mr-2" />
           مشروع بحثي جديد
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Research Projects */}
       {activeView === 'projects' && (
         <div className="space-y-4">
           {researchProjects.map((project) => (
-            <Card key={project.id}>
-              <CardHeader>
+            <BaseBox key={project.id}>
+              <div className="mb-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg mb-2">{project.title}</CardTitle>
+                    <h3 className="text-lg font-semibold flex items-center gap-2">{project.title}</h3>
                     <div className="flex items-center gap-2 mb-2">
                       <BaseBadge className={getTypeColor(project.type)}>
                         {project.type}
@@ -171,8 +171,8 @@ export const CulturalResearchTab: React.FC = () => {
                     <div className="text-2xl font-bold text-blue-600">{project.progress}%</div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
+              </div>
+              <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <h4 className="font-medium mb-2">فريق البحث</h4>
@@ -222,22 +222,22 @@ export const CulturalResearchTab: React.FC = () => {
                 <div className="mt-4 pt-4 border-t">
                   <Progress value={project.progress} className="h-2" />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </BaseBox>
           ))}
         </div>
       )}
 
       {/* Publications View */}
       {activeView === 'publications' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox>
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <FileText className="h-5 w-5" />
               المنشورات العلمية
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               <div className="p-4 border rounded-lg">
                 <h3 className="font-medium mb-2">تأثير الثقافة على قرارات الشراء في السوق السعودي</h3>
@@ -263,21 +263,21 @@ export const CulturalResearchTab: React.FC = () => {
                 </p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       )}
 
       {/* Insights View */}
       {activeView === 'insights' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
                 اتجاهات البحث
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">التراث الرقمي</span>
@@ -296,17 +296,17 @@ export const CulturalResearchTab: React.FC = () => {
                   <span className="text-sm text-orange-600">+12%</span>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
                 <BarChart3 className="h-5 w-5" />
                 تحليل الأثر
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </h3>
+            </div>
+            <div>
               <div className="space-y-4">
                 <div className="text-center space-y-2">
                   <div className="text-3xl font-bold text-blue-600">2.3M</div>
@@ -321,8 +321,8 @@ export const CulturalResearchTab: React.FC = () => {
                   <div className="text-sm text-gray-600">جوائز بحثية</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </div>
       )}
     </div>
