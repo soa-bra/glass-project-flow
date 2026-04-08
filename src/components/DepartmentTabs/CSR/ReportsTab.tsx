@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Download, Eye, Calendar, Globe, Target } from 'lucide-react';
-import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
