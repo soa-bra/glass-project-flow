@@ -45,13 +45,13 @@ export const TemplatesTab: React.FC = () => {
   ];
 
   const handleAddTemplate = (data: Record<string, string>) => {
-    const newT: any = { id: `t-${Date.now()}`, name: data.name, category: data.category, description: data.description, createdBy: 'المستخدم الحالي', lastModified: new Date().toISOString(), usageCount: 0, isActive: true, variables: [], tags: [] };
+    const newT = { id: `t-${Date.now()}`, name: data.name, category: data.category as CSRTemplate['category'], description: data.description, fileUrl: '', createdBy: 'المستخدم الحالي', createdDate: new Date().toISOString().split('T')[0], lastModified: new Date().toISOString(), usageCount: 0, isActive: true, variables: [] as string[], tags: [] as string[] };
     setTemplates(prev => [newT, ...prev]);
   };
 
   const handleEditTemplate = (data: Record<string, string>) => {
     if (!editingTemplate) return;
-    setTemplates(prev => prev.map(t => t.id === editingTemplate.id ? { ...t, name: data.name, category: data.category, description: data.description, lastModified: new Date().toISOString() } : t));
+    setTemplates(prev => prev.map(t => t.id === editingTemplate.id ? { ...t, name: data.name, category: data.category as CSRTemplate['category'], description: data.description, lastModified: new Date().toISOString() } : t));
     setEditingTemplate(null);
   };
 
