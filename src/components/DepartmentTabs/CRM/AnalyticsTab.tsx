@@ -1,347 +1,202 @@
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  LineChart, Line, PieChart, Pie, Cell, Area, AreaChart
-} from 'recharts';
-import { 
-  TrendingUp, Users, DollarSign, Target, Activity, Heart, MessageSquare, Download, RefreshCw
-} from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, Tooltip, XAxis, YAxis } from 'recharts';
+import { Download, RefreshCw } from 'lucide-react';
+import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
 import { mockCRMAnalytics, mockNPS } from './data';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
 
+const chartTooltipStyle = {
+  backgroundColor: '#0B0F12',
+  border: 'none',
+  borderRadius: '10px',
+  fontSize: '12px',
+  color: '#FFFFFF',
+  padding: '8px 12px',
+};
+
 export const AnalyticsTab: React.FC = () => {
   const [timeRange, setTimeRange] = useState('6months');
-  const [selectedMetric, setSelectedMetric] = useState('revenue');
 
-  // Enhanced mock data for analytics
   const customerGrowthData = [
-    { month: 'يناير', new: 8, lost: 2, total: 142 },
-    { month: 'فبراير', new: 12, lost: 1, total: 153 },
-    { month: 'مارس', new: 9, lost: 3, total: 159 },
-    { month: 'أبريل', new: 15, lost: 2, total: 172 },
-    { month: 'مايو', new: 11, lost: 4, total: 179 },
-    { month: 'يونيو', new: 13, lost: 1, total: 191 }
+    { month: 'يناير', new: 8, total: 142 },
+    { month: 'فبراير', new: 12, total: 153 },
+    { month: 'مارس', new: 9, total: 159 },
+    { month: 'أبريل', new: 15, total: 172 },
+    { month: 'مايو', new: 11, total: 179 },
+    { month: 'يونيو', new: 13, total: 191 },
   ];
 
   const revenueBySegment = [
-    { segment: 'عملاء الشركات الكبيرة', revenue: 4500000, customers: 15, color: '#1E40AF' },
-    { segment: 'الشركات المتوسطة', revenue: 2800000, customers: 32, color: '#3B82F6' },
-    { segment: 'الشركات الصغيرة', revenue: 1200000, customers: 89, color: '#60A5FA' },
-    { segment: 'الشركات الناشئة', revenue: 450000, customers: 24, color: '#93C5FD' }
+    { segment: 'شركات كبيرة', revenue: 4500000, color: '#3DA8F5' },
+    { segment: 'متوسطة', revenue: 2800000, color: '#3DBE8B' },
+    { segment: 'صغيرة', revenue: 1200000, color: '#F6C445' },
+    { segment: 'ناشئة', revenue: 450000, color: '#E5564D' },
   ];
 
   const salesPerformance = [
-    { month: 'يناير', target: 1000000, actual: 950000, opportunities: 23 },
-    { month: 'فبراير', target: 1100000, actual: 1180000, opportunities: 28 },
-    { month: 'مارس', target: 1200000, actual: 1220000, opportunities: 31 },
-    { month: 'أبريل', target: 1150000, actual: 1190000, opportunities: 27 },
-    { month: 'مايو', target: 1300000, actual: 1250000, opportunities: 35 },
-    { month: 'يونيو', target: 1400000, actual: 1450000, opportunities: 42 }
+    { month: 'يناير', target: 1000000, actual: 950000 },
+    { month: 'فبراير', target: 1100000, actual: 1180000 },
+    { month: 'مارس', target: 1200000, actual: 1220000 },
+    { month: 'أبريل', target: 1150000, actual: 1190000 },
+    { month: 'مايو', target: 1300000, actual: 1250000 },
+    { month: 'يونيو', target: 1400000, actual: 1450000 },
   ];
 
-  const customerSatisfactionTrend = [
-    { month: 'يناير', nps: 76, satisfaction: 4.2, complaints: 12 },
-    { month: 'فبراير', nps: 78, satisfaction: 4.3, complaints: 8 },
-    { month: 'مارس', nps: 74, satisfaction: 4.1, complaints: 15 },
-    { month: 'أبريل', nps: 82, satisfaction: 4.5, complaints: 6 },
-    { month: 'مايو', nps: 79, satisfaction: 4.4, complaints: 9 },
-    { month: 'يونيو', nps: 81, satisfaction: 4.6, complaints: 5 }
-  ];
-
-  const churnAnalysis = [
-    { reason: 'السعر', percentage: 35, count: 14 },
-    { reason: 'جودة الخدمة', percentage: 28, count: 11 },
-    { reason: 'عدم الاستخدام', percentage: 20, count: 8 },
-    { reason: 'منافس أفضل', percentage: 12, count: 5 },
-    { reason: 'أخرى', percentage: 5, count: 2 }
+  const satisfactionTrend = [
+    { month: 'يناير', nps: 76, satisfaction: 4.2 },
+    { month: 'فبراير', nps: 78, satisfaction: 4.3 },
+    { month: 'مارس', nps: 74, satisfaction: 4.1 },
+    { month: 'أبريل', nps: 82, satisfaction: 4.5 },
+    { month: 'مايو', nps: 79, satisfaction: 4.4 },
+    { month: 'يونيو', nps: 81, satisfaction: 4.6 },
   ];
 
   const conversionFunnel = [
-    { stage: 'زوار الموقع', count: 12500, rate: 100 },
-    { stage: 'استفسارات', count: 1250, rate: 10 },
-    { stage: 'عروض أسعار', count: 375, rate: 30 },
-    { stage: 'مفاوضات', count: 188, rate: 50 },
-    { stage: 'صفقات مغلقة', count: 94, rate: 50 }
+    { label: 'زوار الموقع', value: 12500 },
+    { label: 'استفسارات', value: 1250 },
+    { label: 'عروض أسعار', value: 375 },
+    { label: 'مفاوضات', value: 188 },
+    { label: 'صفقات مغلقة', value: 94 },
   ];
 
-  const handleRefresh = () => {
-    toast.success('تم تحديث البيانات بنجاح');
-  };
+  const churnData = [
+    { label: 'السعر', value: 35 },
+    { label: 'جودة الخدمة', value: 28 },
+    { label: 'عدم الاستخدام', value: 20 },
+    { label: 'منافس أفضل', value: 12 },
+    { label: 'أخرى', value: 5 },
+  ];
 
   const handleExport = () => {
     downloadAsCSV(
-      ['الشهر', 'المستهدف', 'الفعلي', 'الفرص'],
-      salesPerformance.map(r => [r.month, String(r.target), String(r.actual), String(r.opportunities)]),
+      ['الشهر', 'المستهدف', 'الفعلي'],
+      salesPerformance.map(r => [r.month, String(r.target), String(r.actual)]),
       'تقرير-تحليلات-CRM'
     );
-    toast.success('تم تصدير التقرير بنجاح');
+    toast.success('تم تصدير التقرير');
   };
 
   return (
     <div className="space-y-6">
-      {/* Header and Controls */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="flex items-center gap-4">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white"
-          >
-            <option value="1month">الشهر الماضي</option>
-            <option value="3months">آخر 3 أشهر</option>
-            <option value="6months">آخر 6 أشهر</option>
-            <option value="1year">السنة الماضية</option>
-          </select>
-          <select
-            value={selectedMetric}
-            onChange={(e) => setSelectedMetric(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white"
-          >
-            <option value="revenue">الإيرادات</option>
-            <option value="customers">العملاء</option>
-            <option value="satisfaction">الرضا</option>
-            <option value="conversion">التحويل</option>
-          </select>
-        </div>
+      {/* Controls */}
+      <div className="flex justify-between items-center">
+        <select value={timeRange} onChange={e => setTimeRange(e.target.value)} className="px-3 py-1.5 border border-[#DADCE0] rounded-full bg-white font-arabic text-xs">
+          <option value="1month">الشهر الماضي</option>
+          <option value="3months">آخر 3 أشهر</option>
+          <option value="6months">آخر 6 أشهر</option>
+          <option value="1year">السنة</option>
+        </select>
         <div className="flex gap-2">
-          <Button variant="outline" className="font-arabic" onClick={handleRefresh}>
-            <RefreshCw className="ml-2 h-4 w-4" />
-            تحديث البيانات
-          </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white font-arabic" onClick={handleExport}>
-            <Download className="ml-2 h-4 w-4" />
-            تصدير التقرير
-          </Button>
+          <button onClick={() => toast.success('تم التحديث')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DADCE0] text-xs font-arabic hover:bg-[#d9e7ed]/50 transition-colors">
+            <RefreshCw className="w-3.5 h-3.5" /> تحديث
+          </button>
+          <button onClick={handleExport} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0B0F12] text-white text-xs font-arabic hover:bg-[#0B0F12]/90 transition-colors">
+            <Download className="w-3.5 h-3.5" /> تصدير
+          </button>
         </div>
       </div>
 
-      {/* Key Performance Indicators */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-3">
-            <Users className="h-6 w-6 text-blue-600" />
-          </div>
-          <h3 className="text-xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.totalCustomers}</h3>
-          <p className="text-gray-600 font-arabic text-sm">إجمالي العملاء</p>
-          <div className="mt-1 text-xs text-green-600 font-arabic">
-            +{mockCRMAnalytics.newCustomersThisMonth} هذا الشهر
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-3">
-            <DollarSign className="h-6 w-6 text-green-600" />
-          </div>
-          <h3 className="text-xl font-bold font-arabic text-gray-900">
-            {(mockCRMAnalytics.monthlyRevenue / 1000000).toFixed(1)}م
-          </h3>
-          <p className="text-gray-600 font-arabic text-sm">الإيرادات الشهرية</p>
-          <div className="mt-1 text-xs text-blue-600 font-arabic">
-            +12% عن الماضي
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-3">
-            <Target className="h-6 w-6 text-purple-600" />
-          </div>
-          <h3 className="text-xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.conversionRate}%</h3>
-          <p className="text-gray-600 font-arabic text-sm">معدل التحويل</p>
-          <div className="mt-1 text-xs text-green-600 font-arabic">
-            +3.2% عن الماضي
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-3">
-            <Heart className="h-6 w-6 text-red-500" />
-          </div>
-          <h3 className="text-xl font-bold font-arabic text-gray-900">{mockNPS.score}</h3>
-          <p className="text-gray-600 font-arabic text-sm">درجة NPS</p>
-          <div className="mt-1 text-xs text-green-600 font-arabic">
-            +5 نقاط
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-3">
-            <Activity className="h-6 w-6 text-orange-600" />
-          </div>
-          <h3 className="text-xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.churnRate}%</h3>
-          <p className="text-gray-600 font-arabic text-sm">معدل الفقدان</p>
-          <div className="mt-1 text-xs text-red-600 font-arabic">
-            -0.8% عن الماضي
-          </div>
-        </GenericCard>
+      {/* KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <MetricHeroCard title="إجمالي العملاء" value={mockCRMAnalytics.totalCustomers} description={`+${mockCRMAnalytics.newCustomersThisMonth} هذا الشهر`} className="min-h-[130px]" />
+        <MetricHeroCard title="الإيرادات الشهرية" value={`${(mockCRMAnalytics.monthlyRevenue / 1000000).toFixed(1)}`} unit="م ر.س" description="+12% عن الماضي" className="min-h-[130px]" />
+        <MetricHeroCard title="معدل التحويل" value={`${mockCRMAnalytics.conversionRate}%`} description="+3.2% عن الماضي" className="min-h-[130px]" />
+        <MetricHeroCard title="درجة NPS" value={mockNPS.score} description="+5 نقاط" className="min-h-[130px]" />
+        <MetricHeroCard title="معدل الفقدان" value={`${mockCRMAnalytics.churnRate}%`} description="-0.8% عن الماضي" className="min-h-[130px]" />
       </div>
 
-      {/* Main Analytics Charts */}
+      {/* Charts row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Customer Growth */}
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4 flex items-center">
-            <TrendingUp className="ml-2 h-5 w-5" />
-            نمو العملاء
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={customerGrowthData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" className="font-arabic" />
-              <YAxis />
-              <Tooltip />
-              <Area type="monotone" dataKey="total" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} name="إجمالي" />
-              <Area type="monotone" dataKey="new" stackId="2" stroke="#10B981" fill="#10B981" fillOpacity={0.6} name="جديد" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </GenericCard>
-
-        {/* Sales Performance */}
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4 flex items-center">
-            <Target className="ml-2 h-5 w-5" />
-            أداء المبيعات
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={salesPerformance}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" className="font-arabic" />
-              <YAxis />
-              <Tooltip formatter={(value) => [`${(value as number / 1000000).toFixed(1)}م ر.س`, '']} />
-              <Bar dataKey="target" fill="#E5E7EB" name="المستهدف" />
-              <Bar dataKey="actual" fill="#3B82F6" name="الفعلي" />
-            </BarChart>
-          </ResponsiveContainer>
-        </GenericCard>
-      </div>
-
-      {/* Revenue and Customer Analysis */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Revenue by Segment */}
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4 flex items-center">
-            <DollarSign className="ml-2 h-5 w-5" />
-            الإيرادات حسب الشريحة
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={revenueBySegment}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                dataKey="revenue"
-                label={({ segment, percent }) => `${segment} ${(percent * 100).toFixed(0)}%`}
-              >
-                {revenueBySegment.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => [`${(value as number / 1000000).toFixed(1)}م ر.س`, 'الإيرادات']} />
-            </PieChart>
-          </ResponsiveContainer>
-        </GenericCard>
-
-        {/* Customer Satisfaction Trend */}
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4 flex items-center">
-            <Heart className="ml-2 h-5 w-5" />
-            اتجاه رضا العملاء
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={customerSatisfactionTrend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" className="font-arabic" />
-              <YAxis yAxisId="left" domain={[0, 100]} />
-              <YAxis yAxisId="right" orientation="right" domain={[1, 5]} />
-              <Tooltip />
-              <Line yAxisId="left" type="monotone" dataKey="nps" stroke="#10B981" strokeWidth={3} name="NPS" />
-              <Line yAxisId="right" type="monotone" dataKey="satisfaction" stroke="#3B82F6" strokeWidth={3} name="الرضا" />
-            </LineChart>
-          </ResponsiveContainer>
-        </GenericCard>
-      </div>
-
-      {/* Conversion Funnel and Churn Analysis */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Conversion Funnel */}
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4 flex items-center">
-            <Activity className="ml-2 h-5 w-5" />
-            مسار التحويل
-          </h3>
-          <div className="space-y-4">
-            {conversionFunnel.map((stage, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-arabic text-sm font-semibold">{stage.stage}</span>
-                    <span className="font-arabic text-sm text-gray-600">{stage.count.toLocaleString()}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${stage.rate}%` }}
-                    />
-                  </div>
-                </div>
-                <div className="mr-4 text-sm font-arabic text-gray-600">
-                  {stage.rate}%
-                </div>
-              </div>
-            ))}
-          </div>
-        </GenericCard>
-
-        {/* Churn Analysis */}
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4 flex items-center">
-            <Users className="ml-2 h-5 w-5" />
-            تحليل أسباب فقدان العملاء
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={churnAnalysis} layout="horizontal">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis dataKey="reason" type="category" className="font-arabic" />
-              <Tooltip />
-              <Bar dataKey="percentage" fill="#EF4444" />
-            </BarChart>
-          </ResponsiveContainer>
-        </GenericCard>
-      </div>
-
-      {/* AI Insights and Recommendations */}
-      <GenericCard>
-        <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-          <MessageSquare className="ml-2 h-5 w-5" />
-          رؤى الذكاء الاصطناعي والتوصيات
-        </h3>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-            <h4 className="font-semibold font-arabic text-blue-800 mb-2">فرصة نمو</h4>
-            <p className="text-blue-700 font-arabic text-sm">
-              العملاء في الشريحة الفضية يظهرون استعداداً للترقية. يُنصح بحملة تسويقية مستهدفة لـ 67 عميل.
-            </p>
-          </div>
-          
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-            <h4 className="font-semibold font-arabic text-yellow-800 mb-2">تحذير مخاطر</h4>
-            <p className="text-yellow-700 font-arabic text-sm">
-              5 عملاء مميزين يظهرون علامات عدم رضا. يُنصح بالتدخل الفوري لتجنب الفقدان.
-            </p>
-          </div>
-
-          <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
-            <h4 className="font-semibold font-arabic text-green-800 mb-2">أداء متميز</h4>
-            <p className="text-green-700 font-arabic text-sm">
-              تحسن معدل التحويل بنسبة 15% هذا الربع. استمر في استراتيجية التسويق الحالية.
-            </p>
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">نمو العملاء</span>
+          <div className="mt-4">
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={customerGrowthData}>
+                <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+                <Area type="monotone" dataKey="total" stroke="#3DA8F5" fill="#3DA8F5" fillOpacity={0.15} strokeWidth={2.5} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </GenericCard>
+
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">أداء المبيعات</span>
+          <div className="mt-4">
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={salesPerformance} barSize={14}>
+                <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} formatter={(v: any) => [`${(v / 1000000).toFixed(1)}م`, '']} />
+                <Bar dataKey="target" fill="rgba(11,15,18,0.08)" radius={[7, 7, 7, 7]} />
+                <Bar dataKey="actual" fill="#3DA8F5" radius={[7, 7, 7, 7]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Charts row 2 */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">الإيرادات حسب الشريحة</span>
+          <div className="mt-4">
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie data={revenueBySegment} cx="50%" cy="50%" outerRadius={85} innerRadius={50} strokeWidth={0} dataKey="revenue"
+                  label={({ segment, percent }) => `${segment} ${(percent * 100).toFixed(0)}%`}>
+                  {revenueBySegment.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                </Pie>
+                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">اتجاه رضا العملاء</span>
+          <div className="mt-4">
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={satisfactionTrend}>
+                <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+                <Line type="monotone" dataKey="nps" stroke="#3DBE8B" strokeWidth={2.5} dot={false} />
+                <Line type="monotone" dataKey="satisfaction" stroke="#3DA8F5" strokeWidth={2.5} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Funnel & Churn */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <CapsuleBarChart title="مسار التحويل" data={conversionFunnel} color="#3DA8F5" />
+        <CapsuleBarChart title="أسباب فقدان العملاء" data={churnData} color="#E5564D" />
+      </div>
+
+      {/* AI Insights */}
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase mb-4 block">
+          رؤى الذكاء الاصطناعي
+        </span>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {[
+            { title: 'فرصة نمو', text: 'العملاء في الشريحة الفضية يظهرون استعداداً للترقية. حملة مستهدفة لـ 67 عميل.', color: '#3DA8F5' },
+            { title: 'تحذير مخاطر', text: '5 عملاء مميزين يظهرون علامات عدم رضا. يُنصح بالتدخل الفوري.', color: '#F6C445' },
+            { title: 'أداء متميز', text: 'تحسن معدل التحويل بنسبة 15% هذا الربع. استمر في الاستراتيجية الحالية.', color: '#3DBE8B' },
+          ].map((insight, i) => (
+            <div key={i} className="rounded-[18px] p-4" style={{ backgroundColor: `${insight.color}10`, borderRight: `3px solid ${insight.color}` }}>
+              <h4 className="text-xs font-bold font-arabic mb-1" style={{ color: insight.color }}>{insight.title}</h4>
+              <p className="text-[11px] text-[rgba(11,15,18,0.60)] font-arabic leading-relaxed">{insight.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

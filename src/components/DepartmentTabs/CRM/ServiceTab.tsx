@@ -1,360 +1,187 @@
-
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  MessageSquare, 
-  Plus, 
-  Search, 
-  Clock, 
-  CheckCircle, 
-  XCircle,
-  Star,
-  TrendingUp,
-  Timer
-} from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, BarChart, Bar, Tooltip, XAxis, YAxis } from 'recharts';
+import { MessageSquare, Plus, Search, Clock, CheckCircle, XCircle, Timer } from 'lucide-react';
+import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { mockCustomerService } from './data';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';
 
+const tooltipStyle = { backgroundColor: '#0B0F12', border: 'none', borderRadius: '10px', fontSize: '12px', color: '#FFF', padding: '8px 12px' };
+
 export const ServiceTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPriority, setSelectedPriority] = useState<string>('all');
-  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedPriority, setSelectedPriority] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState('all');
   const [showNewTicketForm, setShowNewTicketForm] = useState(false);
   const [tickets, setTickets] = useState(mockCustomerService);
   const [viewingTicket, setViewingTicket] = useState<any>(null);
-
-  // Form state
   const [newTicket, setNewTicket] = useState({ customer: '', priority: 'medium', subject: '', description: '' });
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800 border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+  const getPriorityColor = (p: string) => ({ urgent: 'bg-[#E5564D]/10 text-[#E5564D]', high: 'bg-[#F6C445]/10 text-[#F6C445]', medium: 'bg-[#3DA8F5]/10 text-[#3DA8F5]', low: 'bg-[#3DBE8B]/10 text-[#3DBE8B]' }[p] || 'bg-gray-100 text-gray-600');
+  const getPriorityText = (p: string) => ({ urgent: 'عاجل', high: 'مرتفع', medium: 'متوسط', low: 'منخفض' }[p] || p);
+  const getStatusColor = (s: string) => ({ open: 'bg-[#3DA8F5]/10 text-[#3DA8F5]', 'in-progress': 'bg-[#F6C445]/10 text-[#F6C445]', resolved: 'bg-[#3DBE8B]/10 text-[#3DBE8B]', closed: 'bg-[rgba(11,15,18,0.08)] text-[rgba(11,15,18,0.50)]' }[s] || 'bg-gray-100');
+  const getStatusText = (s: string) => ({ open: 'مفتوح', 'in-progress': 'قيد المعالجة', resolved: 'محلول', closed: 'مغلق' }[s] || s);
 
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case 'urgent': return 'عاجل';
-      case 'high': return 'مرتفع';
-      case 'medium': return 'متوسط';
-      case 'low': return 'منخفض';
-      default: return priority;
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'open': return 'bg-blue-100 text-blue-800';
-      case 'in-progress': return 'bg-yellow-100 text-yellow-800';
-      case 'resolved': return 'bg-green-100 text-green-800';
-      case 'closed': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'open': return 'مفتوح';
-      case 'in-progress': return 'قيد المعالجة';
-      case 'resolved': return 'محلول';
-      case 'closed': return 'مغلق';
-      default: return status;
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'open': return <Clock className="h-4 w-4" />;
-      case 'in-progress': return <Timer className="h-4 w-4" />;
-      case 'resolved': return <CheckCircle className="h-4 w-4" />;
-      case 'closed': return <XCircle className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
-    }
-  };
-
-  const filteredTickets = tickets.filter(ticket => {
-    const matchesSearch = ticket.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         ticket.customerName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPriority = selectedPriority === 'all' || ticket.priority === selectedPriority;
-    const matchesStatus = selectedStatus === 'all' || ticket.status === selectedStatus;
-    return matchesSearch && matchesPriority && matchesStatus;
+  const filteredTickets = tickets.filter(t => {
+    const ms = t.subject.toLowerCase().includes(searchTerm.toLowerCase()) || t.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+    return ms && (selectedPriority === 'all' || t.priority === selectedPriority) && (selectedStatus === 'all' || t.status === selectedStatus);
   });
 
   const handleCreateTicket = () => {
-    if (!newTicket.customer || !newTicket.subject) {
-      toast.error('يرجى ملء الحقول المطلوبة');
-      return;
-    }
-    const ticket = {
-      id: `ticket-${Date.now()}`,
-      customerId: `c-${Date.now()}`,
-      customerName: newTicket.customer,
-      type: 'request' as const,
-      priority: newTicket.priority as any,
-      status: 'open' as const,
-      subject: newTicket.subject,
-      description: newTicket.description,
-      category: 'عام',
-      subcategory: '',
-      assignedTo: 'غير محدد',
-      createdDate: new Date().toISOString().split('T')[0],
-      dueDate: '',
-      escalated: false,
-      tags: [],
-      attachments: [],
-      responseTime: 0,
-    };
-    setTickets(prev => [ticket, ...prev]);
+    if (!newTicket.customer || !newTicket.subject) { toast.error('يرجى ملء الحقول المطلوبة'); return; }
+    setTickets(prev => [{ id: `ticket-${Date.now()}`, customerId: `c-${Date.now()}`, customerName: newTicket.customer, type: 'request' as const, priority: newTicket.priority as any, status: 'open' as const, subject: newTicket.subject, description: newTicket.description, category: 'عام', subcategory: '', assignedTo: 'غير محدد', createdDate: new Date().toISOString().split('T')[0], dueDate: '', escalated: false, tags: [], attachments: [], responseTime: 0 }, ...prev]);
     setNewTicket({ customer: '', priority: 'medium', subject: '', description: '' });
     setShowNewTicketForm(false);
-    toast.success('تم إنشاء التذكرة بنجاح');
+    toast.success('تم إنشاء التذكرة');
   };
 
-  const handleProcessTicket = (ticketId: string) => {
-    setTickets(prev => prev.map(t => t.id === ticketId ? { ...t, status: 'in-progress' as const } : t));
-    toast.success('تم بدء معالجة التذكرة');
+  const handleProcessTicket = (id: string) => {
+    setTickets(prev => prev.map(t => t.id === id ? { ...t, status: 'in-progress' as const } : t));
+    toast.success('تم بدء المعالجة');
   };
 
-  const getViewFields = (ticket: any): DetailField[] => [
-    { label: 'رقم التذكرة', value: ticket.id },
-    { label: 'الموضوع', value: ticket.subject },
-    { label: 'العميل', value: ticket.customerName },
-    { label: 'الأولوية', value: getPriorityText(ticket.priority) },
-    { label: 'الحالة', value: getStatusText(ticket.status) },
-    { label: 'المسؤول', value: ticket.assignedTo },
-    { label: 'تاريخ الإنشاء', value: ticket.createdDate },
-    { label: 'الوصف', value: ticket.description || 'لا يوجد وصف' },
+  const getViewFields = (t: any): DetailField[] => [
+    { label: 'رقم التذكرة', value: t.id }, { label: 'الموضوع', value: t.subject },
+    { label: 'العميل', value: t.customerName }, { label: 'الأولوية', value: getPriorityText(t.priority) },
+    { label: 'الحالة', value: getStatusText(t.status) }, { label: 'المسؤول', value: t.assignedTo },
+    { label: 'تاريخ الإنشاء', value: t.createdDate }, { label: 'الوصف', value: t.description || 'لا يوجد' },
   ];
 
-  // Mock data for charts
   const responseTimeData = [
-    { month: 'يناير', avgTime: 2.1, target: 2.0 },
-    { month: 'فبراير', avgTime: 1.9, target: 2.0 },
-    { month: 'مارس', avgTime: 2.3, target: 2.0 },
-    { month: 'أبريل', avgTime: 1.8, target: 2.0 },
-    { month: 'مايو', avgTime: 1.7, target: 2.0 },
-    { month: 'يونيو', avgTime: 1.6, target: 2.0 }
+    { month: 'يناير', avgTime: 2.1 }, { month: 'فبراير', avgTime: 1.9 }, { month: 'مارس', avgTime: 2.3 },
+    { month: 'أبريل', avgTime: 1.8 }, { month: 'مايو', avgTime: 1.7 }, { month: 'يونيو', avgTime: 1.6 },
   ];
-
   const ticketCategoryData = [
-    { category: 'تقني', count: 45 },
-    { category: 'فوترة', count: 23 },
-    { category: 'عام', count: 18 },
-    { category: 'طلبات تغيير', count: 15 },
-    { category: 'تدريب', count: 8 }
+    { category: 'تقني', count: 45 }, { category: 'فوترة', count: 23 }, { category: 'عام', count: 18 },
+    { category: 'تغيير', count: 15 }, { category: 'تدريب', count: 8 },
   ];
-
   const satisfactionData = [
-    { month: 'يناير', rating: 4.2 },
-    { month: 'فبراير', rating: 4.3 },
-    { month: 'مارس', rating: 4.1 },
-    { month: 'أبريل', rating: 4.5 },
-    { month: 'مايو', rating: 4.4 },
-    { month: 'يونيو', rating: 4.6 }
+    { month: 'يناير', rating: 4.2 }, { month: 'فبراير', rating: 4.3 }, { month: 'مارس', rating: 4.1 },
+    { month: 'أبريل', rating: 4.5 }, { month: 'مايو', rating: 4.4 }, { month: 'يونيو', rating: 4.6 },
   ];
 
   return (
     <div className="space-y-6">
-      {/* Header and Controls */}
+      {/* Controls */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div className="flex items-center gap-4 w-full lg:w-auto">
-          <div className="relative flex-1 lg:w-96">
-            <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="البحث في التذاكر..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10"
-            />
+        <div className="flex items-center gap-3 w-full lg:w-auto">
+          <div className="relative flex-1 lg:w-80">
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(11,15,18,0.30)]" />
+            <Input placeholder="البحث في التذاكر..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pr-10 rounded-full border-[#DADCE0]" />
           </div>
-          <select value={selectedPriority} onChange={(e) => setSelectedPriority(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white">
-            <option value="all">جميع الأولويات</option>
-            <option value="urgent">عاجل</option>
-            <option value="high">مرتفع</option>
-            <option value="medium">متوسط</option>
-            <option value="low">منخفض</option>
+          <select value={selectedPriority} onChange={e => setSelectedPriority(e.target.value)} className="px-3 py-1.5 border border-[#DADCE0] rounded-full bg-white font-arabic text-xs">
+            <option value="all">الأولويات</option><option value="urgent">عاجل</option><option value="high">مرتفع</option><option value="medium">متوسط</option><option value="low">منخفض</option>
           </select>
-          <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white">
-            <option value="all">جميع الحالات</option>
-            <option value="open">مفتوح</option>
-            <option value="in-progress">قيد المعالجة</option>
-            <option value="resolved">محلول</option>
-            <option value="closed">مغلق</option>
+          <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="px-3 py-1.5 border border-[#DADCE0] rounded-full bg-white font-arabic text-xs">
+            <option value="all">الحالات</option><option value="open">مفتوح</option><option value="in-progress">قيد المعالجة</option><option value="resolved">محلول</option>
           </select>
         </div>
-        <Button onClick={() => setShowNewTicketForm(!showNewTicketForm)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
-          <Plus className="ml-2 h-4 w-4" />
-          تذكرة جديدة
-        </Button>
+        <button onClick={() => setShowNewTicketForm(!showNewTicketForm)} className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0B0F12] text-white text-xs font-arabic hover:bg-[#0B0F12]/90 transition-colors">
+          <Plus className="w-3.5 h-3.5" /> تذكرة جديدة
+        </button>
       </div>
 
       {/* New Ticket Form */}
       {showNewTicketForm && (
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4">إنشاء تذكرة جديدة</h3>
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic block mb-4">إنشاء تذكرة جديدة</span>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block text-sm font-semibold font-arabic mb-2">العميل *</label>
-              <Input placeholder="اسم العميل أو الشركة" value={newTicket.customer} onChange={e => setNewTicket(p => ({ ...p, customer: e.target.value }))} />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold font-arabic mb-2">الأولوية</label>
-              <select value={newTicket.priority} onChange={e => setNewTicket(p => ({ ...p, priority: e.target.value }))} className="w-full px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white">
-                <option value="low">منخفض</option>
-                <option value="medium">متوسط</option>
-                <option value="high">مرتفع</option>
-                <option value="urgent">عاجل</option>
-              </select>
-            </div>
+            <div><label className="block text-[11px] font-arabic mb-1 text-[rgba(11,15,18,0.50)]">العميل *</label><Input value={newTicket.customer} onChange={e => setNewTicket(p => ({ ...p, customer: e.target.value }))} className="rounded-[12px] border-[#DADCE0]" /></div>
+            <div><label className="block text-[11px] font-arabic mb-1 text-[rgba(11,15,18,0.50)]">الأولوية</label><select value={newTicket.priority} onChange={e => setNewTicket(p => ({ ...p, priority: e.target.value }))} className="w-full px-3 py-2 border border-[#DADCE0] rounded-[12px] bg-white font-arabic text-sm"><option value="low">منخفض</option><option value="medium">متوسط</option><option value="high">مرتفع</option><option value="urgent">عاجل</option></select></div>
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold font-arabic mb-2">الموضوع *</label>
-            <Input placeholder="موضوع التذكرة" value={newTicket.subject} onChange={e => setNewTicket(p => ({ ...p, subject: e.target.value }))} />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold font-arabic mb-2">الوصف</label>
-            <Textarea placeholder="وصف تفصيلي للمشكلة أو الطلب" className="min-h-[100px]" value={newTicket.description} onChange={e => setNewTicket(p => ({ ...p, description: e.target.value }))} />
-          </div>
+          <div className="mb-4"><label className="block text-[11px] font-arabic mb-1 text-[rgba(11,15,18,0.50)]">الموضوع *</label><Input value={newTicket.subject} onChange={e => setNewTicket(p => ({ ...p, subject: e.target.value }))} className="rounded-[12px] border-[#DADCE0]" /></div>
+          <div className="mb-4"><label className="block text-[11px] font-arabic mb-1 text-[rgba(11,15,18,0.50)]">الوصف</label><Textarea value={newTicket.description} onChange={e => setNewTicket(p => ({ ...p, description: e.target.value }))} className="min-h-[80px] rounded-[12px] border-[#DADCE0]" /></div>
           <div className="flex gap-2">
-            <Button onClick={handleCreateTicket} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
-              إنشاء التذكرة
-            </Button>
-            <Button variant="outline" onClick={() => setShowNewTicketForm(false)} className="font-arabic">
-              إلغاء
-            </Button>
+            <button onClick={handleCreateTicket} className="px-4 py-2 rounded-full bg-[#3DBE8B] text-white text-xs font-arabic">إنشاء</button>
+            <button onClick={() => setShowNewTicketForm(false)} className="px-4 py-2 rounded-full border border-[#DADCE0] text-xs font-arabic">إلغاء</button>
           </div>
-        </GenericCard>
+        </div>
       )}
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4"><MessageSquare className="h-8 w-8 text-blue-600" /></div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{tickets.filter(t => t.status === 'open').length}</h3>
-          <p className="text-gray-600 font-arabic">تذاكر مفتوحة</p>
-          <div className="mt-2 text-sm text-blue-600 font-arabic">من أصل {tickets.length} إجمالي</div>
-        </GenericCard>
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4"><Clock className="h-8 w-8 text-orange-600" /></div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">1.6</h3>
-          <p className="text-gray-600 font-arabic">متوسط وقت الاستجابة</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">ساعة</div>
-        </GenericCard>
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4"><Star className="h-8 w-8 text-yellow-500" /></div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">4.6</h3>
-          <p className="text-gray-600 font-arabic">تقييم الرضا</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">من 5</div>
-        </GenericCard>
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4"><TrendingUp className="h-8 w-8 text-green-600" /></div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">92%</h3>
-          <p className="text-gray-600 font-arabic">معدل الحل في الوقت</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">هذا الشهر</div>
-        </GenericCard>
+      {/* KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricHeroCard title="تذاكر مفتوحة" value={tickets.filter(t => t.status === 'open').length} description={`من أصل ${tickets.length}`} className="min-h-[130px]" />
+        <MetricHeroCard title="وقت الاستجابة" value="1.6" unit="ساعة" className="min-h-[130px]" />
+        <MetricHeroCard title="تقييم الرضا" value="4.6" unit="/5" className="min-h-[130px]" />
+        <MetricHeroCard title="معدل الحل" value="92%" className="min-h-[130px]" />
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4">اتجاه وقت الاستجابة</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={responseTimeData}>
-              <CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" /><YAxis /><Tooltip />
-              <Line type="monotone" dataKey="avgTime" stroke="#3B82F6" strokeWidth={2} name="الفعلي" />
-              <Line type="monotone" dataKey="target" stroke="#EF4444" strokeWidth={2} strokeDasharray="5 5" name="المستهدف" />
-            </LineChart>
-          </ResponsiveContainer>
-        </GenericCard>
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4">التذاكر حسب الفئة</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={ticketCategoryData}>
-              <CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="category" /><YAxis /><Tooltip />
-              <Bar dataKey="count" fill="#10B981" />
-            </BarChart>
-          </ResponsiveContainer>
-        </GenericCard>
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4">اتجاه الرضا</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={satisfactionData}>
-              <CartesianGrid strokeDasharray="3 3" /><XAxis dataKey="month" /><YAxis domain={[1, 5]} /><Tooltip />
-              <Line type="monotone" dataKey="rating" stroke="#F59E0B" strokeWidth={3} />
-            </LineChart>
-          </ResponsiveContainer>
-        </GenericCard>
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-5">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic">وقت الاستجابة</span>
+          <div className="mt-3">
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart data={responseTimeData}>
+                <XAxis dataKey="month" tick={{ fontSize: 9 }} axisLine={false} tickLine={false} /><YAxis hide />
+                <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: '#FFF' }} />
+                <Line type="monotone" dataKey="avgTime" stroke="#3DA8F5" strokeWidth={2.5} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-5">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic">التذاكر حسب الفئة</span>
+          <div className="mt-3">
+            <ResponsiveContainer width="100%" height={160}>
+              <BarChart data={ticketCategoryData} barSize={12}>
+                <XAxis dataKey="category" tick={{ fontSize: 9 }} axisLine={false} tickLine={false} /><YAxis hide />
+                <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: '#FFF' }} />
+                <Bar dataKey="count" fill="#3DBE8B" radius={[6, 6, 6, 6]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-5">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic">اتجاه الرضا</span>
+          <div className="mt-3">
+            <ResponsiveContainer width="100%" height={160}>
+              <LineChart data={satisfactionData}>
+                <XAxis dataKey="month" tick={{ fontSize: 9 }} axisLine={false} tickLine={false} /><YAxis hide />
+                <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: '#FFF' }} />
+                <Line type="monotone" dataKey="rating" stroke="#F6C445" strokeWidth={2.5} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
 
       {/* Tickets List */}
-      <GenericCard>
-        <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-          <MessageSquare className="ml-2 h-5 w-5" />
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase mb-4 block">
           قائمة التذاكر ({filteredTickets.length})
-        </h3>
-        <div className="space-y-4">
-          {filteredTickets.map((ticket) => (
-            <div key={ticket.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-              <div className="flex items-start justify-between mb-3">
+        </span>
+        <div className="space-y-3">
+          {filteredTickets.map(ticket => (
+            <div key={ticket.id} className="p-4 rounded-[18px] border border-[#DADCE0] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+              <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h4 className="font-semibold font-arabic text-gray-900">{ticket.subject}</h4>
-                    <span className={`px-2 py-1 text-xs rounded-full border ${getPriorityColor(ticket.priority)}`}>{getPriorityText(ticket.priority)}</span>
-                    <span className={`px-2 py-1 text-xs rounded-full flex items-center gap-1 ${getStatusColor(ticket.status)}`}>
-                      {getStatusIcon(ticket.status)}{getStatusText(ticket.status)}
-                    </span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="text-sm font-bold text-[#0B0F12] font-arabic">{ticket.subject}</h4>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getPriorityColor(ticket.priority)}`}>{getPriorityText(ticket.priority)}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(ticket.status)}`}>{getStatusText(ticket.status)}</span>
                   </div>
-                  <p className="text-gray-600 font-arabic text-sm mb-2">{ticket.description}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-500 font-arabic">
+                  <div className="flex gap-3 text-[10px] text-[rgba(11,15,18,0.35)] font-arabic">
                     <span>العميل: {ticket.customerName}</span>
                     <span>المسؤول: {ticket.assignedTo}</span>
-                    <span>تاريخ الإنشاء: {ticket.createdDate}</span>
-                    {ticket.responseTime > 0 && (
-                      <span className="text-blue-600">وقت الاستجابة: {ticket.responseTime} ساعة</span>
-                    )}
+                    <span>{ticket.createdDate}</span>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="font-arabic" onClick={() => setViewingTicket(ticket)}>
-                    عرض
-                  </Button>
+                  <button onClick={() => setViewingTicket(ticket)} className="px-3 py-1 rounded-full border border-[#DADCE0] text-[10px] font-arabic hover:bg-[#d9e7ed]/50 transition-colors">عرض</button>
                   {ticket.status === 'open' && (
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-arabic" onClick={() => handleProcessTicket(ticket.id)}>
-                      معالجة
-                    </Button>
+                    <button onClick={() => handleProcessTicket(ticket.id)} className="px-3 py-1 rounded-full bg-[#3DA8F5] text-white text-[10px] font-arabic">معالجة</button>
                   )}
                 </div>
               </div>
-              {ticket.tags.length > 0 && (
-                <div className="flex gap-2 mt-3">
-                  {ticket.tags.map((tag, index) => (
-                    <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-arabic">{tag}</span>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
         </div>
-      </GenericCard>
+      </div>
 
-      {/* View Ticket Modal */}
-      {viewingTicket && (
-        <GenericDetailModal
-          isOpen={!!viewingTicket}
-          onClose={() => setViewingTicket(null)}
-          title={`تذكرة: ${viewingTicket.subject}`}
-          fields={getViewFields(viewingTicket)}
-        />
-      )}
+      {viewingTicket && <GenericDetailModal isOpen={!!viewingTicket} onClose={() => setViewingTicket(null)} title={`تذكرة: ${viewingTicket.subject}`} fields={getViewFields(viewingTicket)} />}
     </div>
   );
 };
