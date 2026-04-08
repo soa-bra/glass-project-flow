@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { FileText, Download, Eye, Edit, Plus, Search } from 'lucide-react';
-import { BaseBadge } from '@/components/ui/BaseBadge';
+import { FileText, Download, Eye, Edit, Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
 import { mockHRTemplates } from './data';
+import { toast } from 'sonner';
 
 export const TemplatesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('الكل');
+  const [previewTemplate, setPreviewTemplate] = useState<typeof mockHRTemplates[0] | null>(null);
+  const [editTemplate, setEditTemplate] = useState<typeof mockHRTemplates[0] | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDesc, setEditDesc] = useState('');
 
   const categories = ['الكل', 'contract', 'evaluation', 'policy', 'form', 'letter'];
   const categoryLabels: Record<string, string> = { contract: 'عقود', evaluation: 'تقييمات', policy: 'سياسات', form: 'نماذج', letter: 'رسائل' };
@@ -31,6 +35,34 @@ export const TemplatesTab: React.FC = () => {
     .sort((a, b) => b.usageCount - a.usageCount)
     .slice(0, 5)
     .map(t => ({ label: t.name, value: t.usageCount }));
+
+  const handleDownload = (template: typeof mockHRTemplates[0]) => {
+    const blob = new Blob([JSON.stringify({ name: template.name, category: template.category, description: template.description, content: 'محتوى النموذج' }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${template.name}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`تم تحميل: ${template.name}`);
+  };
+
+  const handlePreview = (template: typeof mockHRTemplates[0]) => {
+    setPreviewTemplate(template);
+  };
+
+  const handleEdit = (template: typeof mockHRTemplates[0]) => {
+    setEditTemplate(template);
+    setEditName(template.name);
+    setEditDesc(template.description);
+  };
+
+  const handleSaveEdit = () => {
+    if (editTemplate) {
+      toast.success(`تم حفظ التعديلات على: ${editName}`);
+      setEditTemplate(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -80,9 +112,9 @@ export const TemplatesTab: React.FC = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors"><Eye className="w-3.5 h-3.5" /></button>
-                <button className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors"><Download className="w-3.5 h-3.5" /></button>
-                <button className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors"><Edit className="w-3.5 h-3.5" /></button>
+                <button onClick={() => handlePreview(template)} className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors" title="عرض"><Eye className="w-3.5 h-3.5" /></button>
+                <button onClick={() => handleDownload(template)} className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors" title="تحميل"><Download className="w-3.5 h-3.5" /></button>
+                <button onClick={() => handleEdit(template)} className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors" title="تعديل"><Edit className="w-3.5 h-3.5" /></button>
               </div>
             </div>
           ))}
@@ -94,6 +126,61 @@ export const TemplatesTab: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Preview Modal */}
+      {previewTemplate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setPreviewTemplate(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-[24px] border border-[#DADCE0] shadow-[0_12px_28px_rgba(0,0,0,0.10)] w-full max-w-lg max-h-[80vh] overflow-auto p-6 mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#0B0F12] font-arabic">{previewTemplate.name}</h3>
+              <button onClick={() => setPreviewTemplate(null)} className="p-2 rounded-full hover:bg-[#d9e7ed]/50 transition-colors"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="space-y-3 text-sm font-arabic" dir="rtl">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full bg-[#d9e7ed] text-[10px]">{categoryLabels[previewTemplate.category] || previewTemplate.category}</span>
+                <span className="text-[11px] text-[rgba(11,15,18,0.50)]">{previewTemplate.usageCount} مرة استخدام</span>
+              </div>
+              <p className="text-[rgba(11,15,18,0.70)]">{previewTemplate.description}</p>
+              <div className="p-4 rounded-[18px] bg-[#d9e7ed]/20 border border-[#DADCE0]">
+                <p className="text-xs text-[rgba(11,15,18,0.40)] mb-2">محتوى النموذج</p>
+                <p className="text-[rgba(11,15,18,0.60)]">هذا نموذج {previewTemplate.name} - يحتوي على الحقول والبيانات المطلوبة لإتمام الإجراء.</p>
+              </div>
+              <p className="text-[10px] text-[rgba(11,15,18,0.35)]">آخر تعديل: {previewTemplate.lastModified}</p>
+              <div className="flex justify-end">
+                <button onClick={() => { handleDownload(previewTemplate); setPreviewTemplate(null); }} className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0B0F12] text-white text-xs font-arabic hover:bg-[#0B0F12]/90 transition-colors">
+                  <Download className="w-3.5 h-3.5" /> تحميل
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editTemplate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" onClick={() => setEditTemplate(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-[24px] border border-[#DADCE0] shadow-[0_12px_28px_rgba(0,0,0,0.10)] w-full max-w-lg p-6 mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-[#0B0F12] font-arabic">تعديل النموذج</h3>
+              <button onClick={() => setEditTemplate(null)} className="p-2 rounded-full hover:bg-[#d9e7ed]/50 transition-colors"><X className="w-4 h-4" /></button>
+            </div>
+            <div className="space-y-4" dir="rtl">
+              <div>
+                <label className="block text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic mb-1">اسم النموذج</label>
+                <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="rounded-full border-[#DADCE0]" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic mb-1">الوصف</label>
+                <textarea value={editDesc} onChange={(e) => setEditDesc(e.target.value)} rows={3} className="w-full px-4 py-2 rounded-[18px] border border-[#DADCE0] text-sm font-arabic resize-none focus:outline-none focus:ring-1 focus:ring-[#0B0F12]" />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button onClick={() => setEditTemplate(null)} className="px-4 py-2 rounded-full border border-[#DADCE0] text-xs font-arabic hover:bg-[#d9e7ed]/50 transition-colors">إلغاء</button>
+                <button onClick={handleSaveEdit} className="px-4 py-2 rounded-full bg-[#0B0F12] text-white text-xs font-arabic hover:bg-[#0B0F12]/90 transition-colors">حفظ التعديلات</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Usage chart */}
       <CapsuleBarChart title="أكثر النماذج استخداماً" data={usageData} color="#3DBE8B" />
