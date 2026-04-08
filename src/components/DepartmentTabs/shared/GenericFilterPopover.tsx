@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Filter } from 'lucide-react';
@@ -47,10 +47,10 @@ export const GenericFilterPopover: React.FC<GenericFilterPopoverProps> = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         {triggerButton || (
-          <Button variant="outline" size="sm" className="font-arabic rounded-full">
+          <BaseActionButton variant="outline" size="sm" className="font-arabic rounded-full">
             <Filter className="h-4 w-4 ml-2" />
             تصفية
-          </Button>
+          </BaseActionButton>
         )}
       </PopoverTrigger>
       <PopoverContent className="w-80 bg-white/90 backdrop-blur-xl rounded-2xl border border-black/10" align="end">
@@ -73,8 +73,8 @@ export const GenericFilterPopover: React.FC<GenericFilterPopoverProps> = ({
             </div>
           ))}
           <div className="flex gap-2 pt-2">
-            <Button onClick={handleApply} size="sm" className="flex-1 bg-black text-white rounded-full font-arabic">تطبيق</Button>
-            <Button onClick={handleReset} size="sm" variant="outline" className="flex-1 rounded-full font-arabic">إعادة تعيين</Button>
+            <BaseActionButton onClick={handleApply} size="sm" className="flex-1 bg-black text-white rounded-full font-arabic">تطبيق</BaseActionButton>
+            <BaseActionButton onClick={handleReset} size="sm" variant="outline" className="flex-1 rounded-full font-arabic">إعادة تعيين</BaseActionButton>
           </div>
         </div>
       </PopoverContent>

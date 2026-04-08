@@ -3,7 +3,7 @@ import React from 'react';
 import { Star, Download } from 'lucide-react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface PopularTemplate {
   name: string;
@@ -72,9 +72,9 @@ export const PopularTemplatesList: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <Button size="sm" variant="ghost">
+              <BaseActionButton size="sm" variant="ghost">
                 <Download className="h-4 w-4" />
-              </Button>
+              </BaseActionButton>
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>{template.size}</span>

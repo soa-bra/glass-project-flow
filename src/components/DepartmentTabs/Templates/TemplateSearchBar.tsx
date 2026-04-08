@@ -2,7 +2,7 @@
 import React from 'react';
 import { Search, Filter, Plus } from 'lucide-react';
 import { BaseBox } from '@/components/ui/BaseBox';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 
 export const TemplateSearchBar: React.FC = () => {
@@ -16,14 +16,14 @@ export const TemplateSearchBar: React.FC = () => {
             className="pr-10 font-arabic"
           />
         </div>
-        <Button variant="outline" size="sm">
+        <BaseActionButton variant="outline" size="sm">
           <Filter className="h-4 w-4 ml-2" />
           فلترة
-        </Button>
-        <Button size="sm">
+        </BaseActionButton>
+        <BaseActionButton variant="primary" size="sm">
           <Plus className="h-4 w-4 ml-2" />
           إضافة نموذج
-        </Button>
+        </BaseActionButton>
       </div>
     </BaseBox>
   );
