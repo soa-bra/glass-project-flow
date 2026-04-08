@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Shield, Activity } from 'lucide-react';
 import { mockRiskAssessments } from './data';
-import { getStatusColor, getStatusText, getRiskColor, calculateRiskScore, formatDate } from './utils';
+import { getStatusColor, getStatusText, calculateRiskScore, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';

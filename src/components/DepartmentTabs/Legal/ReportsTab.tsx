@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart, Download, Calendar, Filter, Eye, Plus } from 'lucide-react';
+import { BarChart, Download, Calendar, Filter, Eye } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';

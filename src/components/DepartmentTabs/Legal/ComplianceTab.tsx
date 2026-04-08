@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { mockComplianceItems } from './data';
-import { getStatusColor, getStatusText, formatDate } from './utils';
+import { getStatusText, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';
