@@ -1,61 +1,25 @@
-
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
-import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Bell } from 'lucide-react';
+import { ResponsiveContainer, BarChart as RechartsBarChart, Bar, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { BaseBox, BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
-import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
+import { SPACING } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
   const [alerts] = useState<Alert[]>([
-    {
-      id: 1,
-      type: 'warning',
-      message: 'تجاوز ميزانية التسويق بنسبة 15%',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      type: 'info',
-      message: 'موعد دفع الرواتب خلال 3 أيام',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      type: 'success',
-      message: 'تم استلام دفعة من مشروع XYZ',
-      priority: 'low'
-    }
+    { id: 1, type: 'warning', message: 'تجاوز ميزانية التسويق بنسبة 15%', priority: 'high' },
+    { id: 2, type: 'info', message: 'موعد دفع الرواتب خلال 3 أيام', priority: 'medium' },
+    { id: 3, type: 'success', message: 'تم استلام دفعة من مشروع XYZ', priority: 'low' },
   ]);
 
   const kpiStats = [
-    {
-      title: 'الإيرادات الشهرية',
-      value: '2.5',
-      unit: 'مليون ر.س',
-      description: 'إجمالي الإيرادات لهذا الشهر'
-    },
-    {
-      title: 'النفقات الشهرية',
-      value: '1.8',
-      unit: 'مليون ر.س',
-      description: 'إجمالي النفقات لهذا الشهر'
-    },
-    {
-      title: 'الربح الصافي',
-      value: '700',
-      unit: 'ألف ر.س',
-      description: 'الأرباح بعد خصم النفقات'
-    },
-    {
-      title: 'التدفق النقدي',
-      value: '+12%',
-      unit: 'نمو',
-      description: 'مقارنة بالشهر السابق'
-    }
+    { title: 'الإيرادات الشهرية', value: '2.5', unit: 'مليون ر.س', description: 'إجمالي الإيرادات لهذا الشهر' },
+    { title: 'النفقات الشهرية', value: '1.8', unit: 'مليون ر.س', description: 'إجمالي النفقات لهذا الشهر' },
+    { title: 'الربح الصافي', value: '700', unit: 'ألف ر.س', description: 'الأرباح بعد خصم النفقات' },
+    { title: 'التدفق النقدي', value: '+12%', unit: 'نمو', description: 'مقارنة بالشهر السابق' },
   ];
 
   const getBadgeVariant = (priority: string): 'success' | 'warning' | 'error' | 'info' | 'default' => {
@@ -67,96 +31,105 @@ export const OverviewTab: React.FC = () => {
     }
   };
 
-  return (
-    <div className={`space-y-6 ${SPACING.SECTION_MARGIN}`}>
-      {/* مؤشرات الأداء الأساسية */}
-      <KPIStatsSection stats={kpiStats} />
-      
-      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
-        {/* Budget vs Actual Chart */}
-        <BaseBox
-          title="الميزانية مقابل الفعلي (شهري)"
-          icon={<BarChart className={LAYOUT.ICON_SIZE} />}
-          className="p-6"
-        >
-          <ResponsiveContainer width="100%" height={300}>
-            <RechartsBarChart data={mockBudgetData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
-              <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <Tooltip 
-                formatter={value => formatCurrency(Number(value))} 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '12px',
-                  color: '#000000'
-                }}
-                labelStyle={{ color: '#000000' }}
-              />
-              <Legend wrapperStyle={{ color: '#000000' }} />
-              <Bar dataKey="budget" fill="#bdeed3" name="الميزانية" />
-              <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
-            </RechartsBarChart>
-          </ResponsiveContainer>
-        </BaseBox>
+  const tooltipStyle = {
+    backgroundColor: '#0B0F12',
+    border: 'none',
+    borderRadius: '10px',
+    color: '#fff',
+    fontSize: 13,
+    padding: '8px 12px',
+  };
 
-        {/* Cash Flow Forecast */}
-        <BaseBox
-          title="توقعات التدفق النقدي"
-          icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
-          className="p-6"
-        >
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={mockCashFlowData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
-              <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <Tooltip 
-                formatter={value => formatCurrency(Number(value))} 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '12px',
-                  color: '#000000'
-                }}
-                labelStyle={{ color: '#000000' }}
-              />
-              <Legend wrapperStyle={{ color: '#000000' }} />
-              <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} name="التدفق الداخل" />
-              <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
-            </LineChart>
-          </ResponsiveContainer>
-        </BaseBox>
+  return (
+    <div className={`space-y-5 ${SPACING.SECTION_MARGIN}`}>
+      <KPIStatsSection stats={kpiStats} />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Budget Bar Chart - Capsule style */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+            الميزانية مقابل الفعلي
+          </span>
+          <div className="mt-4" style={{ height: 220 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RechartsBarChart data={mockBudgetData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  formatter={value => formatCurrency(Number(value))}
+                  labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}
+                />
+                <Bar dataKey="budget" fill="rgba(189,238,211,0.4)" radius={[999, 999, 999, 999]} barSize={14} />
+                <Bar dataKey="actual" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={14} />
+              </RechartsBarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Cash Flow Line - Minimal */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+            توقعات التدفق النقدي
+          </span>
+          <div className="mt-4" style={{ height: 220 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={mockCashFlowData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  formatter={value => formatCurrency(Number(value))}
+                  labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }}
+                />
+                <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} dot={false} />
+                <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="flex items-center gap-4 mt-3">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-1 rounded-full bg-[#d9d2fd]" />
+              <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الداخل</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-1 rounded-full bg-[#f1b5b9]" />
+              <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الخارج</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* AI Alerts */}
-      <BaseBox
-        title="تنبيهات الذكاء الاصطناعي"
-        icon={<Bell className={LAYOUT.ICON_SIZE} />}
-        className="p-6"
-      >
-        <div className="space-y-3">
+      {/* Alerts */}
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Bell className="h-4 w-4 text-[rgba(11,15,18,0.40)]" />
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+            تنبيهات الذكاء الاصطناعي
+          </span>
+        </div>
+        <div className="space-y-2">
           {alerts.map(alert => (
             <BaseListItem
               key={alert.id}
-              icon={
-                alert.type === 'warning' ? <AlertTriangle className={LAYOUT.ICON_SIZE} /> :
-                alert.type === 'info' ? <Clock className={LAYOUT.ICON_SIZE} /> :
-                <CheckCircle className={LAYOUT.ICON_SIZE} />
-              }
               badge={{
                 text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
-                variant: getBadgeVariant(alert.priority)
+                variant: getBadgeVariant(alert.priority),
               }}
             >
               {alert.message}
             </BaseListItem>
           ))}
         </div>
-      </BaseBox>
+      </div>
     </div>
   );
 };

@@ -1,178 +1,166 @@
-
 import React from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { Users, TrendingUp, Heart, MessageSquare, Target, DollarSign, Clock, Award } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 import { mockCRMAnalytics, mockNPS } from './data';
 
 export const OverviewTab: React.FC = () => {
   const funnelData = mockCRMAnalytics.salesFunnel;
-  const npsData = mockNPS;
-  
-  const satisfactionColors = ['#10B981', '#F59E0B', '#EF4444', '#6B7280'];
   const satisfactionData = [
-    { name: 'ممتاز', value: mockCRMAnalytics.customerSatisfaction.excellent, color: '#10B981' },
-    { name: 'جيد', value: mockCRMAnalytics.customerSatisfaction.good, color: '#3B82F6' },
-    { name: 'مقبول', value: mockCRMAnalytics.customerSatisfaction.fair, color: '#F59E0B' },
-    { name: 'ضعيف', value: mockCRMAnalytics.customerSatisfaction.poor, color: '#EF4444' }
+    { name: 'ممتاز', value: mockCRMAnalytics.customerSatisfaction.excellent, color: '#bdeed3' },
+    { name: 'جيد', value: mockCRMAnalytics.customerSatisfaction.good, color: '#a4e2f6' },
+    { name: 'مقبول', value: mockCRMAnalytics.customerSatisfaction.fair, color: '#fbe2aa' },
+    { name: 'ضعيف', value: mockCRMAnalytics.customerSatisfaction.poor, color: '#f1b5b9' },
   ];
 
   const monthlyTrend = [
-    { month: 'يناير', customers: 142, revenue: 1100000 },
-    { month: 'فبراير', customers: 148, revenue: 1180000 },
-    { month: 'مارس', customers: 151, revenue: 1220000 },
-    { month: 'أبريل', customers: 154, revenue: 1190000 },
-    { month: 'مايو', customers: 156, revenue: 1250000 },
-    { month: 'يونيو', customers: 158, revenue: 1300000 }
+    { label: 'يناير', customers: 142, revenue: 1100000 },
+    { label: 'فبراير', customers: 148, revenue: 1180000 },
+    { label: 'مارس', customers: 151, revenue: 1220000 },
+    { label: 'أبريل', customers: 154, revenue: 1190000 },
+    { label: 'مايو', customers: 156, revenue: 1250000 },
+    { label: 'يونيو', customers: 158, revenue: 1300000 },
   ];
 
   const kpiStats = [
-    {
-      title: 'إجمالي العملاء',
-      value: mockCRMAnalytics.totalCustomers,
-      unit: 'عميل',
-      description: 'العملاء المسجلون حالياً'
-    },
-    {
-      title: 'معدل التحويل',
-      value: `${mockCRMAnalytics.conversionRate}%`,
-      unit: 'تحويل',
-      description: 'نسبة تحويل الفرص'
-    },
-    {
-      title: 'درجة NPS',
-      value: npsData.score,
-      unit: 'نقطة',
-      description: 'مؤشر رضا العملاء'
-    },
-    {
-      title: 'الإيرادات الشهرية',
-      value: `${(mockCRMAnalytics.monthlyRevenue / 1000000).toFixed(1)}`,
-      unit: 'مليون ر.س',
-      description: 'إجمالي الإيرادات'
-    }
+    { title: 'إجمالي العملاء', value: mockCRMAnalytics.totalCustomers, unit: 'عميل', description: 'العملاء المسجلون حالياً' },
+    { title: 'معدل التحويل', value: `${mockCRMAnalytics.conversionRate}%`, unit: 'تحويل', description: 'نسبة تحويل الفرص' },
+    { title: 'درجة NPS', value: mockNPS.score, unit: 'نقطة', description: 'مؤشر رضا العملاء' },
+    { title: 'الإيرادات الشهرية', value: `${(mockCRMAnalytics.monthlyRevenue / 1000000).toFixed(1)}`, unit: 'مليون ر.س', description: 'إجمالي الإيرادات' },
   ];
 
+  const tooltipStyle = {
+    backgroundColor: '#0B0F12',
+    border: 'none',
+    borderRadius: '10px',
+    color: '#fff',
+    fontSize: 13,
+    padding: '8px 12px',
+  };
+
   return (
-    <div className="space-y-6">
-      {/* مؤشرات الأداء الأساسية */}
+    <div className="space-y-5">
       <KPIStatsSection stats={kpiStats} />
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Sales Funnel */}
-        <GenericCard>
-          <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-            <TrendingUp className="ml-2 h-5 w-5" />
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
             مسار المبيعات
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="stage" className="font-arabic" />
-              <YAxis />
-              <Tooltip formatter={(value, name) => [value, name === 'count' ? 'العدد' : 'القيمة']} />
-              <Bar dataKey="count" fill="#3B82F6" />
-            </BarChart>
-          </ResponsiveContainer>
-        </GenericCard>
+          </span>
+          <div className="mt-4" style={{ height: 220 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={funnelData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                <XAxis
+                  dataKey="stage"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }}
+                />
+                <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }} />
+                <Bar dataKey="count" fill="#a4e2f6" radius={[999, 999, 999, 999]} barSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-        {/* Customer Satisfaction */}
-        <GenericCard>
-          <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-            <Award className="ml-2 h-5 w-5" />
-            توزيع رضا العملاء
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={satisfactionData}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              >
-                {satisfactionData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </GenericCard>
+        {/* Satisfaction Doughnut */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col items-center">
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide self-stretch text-right">
+            رضا العملاء
+          </span>
+          <div className="mt-4 relative" style={{ width: 180, height: 180 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={satisfactionData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={80}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
+                  {satisfactionData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={tooltipStyle} />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-[28px] font-bold text-[#0B0F12]">
+                {mockCRMAnalytics.customerSatisfaction.excellent + mockCRMAnalytics.customerSatisfaction.good}%
+              </span>
+              <span className="text-[10px] text-[rgba(11,15,18,0.35)]">إيجابي</span>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-3 mt-3">
+            {satisfactionData.map((d, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }} />
+                <span className="text-[10px] text-[rgba(11,15,18,0.50)] font-arabic">{d.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Monthly Trends */}
-      <GenericCard>
-        <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-          <LineChart className="ml-2 h-5 w-5" />
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
           الاتجاهات الشهرية
-        </h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={monthlyTrend} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" className="font-arabic" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
-            <Tooltip />
-            <Line yAxisId="left" type="monotone" dataKey="customers" stroke="#3B82F6" strokeWidth={3} name="العملاء" />
-            <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={3} name="الإيرادات" />
-          </LineChart>
-        </ResponsiveContainer>
-      </GenericCard>
+        </span>
+        <div className="mt-4" style={{ height: 200 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={monthlyTrend} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="crmAreaFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#d9d2fd" stopOpacity={0.2} />
+                  <stop offset="100%" stopColor="#d9d2fd" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }}
+              />
+              <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }} />
+              <Area type="monotone" dataKey="customers" stroke="#d9d2fd" strokeWidth={2.5} fill="url(#crmAreaFill)" dot={false} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex items-center gap-1.5 mt-2">
+          <span className="w-3 h-1 rounded-full bg-[#d9d2fd]" />
+          <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">عدد العملاء</span>
+        </div>
+      </div>
 
       {/* AI Insights */}
-      <GenericCard>
-        <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-          <MessageSquare className="ml-2 h-5 w-5" />
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
           رؤى الذكاء الاصطناعي
-        </h3>
-        <div className="space-y-4">
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <TrendingUp className="h-5 w-5 text-blue-400" />
-              </div>
-              <div className="mr-3">
-                <h4 className="font-semibold font-arabic text-blue-800">توقع نمو المبيعات</h4>
-                <p className="text-blue-700 font-arabic">
-                  بناءً على الاتجاهات الحالية، متوقع زيادة الإيرادات بنسبة 15% في الربع القادم
-                </p>
-              </div>
+        </span>
+        <div className="space-y-3 mt-4">
+          {[
+            { msg: 'بناءً على الاتجاهات الحالية، متوقع زيادة الإيرادات بنسبة 15% في الربع القادم', color: '#a4e2f6' },
+            { msg: '85% من التفاعلات الأخيرة إيجابية، مع تحسن ملحوظ في رضا العملاء', color: '#fbe2aa' },
+            { msg: 'تم تحديد 3 عملاء معرضين لخطر المغادرة - يُنصح بالتواصل الاستباقي', color: '#bdeed3' },
+          ].map((insight, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 p-3 rounded-[16px]"
+              style={{ backgroundColor: `${insight.color}20` }}
+            >
+              <span className="w-1 h-full min-h-[20px] rounded-full shrink-0" style={{ backgroundColor: insight.color }} />
+              <p className="text-[12px] text-[rgba(11,15,18,0.70)] font-arabic leading-relaxed">
+                {insight.msg}
+              </p>
             </div>
-          </div>
-          
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <Clock className="h-5 w-5 text-yellow-400" />
-              </div>
-              <div className="mr-3">
-                <h4 className="font-semibold font-arabic text-yellow-800">تحليل المشاعر</h4>
-                <p className="text-yellow-700 font-arabic">
-                  85% من التفاعلات الأخيرة إيجابية، مع تحسن ملحوظ في رضا العملاء عن الدعم التقني
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <Award className="h-5 w-5 text-green-400" />
-              </div>
-              <div className="mr-3">
-                <h4 className="font-semibold font-arabic text-green-800">فرص الاحتفاظ</h4>
-                <p className="text-green-700 font-arabic">
-                  تم تحديد 3 عملاء معرضين لخطر المغادرة - يُنصح بالتواصل الاستباقي
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-      </GenericCard>
+      </div>
     </div>
   );
 };
