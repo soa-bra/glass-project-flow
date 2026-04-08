@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Upload, Download, FileText } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export const TemplatesTab: React.FC = () => {
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
   const templates = [
     { name: 'قالب الميزانية السنوية', type: 'Excel', downloads: 45 },
     { name: 'نموذج طلب صرف', type: 'PDF', downloads: 32 },
@@ -18,7 +19,7 @@ export const TemplatesTab: React.FC = () => {
   ];
 
   const handleUpload = () => {
-    toast.success('تم رفع القالب بنجاح');
+    setIsUploadOpen(true);
   };
 
   const handleDownload = (template: typeof templates[0]) => {

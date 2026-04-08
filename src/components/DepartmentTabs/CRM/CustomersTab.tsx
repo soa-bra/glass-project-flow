@@ -63,7 +63,10 @@ export const CustomersTab: React.FC = () => {
   };
 
   const handleSendSurvey = () => {
-    toast.success('تم إرسال استطلاع رضا العملاء بنجاح');
+    const activeCount = customers.filter(c => c.status === 'active').length;
+    toast.success(`تم إرسال استطلاع الرضا إلى ${activeCount} عميل نشط`, {
+      description: 'سيتم جمع الردود خلال 7 أيام عمل',
+    });
   };
 
   const filteredCustomers = customers.filter(customer => {
