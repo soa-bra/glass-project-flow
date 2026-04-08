@@ -3,13 +3,19 @@ import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Target, Plus, Search, Filter, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
+import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { mockOpportunities, mockCRMAnalytics } from './data';
+import { GenericFormModal, FormField } from '../shared/GenericFormModal';
+import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
+import { toast } from 'sonner';
 
 export const OpportunitiesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState<string>('all');
+  const [opportunities, setOpportunities] = useState(mockOpportunities);
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [viewingOpp, setViewingOpp] = useState<any>(null);
 
   const stageColors = {
     'lead': '#6B7280',
@@ -41,7 +47,7 @@ export const OpportunitiesTab: React.FC = () => {
     };
   };
 
-  const filteredOpportunities = mockOpportunities.filter(opp => {
+  const filteredOpportunities = opportunities.filter(opp => {
     const matchesSearch = opp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          opp.customerName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStage = selectedStage === 'all' || opp.stage === selectedStage;
@@ -56,6 +62,58 @@ export const OpportunitiesTab: React.FC = () => {
     { name: 'التسويق', value: 22, color: '#F59E0B' },
     { name: 'التواصل المباشر', value: 10, color: '#8B5CF6' },
     { name: 'أخرى', value: 5, color: '#6B7280' }
+  ];
+
+  const addFields: FormField[] = [
+    { name: 'title', label: 'عنوان الفرصة', type: 'text', required: true, placeholder: 'أدخل عنوان الفرصة' },
+    { name: 'customerName', label: 'العميل', type: 'text', required: true, placeholder: 'اسم العميل' },
+    { name: 'value', label: 'القيمة المتوقعة (ر.س)', type: 'number', required: true, placeholder: '0' },
+    { name: 'probability', label: 'الاحتمالية (%)', type: 'number', required: true, placeholder: '50' },
+    { name: 'stage', label: 'المرحلة', type: 'select', required: true, options: [
+      { value: 'lead', label: 'عميل محتمل' },
+      { value: 'qualified', label: 'مؤهل' },
+      { value: 'proposal', label: 'عرض' },
+      { value: 'negotiation', label: 'تفاوض' },
+    ]},
+    { name: 'expectedCloseDate', label: 'تاريخ الإغلاق المتوقع', type: 'date', required: true },
+    { name: 'assignedTo', label: 'المسؤول', type: 'text', placeholder: 'اسم المسؤول' },
+    { name: 'description', label: 'الوصف', type: 'textarea', placeholder: 'تفاصيل الفرصة...' },
+  ];
+
+  const handleAddOpportunity = (data: Record<string, string>) => {
+    const newOpp = {
+      id: `opp-${Date.now()}`,
+      customerId: `c-${Date.now()}`,
+      customerName: data.customerName,
+      title: data.title,
+      description: data.description || '',
+      value: Number(data.value),
+      currency: 'SAR',
+      probability: Number(data.probability),
+      stage: data.stage as any,
+      source: 'other' as const,
+      expectedCloseDate: data.expectedCloseDate,
+      assignedTo: data.assignedTo || 'غير محدد',
+      createdDate: new Date().toISOString().split('T')[0],
+      lastActivityDate: new Date().toISOString().split('T')[0],
+      nextSteps: '',
+      competitors: [],
+      tags: [],
+      documents: [],
+    };
+    setOpportunities(prev => [newOpp, ...prev]);
+  };
+
+  const getViewFields = (opp: any): DetailField[] => [
+    { label: 'العنوان', value: opp.title },
+    { label: 'العميل', value: opp.customerName },
+    { label: 'المرحلة', value: getStageText(opp.stage) },
+    { label: 'القيمة', value: `${(opp.value / 1000).toFixed(0)}ك ر.س` },
+    { label: 'الاحتمالية', value: `${opp.probability}%` },
+    { label: 'تاريخ الإغلاق المتوقع', value: opp.expectedCloseDate },
+    { label: 'المسؤول', value: opp.assignedTo },
+    { label: 'المصدر', value: opp.source || 'غير محدد' },
+    { label: 'الوصف', value: opp.description || 'لا يوجد وصف' },
   ];
 
   return (
@@ -86,7 +144,7 @@ export const OpportunitiesTab: React.FC = () => {
             <option value="closed-lost">مغلق - خسارة</option>
           </select>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700 text-white font-arabic">
+        <Button onClick={() => setIsAddOpen(true)} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" />
           إضافة فرصة جديدة
         </Button>
@@ -139,7 +197,6 @@ export const OpportunitiesTab: React.FC = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Sales Funnel */}
         <GenericCard>
           <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
             <TrendingUp className="ml-2 h-5 w-5" />
@@ -161,7 +218,6 @@ export const OpportunitiesTab: React.FC = () => {
           </ResponsiveContainer>
         </GenericCard>
 
-        {/* Opportunities by Source */}
         <GenericCard>
           <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
             <Users className="ml-2 h-5 w-5" />
@@ -246,7 +302,7 @@ export const OpportunitiesTab: React.FC = () => {
                     <td className="p-3 font-arabic text-sm">{opportunity.expectedCloseDate}</td>
                     <td className="p-3 font-arabic text-sm">{opportunity.assignedTo}</td>
                     <td className="p-3">
-                      <Button size="sm" variant="outline" className="font-arabic">
+                      <Button size="sm" variant="outline" className="font-arabic" onClick={() => setViewingOpp(opportunity)}>
                         عرض
                       </Button>
                     </td>
@@ -257,6 +313,27 @@ export const OpportunitiesTab: React.FC = () => {
           </table>
         </div>
       </GenericCard>
+
+      {/* Add Opportunity Modal */}
+      <GenericFormModal
+        isOpen={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        title="إضافة فرصة جديدة"
+        fields={addFields}
+        onSubmit={handleAddOpportunity}
+        submitLabel="إضافة"
+        successMessage="تمت إضافة الفرصة بنجاح"
+      />
+
+      {/* View Opportunity Modal */}
+      {viewingOpp && (
+        <GenericDetailModal
+          isOpen={!!viewingOpp}
+          onClose={() => setViewingOpp(null)}
+          title={viewingOpp.title}
+          fields={getViewFields(viewingOpp)}
+        />
+      )}
     </div>
   );
 };
