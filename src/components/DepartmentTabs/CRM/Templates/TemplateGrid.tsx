@@ -3,6 +3,8 @@ import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { Eye, Download, Copy, Edit, Calendar, User } from 'lucide-react';
+import { toast } from 'sonner';
+import { downloadAsCSV } from '../../shared/downloadUtils';
 
 interface Template {
   id: string;
@@ -28,6 +30,28 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
   getCategoryText,
   getCategoryColor
 }) => {
+  const handlePreview = (template: Template) => {
+    toast.info(`معاينة: ${template.name}`, { description: template.description });
+  };
+
+  const handleDownload = (template: Template) => {
+    downloadAsCSV(
+      ['الرقم', 'الاسم', 'الفئة', 'الوصف', 'مرات الاستخدام', 'المتغيرات'],
+      [[template.id, template.name, template.category, template.description, String(template.usageCount), template.variables.map(v => v.name || v).join(', ')]],
+      `قالب-${template.id}`
+    );
+    toast.success(`تم تحميل القالب: ${template.name}`);
+  };
+
+  const handleCopy = (template: Template) => {
+    navigator.clipboard.writeText(`قالب: ${template.name}\nالوصف: ${template.description}\nالمتغيرات: ${template.variables.map(v => v.name || v).join(', ')}`);
+    toast.success('تم نسخ بيانات القالب');
+  };
+
+  const handleEdit = (template: Template) => {
+    toast.info(`تعديل القالب: ${template.name}`, { description: 'سيتم فتح محرر القوالب قريباً' });
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {templates.map((template) => (
@@ -44,16 +68,9 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
             </div>
           </div>
 
-          {/* Template Stats */}
           <div className="flex items-center justify-between text-sm text-gray-500 font-arabic mb-4">
-            <div className="flex items-center">
-              <User className="h-3 w-3 ml-1" />
-              <span>{template.createdBy}</span>
-            </div>
-            <div className="flex items-center">
-              <Calendar className="h-3 w-3 ml-1" />
-              <span>{template.lastModified}</span>
-            </div>
+            <div className="flex items-center"><User className="h-3 w-3 ml-1" /><span>{template.createdBy}</span></div>
+            <div className="flex items-center"><Calendar className="h-3 w-3 ml-1" /><span>{template.lastModified}</span></div>
           </div>
 
           <div className="flex items-center justify-between text-sm text-gray-500 font-arabic mb-4">
@@ -61,39 +78,29 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
             <div>{template.variables.length} متغير</div>
           </div>
 
-          {/* Tags */}
           {template.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-4">
               {template.tags.slice(0, 3).map((tag, index) => (
-                <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-arabic">
-                  {tag}
-                </span>
+                <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-arabic">{tag}</span>
               ))}
               {template.tags.length > 3 && (
-                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-arabic">
-                  +{template.tags.length - 3}
-                </span>
+                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-arabic">+{template.tags.length - 3}</span>
               )}
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="flex-1 font-arabic">
-              <Eye className="h-3 w-3 ml-1" />
-              معاينة
+            <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => handlePreview(template)}>
+              <Eye className="h-3 w-3 ml-1" />معاينة
             </Button>
-            <Button size="sm" variant="outline" className="font-arabic">
-              <Download className="h-3 w-3 ml-1" />
-              تحميل
+            <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleDownload(template)}>
+              <Download className="h-3 w-3 ml-1" />تحميل
             </Button>
-            <Button size="sm" variant="outline" className="font-arabic">
-              <Copy className="h-3 w-3 ml-1" />
-              نسخ
+            <Button size="sm" variant="outline" className="font-arabic" onClick={() => handleCopy(template)}>
+              <Copy className="h-3 w-3 ml-1" />نسخ
             </Button>
-            <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 font-arabic">
-              <Edit className="h-3 w-3 ml-1" />
-              تعديل
+            <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700 font-arabic" onClick={() => handleEdit(template)}>
+              <Edit className="h-3 w-3 ml-1" />تعديل
             </Button>
           </div>
         </GenericCard>
