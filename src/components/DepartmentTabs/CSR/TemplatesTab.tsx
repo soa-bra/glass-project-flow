@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FileText, Plus, Search, Download, Edit, Copy, Upload, Eye, Calendar, User } from 'lucide-react';
 import { mockCSRTemplates } from './data';
+import { CSRTemplate } from './types';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
