@@ -46,7 +46,7 @@ export const OverviewTab: React.FC = () => {
   const upcomingSessions = mockTrainingSessions.filter(s => s.status === 'scheduled').slice(0, 3);
 
   const StatCard = ({ title, value, icon: Icon, trend, color = "bg-blue-500" }: any) => (
-    <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] relative overflow-hidden">
+    <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] relative overflow-hidden">
       <div className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
         <div className="text-sm font-medium text-gray-600">{title}</div>
         <div className={`p-2 rounded-lg ${color} text-white`}>
@@ -98,7 +98,7 @@ export const OverviewTab: React.FC = () => {
       </div>
 
       {/* Kirkpatrick Metrics */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2">
           <div className="flex items-center gap-2 text-lg font-semibold">
             <Target className="h-5 w-5" />
@@ -141,7 +141,7 @@ export const OverviewTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Skill Gap Alerts */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
           <div className="p-6 pb-2">
             <div className="flex items-center gap-2 text-lg font-semibold">
               <AlertTriangle className="h-5 w-5" />
@@ -177,7 +177,7 @@ export const OverviewTab: React.FC = () => {
         </div>
 
         {/* Upcoming Sessions */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
           <div className="p-6 pb-2">
             <div className="text-lg font-semibold">الجلسات القادمة</div>
           </div>
@@ -209,7 +209,7 @@ export const OverviewTab: React.FC = () => {
       </div>
 
       {/* Recent Enrollments */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2">
           <div className="text-lg font-semibold">التسجيلات الأخيرة</div>
         </div>

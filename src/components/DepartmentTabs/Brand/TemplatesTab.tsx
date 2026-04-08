@@ -126,7 +126,7 @@ export const TemplatesTab: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Categories Sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0]">
+          <div className="bg-[#FFFFFF] rounded-[24px] ring-1 ring-[#DADCE0]">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-black">فئات القوالب</h3>
             </div>
@@ -138,7 +138,7 @@ export const TemplatesTab: React.FC = () => {
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`w-full flex items-center justify-between p-3 rounded-[40px] text-right transition-colors ${
+                      className={`w-full flex items-center justify-between p-3 rounded-[24px] text-right transition-colors ${
                         selectedCategory === category.id
                           ? 'bg-transparent ring-1 ring-[#DADCE0]'
                           : 'hover:bg-transparent'
@@ -159,7 +159,7 @@ export const TemplatesTab: React.FC = () => {
           </div>
 
           {/* Template Stats */}
-          <div className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0] mt-4">
+          <div className="bg-[#FFFFFF] rounded-[24px] ring-1 ring-[#DADCE0] mt-4">
             <div className="p-6">
               <h3 className="text-lg font-semibold text-black">إحصائيات القوالب</h3>
             </div>
@@ -186,7 +186,7 @@ export const TemplatesTab: React.FC = () => {
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredTemplates.map((template) => (
-              <div key={template.id} className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0] hover:shadow-lg transition-shadow">
+              <div key={template.id} className="bg-[#FFFFFF] rounded-[24px] ring-1 ring-[#DADCE0] hover:shadow-lg transition-shadow">
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -261,7 +261,7 @@ export const TemplatesTab: React.FC = () => {
 
           {/* Empty State */}
           {filteredTemplates.length === 0 && (
-            <div className="bg-[#FFFFFF] rounded-[40px] ring-1 ring-[#DADCE0]">
+            <div className="bg-[#FFFFFF] rounded-[24px] ring-1 ring-[#DADCE0]">
               <div className="text-center py-12 px-6">
                 <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">لا توجد قوالب</h3>

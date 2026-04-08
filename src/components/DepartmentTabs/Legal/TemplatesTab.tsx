@@ -72,7 +72,7 @@ export const TemplatesTab: React.FC = () => {
       </div>
 
       {/* أدوات البحث */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center absolute right-3 top-1/2 transform -translate-y-1/2"><Search className="w-4 h-4 text-black" /></div>
@@ -83,7 +83,7 @@ export const TemplatesTab: React.FC = () => {
 
       {/* شبكة النماذج */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map(template => <div key={template.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+        {filteredTemplates.map(template => <div key={template.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><FileText className="w-4 h-4 text-black" /></div>

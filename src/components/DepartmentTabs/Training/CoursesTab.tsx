@@ -114,7 +114,7 @@ export const CoursesTab: React.FC = () => {
           { label: 'برامج مؤسسية', count: courses.filter(c => c.category === 'corporate').length, color: 'text-orange-600' },
           { label: 'ورش عمل', count: courses.filter(c => c.category === 'workshop').length, color: 'text-red-600' },
         ].map((item, i) => (
-          <div key={i} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <div key={i} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
             <div className={`text-2xl font-bold ${item.color}`}>{item.count}</div>
             <div className="text-sm text-gray-600">{item.label}</div>
           </div>
@@ -123,7 +123,7 @@ export const CoursesTab: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
-          <div key={course.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-lg transition-shadow">
+          <div key={course.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-lg transition-shadow">
             <div className="p-6 pb-2">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -163,7 +163,7 @@ export const CoursesTab: React.FC = () => {
         ))}
       </div>
 
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2"><div className="text-lg font-semibold">محرر الدورات البصري</div></div>
         <div className="px-6 pb-6">
           <div className="text-center py-8">

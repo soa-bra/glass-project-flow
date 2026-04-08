@@ -91,7 +91,7 @@ export const LicensesTab: React.FC = () => {
       </div>
 
       {/* إحصائيات التراخيص */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><Award className="h-4 w-4 text-black" /></div>
@@ -99,22 +99,22 @@ export const LicensesTab: React.FC = () => {
           </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Award className="h-4 w-4 text-black" /></div>
             <div className="text-2xl font-bold text-black font-arabic">{licenseStats.active}</div>
             <div className="text-sm font-medium text-black font-arabic">تراخيص نشطة</div>
           </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><AlertTriangle className="h-4 w-4 text-black" /></div>
             <div className="text-2xl font-bold text-black font-arabic">{licenseStats.pendingRenewal}</div>
             <div className="text-sm font-medium text-black font-arabic">تحتاج تجديد</div>
           </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Calendar className="h-4 w-4 text-black" /></div>
             <div className="text-2xl font-bold text-black font-arabic">{licenseStats.expired}</div>
             <div className="text-sm font-medium text-black font-arabic">منتهية</div>
           </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><DollarSign className="h-4 w-4 text-black" /></div>
             <div className="text-2xl font-bold text-black font-arabic">{totalRenewalCost.toLocaleString()}</div>
             <div className="text-sm font-medium text-black font-arabic">تكلفة التجديد (ر.س)</div>
@@ -123,7 +123,7 @@ export const LicensesTab: React.FC = () => {
       </div>
 
       {/* جدول التراخيص */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">قائمة التراخيص</h3></div>
         <div className="overflow-x-auto">
           <table className="w-full text-right">

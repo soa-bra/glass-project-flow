@@ -102,7 +102,7 @@ export const BudgetsTab: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-[40px] border border-[#DADCE0]">
+      <div className="bg-white p-6 rounded-[24px] border border-[#DADCE0]">
         <div className="px-0 pt-0 mb-6">
           <h3 className="text-large font-semibold text-black font-arabic">شجرة الميزانيات</h3>
         </div>

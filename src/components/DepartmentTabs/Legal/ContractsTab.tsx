@@ -96,7 +96,7 @@ export const ContractsTab: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[40px] shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[24px] shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic">البحث والتصفية</h3>
         </div>
@@ -125,25 +125,25 @@ export const ContractsTab: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[40px] shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[24px] shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">إحصائيات العقود</h3>
         </div>
         <div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[40px]">
+            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
               <div className="text-2xl font-bold text-black font-arabic">{contracts.filter(c => c.status === 'signed').length}</div>
               <div className="text-sm font-medium text-black font-arabic">عقود موقعة</div>
             </div>
-            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[40px]">
+            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
               <div className="text-2xl font-bold text-black font-arabic">{contracts.filter(c => c.status === 'pending').length}</div>
               <div className="text-sm font-medium text-black font-arabic">في الانتظار</div>
             </div>
-            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[40px]">
+            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
               <div className="text-2xl font-bold text-black font-arabic">{contracts.filter(c => c.status === 'expired').length}</div>
               <div className="text-sm font-medium text-black font-arabic">منتهية</div>
             </div>
-            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[40px]">
+            <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
               <div className="text-2xl font-bold text-black font-arabic">{contracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()}</div>
               <div className="text-sm font-medium text-black font-arabic">القيمة الإجمالية (ر.س)</div>
             </div>
@@ -151,7 +151,7 @@ export const ContractsTab: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[40px] shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[24px] shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic">قائمة العقود ({filteredContracts.length})</h3>
         </div>
