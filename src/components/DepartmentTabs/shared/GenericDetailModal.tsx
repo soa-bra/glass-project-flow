@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 export interface DetailField {
   label: string;
@@ -37,7 +37,7 @@ export const GenericDetailModal: React.FC<GenericDetailModalProps> = ({
         </div>
         <div className="flex justify-end gap-3 mt-6">
           {actions}
-          <Button variant="outline" onClick={onClose} className="font-arabic rounded-full">إغلاق</Button>
+          <BaseActionButton variant="outline" onClick={onClose}>إغلاق</BaseActionButton>
         </div>
       </DialogContent>
     </Dialog>

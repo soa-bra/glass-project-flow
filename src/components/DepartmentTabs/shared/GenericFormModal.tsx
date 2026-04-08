@@ -3,7 +3,7 @@
  */
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -96,8 +96,8 @@ export const GenericFormModal: React.FC<GenericFormModalProps> = ({
           ))}
         </div>
         <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={onClose} className="font-arabic rounded-full">إلغاء</Button>
-          <Button onClick={handleSubmit} className="bg-black text-white hover:bg-black/90 font-arabic rounded-full">{submitLabel}</Button>
+          <BaseActionButton variant="outline" onClick={onClose}>إلغاء</BaseActionButton>
+          <BaseActionButton variant="primary" onClick={handleSubmit}>{submitLabel}</BaseActionButton>
         </div>
       </DialogContent>
     </Dialog>
