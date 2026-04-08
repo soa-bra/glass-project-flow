@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Users, Search, Plus, Filter, Mail, Phone, MapPin, Star, Calendar, TrendingUp } from 'lucide-react';
 import { mockCustomers } from './data';
+import type { Customer } from './types';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { toast } from 'sonner';
 
@@ -36,7 +37,7 @@ export const CustomersTab: React.FC = () => {
   ];
 
   const handleAddCustomer = (data: Record<string, string>) => {
-    const newCustomer = {
+    const newCustomer: Customer = {
       id: `cust-${Date.now()}`,
       name: data.name,
       company: data.company,
@@ -44,13 +45,19 @@ export const CustomersTab: React.FC = () => {
       phone: data.phone,
       city: data.city || 'غير محدد',
       country: 'السعودية',
-      status: data.status as any,
+      industry: 'غير محدد',
+      website: '',
+      status: (data.status as Customer['status']) || 'prospect',
       customerSince: new Date().toISOString().split('T')[0],
+      lastContact: new Date().toISOString().split('T')[0],
       totalValue: 0,
-      projects: [],
+      assignedManager: '',
+      preferences: { communicationChannel: 'email', contactTiming: '09:00-17:00', language: 'ar', meetingPreference: 'virtual', documentFormat: 'pdf' },
+      specialNeeds: [],
       interactionHistory: [],
+      projects: [],
       satisfaction: { npsScore: 0, overallRating: 0, lastSurveyDate: '' },
-      preferences: { communicationChannel: 'بريد إلكتروني', contactTiming: 'صباحًا', meetingPreference: 'افتراضي' },
+      tags: [],
     };
     setCustomers(prev => [newCustomer, ...prev]);
   };

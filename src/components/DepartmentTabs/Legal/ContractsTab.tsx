@@ -40,15 +40,17 @@ export const ContractsTab: React.FC = () => {
   ];
 
   const handleCreateContract = (data: Record<string, string>) => {
-    const newContract = {
+    const newContract: Contract = {
       id: `CON-${Date.now().toString().slice(-4)}`,
       title: data.title,
       client: data.client,
-      type: data.type,
-      status: 'draft' as const,
+      type: data.type as Contract['type'],
+      status: 'draft',
       value: Number(data.value),
       startDate: data.startDate,
       endDate: data.endDate,
+      signatories: [],
+      riskLevel: 'low',
     };
     setContracts(prev => [newContract, ...prev]);
   };
