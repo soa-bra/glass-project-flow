@@ -1,9 +1,10 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
+import { BaseBadge } from '@/components/ui/BaseBadge';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Users, BookOpen, Award, TrendingUp, Clock, Target, AlertTriangle, DollarSign } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { 
   mockTrainingMetrics, 
   mockSkillGapAlerts, 
@@ -15,237 +16,122 @@ export const OverviewTab: React.FC = () => {
   const metrics = mockTrainingMetrics;
 
   const kpiStats = [
-    {
-      title: 'إجمالي الدورات',
-      value: metrics.totalCourses,
-      unit: 'دورة',
-      description: 'الدورات المتاحة حالياً'
-    },
-    {
-      title: 'المتدربون النشطون',
-      value: metrics.activeLearners,
-      unit: 'متدرب',
-      description: 'المتدربون المسجلون حالياً'
-    },
-    {
-      title: 'معدل الإنجاز',
-      value: `${metrics.completionRate}%`,
-      unit: 'إنجاز',
-      description: 'نسبة إكمال الدورات'
-    },
-    {
-      title: 'الشهادات الصادرة',
-      value: metrics.certificatesIssued,
-      unit: 'شهادة',
-      description: 'الشهادات المُصدرة هذا الشهر'
-    }
+    { title: 'إجمالي الدورات', value: metrics.totalCourses, unit: 'دورة', description: 'الدورات المتاحة حالياً' },
+    { title: 'المتدربون النشطون', value: metrics.activeLearners, unit: 'متدرب', description: 'المتدربون المسجلون حالياً' },
+    { title: 'معدل الإنجاز', value: `${metrics.completionRate}%`, unit: 'إنجاز', description: 'نسبة إكمال الدورات' },
+    { title: 'الشهادات الصادرة', value: metrics.certificatesIssued, unit: 'شهادة', description: 'الشهادات المُصدرة هذا الشهر' },
   ];
 
   const alerts = mockSkillGapAlerts;
   const recentEnrollments = mockEnrollments.slice(0, 5);
   const upcomingSessions = mockTrainingSessions.filter(s => s.status === 'scheduled').slice(0, 3);
 
-  const StatCard = ({ title, value, icon: Icon, trend, color = "bg-blue-500" }: any) => (
-    <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] relative overflow-hidden">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-2 p-6">
-        <div className="text-sm font-medium text-gray-600">{title}</div>
-        <div className={`p-2 rounded-lg ${color} text-white`}>
-          <Icon className="h-4 w-4" />
-        </div>
-      </div>
-      <div className="px-6 pb-6">
-        <div className="text-2xl font-bold">{value}</div>
-        {trend && (
-          <p className="text-xs text-muted-foreground">
-            {trend > 0 ? '+' : ''}{trend}% من الشهر الماضي
-          </p>
-        )}
-      </div>
-    </div>
-  );
-
   return (
-    <div className="space-y-6">
-      {/* مؤشرات الأداء الأساسية */}
+    <div className="space-y-5">
       <KPIStatsSection stats={kpiStats} />
 
       {/* Monthly Performance */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="التسجيلات الجديدة"
-          value={metrics.monthlyStats.newEnrollments}
-          icon={TrendingUp}
-          color="bg-cyan-500"
-        />
-        <StatCard
-          title="الدورات المكتملة"
-          value={metrics.monthlyStats.coursesCompleted}
-          icon={BookOpen}
-          color="bg-emerald-500"
-        />
-        <StatCard
-          title="الساعات التدريبية"
-          value={metrics.totalHoursDelivered}
-          icon={Clock}
-          color="bg-indigo-500"
-        />
-        <StatCard
-          title="الإيرادات"
-          value={`${(metrics.monthlyStats.revenue / 1000).toFixed(0)}k ر.س`}
-          icon={DollarSign}
-          color="bg-rose-500"
-        />
+        <NumericStatCard title="التسجيلات الجديدة" value={metrics.monthlyStats.newEnrollments} description="هذا الشهر" accentColor="#a4e2f6" />
+        <NumericStatCard title="الدورات المكتملة" value={metrics.monthlyStats.coursesCompleted} description="هذا الشهر" accentColor="#bdeed3" />
+        <NumericStatCard title="الساعات التدريبية" value={metrics.totalHoursDelivered} description="إجمالي الساعات" accentColor="#d9d2fd" />
+        <NumericStatCard title="الإيرادات" value={`${(metrics.monthlyStats.revenue / 1000).toFixed(0)}k ر.س`} description="هذا الشهر" accentColor="#fbe2aa" />
       </div>
 
       {/* Kirkpatrick Metrics */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
-        <div className="p-6 pb-2">
-          <div className="flex items-center gap-2 text-lg font-semibold">
-            <Target className="h-5 w-5" />
-            مؤشرات كيركباتريك للتقييم
-          </div>
+      <BaseBox title="مؤشرات كيركباتريك للتقييم">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { label: 'رد الفعل', value: metrics.kirkpatrickMetrics.reaction },
+            { label: 'التعلم', value: metrics.kirkpatrickMetrics.learning },
+            { label: 'السلوك', value: metrics.kirkpatrickMetrics.behavior },
+            { label: 'النتائج', value: metrics.kirkpatrickMetrics.results },
+          ].map((m, i) => (
+            <div key={i} className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-xs font-medium text-[rgba(11,15,18,0.60)] font-arabic">{m.label}</span>
+                <span className="text-xs font-bold text-[#0B0F12]">{m.value}/5</span>
+              </div>
+              <div className="w-full h-2 bg-[rgba(11,15,18,0.04)] rounded-full">
+                <div className="h-2 rounded-full bg-[#bdeed3] transition-all" style={{ width: `${(m.value / 5) * 100}%` }} />
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="px-6 pb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">رد الفعل</span>
-                <span className="text-sm text-gray-600">{metrics.kirkpatrickMetrics.reaction}/5</span>
-              </div>
-              <Progress value={(metrics.kirkpatrickMetrics.reaction / 5) * 100} className="h-2" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">التعلم</span>
-                <span className="text-sm text-gray-600">{metrics.kirkpatrickMetrics.learning}/5</span>
-              </div>
-              <Progress value={(metrics.kirkpatrickMetrics.learning / 5) * 100} className="h-2" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">السلوك</span>
-                <span className="text-sm text-gray-600">{metrics.kirkpatrickMetrics.behavior}/5</span>
-              </div>
-              <Progress value={(metrics.kirkpatrickMetrics.behavior / 5) * 100} className="h-2" />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium">النتائج</span>
-                <span className="text-sm text-gray-600">{metrics.kirkpatrickMetrics.results}/5</span>
-              </div>
-              <Progress value={(metrics.kirkpatrickMetrics.results / 5) * 100} className="h-2" />
-            </div>
-          </div>
-        </div>
-      </div>
+      </BaseBox>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Skill Gap Alerts */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
-          <div className="p-6 pb-2">
-            <div className="flex items-center gap-2 text-lg font-semibold">
-              <AlertTriangle className="h-5 w-5" />
-              تنبيهات فجوات المهارات
-            </div>
-          </div>
-          <div className="px-6 pb-6">
-            <div className="space-y-4">
-              {alerts.map((alert) => (
-                <div key={alert.id} className="flex items-start justify-between p-3 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium">{alert.area}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{alert.businessImpact}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Badge variant={
-                        alert.severity === 'critical' ? 'error' :
-                        alert.severity === 'high' ? 'error' :
-                        alert.severity === 'medium' ? 'secondary' : 'outline'
-                      }>
-                        {alert.severity === 'critical' ? 'حرج' :
-                         alert.severity === 'high' ? 'عالي' :
-                         alert.severity === 'medium' ? 'متوسط' : 'منخفض'}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {alert.affectedEmployees.length} موظف متأثر
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Upcoming Sessions */}
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
-          <div className="p-6 pb-2">
-            <div className="text-lg font-semibold">الجلسات القادمة</div>
-          </div>
-          <div className="px-6 pb-6">
-            <div className="space-y-4">
-              {upcomingSessions.map((session) => (
-                <div key={session.id} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex-1">
-                    <h4 className="font-medium">{session.title}</h4>
-                    <p className="text-sm text-gray-600">{session.instructor}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <span className="text-xs text-gray-500">
-                        {new Date(session.scheduledAt).toLocaleDateString('ar-SA')}
-                      </span>
-                      <Badge variant="outline">
-                        {session.type === 'workshop' ? 'ورشة عمل' :
-                         session.type === 'live' ? 'جلسة مباشرة' : 'ندوة'}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {session.registeredCount}/{session.maxAttendees}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Enrollments */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
-        <div className="p-6 pb-2">
-          <div className="text-lg font-semibold">التسجيلات الأخيرة</div>
-        </div>
-        <div className="px-6 pb-6">
-          <div className="space-y-4">
-            {recentEnrollments.map((enrollment) => (
-              <div key={enrollment.id} className="flex items-center justify-between p-3 border rounded-lg">
+        <BaseBox title="تنبيهات فجوات المهارات">
+          <div className="space-y-3">
+            {alerts.map((alert) => (
+              <div key={alert.id} className="flex items-start justify-between p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <h4 className="font-medium">موظف {enrollment.studentId}</h4>
-                      <p className="text-sm text-gray-600">دورة {enrollment.courseId}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                   <Badge variant={
-                    enrollment.status === 'completed' ? 'default' :
-                    enrollment.status === 'in_progress' ? 'secondary' :
-                    enrollment.status === 'failed' ? 'error' : 'outline'
-                  }>
-                    {enrollment.status === 'completed' ? 'مكتمل' :
-                     enrollment.status === 'in_progress' ? 'قيد التقدم' :
-                     enrollment.status === 'failed' ? 'فاشل' :
-                     enrollment.status === 'dropped' ? 'منسحب' : 'مسجل'}
-                  </Badge>
-                  <div className="text-right">
-                    <div className="text-sm font-medium">{enrollment.progress}%</div>
-                    <Progress value={enrollment.progress} className="h-1 w-16" />
+                  <h4 className="text-[12px] font-bold font-arabic text-[#0B0F12]">{alert.area}</h4>
+                  <p className="text-[11px] text-[rgba(11,15,18,0.50)] font-arabic mt-1">{alert.businessImpact}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <BaseBadge variant={alert.severity === 'critical' || alert.severity === 'high' ? 'error' : 'secondary'} size="sm">
+                      {alert.severity === 'critical' ? 'حرج' : alert.severity === 'high' ? 'عالي' : alert.severity === 'medium' ? 'متوسط' : 'منخفض'}
+                    </BaseBadge>
+                    <span className="text-[10px] text-[rgba(11,15,18,0.35)]">{alert.affectedEmployees.length} موظف متأثر</span>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </BaseBox>
+
+        {/* Upcoming Sessions */}
+        <BaseBox title="الجلسات القادمة">
+          <div className="space-y-3">
+            {upcomingSessions.map((session) => (
+              <div key={session.id} className="flex items-center justify-between p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+                <div className="flex-1">
+                  <h4 className="text-[12px] font-bold font-arabic text-[#0B0F12]">{session.title}</h4>
+                  <p className="text-[11px] text-[rgba(11,15,18,0.50)] font-arabic">{session.instructor}</p>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-[10px] text-[rgba(11,15,18,0.35)]">
+                      {new Date(session.scheduledAt).toLocaleDateString('ar-SA')}
+                    </span>
+                    <BaseBadge variant="outline" size="sm">
+                      {session.type === 'workshop' ? 'ورشة عمل' : session.type === 'live' ? 'جلسة مباشرة' : 'ندوة'}
+                    </BaseBadge>
+                    <span className="text-[10px] text-[rgba(11,15,18,0.35)]">{session.registeredCount}/{session.maxAttendees}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </BaseBox>
       </div>
+
+      {/* Recent Enrollments */}
+      <BaseBox title="التسجيلات الأخيرة">
+        <div className="space-y-3">
+          {recentEnrollments.map((enrollment) => (
+            <div key={enrollment.id} className="flex items-center justify-between p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+              <div className="flex-1">
+                <h4 className="text-[12px] font-bold font-arabic text-[#0B0F12]">موظف {enrollment.studentId}</h4>
+                <p className="text-[11px] text-[rgba(11,15,18,0.50)] font-arabic">دورة {enrollment.courseId}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <BaseBadge
+                  variant={enrollment.status === 'completed' ? 'success' : enrollment.status === 'in_progress' ? 'info' : enrollment.status === 'failed' ? 'error' : 'outline'}
+                  size="sm"
+                >
+                  {enrollment.status === 'completed' ? 'مكتمل' : enrollment.status === 'in_progress' ? 'قيد التقدم' : enrollment.status === 'failed' ? 'فاشل' : enrollment.status === 'dropped' ? 'منسحب' : 'مسجل'}
+                </BaseBadge>
+                <div className="text-right">
+                  <div className="text-[12px] font-bold text-[#0B0F12]">{enrollment.progress}%</div>
+                  <div className="w-16 h-1.5 bg-[rgba(11,15,18,0.04)] rounded-full mt-0.5">
+                    <div className="h-full rounded-full bg-[#bdeed3] transition-all" style={{ width: `${enrollment.progress}%` }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </BaseBox>
     </div>
   );
 };

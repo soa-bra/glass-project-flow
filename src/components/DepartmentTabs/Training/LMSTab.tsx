@@ -63,24 +63,24 @@ export const LMSTab: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">24</div>
           <div className="text-sm text-gray-600">حزم SCORM</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Play className="h-8 w-8 text-green-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">156</div>
           <div className="text-sm text-gray-600">جلسات تفاعلية</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">89</div>
           <div className="text-sm text-gray-600">موارد تعليمية</div>
         </div>
       </div>
 
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2">
           <div className="text-lg font-semibold">حزم SCORM المرفوعة</div>
         </div>
@@ -117,29 +117,29 @@ export const LMSTab: React.FC = () => {
       <h3 className="text-xl font-semibold">تتبع التقدم والتحليلات</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">847</div>
           <div className="text-sm text-gray-600">إجمالي المستخدمين</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">2,340</div>
           <div className="text-sm text-gray-600">ساعات التعلم</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <CheckCircle className="h-8 w-8 text-purple-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">89%</div>
           <div className="text-sm text-gray-600">معدل الإنجاز</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">456</div>
           <div className="text-sm text-gray-600">شهادة صادرة</div>
         </div>
       </div>
 
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2">
           <div className="text-lg font-semibold">بيانات xAPI الحديثة</div>
         </div>
@@ -177,7 +177,7 @@ export const LMSTab: React.FC = () => {
       <h3 className="text-xl font-semibold">إعدادات نظام إدارة التعلم</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
           <div className="p-6 pb-2">
             <div className="text-lg font-semibold">إعدادات SCORM</div>
           </div>
@@ -197,7 +197,7 @@ export const LMSTab: React.FC = () => {
           </div>
         </div>
 
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
           <div className="p-6 pb-2">
             <div className="text-lg font-semibold">إعدادات xAPI</div>
           </div>
@@ -218,7 +218,7 @@ export const LMSTab: React.FC = () => {
         </div>
       </div>
 
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2">
           <div className="text-lg font-semibold">إعدادات التتبع</div>
         </div>

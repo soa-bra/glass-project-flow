@@ -50,22 +50,22 @@ export const CertificationsTab: React.FC = () => {
 
       {/* Certificate Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Award className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{certificates.length}</div>
           <div className="text-sm text-gray-600">شهادات صادرة</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{certificates.length}</div>
           <div className="text-sm text-gray-600">شهادات مفعلة</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{certificateTemplates.length}</div>
           <div className="text-sm text-gray-600">قوالب الشهادات</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">234</div>
           <div className="text-sm text-gray-600">تحميلات الشهادات</div>
@@ -179,12 +179,12 @@ export const CertificationsTab: React.FC = () => {
 
       {/* Skills Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{skillMatrix.length}</div>
           <div className="text-sm text-gray-600">ملفات المهارات</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">
             {Math.round(skillMatrix.reduce((acc, emp) => 
@@ -193,7 +193,7 @@ export const CertificationsTab: React.FC = () => {
           </div>
           <div className="text-sm text-gray-600">متوسط المهارات</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">
             {skillMatrix.filter(emp => 
@@ -202,7 +202,7 @@ export const CertificationsTab: React.FC = () => {
           </div>
           <div className="text-sm text-gray-600">خبراء</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">
             {skillMatrix.filter(emp => 

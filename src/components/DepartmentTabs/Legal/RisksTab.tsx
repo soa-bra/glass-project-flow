@@ -93,7 +93,7 @@ export const RisksTab: React.FC = () => {
       </div>
 
       {/* نظرة عامة على المخاطر */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><Shield className="h-4 w-4 text-black" /></div>
@@ -107,7 +107,7 @@ export const RisksTab: React.FC = () => {
             { label: 'مخاطر متوسطة', count: riskStats.medium, icon: Activity },
             { label: 'مخاطر منخفضة', count: riskStats.low, icon: Shield },
           ].map((stat, i) => (
-            <div key={i} className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            <div key={i} className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><stat.icon className="h-4 w-4 text-black" /></div>
               <div className="text-2xl font-bold text-black font-arabic">{stat.count}</div>
               <div className="text-sm font-medium text-black font-arabic">{stat.label}</div>
@@ -117,7 +117,7 @@ export const RisksTab: React.FC = () => {
       </div>
 
       {/* مصفوفة المخاطر */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">مصفوفة المخاطر</h3></div>
         <div className="grid grid-cols-5 gap-2 mb-4">
           <div className="text-center text-sm font-medium text-black font-arabic">الاحتمالية</div>
@@ -131,17 +131,17 @@ export const RisksTab: React.FC = () => {
                 const score = probability * impact;
                 let colorClass = 'bg-[#bdeed3]';
                 if (score >= 12) colorClass = 'bg-[#f1b5b9]'; else if (score >= 8) colorClass = 'bg-[#fbe2aa]'; else if (score >= 4) colorClass = 'bg-[#a4e2f6]';
-                return <div key={`${impact}-${probability}`} className={`h-12 flex items-center justify-center rounded-[41px] ${colorClass} border border-[#DADCE0]`}><span className="text-sm font-medium text-black">{score}</span></div>;
+                return <div key={`${impact}-${probability}`} className={`h-12 flex items-center justify-center rounded-[24px] ${colorClass} border border-[#DADCE0]`}><span className="text-sm font-medium text-black">{score}</span></div>;
               })}
             </React.Fragment>)}
         </div>
       </div>
 
       {/* تقييمات المخاطر */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">تقييمات المخاطر</h3></div>
         <div className="space-y-4">
-          {risks.map(risk => <div key={risk.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          {risks.map(risk => <div key={risk.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -162,7 +162,7 @@ export const RisksTab: React.FC = () => {
                   <div className="text-xs text-center mt-1 text-black/70 font-arabic">{getStatusText(risk.riskLevel)}</div>
                 </div>
               </div>
-              <div className="bg-transparent border border-[#DADCE0] rounded-[41px] p-3">
+              <div className="bg-transparent border border-[#DADCE0] rounded-[24px] p-3">
                 <div className="text-sm font-medium text-black font-arabic mb-1">استراتيجية التخفيف:</div>
                 <div className="text-sm text-black/70 font-arabic">{risk.mitigationStrategy}</div>
               </div>

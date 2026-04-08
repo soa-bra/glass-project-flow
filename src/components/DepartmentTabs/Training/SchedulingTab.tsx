@@ -94,7 +94,7 @@ export const SchedulingTab: React.FC = () => {
   const ListView = () => (
     <div className="space-y-4">
       {scheduledSessions.map((session) => (
-        <div key={session.id} className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-md transition-shadow">
+        <div key={session.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-md transition-shadow">
           <div className="p-6">
             <div className="flex justify-between items-start">
               <div className="flex-1">
@@ -175,22 +175,22 @@ export const SchedulingTab: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{scheduledSessions.length}</div>
           <div className="text-sm text-gray-600">جلسات مجدولة</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{scheduledSessions.reduce((acc, s) => acc + s.registered, 0)}</div>
           <div className="text-sm text-gray-600">إجمالي المسجلين</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <Clock className="h-8 w-8 text-orange-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{upcomingThisWeek.length}</div>
           <div className="text-sm text-gray-600">هذا الأسبوع</div>
         </div>
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
           <MapPin className="h-8 w-8 text-purple-600 mx-auto mb-2" />
           <div className="text-2xl font-bold">{scheduledSessions.reduce((acc, s) => acc + s.waitlist, 0)}</div>
           <div className="text-sm text-gray-600">قوائم الانتظار</div>
@@ -229,7 +229,7 @@ export const SchedulingTab: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
         <div className="p-6 pb-2">
           <div className="text-lg font-semibold">
             {viewMode === 'calendar' ? 'تقويم الجلسات' : 'قائمة الجلسات المجدولة'}
@@ -242,7 +242,7 @@ export const SchedulingTab: React.FC = () => {
 
       {/* Upcoming This Week */}
       {upcomingThisWeek.length > 0 && (
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0]">
+        <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
           <div className="p-6 pb-2">
             <div className="text-lg font-semibold">الجلسات القادمة هذا الأسبوع</div>
           </div>

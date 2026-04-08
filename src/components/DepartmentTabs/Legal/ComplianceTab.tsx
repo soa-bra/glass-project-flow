@@ -81,7 +81,7 @@ export const ComplianceTab: React.FC = () => {
       </div>
 
       {/* نظرة عامة على الامتثال */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
@@ -92,29 +92,29 @@ export const ComplianceTab: React.FC = () => {
         </div>
         <div>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="text-3xl font-bold text-black font-arabic mb-2">{compliancePercentage}%</div>
               <div className="text-sm font-medium text-black font-arabic">نسبة الامتثال</div>
               <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                 <div className="bg-[#bdeed3] h-2 rounded-full transition-all duration-300" style={{ width: `${compliancePercentage}%` }} />
               </div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><CheckCircle className="h-4 w-4 text-black" /></div>
               <div className="text-2xl font-bold text-black font-arabic">{complianceStats.compliant}</div>
               <div className="text-sm font-medium text-black font-arabic">متوافقة</div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><AlertTriangle className="h-4 w-4 text-black" /></div>
               <div className="text-2xl font-bold text-black font-arabic">{complianceStats.actionRequired}</div>
               <div className="text-sm font-medium text-black font-arabic">تحتاج إجراء</div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Clock className="h-4 w-4 text-black" /></div>
               <div className="text-2xl font-bold text-black font-arabic">{complianceStats.pendingReview}</div>
               <div className="text-sm font-medium text-black font-arabic">قيد المراجعة</div>
             </div>
-            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
               <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><AlertTriangle className="h-4 w-4 text-black" /></div>
               <div className="text-2xl font-bold text-black font-arabic">{complianceStats.nonCompliant}</div>
               <div className="text-sm font-medium text-black font-arabic">غير متوافقة</div>
@@ -124,7 +124,7 @@ export const ComplianceTab: React.FC = () => {
       </div>
 
       {/* قائمة عناصر الامتثال */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">مصفوفة المتطلبات القانونية</h3></div>
         <div>
           <div className="overflow-x-auto">
@@ -167,7 +167,7 @@ export const ComplianceTab: React.FC = () => {
       </div>
 
       {/* العناصر التي تحتاج إجراء عاجل */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><AlertTriangle className="h-4 w-4 text-black" /></div>
@@ -176,7 +176,7 @@ export const ComplianceTab: React.FC = () => {
         </div>
         <div>
           <div className="space-y-3">
-            {items.filter(item => item.status === 'action_required' || item.status === 'non_compliant').slice(0, 5).map(item => <div key={item.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+            {items.filter(item => item.status === 'action_required' || item.status === 'non_compliant').slice(0, 5).map(item => <div key={item.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><AlertTriangle className="h-4 w-4 text-black" /></div>
                     <div className="flex-1">
