@@ -51,7 +51,7 @@ export const CulturalIdentityTab: React.FC = () => {
             العناصر الأساسية للهوية
           </h3>
           <BaseActionButton 
-            variant={isEditing ? "default" : "outline"} 
+            variant={isEditing ? "secondary" : "outline"} 
             size="sm"
             onClick={() => setIsEditing(!isEditing)}
           >
