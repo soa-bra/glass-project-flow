@@ -32,9 +32,9 @@ export const ReportsTab: React.FC = () => {
   };
 
   const handleCreateReport = () => {
-    const allData = reports.map(r => [r.name, r.period, r.lastGenerated, r.status]);
+    const allData = reports.map(r => [r.name, r.period, r.lastGenerated]);
     downloadAsCSV(
-      ['اسم التقرير', 'الفترة', 'آخر إنشاء', 'الحالة'],
+      ['اسم التقرير', 'الفترة', 'آخر إنشاء'],
       allData,
       `تقرير-مالي-مخصص-${new Date().toISOString().split('T')[0]}`
     );
