@@ -1,6 +1,4 @@
-
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
 import { Project } from '@/types/project';
 
 interface AICardProps {
@@ -9,81 +7,45 @@ interface AICardProps {
 
 export const AIBox: React.FC<AICardProps> = ({ project }) => {
   const suggestions = [
-    {
-      id: 1,
-      type: 'team',
-      title: 'إضافة مطور واجهات',
-      description: 'يُنصح بإضافة مطور واجهات متخصص لتسريع العمل في المرحلة القادمة',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      type: 'budget',
-      title: 'مراجعة الميزانية',
-      description: 'تم صرف 75% من الميزانية، يُنصح بمراجعة المصروفات المتبقية',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      type: 'legal',
-      title: 'تجديد التراخيص',
-      description: 'ينتهي ترخيص البرمجيات المستخدمة في 15 يوماً',
-      priority: 'high'
-    }
+    { id: 1, type: 'team', title: 'إضافة مطور واجهات', description: 'يُنصح بإضافة مطور واجهات متخصص لتسريع العمل في المرحلة القادمة', priority: 'high' },
+    { id: 2, type: 'budget', title: 'مراجعة الميزانية', description: 'تم صرف 75% من الميزانية، يُنصح بمراجعة المصروفات المتبقية', priority: 'medium' },
+    { id: 3, type: 'legal', title: 'تجديد التراخيص', description: 'ينتهي ترخيص البرمجيات المستخدمة في 15 يوماً', priority: 'high' },
   ];
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800 border-red-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'team': return '👥';
-      case 'budget': return '💰';
-      case 'legal': return '⚖️';
-      default: return '🤖';
+  const getPriorityStyle = (p: string) => {
+    switch (p) {
+      case 'high': return { bg: '#f1b5b9', text: 'عالي' };
+      case 'medium': return { bg: '#fbe2aa', text: 'متوسط' };
+      default: return { bg: '#bdeed3', text: 'منخفض' };
     }
   };
 
   return (
-    <div className="h-full rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm">
-          🤖
-        </div>
-        <h3 className="text-lg font-arabic font-semibold">اقتراحات الذكاء الاصطناعي</h3>
+    <div className="h-full rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+      <div className="flex items-center gap-2 mb-5">
+        <div className="w-8 h-8 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center text-sm">🤖</div>
+        <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">اقتراحات الذكاء الاصطناعي</h3>
       </div>
-      
-      <div className="space-y-4 max-h-96 overflow-y-auto">
-        {suggestions.map((suggestion) => (
-          <div key={suggestion.id} className="bg-gray-50/50 rounded-xl p-4 border border-gray-100">
-            <div className="flex items-start gap-3">
-              <div className="text-lg">{getTypeIcon(suggestion.type)}</div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <h4 className="font-arabic font-semibold text-gray-800">{suggestion.title}</h4>
-                  <span className={`px-2 py-1 rounded-full text-xs border ${getPriorityColor(suggestion.priority)}`}>
-                    {suggestion.priority === 'high' ? 'عالي' : suggestion.priority === 'medium' ? 'متوسط' : 'منخفض'}
-                  </span>
+
+      <div className="space-y-3 max-h-96 overflow-y-auto">
+        {suggestions.map((s) => {
+          const ps = getPriorityStyle(s.priority);
+          return (
+            <div key={s.id} className="rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] p-4 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="font-bold text-[#0B0F12] text-sm flex-1">{s.title}</h4>
+                <div className="px-2.5 py-0.5 rounded-full" style={{ backgroundColor: ps.bg }}>
+                  <span className="text-[10px] font-medium text-[#0B0F12]">{ps.text}</span>
                 </div>
-                <p className="text-sm font-arabic text-gray-600">{suggestion.description}</p>
+              </div>
+              <p className="text-[12px] text-[rgba(11,15,18,0.6)] leading-relaxed">{s.description}</p>
+              <div className="flex gap-2 mt-3">
+                <button className="px-3 py-1.5 bg-[#0B0F12] text-white rounded-full text-[11px] font-medium hover:bg-[rgba(11,15,18,0.85)] transition-colors">تطبيق</button>
+                <button className="px-3 py-1.5 rounded-full text-[11px] font-medium ring-1 ring-[rgba(11,15,18,0.15)] text-[#0B0F12] hover:bg-[rgba(11,15,18,0.05)] transition-colors">تجاهل</button>
               </div>
             </div>
-            <div className="flex gap-2 mt-3">
-              <button className="px-3 py-1 bg-blue-500 text-white rounded-lg text-xs hover:bg-blue-600 transition-colors">
-                تطبيق
-              </button>
-              <button className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs hover:bg-gray-300 transition-colors">
-                تجاهل
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
