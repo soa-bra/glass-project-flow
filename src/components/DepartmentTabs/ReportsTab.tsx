@@ -3,7 +3,7 @@ import React from 'react';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp } from 'lucide-react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface ReportsTabProps {
   departmentTitle: string;
@@ -95,14 +95,14 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
               
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">آخر إنشاء: {report.lastGenerated}</span>
-                <Button 
+                <BaseActionButton 
                   size="sm" 
                   variant={report.status === 'متاح' ? 'default' : 'outline'}
                   className="text-xs"
                   disabled={report.status !== 'متاح'}
                 >
                   {report.status === 'متاح' ? 'تحميل' : 'إنشاء'}
-                </Button>
+                </BaseActionButton>
               </div>
             </div>
           ))}
@@ -116,9 +116,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
             <Download className="h-5 w-5 text-green-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">التقارير الحديثة</h3>
           </div>
-          <Button variant="outline" size="sm">
+          <BaseActionButton variant="outline" size="sm">
             عرض الكل
-          </Button>
+          </BaseActionButton>
         </div>
         
         <div className="space-y-3">
@@ -136,9 +136,9 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
                 </div>
               </div>
               
-              <Button size="sm" variant="ghost">
+              <BaseActionButton size="sm" variant="ghost">
                 <Download className="h-4 w-4" />
-              </Button>
+              </BaseActionButton>
             </div>
           ))}
         </div>

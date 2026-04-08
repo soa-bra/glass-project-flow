@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { BaseBox } from "@/components/ui/BaseBox";
+import { BaseActionButton } from "@/components/shared/BaseActionButton";
 import { BaseBadge } from "@/components/ui/BaseBadge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -113,14 +113,14 @@ export const ModelsTemplatesTab: React.FC = () => {
             <BaseBadge variant="outline">{getCategoryLabel(metric.category)}</BaseBadge>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <BaseActionButton variant="outline" size="sm">
               <Eye className="h-3 w-3 mr-1" />
               معاينة
-            </Button>
-            <Button size="sm">
+            </BaseActionButton>
+            <BaseActionButton variant="primary" size="sm">
               <Download className="h-3 w-3 mr-1" />
               تحميل Excel
-            </Button>
+            </BaseActionButton>
           </div>
         </div>
 
@@ -217,14 +217,14 @@ export const ModelsTemplatesTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">النماذج والقوالب</h3>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+          <BaseActionButton variant="outline" className="flex items-center gap-2">
             <Upload className="h-4 w-4" />
             رفع قالب
-          </Button>
-          <Button className="flex items-center gap-2">
+          </BaseActionButton>
+          <BaseActionButton variant="primary" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             إنشاء نموذج جديد
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -237,9 +237,9 @@ export const ModelsTemplatesTab: React.FC = () => {
         <TabsContent value="metrics" className="space-y-6">
           {selectedMetric ? (
             <div>
-              <Button variant="outline" className="mb-4" onClick={() => setSelectedMetric(null)}>
+              <BaseActionButton variant="outline" className="mb-4" onClick={() => setSelectedMetric(null)}>
                 ← العودة للمقاييس
-              </Button>
+              </BaseActionButton>
               <MetricDetails metric={metrics.find((m) => m.id === selectedMetric)} />
             </div>
           ) : (
@@ -325,9 +325,9 @@ export const ModelsTemplatesTab: React.FC = () => {
                                 <BaseBadge variant="secondary" className="text-xs">
                                   {metric.usage} استخدام
                                 </BaseBadge>
-                                <Button size="sm" variant="ghost" className="h-6 px-2">
+                                <BaseActionButton variant="ghost" size="sm" className="h-6 px-2">
                                   <Eye className="h-3 w-3" />
-                                </Button>
+                                </BaseActionButton>
                               </div>
                             </div>
                           ))}
@@ -441,18 +441,18 @@ export const ModelsTemplatesTab: React.FC = () => {
                         <div className="text-xs text-gray-600">تحميل</div>
                       </div>
                       <div className="flex gap-1">
-                        <Button size="sm" variant="outline">
+                        <BaseActionButton variant="outline" size="sm">
                           <Eye className="h-3 w-3 mr-1" />
                           معاينة
-                        </Button>
-                        <Button size="sm">
+                        </BaseActionButton>
+                        <BaseActionButton variant="primary" size="sm">
                           <Download className="h-3 w-3 mr-1" />
                           تحميل
-                        </Button>
-                        <Button size="sm" variant="outline">
+                        </BaseActionButton>
+                        <BaseActionButton variant="outline" size="sm">
                           <Edit className="h-3 w-3 mr-1" />
                           تحرير
-                        </Button>
+                        </BaseActionButton>
                       </div>
                     </div>
                   </div>
