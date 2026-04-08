@@ -1,10 +1,10 @@
 import React from 'react';
-import { Download, PieChart, Target } from 'lucide-react';
+import { Download, Target } from 'lucide-react';
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
-import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
+import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
 import { mockExpenseCategories } from './data';
@@ -14,31 +14,16 @@ export const AnalysisTab: React.FC = () => {
   const colors = ['#3DBE8B', '#3DA8F5', '#F6C445', '#E5564D', '#9B59B6'];
 
   const scenarios = [
-    {
-      title: 'السيناريو المتفائل',
-      growth: '+25%',
-      revenue: 3062500,
-      variant: 'success' as const
-    },
-    {
-      title: 'السيناريو الأساسي',
-      growth: '+12%',
-      revenue: 2744000,
-      variant: 'info' as const
-    },
-    {
-      title: 'السيناريو المتحفظ',
-      growth: '+5%',
-      revenue: 2572500,
-      variant: 'warning' as const
-    }
+    { title: 'السيناريو المتفائل', growth: '+25%', revenue: 3062500, color: '#3DBE8B' },
+    { title: 'السيناريو الأساسي', growth: '+12%', revenue: 2744000, color: '#3DA8F5' },
+    { title: 'السيناريو المتحفظ', growth: '+5%', revenue: 2572500, color: '#F6C445' },
   ];
 
   return (
     <BaseTabContent value="analysis">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
-          <h3 className={buildTitleClasses()}>التحليل والتقارير</h3>
+          <h3 className="text-lg font-bold text-[#0B0F12] font-arabic">التحليل والتقارير</h3>
           <BaseActionButton variant="primary" icon={<Download className="w-4 h-4" />}>
             تصدير التقرير
           </BaseActionButton>
@@ -46,66 +31,74 @@ export const AnalysisTab: React.FC = () => {
       </Reveal>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseBox 
-          title="توزيع المصروفات" 
-          icon={<PieChart className="h-5 w-5" />}
-        >
-          <ResponsiveContainer width="100%" height={300}>
-            <RechartsPieChart>
-              <Pie 
-                data={mockExpenseCategories} 
-                cx="50%" 
-                cy="50%" 
-                labelLine={false} 
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} 
-                outerRadius={80} 
-                fill="#8884d8" 
-                dataKey="value"
-              >
-                {mockExpenseCategories.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                ))}
-              </Pie>
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '12px',
-                  fontSize: '14px'
-                }}
-              />
-            </RechartsPieChart>
-          </ResponsiveContainer>
-        </BaseBox>
+        {/* Pie Chart */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">
+            توزيع المصروفات
+          </span>
+          <div className="mt-4">
+            <ResponsiveContainer width="100%" height={280}>
+              <RechartsPieChart>
+                <Pie
+                  data={mockExpenseCategories}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={90}
+                  innerRadius={50}
+                  strokeWidth={0}
+                  dataKey="value"
+                >
+                  {mockExpenseCategories.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0B0F12',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '14px',
+                    color: '#FFFFFF',
+                    padding: '8px 12px',
+                  }}
+                  itemStyle={{ color: '#FFFFFF' }}
+                />
+              </RechartsPieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-        <BaseBox 
-          title="التنبؤات المالية" 
-          icon={<Target className="h-5 w-5" />}
-        >
-          <Stagger gap={0.1} className="space-y-4">
+        {/* Scenarios */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col">
+          <div className="flex items-center gap-2 mb-6">
+            <Target className="h-5 w-5 text-[#0B0F12]" />
+            <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">
+              التنبؤات المالية
+            </span>
+          </div>
+          <Stagger gap={0.1} className="space-y-4 flex-1">
             {scenarios.map((scenario, index) => (
               <Stagger.Item key={index}>
-                <div className={cn(
-                  'p-4 rounded-lg',
-                  scenario.variant === 'success' && 'bg-green-50 border border-green-200',
-                  scenario.variant === 'info' && 'bg-blue-50 border border-blue-200',
-                  scenario.variant === 'warning' && 'bg-yellow-50 border border-yellow-200'
-                )}>
-                  <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
-                    {scenario.title}
-                  </h4>
-                  <p className={cn(TYPOGRAPHY.SMALL, 'font-medium', COLORS.PRIMARY_TEXT)}>
-                    نمو متوقع: {scenario.growth}
-                  </p>
-                  <p className={cn(TYPOGRAPHY.SMALL, COLORS.SECONDARY_TEXT)}>
-                    الإيرادات المتوقعة: {formatCurrency(scenario.revenue)}
-                  </p>
+                <div className="rounded-[18px] border border-[#DADCE0] p-5 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-[rgba(11,15,18,0.50)] font-arabic mb-1">{scenario.title}</p>
+                    <p className="text-[28px] leading-none font-bold text-[#0B0F12] font-arabic">
+                      {formatCurrency(scenario.revenue)}
+                    </p>
+                  </div>
+                  <div
+                    className="text-sm font-bold font-arabic px-3 py-1.5 rounded-full"
+                    style={{ backgroundColor: `${scenario.color}20`, color: scenario.color }}
+                  >
+                    {scenario.growth}
+                  </div>
                 </div>
               </Stagger.Item>
             ))}
           </Stagger>
-        </BaseBox>
+        </div>
       </div>
     </BaseTabContent>
   );

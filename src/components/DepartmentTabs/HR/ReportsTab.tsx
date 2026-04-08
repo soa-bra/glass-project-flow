@@ -1,290 +1,85 @@
-
 import React, { useState } from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
-import { BarChart3, PieChart, TrendingUp, Users, Calendar, Download, Filter, Eye } from 'lucide-react';
-import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { Download, Eye } from 'lucide-react';
+import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
 import { mockWorkforceAnalytics, mockHRStats } from './data';
 
 export const ReportsTab: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
-  
   const analytics = mockWorkforceAnalytics;
   const stats = mockHRStats;
 
   const reportTypes = [
-    {
-      id: 'attendance',
-      title: 'تقرير الحضور والغياب',
-      description: 'تحليل شامل لحضور الموظفين ومعدلات الغياب',
-      icon: Calendar,
-      color: 'text-blue-600',
-      lastGenerated: '2024-12-30'
-    },
-    {
-      id: 'performance',
-      title: 'تقرير الأداء والتقييم',
-      description: 'ملخص تقييمات الأداء والإنجازات',
-      icon: TrendingUp,
-      color: 'text-green-600',
-      lastGenerated: '2024-12-28'
-    },
-    {
-      id: 'recruitment',
-      title: 'تقرير التوظيف والاستقطاب',
-      description: 'إحصائيات التوظيف ومعدلات النجاح',
-      icon: Users,
-      color: 'text-purple-600',
-      lastGenerated: '2024-12-25'
-    },
-    {
-      id: 'training',
-      title: 'تقرير التدريب والتطوير',
-      description: 'تحليل البرامج التدريبية ومعدلات الإكمال',
-      icon: BarChart3,
-      color: 'text-orange-600',
-      lastGenerated: '2024-12-20'
-    },
-    {
-      id: 'workforce',
-      title: 'تحليل القوى العاملة',
-      description: 'رؤى شاملة حول تركيبة وتوزيع القوى العاملة',
-      icon: PieChart,
-      color: 'text-indigo-600',
-      lastGenerated: '2024-12-30'
-    }
+    { id: 'attendance', title: 'تقرير الحضور والغياب', lastGenerated: '2024-12-30' },
+    { id: 'performance', title: 'تقرير الأداء والتقييم', lastGenerated: '2024-12-28' },
+    { id: 'recruitment', title: 'تقرير التوظيف والاستقطاب', lastGenerated: '2024-12-25' },
+    { id: 'training', title: 'تقرير التدريب والتطوير', lastGenerated: '2024-12-20' },
+    { id: 'workforce', title: 'تحليل القوى العاملة', lastGenerated: '2024-12-30' },
   ];
 
-  const quickInsights = [
-    {
-      title: 'أعلى معدل حضور',
-      value: '98.5%',
-      department: 'قسم التقنية',
-      trend: 'up'
-    },
-    {
-      title: 'أعلى معدل رضا',
-      value: '4.7/5',
-      department: 'قسم التصميم',
-      trend: 'up'
-    },
-    {
-      title: 'أسرع وقت توظيف',
-      value: '12 يوم',
-      department: 'قسم المالية',
-      trend: 'down'
-    },
-    {
-      title: 'أعلى معدل إكمال تدريب',
-      value: '94%',
-      department: 'قسم التسويق',
-      trend: 'up'
-    }
-  ];
+  const deptData = analytics.departmentDistribution.map((d: any) => ({
+    label: d.department,
+    value: d.count,
+  }));
 
-  const generateReport = (reportType: string) => {
-    // هنا يمكن إضافة منطق توليد التقرير
-  };
+  const perfData = [
+    { label: 'ممتاز', value: analytics.performanceDistribution.excellent },
+    { label: 'جيد', value: analytics.performanceDistribution.good },
+    { label: 'مقبول', value: analytics.performanceDistribution.satisfactory },
+    { label: 'يحتاج تحسين', value: analytics.performanceDistribution.needsImprovement },
+  ];
 
   return (
-    <div className="space-y-6 bg-transparent">
-      {/* لوحة المعلومات التحليلية */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <BaseBox variant="operations" size="sm">
-          <div className="text-center">
-            <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-800">{analytics.totalEmployees}</p>
-            <p className="text-sm text-gray-600 font-arabic">إجمالي الموظفين</p>
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" size="sm">
-          <div className="text-center">
-            <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-800">{analytics.turnoverRate}%</p>
-            <p className="text-sm text-gray-600 font-arabic">معدل الدوران</p>
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" size="sm">
-          <div className="text-center">
-            <Calendar className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-800">{analytics.averageAge}</p>
-            <p className="text-sm text-gray-600 font-arabic">متوسط العمر</p>
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" size="sm">
-          <div className="text-center">
-            <BarChart3 className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-gray-800">{stats.attendanceRate}%</p>
-            <p className="text-sm text-gray-600 font-arabic">معدل الحضور</p>
-          </div>
-        </BaseBox>
+    <div className="space-y-6">
+      {/* KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricHeroCard title="إجمالي الموظفين" value={analytics.totalEmployees} />
+        <MetricHeroCard title="معدل الدوران" value={`${analytics.turnoverRate}%`} />
+        <MetricHeroCard title="متوسط العمر" value={analytics.averageAge} unit="سنة" />
+        <MetricHeroCard title="معدل الحضور" value={`${stats.attendanceRate}%`} />
       </div>
 
-      {/* الرؤى السريعة */}
-      <BaseBox variant="operations" size="md">
-        <div className="flex items-center gap-2 mb-4">
-          <Eye className="h-6 w-6 text-blue-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">الرؤى السريعة</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickInsights.map((insight, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="font-medium font-arabic text-sm">{insight.title}</h4>
-                <TrendingUp className={`h-4 w-4 ${insight.trend === 'up' ? 'text-green-600' : 'text-red-600'}`} />
-              </div>
-              <p className="text-2xl font-bold text-gray-800 mb-1">{insight.value}</p>
-              <p className="text-sm text-gray-600 font-arabic">{insight.department}</p>
-            </div>
-          ))}
-        </div>
-      </BaseBox>
-
-      {/* أنواع التقارير */}
-      <BaseBox variant="operations" size="md">
+      {/* Reports List */}
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-6 w-6 text-blue-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">التقارير المتاحة</h3>
-          </div>
-          <div className="flex gap-2">
-            <select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white font-arabic"
-            >
-              <option value="daily">يومي</option>
-              <option value="weekly">أسبوعي</option>
-              <option value="monthly">شهري</option>
-              <option value="quarterly">ربع سنوي</option>
-              <option value="yearly">سنوي</option>
-            </select>
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              <span className="font-arabic">تصفية</span>
-            </Button>
-          </div>
+          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">
+            التقارير المتاحة
+          </span>
+          <select
+            value={selectedPeriod}
+            onChange={(e) => setSelectedPeriod(e.target.value)}
+            className="px-3 py-1.5 border border-[#DADCE0] rounded-full bg-white font-arabic text-xs"
+          >
+            <option value="daily">يومي</option>
+            <option value="weekly">أسبوعي</option>
+            <option value="monthly">شهري</option>
+            <option value="quarterly">ربع سنوي</option>
+          </select>
         </div>
-
-        <div className="grid gap-4">
-          {reportTypes.map((report, index) => (
-            <div key={index} className="p-6 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <report.icon className={`h-8 w-8 ${report.color}`} />
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800 font-arabic mb-2">{report.title}</h3>
-                    <p className="text-gray-600 font-arabic mb-3">{report.description}</p>
-                    <p className="text-sm text-gray-500">آخر إنشاء: {report.lastGenerated}</p>
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => generateReport(report.id)}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    <span className="font-arabic">عرض</span>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => generateReport(report.id)}
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    <span className="font-arabic">تحميل</span>
-                  </Button>
-                  <Button 
-                    size="sm"
-                    onClick={() => generateReport(report.id)}
-                    className="font-arabic"
-                  >
-                    إنشاء تقرير جديد
-                  </Button>
-                </div>
+        <div className="space-y-3">
+          {reportTypes.map((report) => (
+            <div key={report.id} className="flex items-center justify-between p-4 rounded-[18px] border border-[#DADCE0] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+              <div>
+                <h4 className="text-sm font-bold text-[#0B0F12] font-arabic">{report.title}</h4>
+                <p className="text-[11px] text-[rgba(11,15,18,0.35)] font-arabic mt-1">آخر إنشاء: {report.lastGenerated}</p>
+              </div>
+              <div className="flex gap-2">
+                <button className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#DADCE0] text-xs font-arabic hover:bg-[#d9e7ed]/50 transition-colors">
+                  <Eye className="w-3.5 h-3.5" /> عرض
+                </button>
+                <button className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#0B0F12] text-white text-xs font-arabic hover:bg-[#0B0F12]/90 transition-colors">
+                  <Download className="w-3.5 h-3.5" /> تحميل
+                </button>
               </div>
             </div>
           ))}
         </div>
-      </BaseBox>
+      </div>
 
-      {/* توزيع القوى العاملة */}
+      {/* Distribution Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseBox variant="operations" size="md">
-          <div className="flex items-center gap-2 mb-4">
-            <PieChart className="h-6 w-6 text-purple-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">التوزيع حسب القسم</h3>
-          </div>
-          
-          <div className="space-y-3">
-            {analytics.departmentDistribution.map((dept, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="text-sm font-arabic">{dept.department}</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 h-2 bg-gray-200 rounded-full">
-                    <div 
-                      className="h-2 bg-blue-600 rounded-full" 
-                      style={{ width: `${dept.percentage}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-bold w-12 text-right">{dept.count}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" size="md">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="h-6 w-6 text-green-600" />
-            <h3 className="text-xl font-bold text-gray-800 font-arabic">توزيع الأداء</h3>
-          </div>
-          
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-arabic">ممتاز</span>
-              <div className="flex items-center gap-2">
-                <div className="w-24 h-2 bg-gray-200 rounded-full">
-                  <div className="h-2 bg-green-600 rounded-full" style={{ width: '35%' }} />
-                </div>
-                <span className="text-sm font-bold w-12 text-right">{analytics.performanceDistribution.excellent}</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-arabic">جيد</span>
-              <div className="flex items-center gap-2">
-                <div className="w-24 h-2 bg-gray-200 rounded-full">
-                  <div className="h-2 bg-blue-600 rounded-full" style={{ width: '55%' }} />
-                </div>
-                <span className="text-sm font-bold w-12 text-right">{analytics.performanceDistribution.good}</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-arabic">مقبول</span>
-              <div className="flex items-center gap-2">
-                <div className="w-24 h-2 bg-gray-200 rounded-full">
-                  <div className="h-2 bg-yellow-600 rounded-full" style={{ width: '45%' }} />
-                </div>
-                <span className="text-sm font-bold w-12 text-right">{analytics.performanceDistribution.satisfactory}</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-arabic">يحتاج تحسين</span>
-              <div className="flex items-center gap-2">
-                <div className="w-24 h-2 bg-gray-200 rounded-full">
-                  <div className="h-2 bg-red-600 rounded-full" style={{ width: '20%' }} />
-                </div>
-                <span className="text-sm font-bold w-12 text-right">{analytics.performanceDistribution.needsImprovement}</span>
-              </div>
-            </div>
-          </div>
-        </BaseBox>
+        <CapsuleBarChart title="التوزيع حسب القسم" data={deptData} color="#3DA8F5" />
+        <CapsuleBarChart title="توزيع الأداء" data={perfData} color="#3DBE8B" />
       </div>
     </div>
   );

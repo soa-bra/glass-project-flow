@@ -1,9 +1,8 @@
 import React from 'react';
 import { Upload, Download, FileText } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
-import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
-import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
+import { SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -15,7 +14,7 @@ export const TemplatesTab: React.FC = () => {
     { name: 'قالب الفاتورة الموحدة', type: 'Word', downloads: 78 },
     { name: 'نموذج تقرير مالي شهري', type: 'Excel', downloads: 23 },
     { name: 'قالب عقد مالي', type: 'PDF', downloads: 19 },
-    { name: 'نموذج طلب ميزانية', type: 'Word', downloads: 56 }
+    { name: 'نموذج طلب ميزانية', type: 'Word', downloads: 56 },
   ];
 
   const handleUpload = () => {
@@ -37,37 +36,38 @@ export const TemplatesTab: React.FC = () => {
     <BaseTabContent value="templates">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
-          <h3 className={buildTitleClasses()}>النماذج والقوالب المالية</h3>
+          <h3 className="text-lg font-bold text-[#0B0F12] font-arabic">النماذج والقوالب المالية</h3>
           <BaseActionButton variant="primary" icon={<Upload className="w-4 h-4" />} onClick={handleUpload}>
             رفع قالب جديد
           </BaseActionButton>
         </div>
       </Reveal>
 
-      <Stagger gap={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Stagger gap={0.1} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {templates.map((template, index) => (
           <Stagger.Item key={index}>
-            <BaseBox className="cursor-pointer hover:shadow-lg transition-shadow">
-              <div className="flex items-center gap-3 mb-4">
-                <FileText className="h-8 w-8 text-blue-600" />
-                <div>
-                  <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
-                    {template.name}
-                  </h4>
-                  <p className={cn(TYPOGRAPHY.SMALL, COLORS.SECONDARY_TEXT)}>
-                    {template.type}
-                  </p>
+            <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col justify-between min-h-[160px] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow cursor-pointer">
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <FileText className="h-5 w-5 text-[rgba(11,15,18,0.40)]" />
+                  <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic">{template.type}</span>
                 </div>
+                <h4 className="text-base font-bold text-[#0B0F12] font-arabic leading-snug">
+                  {template.name}
+                </h4>
               </div>
-              <div className="flex justify-between items-center">
-                <span className={cn(TYPOGRAPHY.SMALL, 'text-gray-400')}>
+              <div className="flex justify-between items-center mt-auto pt-4">
+                <span className="text-[11px] text-[rgba(11,15,18,0.35)] font-arabic">
                   {template.downloads} تحميل
                 </span>
-                <BaseActionButton variant="primary" size="sm" icon={<Download className="w-4 h-4" />} onClick={() => handleDownload(template)}>
-                  تحميل
-                </BaseActionButton>
+                <button
+                  onClick={() => handleDownload(template)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0B0F12] text-white text-xs font-medium hover:bg-[#0B0F12]/90 transition-colors font-arabic"
+                >
+                  <Download className="w-3.5 h-3.5" /> تحميل
+                </button>
               </div>
-            </BaseBox>
+            </div>
           </Stagger.Item>
         ))}
       </Stagger>

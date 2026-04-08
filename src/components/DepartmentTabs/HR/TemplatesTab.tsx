@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
-import { FileText, Download, Eye, Edit, Plus, Search, Filter } from 'lucide-react';
+import { FileText, Download, Eye, Edit, Plus, Search } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
 import { mockHRTemplates } from './data';
 
 export const TemplatesTab: React.FC = () => {
@@ -11,221 +11,92 @@ export const TemplatesTab: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('الكل');
 
   const categories = ['الكل', 'contract', 'evaluation', 'policy', 'form', 'letter'];
-  
-  const categoryLabels = {
-    contract: 'عقود',
-    evaluation: 'تقييمات',
-    policy: 'سياسات',
-    form: 'نماذج',
-    letter: 'رسائل'
-  };
+  const categoryLabels: Record<string, string> = { contract: 'عقود', evaluation: 'تقييمات', policy: 'سياسات', form: 'نماذج', letter: 'رسائل' };
 
-  const filteredTemplates = mockHRTemplates.filter(template => {
-    const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         template.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'الكل' || template.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+  const filteredTemplates = mockHRTemplates.filter(t => {
+    const matchSearch = t.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchCat = selectedCategory === 'الكل' || t.category === selectedCategory;
+    return matchSearch && matchCat;
   });
 
-  const templateStats = {
-    totalTemplates: mockHRTemplates.length,
-    mostUsed: mockHRTemplates.reduce((prev, current) => (prev.usageCount > current.usageCount) ? prev : current),
-    recentlyUpdated: mockHRTemplates.filter(t => {
-      const updateDate = new Date(t.lastModified);
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      return updateDate > thirtyDaysAgo;
-    }).length
-  };
+  const mostUsed = mockHRTemplates.reduce((prev, cur) => (prev.usageCount > cur.usageCount ? prev : cur));
+  const recentlyUpdated = mockHRTemplates.filter(t => {
+    const d = new Date(t.lastModified);
+    const ago = new Date();
+    ago.setDate(ago.getDate() - 30);
+    return d > ago;
+  }).length;
 
-  const getCategoryBadge = (category: string) => {
-    const colors = {
-      contract: 'bg-blue-600',
-      evaluation: 'bg-green-600',
-      policy: 'bg-purple-600',
-      form: 'bg-orange-600',
-      letter: 'bg-gray-600'
-    };
-    
-    return (
-      <BaseBadge className={`text-xs text-white ${colors[category as keyof typeof colors] || 'bg-gray-600'}`}>
-        {categoryLabels[category as keyof typeof categoryLabels] || category}
-      </BaseBadge>
-    );
-  };
+  const usageData = mockHRTemplates
+    .sort((a, b) => b.usageCount - a.usageCount)
+    .slice(0, 5)
+    .map(t => ({ label: t.name, value: t.usageCount }));
 
   return (
-    <div className="space-y-6 bg-transparent">
-      {/* إحصائيات النماذج */}
+    <div className="space-y-6">
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">إجمالي النماذج</p>
-              <p className="text-2xl font-bold text-blue-600">{templateStats.totalTemplates}</p>
-            </div>
-            <FileText className="h-8 w-8 text-blue-600" />
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">الأكثر استخداماً</p>
-              <p className="text-lg font-bold text-green-600 font-arabic">{templateStats.mostUsed.name}</p>
-              <p className="text-sm text-gray-500">{templateStats.mostUsed.usageCount} مرة</p>
-            </div>
-            <Download className="h-8 w-8 text-green-600" />
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">محدثة حديثاً</p>
-              <p className="text-2xl font-bold text-purple-600">{templateStats.recentlyUpdated}</p>
-              <p className="text-sm text-gray-500 font-arabic">خلال 30 يوم</p>
-            </div>
-            <Edit className="h-8 w-8 text-purple-600" />
-          </div>
-        </BaseBox>
+        <MetricHeroCard title="إجمالي النماذج" value={mockHRTemplates.length} className="min-h-[120px]" />
+        <MetricHeroCard title="الأكثر استخداماً" value={mostUsed.usageCount} description={mostUsed.name} unit="مرة" className="min-h-[120px]" />
+        <MetricHeroCard title="محدثة حديثاً" value={recentlyUpdated} description="خلال 30 يوم" className="min-h-[120px]" />
       </div>
 
-      {/* أدوات البحث والتصفية */}
-      <BaseBox variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <FileText className="h-6 w-6 text-blue-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">النماذج والقوالب</h3>
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-4">
+      {/* Search */}
+      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="flex-1 relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="البحث في النماذج..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10"
-            />
+            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[rgba(11,15,18,0.30)]" />
+            <Input placeholder="البحث في النماذج..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-10 rounded-full border-[#DADCE0]" />
           </div>
-          
-          <div className="flex gap-2">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg bg-white font-arabic"
-            >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>
-                  {cat === 'الكل' ? cat : categoryLabels[cat as keyof typeof categoryLabels] || cat}
-                </option>
-              ))}
-            </select>
-            
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              <span className="font-arabic">تصفية</span>
-            </Button>
-            
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              <span className="font-arabic">إضافة نموذج</span>
-            </Button>
+          <div className="flex gap-2 flex-wrap">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium font-arabic transition-colors ${selectedCategory === cat ? 'bg-[#0B0F12] text-white' : 'border border-[#DADCE0] text-[#0B0F12] hover:bg-[#d9e7ed]/50'}`}
+              >
+                {cat === 'الكل' ? cat : categoryLabels[cat] || cat}
+              </button>
+            ))}
           </div>
         </div>
-      </BaseBox>
 
-      {/* قائمة النماذج */}
-      <BaseBox variant="operations" className="p-6">
-        <div className="grid gap-4">
+        {/* Templates list */}
+        <div className="space-y-3">
           {filteredTemplates.map((template, index) => (
-            <div key={index} className="p-6 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <FileText className="h-6 w-6 text-blue-600" />
-                    <h3 className="text-xl font-bold text-gray-800 font-arabic">{template.name}</h3>
-                    {getCategoryBadge(template.category)}
-                  </div>
-                  <p className="text-gray-600 font-arabic mb-3">{template.description}</p>
-                  
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span>تم الاستخدام {template.usageCount} مرة</span>
-                    <span>•</span>
-                    <span>آخر تعديل: {template.lastModified}</span>
-                    <span>•</span>
-                    <span>بواسطة: {template.createdBy}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2 mt-3">
-                    {template.tags.map((tag, tagIndex) => (
-                      <BaseBadge key={tagIndex} variant="outline" className="text-xs">
-                        {tag}
-                      </BaseBadge>
-                    ))}
-                  </div>
+            <div key={index} className="flex items-center justify-between p-4 rounded-[18px] border border-[#DADCE0] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <FileText className="h-4 w-4 text-[rgba(11,15,18,0.40)]" />
+                  <h4 className="text-sm font-bold text-[#0B0F12] font-arabic">{template.name}</h4>
+                  <span className="px-2 py-0.5 rounded-full bg-[#d9e7ed] text-[10px] font-arabic">
+                    {categoryLabels[template.category] || template.category}
+                  </span>
                 </div>
-                
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4 mr-2" />
-                    <span className="font-arabic">معاينة</span>
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    <span className="font-arabic">تحميل</span>
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Edit className="h-4 w-4 mr-2" />
-                    <span className="font-arabic">تعديل</span>
-                  </Button>
+                <p className="text-[11px] text-[rgba(11,15,18,0.50)] font-arabic">{template.description}</p>
+                <div className="flex gap-3 mt-1 text-[10px] text-[rgba(11,15,18,0.35)] font-arabic">
+                  <span>{template.usageCount} مرة</span>
+                  <span>آخر تعديل: {template.lastModified}</span>
                 </div>
+              </div>
+              <div className="flex gap-2">
+                <button className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors"><Eye className="w-3.5 h-3.5" /></button>
+                <button className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors"><Download className="w-3.5 h-3.5" /></button>
+                <button className="p-2 rounded-full border border-[#DADCE0] hover:bg-[#d9e7ed]/50 transition-colors"><Edit className="w-3.5 h-3.5" /></button>
               </div>
             </div>
           ))}
+          {filteredTemplates.length === 0 && (
+            <div className="text-center py-12">
+              <FileText className="h-10 w-10 text-[rgba(11,15,18,0.15)] mx-auto mb-3" />
+              <p className="text-sm text-[rgba(11,15,18,0.50)] font-arabic">لا توجد نماذج تطابق البحث</p>
+            </div>
+          )}
         </div>
-        
-        {filteredTemplates.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 font-arabic mb-2">لا توجد نماذج</h3>
-            <p className="text-gray-600 font-arabic">لم يتم العثور على نماذج تطابق معايير البحث الخاصة بك</p>
-          </div>
-        )}
-      </BaseBox>
+      </div>
 
-      {/* إحصائيات الاستخدام */}
-      <BaseBox variant="operations" className="p-6">
-        <div className="flex items-center gap-2 mb-4">
-          <Download className="h-6 w-6 text-green-600" />
-          <h3 className="text-xl font-bold text-gray-800 font-arabic">إحصائيات الاستخدام</h3>
-        </div>
-        
-        <div className="space-y-4">
-          <h4 className="text-lg font-medium font-arabic">أكثر النماذج استخداماً</h4>
-          {mockHRTemplates
-            .sort((a, b) => b.usageCount - a.usageCount)
-            .slice(0, 5)
-            .map((template, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <span className="font-bold text-gray-500">{index + 1}</span>
-                  <span className="font-arabic">{template.name}</span>
-                  {getCategoryBadge(template.category)}
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-gray-200 rounded-full">
-                    <div 
-                      className="h-2 bg-green-600 rounded-full" 
-                      style={{ width: `${(template.usageCount / templateStats.mostUsed.usageCount) * 100}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-bold">{template.usageCount}</span>
-                </div>
-              </div>
-            ))}
-        </div>
-      </BaseBox>
+      {/* Usage chart */}
+      <CapsuleBarChart title="أكثر النماذج استخداماً" data={usageData} color="#3DBE8B" />
     </div>
   );
 };
