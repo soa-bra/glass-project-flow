@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import React from 'react';
 import { Upload, Download, FileText } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
