@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { ResponsiveContainer, LineChart, Line, Area, AreaChart, Tooltip, XAxis } from 'recharts';
+import { motion } from 'framer-motion';
+import { ResponsiveContainer, Line, Area, AreaChart, Tooltip, XAxis, LineChart } from 'recharts';
 
 interface DataPoint {
   label: string;
@@ -32,45 +33,37 @@ const CustomTooltip = ({ active, payload, formatter }: any) => {
   );
 };
 
-/**
- * MinimalLineChart - خط بياني بسيط مع مساحة
- * مستوحى من بطاقة Active users 2,345 في الصور المرجعية
- */
 export const MinimalLineChart: React.FC<MinimalLineChartProps> = ({
-  title,
-  heroValue,
-  heroUnit,
-  data,
-  dataKey = 'value',
-  color = 'var(--visual-data-secondary-3)',
-  fillOpacity = 0.15,
-  showArea = true,
-  height = 120,
-  className,
-  tooltipFormatter,
+  title, heroValue, heroUnit, data, dataKey = 'value',
+  color = 'var(--visual-data-secondary-3)', fillOpacity = 0.15,
+  showArea = true, height = 120, className, tooltipFormatter,
 }) => {
-  // Resolve CSS variable to hex for recharts
   const resolvedColor = color.startsWith('var(')
     ? getComputedStyle(document.documentElement).getPropertyValue(color.slice(4, -1)).trim() || '#d9d2fd'
     : color;
 
   return (
-    <div
-      className={cn(
-        'rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col',
-        className
-      )}
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] as const }}
+      className={cn('rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col', className)}
     >
-      <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
-        {title}
-      </span>
+      <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">{title}</span>
 
       {heroValue !== undefined && (
         <div className="flex items-baseline gap-1.5 mt-1">
-          <span className="text-[36px] font-bold text-[#0B0F12] leading-none">{heroValue}</span>
-          {heroUnit && (
-            <span className="text-sm text-[rgba(11,15,18,0.40)] font-arabic">{heroUnit}</span>
-          )}
+          <motion.span
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-[36px] font-bold text-[#0B0F12] leading-none"
+          >
+            {heroValue}
+          </motion.span>
+          {heroUnit && <span className="text-sm text-[rgba(11,15,18,0.40)] font-arabic">{heroUnit}</span>}
         </div>
       )}
 
@@ -86,32 +79,17 @@ export const MinimalLineChart: React.FC<MinimalLineChartProps> = ({
               </defs>
               <XAxis dataKey="label" hide />
               <Tooltip content={<CustomTooltip formatter={tooltipFormatter} />} />
-              <Area
-                type="monotone"
-                dataKey={dataKey}
-                stroke={resolvedColor}
-                strokeWidth={2.5}
-                fill={`url(#fill-${resolvedColor.replace('#', '')})`}
-                dot={false}
-                activeDot={{ r: 5, fill: resolvedColor, stroke: '#fff', strokeWidth: 2 }}
-              />
+              <Area type="monotone" dataKey={dataKey} stroke={resolvedColor} strokeWidth={2.5} fill={`url(#fill-${resolvedColor.replace('#', '')})`} dot={false} activeDot={{ r: 5, fill: resolvedColor, stroke: '#fff', strokeWidth: 2 }} />
             </AreaChart>
           ) : (
             <LineChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
               <XAxis dataKey="label" hide />
               <Tooltip content={<CustomTooltip formatter={tooltipFormatter} />} />
-              <Line
-                type="monotone"
-                dataKey={dataKey}
-                stroke={resolvedColor}
-                strokeWidth={2.5}
-                dot={false}
-                activeDot={{ r: 5, fill: resolvedColor, stroke: '#fff', strokeWidth: 2 }}
-              />
+              <Line type="monotone" dataKey={dataKey} stroke={resolvedColor} strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: resolvedColor, stroke: '#fff', strokeWidth: 2 }} />
             </LineChart>
           )}
         </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   );
 };
