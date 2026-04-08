@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -289,12 +289,12 @@ export const BudgetManagementModal: React.FC<BudgetManagementModalProps> = ({
         </div>
 
         <div className="flex justify-end gap-3 mt-6">
-          <Button variant="outline" onClick={onClose} className="font-arabic">
+          <BaseActionButton variant="outline" onClick={onClose} className="font-arabic">
             إلغاء
-          </Button>
-          <Button onClick={handleSubmit} className="bg-black text-white hover:bg-black/90 font-arabic">
+          </BaseActionButton>
+          <BaseActionButton onClick={handleSubmit} className="bg-black text-white hover:bg-black/90 font-arabic">
             حفظ التحديثات
-          </Button>
+          </BaseActionButton>
         </div>
       </DialogContent>
     </Dialog>

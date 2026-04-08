@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users, Calendar, DollarSign, TrendingUp, Eye, Edit, Play, Pause, CheckCircle, Clock } from 'lucide-react';
 import { mockCSRInitiatives } from './data';
@@ -147,9 +147,9 @@ export const InitiativesTab: React.FC = () => {
             <option value="community">مجتمع</option>
           </select>
         </div>
-        <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+        <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" /> إضافة مبادرة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -192,12 +192,12 @@ export const InitiativesTab: React.FC = () => {
                 <div><span className="font-semibold">الفريق: </span><span>{initiative.team.length} أعضاء</span></div>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingInit(initiative)}>
+                <BaseActionButton size="sm" variant="outline" className="flex-1 font-arabic" onClick={() => setViewingInit(initiative)}>
                   <Eye className="h-3 w-3 ml-1" /> عرض التفاصيل
-                </Button>
-                <Button size="sm" variant="outline" className="font-arabic" onClick={() => setEditingInit(initiative)}>
+                </BaseActionButton>
+                <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => setEditingInit(initiative)}>
                   <Edit className="h-3 w-3 ml-1" /> تعديل
-                </Button>
+                </BaseActionButton>
               </div>
             </GenericCard>
           );
@@ -207,9 +207,9 @@ export const InitiativesTab: React.FC = () => {
       <GenericCard>
         <h3 className="text-lg font-bold font-arabic mb-4">أداة بناء نظرية التغيير</h3>
         <p className="text-gray-600 font-arabic mb-4">استخدم هذه الأداة لتصميم وتطوير نظرية التغيير للمبادرات الجديدة</p>
-        <Button onClick={() => setIsToCOpen(true)} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
+        <BaseActionButton onClick={() => setIsToCOpen(true)} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" /> بناء نظرية تغيير جديدة
-        </Button>
+        </BaseActionButton>
       </GenericCard>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة مبادرة جديدة" fields={addFields} onSubmit={handleAddInitiative} submitLabel="إضافة المبادرة" successMessage="تمت إضافة المبادرة بنجاح" />
@@ -249,8 +249,8 @@ export const InitiativesTab: React.FC = () => {
             ))}
           </div>
           <div className="flex justify-end gap-3 mt-6">
-            <Button variant="outline" onClick={() => setIsToCOpen(false)} className="font-arabic rounded-full">إلغاء</Button>
-            <Button onClick={handleSaveToC} className="bg-black text-white rounded-full font-arabic">حفظ نظرية التغيير</Button>
+            <BaseActionButton variant="outline" onClick={() => setIsToCOpen(false)} className="font-arabic rounded-full">إلغاء</BaseActionButton>
+            <BaseActionButton onClick={handleSaveToC} className="bg-black text-white rounded-full font-arabic">حفظ نظرية التغيير</BaseActionButton>
           </div>
         </DialogContent>
       </Dialog>

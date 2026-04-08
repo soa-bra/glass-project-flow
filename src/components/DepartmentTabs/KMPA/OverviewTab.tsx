@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { BookOpen, Users, TrendingUp, Download, Eye, FileText, Brain, Target } from 'lucide-react';
@@ -36,14 +36,14 @@ export const OverviewTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Categories */}
-        <Card className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <FileText className="h-5 w-5" />
               الفئات الأكثر نشاطاً
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               {metrics.topCategories.map((category, index) => <div key={index} className="space-y-2">
                   <div className="flex justify-between items-center">
@@ -54,18 +54,18 @@ export const OverviewTab: React.FC = () => {
                   <div className="text-xs text-gray-500">{category.percentage}% من إجمالي المحتوى</div>
                 </div>)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
         {/* AI Recommendations */}
-        <Card className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
               <Brain className="h-5 w-5" />
               توصيات الذكاء الاصطناعي
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+            </h3>
+          </div>
+          <div>
             <div className="space-y-4">
               {recommendations.map(rec => <div key={rec.id} className="p-3 border rounded-lg">
                   <div className="flex items-start justify-between mb-2">
@@ -83,19 +83,19 @@ export const OverviewTab: React.FC = () => {
                   </div>
                 </div>)}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Knowledge Gaps */}
-      <Card className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Target className="h-5 w-5" />
             فجوات المعرفة المكتشفة
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {gaps.map(gap => <div key={gap.id} className="p-4 border rounded-lg">
                 <div className="flex items-start justify-between mb-2">
@@ -117,15 +117,15 @@ export const OverviewTab: React.FC = () => {
                 </div>
               </div>)}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       {/* Recent Activity */}
-      <Card className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
-        <CardHeader>
-          <CardTitle>النشاط الأخير</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">النشاط الأخير</h3>
+        </div>
+        <div>
           <div className="space-y-3">
             <div className="flex items-center gap-3 p-2 bg-transparent p-4 border rounded-2xl ">
               <Download className="h-4 w-4 text-blue-600" />
@@ -143,7 +143,7 @@ export const OverviewTab: React.FC = () => {
               <span className="text-xs text-gray-500 mr-auto">أمس</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>;
 };

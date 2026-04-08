@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BookOpen, Users, Clock, Star, Plus, Eye, Edit, X } from 'lucide-react';
 import { mockCourses } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
@@ -104,7 +104,7 @@ export const CoursesTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div><h3 className="text-2xl font-semibold">الدورات التدريبية</h3><p className="text-gray-600">إدارة وتطوير الدورات والبرامج التدريبية</p></div>
-        <Button onClick={() => setIsCreateOpen(true)} className="flex items-center gap-2"><Plus className="h-4 w-4" /> إنشاء دورة جديدة</Button>
+        <BaseActionButton onClick={() => setIsCreateOpen(true)} className="flex items-center gap-2"><Plus className="h-4 w-4" /> إنشاء دورة جديدة</BaseActionButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -155,8 +155,8 @@ export const CoursesTab: React.FC = () => {
                 )}
               </div>
               <div className="flex gap-2 mt-4">
-                <Button size="sm" className="flex-1" onClick={() => setViewingCourse(course)}>عرض التفاصيل</Button>
-                <Button size="sm" variant="outline" onClick={() => setEditingCourse(course)}>تعديل</Button>
+                <BaseActionButton size="sm" className="flex-1" onClick={() => setViewingCourse(course)}>عرض التفاصيل</BaseActionButton>
+                <BaseActionButton size="sm" variant="outline" onClick={() => setEditingCourse(course)}>تعديل</BaseActionButton>
               </div>
             </div>
           </div>
@@ -170,7 +170,7 @@ export const CoursesTab: React.FC = () => {
             <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">Course Builder</h3>
             <p className="text-gray-600 mb-4">استخدم المحرر البصري لإنشاء دورات تفاعلية تتضمن وحدات ودروس واختبارات</p>
-            <Button onClick={() => setIsCourseBuilderOpen(true)}>إطلاق محرر الدورات</Button>
+            <BaseActionButton onClick={() => setIsCourseBuilderOpen(true)}>إطلاق محرر الدورات</BaseActionButton>
           </div>
         </div>
       </div>
@@ -208,7 +208,7 @@ export const CoursesTab: React.FC = () => {
                 </div>
                 <div><Label className="font-arabic text-sm">المدة (دقائق)</Label><Input type="number" value={newModule.duration} onChange={e => setNewModule(p => ({ ...p, duration: e.target.value }))} placeholder="30" className="rounded-xl" /></div>
               </div>
-              <Button onClick={handleAddModule} size="sm" className="mt-3 bg-black text-white rounded-full font-arabic"><Plus className="h-4 w-4 ml-1" /> إضافة وحدة</Button>
+              <BaseActionButton onClick={handleAddModule} size="sm" className="mt-3 bg-black text-white rounded-full font-arabic"><Plus className="h-4 w-4 ml-1" /> إضافة وحدة</BaseActionButton>
             </div>
 
             {builderModules.length > 0 && (
@@ -227,8 +227,8 @@ export const CoursesTab: React.FC = () => {
             )}
           </div>
           <div className="flex justify-end gap-3 mt-6">
-            <Button variant="outline" onClick={() => setIsCourseBuilderOpen(false)} className="rounded-full font-arabic">إلغاء</Button>
-            <Button onClick={handleSaveCourseBuilder} className="bg-black text-white rounded-full font-arabic">حفظ الدورة</Button>
+            <BaseActionButton variant="outline" onClick={() => setIsCourseBuilderOpen(false)} className="rounded-full font-arabic">إلغاء</BaseActionButton>
+            <BaseActionButton onClick={handleSaveCourseBuilder} className="bg-black text-white rounded-full font-arabic">حفظ الدورة</BaseActionButton>
           </div>
         </DialogContent>
       </Dialog>

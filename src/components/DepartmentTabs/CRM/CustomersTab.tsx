@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Users, Search, Plus, Mail, Phone, MapPin, Star, Calendar, TrendingUp } from 'lucide-react';
 import { mockCustomers } from './data';
 import type { Customer } from './types';
@@ -111,9 +111,9 @@ export const CustomersTab: React.FC = () => {
             <option value="churned">منقطع</option>
           </select>
         </div>
-        <Button onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
+        <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" /> إضافة عميل جديد
-        </Button>
+        </BaseActionButton>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -219,12 +219,12 @@ export const CustomersTab: React.FC = () => {
                         ))}
                       </div>
                       <div className="text-sm text-gray-600 font-arabic">آخر تقييم: {selectedCustomerData.satisfaction.lastSurveyDate}</div>
-                      <Button onClick={handleSendSurvey} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-arabic">إرسال استطلاع جديد</Button>
+                      <BaseActionButton onClick={handleSendSurvey} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-arabic">إرسال استطلاع جديد</BaseActionButton>
                     </div>
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-gray-500 font-arabic">لم يتم تقييم العميل بعد</p>
-                      <Button onClick={handleSendSurvey} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-arabic">إرسال استطلاع رضا</Button>
+                      <BaseActionButton onClick={handleSendSurvey} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-arabic">إرسال استطلاع رضا</BaseActionButton>
                     </div>
                   )}
                 </GenericCard>

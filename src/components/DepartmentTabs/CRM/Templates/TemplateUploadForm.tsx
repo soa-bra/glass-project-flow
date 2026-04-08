@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Upload } from 'lucide-react';
 
@@ -46,19 +46,19 @@ export const TemplateUploadForm: React.FC<TemplateUploadFormProps> = ({
         </div>
       </div>
       <div className="flex gap-2">
-        <Button 
+        <BaseActionButton 
           onClick={onSubmit}
           className="bg-green-600 hover:bg-green-700 text-white font-arabic"
         >
           رفع القالب
-        </Button>
-        <Button 
+        </BaseActionButton>
+        <BaseActionButton 
           variant="outline" 
           onClick={onCancel}
           className="font-arabic"
         >
           إلغاء
-        </Button>
+        </BaseActionButton>
       </div>
     </GenericCard>
   );

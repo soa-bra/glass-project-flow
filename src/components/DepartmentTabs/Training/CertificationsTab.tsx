@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -42,10 +42,10 @@ export const CertificationsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">إدارة الشهادات الرقمية</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إنشاء شهادة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Certificate Stats */}
@@ -73,15 +73,15 @@ export const CertificationsTab: React.FC = () => {
       </div>
 
       {/* Certificate Templates */}
-      <Card>
-        <CardHeader>
-          <CardTitle>قوالب الشهادات</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">قوالب الشهادات</h3>
+        </div>
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {certificateTemplates.map((template) => (
-              <Card key={template.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
+              <BaseBox key={template.id} className="hover:shadow-md transition-shadow">
+                <div>
                   <div className="aspect-[4/3] bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg mb-3 flex items-center justify-center">
                     <Award className="h-12 w-12 text-blue-600" />
                   </div>
@@ -94,25 +94,25 @@ export const CertificationsTab: React.FC = () => {
                     <span>{template.usage} استخدام</span>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <BaseActionButton size="sm" variant="outline" className="flex-1">
                       <Eye className="h-3 w-3 mr-1" />
                       معاينة
-                    </Button>
-                    <Button size="sm" className="flex-1">تحرير</Button>
+                    </BaseActionButton>
+                    <BaseActionButton size="sm" className="flex-1">تحرير</BaseActionButton>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </BaseBox>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
 
       {/* Issued Certificates */}
-      <Card>
-        <CardHeader>
-          <CardTitle>الشهادات الصادرة مؤخراً</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">الشهادات الصادرة مؤخراً</h3>
+        </div>
+        <div>
           <div className="space-y-4">
             {certificates.slice(0, 5).map((cert) => (
               <div key={cert.id} className="flex items-center justify-between p-4 border rounded-lg">
@@ -130,20 +130,20 @@ export const CertificationsTab: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
+                  <BaseActionButton size="sm" variant="outline">
                     <Eye className="h-3 w-3 mr-1" />
                     عرض
-                  </Button>
-                  <Button size="sm">
+                  </BaseActionButton>
+                  <BaseActionButton size="sm">
                     <Download className="h-3 w-3 mr-1" />
                     تحميل
-                  </Button>
+                  </BaseActionButton>
                 </div>
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 
@@ -171,10 +171,10 @@ export const CertificationsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">مصفوفة المهارات</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إضافة مهارة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Skills Overview */}
@@ -214,14 +214,14 @@ export const CertificationsTab: React.FC = () => {
       </div>
 
       {/* Skills Matrix Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>مصفوفة مهارات الموظفين</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">مصفوفة مهارات الموظفين</h3>
+        </div>
+        <div>
           <div className="space-y-4">
             {skillMatrix.map((employee) => (
-              <Card key={employee.employeeId} className="p-4">
+              <BaseBox key={employee.employeeId} className="p-4">
                 <div className="flex justify-between items-center mb-4">
                   <div>
                     <h4 className="font-medium">موظف {employee.employeeId}</h4>
@@ -248,14 +248,14 @@ export const CertificationsTab: React.FC = () => {
                 </div>
 
                 <div className="flex gap-2 mt-4">
-                  <Button size="sm" variant="outline">عرض التفاصيل</Button>
-                  <Button size="sm">تحديث المهارات</Button>
+                  <BaseActionButton size="sm" variant="outline">عرض التفاصيل</BaseActionButton>
+                  <BaseActionButton size="sm">تحديث المهارات</BaseActionButton>
                 </div>
-              </Card>
+              </BaseBox>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 
@@ -267,8 +267,8 @@ export const CertificationsTab: React.FC = () => {
           <p className="text-gray-600">إدارة الشهادات الرقمية ومصفوفة المهارات مع ربطها بملفات الموظفين</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">تصدير التقرير</Button>
-          <Button>إعدادات الشهادات</Button>
+          <BaseActionButton variant="outline">تصدير التقرير</BaseActionButton>
+          <BaseActionButton>إعدادات الشهادات</BaseActionButton>
         </div>
       </div>
 

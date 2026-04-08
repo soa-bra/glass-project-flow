@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Search, Upload, Plus } from 'lucide-react';
 
@@ -47,21 +47,21 @@ export const TemplateSearchControls: React.FC<TemplateSearchControlsProps> = ({
         </select>
       </div>
       <div className="flex gap-2">
-        <Button 
+        <BaseActionButton 
           variant="outline" 
           onClick={onUploadToggle}
           className="font-arabic"
         >
           <Upload className="ml-2 h-4 w-4" />
           رفع قالب
-        </Button>
-        <Button 
+        </BaseActionButton>
+        <BaseActionButton 
           onClick={onCreateNew}
           className="bg-blue-600 hover:bg-blue-700 text-white font-arabic"
         >
           <Plus className="ml-2 h-4 w-4" />
           إنشاء قالب جديد
-        </Button>
+        </BaseActionButton>
       </div>
     </div>
   );

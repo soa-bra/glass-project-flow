@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { UserPlus, Briefcase, Users, Calendar, Star, Phone, Mail, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { mockJobPostings, mockCandidates } from './data';
 import { JobPosting, Candidate } from './types';
 import { getHRStatusColor, getHRStatusText } from './utils';
@@ -57,13 +57,13 @@ export const RecruitmentTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة المرشحين */}
         <div className="flex items-center gap-4">
-          <Button 
+          <BaseActionButton 
             variant="outline" 
             onClick={() => setSelectedCandidate(null)}
             className="flex items-center gap-2"
           >
             <span>← العودة</span>
-          </Button>
+          </BaseActionButton>
           <h3 className="text-2xl font-bold text-gray-800 font-arabic">ملف المرشح</h3>
         </div>
 
@@ -110,16 +110,16 @@ export const RecruitmentTab: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="font-arabic">السيرة الذاتية</span>
-                  <Button variant="ghost" size="sm">
+                  <BaseActionButton variant="ghost" size="sm">
                     <Eye className="h-4 w-4" />
-                  </Button>
+                  </BaseActionButton>
                 </div>
                 {selectedCandidate.coverLetter && (
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="font-arabic">خطاب التقديم</span>
-                    <Button variant="ghost" size="sm">
+                    <BaseActionButton variant="ghost" size="sm">
                       <Eye className="h-4 w-4" />
-                    </Button>
+                    </BaseActionButton>
                   </div>
                 )}
               </div>
@@ -139,7 +139,7 @@ export const RecruitmentTab: React.FC = () => {
         <BaseBox variant="operations" className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-gray-800 font-arabic">المقابلات</h3>
-            <Button className="font-arabic">جدولة مقابلة</Button>
+            <BaseActionButton className="font-arabic">جدولة مقابلة</BaseActionButton>
           </div>
           
           {selectedCandidate.interviews.length > 0 ? (
@@ -193,18 +193,18 @@ export const RecruitmentTab: React.FC = () => {
         <BaseBox variant="operations" className="p-6">
           <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">الإجراءات</h3>
           <div className="flex gap-4">
-            <Button className="flex items-center gap-2">
+            <BaseActionButton className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               <span className="font-arabic">قبول المرشح</span>
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2">
+            </BaseActionButton>
+            <BaseActionButton variant="outline" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="font-arabic">جدولة مقابلة</span>
-            </Button>
-            <Button variant="destructive" className="flex items-center gap-2">
+            </BaseActionButton>
+            <BaseActionButton variant="destructive" className="flex items-center gap-2">
               <XCircle className="h-4 w-4" />
               <span className="font-arabic">رفض المرشح</span>
-            </Button>
+            </BaseActionButton>
           </div>
         </BaseBox>
       </div>
@@ -274,20 +274,20 @@ export const RecruitmentTab: React.FC = () => {
             <h3 className="text-xl font-bold text-gray-800 font-arabic">إدارة التوظيف والمواهب</h3>
           </div>
           <div className="flex gap-2">
-            <Button
+            <BaseActionButton
               variant={selectedView === 'jobs' ? 'default' : 'outline'}
               onClick={() => setSelectedView('jobs')}
               className="font-arabic"
             >
               الوظائف المفتوحة
-            </Button>
-            <Button
+            </BaseActionButton>
+            <BaseActionButton
               variant={selectedView === 'candidates' ? 'default' : 'outline'}
               onClick={() => setSelectedView('candidates')}
               className="font-arabic"
             >
               المرشحون
-            </Button>
+            </BaseActionButton>
           </div>
         </div>
 
@@ -296,7 +296,7 @@ export const RecruitmentTab: React.FC = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="text-lg font-medium font-arabic">الوظائف المفتوحة</h4>
-              <Button className="font-arabic">إضافة وظيفة جديدة</Button>
+              <BaseActionButton className="font-arabic">إضافة وظيفة جديدة</BaseActionButton>
             </div>
             <div className="grid gap-4">
               {mockJobPostings.map((job, index) => (
@@ -325,8 +325,8 @@ export const RecruitmentTab: React.FC = () => {
                       <span>آخر موعد: {job.applicationDeadline}</span>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="font-arabic">عرض الطلبات</Button>
-                      <Button variant="outline" size="sm" className="font-arabic">تعديل</Button>
+                      <BaseActionButton variant="outline" size="sm" className="font-arabic">عرض الطلبات</BaseActionButton>
+                      <BaseActionButton variant="outline" size="sm" className="font-arabic">تعديل</BaseActionButton>
                     </div>
                   </div>
                 </div>
@@ -378,14 +378,14 @@ export const RecruitmentTab: React.FC = () => {
                       ) : '-'}
                     </td>
                     <td className="py-3 px-4">
-                      <Button 
+                      <BaseActionButton 
                         variant="outline" 
                         size="sm"
                         onClick={() => setSelectedCandidate(candidate)}
                         className="font-arabic"
                       >
                         عرض الملف
-                      </Button>
+                      </BaseActionButton>
                     </td>
                   </tr>
                 ))}

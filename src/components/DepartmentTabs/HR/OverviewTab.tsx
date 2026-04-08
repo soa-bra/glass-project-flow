@@ -2,7 +2,7 @@ import React from 'react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { UserPlus, Calendar, Award, Users } from 'lucide-react';
 import { mockHRStats, mockWorkforceAnalytics } from './data';
 

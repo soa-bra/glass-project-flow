@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { GraduationCap, Building, Users, FileText, Plus, ExternalLink, Award, BookOpen } from 'lucide-react';
@@ -95,49 +95,49 @@ export const PartnershipsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">الشراكات الجامعية</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إضافة شراكة جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Partnership Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
+        <BaseBox>
+          <div>
             <GraduationCap className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{universityPartners.length}</div>
             <div className="text-sm text-gray-600">شراكات جامعية</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.students, 0)}</div>
             <div className="text-sm text-gray-600">طلاب مسجلون</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <BookOpen className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.programs, 0)}</div>
             <div className="text-sm text-gray-600">برامج مشتركة</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
+          </div>
+        </BaseBox>
+        <BaseBox>
+          <div>
             <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.research_projects, 0)}</div>
             <div className="text-sm text-gray-600">مشاريع بحثية</div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
 
       {/* Partners List */}
       <div className="space-y-4">
         {universityPartners.map((partner) => (
-          <Card key={partner.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <BaseBox key={partner.id} className="hover:shadow-lg transition-shadow">
+            <div>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -179,15 +179,15 @@ export const PartnershipsTab: React.FC = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
+                  <BaseActionButton size="sm" variant="outline">
                     <ExternalLink className="h-3 w-3 mr-1" />
                     عرض
-                  </Button>
-                  <Button size="sm">تعديل</Button>
+                  </BaseActionButton>
+                  <BaseActionButton size="sm">تعديل</BaseActionButton>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         ))}
       </div>
     </div>
@@ -197,17 +197,17 @@ export const PartnershipsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">مراكز البحث</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إضافة مركز بحثي
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Research Centers */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {researchCenters.map((center) => (
-          <Card key={center.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <BaseBox key={center.id} className="hover:shadow-lg transition-shadow">
+            <div>
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h4 className="text-lg font-semibold mb-2">{center.name}</h4>
@@ -228,20 +228,20 @@ export const PartnershipsTab: React.FC = () => {
               </div>
 
               <div className="flex gap-2 mt-4">
-                <Button size="sm" variant="outline" className="flex-1">عرض المشاريع</Button>
-                <Button size="sm" className="flex-1">إدارة</Button>
+                <BaseActionButton size="sm" variant="outline" className="flex-1">عرض المشاريع</BaseActionButton>
+                <BaseActionButton size="sm" className="flex-1">إدارة</BaseActionButton>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         ))}
       </div>
 
       {/* Active Research Projects */}
-      <Card>
-        <CardHeader>
-          <CardTitle>المشاريع البحثية النشطة</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">المشاريع البحثية النشطة</h3>
+        </div>
+        <div>
           <div className="space-y-4">
             <div className="p-4 border rounded-lg">
               <div className="flex justify-between items-start mb-2">
@@ -277,8 +277,8 @@ export const PartnershipsTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 
@@ -286,17 +286,17 @@ export const PartnershipsTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">البرامج المشتركة</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
           إنشاء برنامج مشترك
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Joint Programs */}
       <div className="space-y-4">
         {jointPrograms.map((program) => (
-          <Card key={program.id} className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
+          <BaseBox key={program.id} className="hover:shadow-lg transition-shadow">
+            <div>
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -330,8 +330,8 @@ export const PartnershipsTab: React.FC = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline">عرض التفاصيل</Button>
-                  <Button size="sm">إدارة البرنامج</Button>
+                  <BaseActionButton size="sm" variant="outline">عرض التفاصيل</BaseActionButton>
+                  <BaseActionButton size="sm">إدارة البرنامج</BaseActionButton>
                 </div>
               </div>
 
@@ -344,20 +344,20 @@ export const PartnershipsTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         ))}
       </div>
 
       {/* Accreditation Status */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <BaseBox>
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2">
             <Award className="h-5 w-5" />
             حالة الاعتماد
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+          </h3>
+        </div>
+        <div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <h4 className="font-semibold">الاعتمادات المحلية</h4>
@@ -391,8 +391,8 @@ export const PartnershipsTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </BaseBox>
     </div>
   );
 
@@ -404,37 +404,37 @@ export const PartnershipsTab: React.FC = () => {
           <p className="text-gray-600">إدارة الشراكات مع الجامعات ومراكز البحث لبرامج الاعتماد المشتركة</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline">تصدير التقرير</Button>
-          <Button>إعدادات الشراكات</Button>
+          <BaseActionButton variant="outline">تصدير التقرير</BaseActionButton>
+          <BaseActionButton>إعدادات الشراكات</BaseActionButton>
         </div>
       </div>
 
       {/* Navigation Tabs */}
       <div className="flex gap-2">
-        <Button
+        <BaseActionButton
           variant={activeView === 'universities' ? 'default' : 'outline'}
           onClick={() => setActiveView('universities')}
           className="flex items-center gap-2"
         >
           <GraduationCap className="h-4 w-4" />
           الجامعات
-        </Button>
-        <Button
+        </BaseActionButton>
+        <BaseActionButton
           variant={activeView === 'research' ? 'default' : 'outline'}
           onClick={() => setActiveView('research')}
           className="flex items-center gap-2"
         >
           <FileText className="h-4 w-4" />
           مراكز البحث
-        </Button>
-        <Button
+        </BaseActionButton>
+        <BaseActionButton
           variant={activeView === 'programs' ? 'default' : 'outline'}
           onClick={() => setActiveView('programs')}
           className="flex items-center gap-2"
         >
           <Award className="h-4 w-4" />
           البرامج المشتركة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Content based on active view */}

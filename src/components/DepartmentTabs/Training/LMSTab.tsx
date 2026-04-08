@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -56,10 +56,10 @@ export const LMSTab: React.FC = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">إدارة المحتوى التعليمي</h3>
-        <Button className="flex items-center gap-2">
+        <BaseActionButton className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           رفع حزمة SCORM
-        </Button>
+        </BaseActionButton>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -246,14 +246,14 @@ export const LMSTab: React.FC = () => {
           <p className="text-gray-600">نظام إدارة التعلم المدمج يدعم معايير SCORM و xAPI مع تتبع الوقت والإنجاز</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+          <BaseActionButton variant="outline" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             تصدير البيانات
-          </Button>
-          <Button className="flex items-center gap-2">
+          </BaseActionButton>
+          <BaseActionButton className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
             الإعدادات
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 

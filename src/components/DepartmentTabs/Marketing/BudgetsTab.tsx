@@ -7,7 +7,6 @@ import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActio
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 export const BudgetsTab: React.FC = () => {

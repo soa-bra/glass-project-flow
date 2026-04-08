@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, Users, Clock, Play } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { mockTrainingPrograms, mockEmployees } from './data';
