@@ -97,7 +97,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ departmentTitle }) => {
                 <span className="text-xs text-gray-500">آخر إنشاء: {report.lastGenerated}</span>
                 <BaseActionButton 
                   size="sm" 
-                  variant={report.status === 'متاح' ? 'default' : 'outline'}
+                  variant={report.status === 'متاح' ? 'primary' : 'outline'}
                   className="text-xs"
                   disabled={report.status !== 'متاح'}
                 >

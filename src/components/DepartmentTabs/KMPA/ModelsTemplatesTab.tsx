@@ -125,19 +125,19 @@ export const ModelsTemplatesTab: React.FC = () => {
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>وصف المقياس</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <div>
+            <h4>وصف المقياس</h4>
+          </div>
+          <div>
             <p className="text-gray-700">{metric.description}</p>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
         <Card>
-          <CardHeader>
-            <CardTitle>مستويات التقييم</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <div>
+            <h4>مستويات التقييم</h4>
+          </div>
+          <div>
             <div className="space-y-3">
               {metric.scale.levels.map((level: any, index: number) => (
                 <div key={index} className="flex items-center gap-4 p-3 border rounded-lg">
@@ -152,14 +152,14 @@ export const ModelsTemplatesTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
         <Card>
-          <CardHeader>
-            <CardTitle>معايير القياس</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <div>
+            <h4>معايير القياس</h4>
+          </div>
+          <div>
             <div className="space-y-4">
               {metric.criteria.map((criterion: any, index: number) => (
                 <div key={index} className="border rounded-lg p-4">
@@ -185,14 +185,14 @@ export const ModelsTemplatesTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
 
         <Card>
-          <CardHeader>
-            <CardTitle>إحصائيات الاستخدام</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <div>
+            <h4>إحصائيات الاستخدام</h4>
+          </div>
+          <div>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">{metric.usage}</div>
@@ -205,8 +205,8 @@ export const ModelsTemplatesTab: React.FC = () => {
                 <div className="text-sm text-gray-600">آخر تحديث</div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </BaseBox>
       </div>
     );
   };
@@ -247,38 +247,38 @@ export const ModelsTemplatesTab: React.FC = () => {
               {/* Metrics Overview */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card>
-                  <CardContent className="p-4 text-center">
+                  <div className="p-4 text-center">
                     <Calculator className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">{metrics.length}</div>
                     <div className="text-sm text-gray-600">إجمالي المقاييس</div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </BaseBox>
                 <Card>
-                  <CardContent className="p-4 text-center">
+                  <div className="p-4 text-center">
                     <FileSpreadsheet className="h-8 w-8 text-green-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">{metrics.length}</div>
                     <div className="text-sm text-gray-600">ملفات Excel</div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </BaseBox>
                 <Card>
-                  <CardContent className="p-4 text-center">
+                  <div className="p-4 text-center">
                     <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">{metrics.reduce((sum, m) => sum + m.usage, 0)}</div>
                     <div className="text-sm text-gray-600">إجمالي الاستخدامات</div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </BaseBox>
                 <Card>
-                  <CardContent className="p-4 text-center">
+                  <div className="p-4 text-center">
                     <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
                     <div className="text-2xl font-bold">5</div>
                     <div className="text-sm text-gray-600">فئات رئيسية</div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </BaseBox>
               </div>
 
               {/* Search */}
               <Card>
-                <CardContent className="p-4">
+                <div className="p-4">
                   <div className="relative">
                     <Input
                       placeholder="البحث في مقاييس سوبرا..."
@@ -288,8 +288,8 @@ export const ModelsTemplatesTab: React.FC = () => {
                     />
                     <BarChart3 className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </BaseBox>
 
               {/* Metrics Categories */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -304,14 +304,14 @@ export const ModelsTemplatesTab: React.FC = () => {
                   const IconComponent = getCategoryIcon(category);
 
                   return (
-                    <Card key={category} className="hover:shadow-md transition-shadow">
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-base">
+                    <BaseBox key={category} className="hover:shadow-md transition-shadow">
+                      <div>
+                        <h4 className="flex items-center gap-2 text-base">
                           <IconComponent className="h-5 w-5" />
                           {getCategoryLabel(category)}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
+                        </h4>
+                      </div>
+                      <div>
                         <div className="space-y-2">
                           {categoryMetrics.map((metric) => (
                             <div
@@ -332,18 +332,18 @@ export const ModelsTemplatesTab: React.FC = () => {
                             </div>
                           ))}
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </BaseBox>
                   );
                 })}
               </div>
 
               {/* Instructions */}
               <Card>
-                <CardHeader>
-                  <CardTitle>دليل استخدام مقاييس سوبرا</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <div>
+                  <h4>دليل استخدام مقاييس سوبرا</h4>
+                </div>
+                <div>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-3">
@@ -381,8 +381,8 @@ export const ModelsTemplatesTab: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </BaseBox>
             </>
           )}
         </TabsContent>
@@ -391,34 +391,34 @@ export const ModelsTemplatesTab: React.FC = () => {
           {/* Templates Overview */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
-              <CardContent className="p-4 text-center">
+              <div className="p-4 text-center">
                 <FileText className="h-8 w-8 text-blue-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{templates.length}</div>
                 <div className="text-sm text-gray-600">إجمالي القوالب</div>
-              </CardContent>
-            </Card>
+              </div>
+            </BaseBox>
             <Card>
-              <CardContent className="p-4 text-center">
+              <div className="p-4 text-center">
                 <Download className="h-8 w-8 text-green-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold">{templates.reduce((sum, t) => sum + t.downloads, 0)}</div>
                 <div className="text-sm text-gray-600">إجمالي التحميلات</div>
-              </CardContent>
-            </Card>
+              </div>
+            </BaseBox>
             <Card>
-              <CardContent className="p-4 text-center">
+              <div className="p-4 text-center">
                 <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
                 <div className="text-2xl font-bold">3</div>
                 <div className="text-sm text-gray-600">أنواع القوالب</div>
-              </CardContent>
-            </Card>
+              </div>
+            </BaseBox>
           </div>
 
           {/* Templates List */}
           <Card>
-            <CardHeader>
-              <CardTitle>القوالب المتاحة</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <div>
+              <h4>القوالب المتاحة</h4>
+            </div>
+            <div>
               <div className="space-y-4">
                 {templates.map((template) => (
                   <div
@@ -458,8 +458,8 @@ export const ModelsTemplatesTab: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </TabsContent>
       </Tabs>
     </div>
