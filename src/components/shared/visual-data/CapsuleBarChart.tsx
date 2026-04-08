@@ -24,7 +24,7 @@ interface CapsuleBarChartProps {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export const CapsuleBarChart: React.FC<CapsuleBarChartProps> = ({
@@ -73,7 +73,7 @@ export const CapsuleBarChart: React.FC<CapsuleBarChartProps> = ({
                     initial={{ height: 0 }}
                     whileInView={{ height: `${height}%` }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
                   />
                 </div>
                 {showLabels && <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">{d.label}</span>}
@@ -103,7 +103,7 @@ export const CapsuleBarChart: React.FC<CapsuleBarChartProps> = ({
                     initial={{ width: 0 }}
                     whileInView={{ width: `${width}%` }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                    transition={{ duration: 0.8, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
                   />
                 </div>
                 {showValues && <span className="text-xs font-semibold text-[#0B0F12] w-10">{d.value}</span>}

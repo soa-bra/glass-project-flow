@@ -15,7 +15,7 @@ interface NumericStatCardProps {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export const NumericStatCard: React.FC<NumericStatCardProps> = ({
@@ -43,7 +43,7 @@ export const NumericStatCard: React.FC<NumericStatCardProps> = ({
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
             className={cn(valueSizes[size], 'font-bold leading-none')}
             style={{ color: accentColor || '#0B0F12' }}
           >

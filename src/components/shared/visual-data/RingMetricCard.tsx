@@ -21,7 +21,7 @@ interface RingMetricCardProps {
 
 const cardVariants = {
   hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
 };
 
 export const RingMetricCard: React.FC<RingMetricCardProps> = ({
@@ -60,7 +60,7 @@ export const RingMetricCard: React.FC<RingMetricCardProps> = ({
                   initial={{ strokeDashoffset: circumference }}
                   whileInView={{ strokeDashoffset: dashOffset }}
                   viewport={{ once: true }}
-                  transition={{ duration: 1.2, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 1.2, delay: i * 0.15, ease: [0.22, 1, 0.36, 1] as const }}
                   transform={`rotate(-90 ${center} ${center})`}
                 />
               </g>
