@@ -97,7 +97,7 @@ export const EmployeesTab: React.FC = () => {
 
   const handleAddDoc = (data: Record<string, string>) => {
     if (!selectedEmployee) return;
-    const newDoc = { id: `doc-${Date.now()}`, name: data.name, type: data.type as Document['type'], uploadDate: new Date().toISOString().split('T')[0], url: '#' };
+    const newDoc: HRDocument = { id: `doc-${Date.now()}`, name: data.name, type: data.type as HRDocument['type'], uploadDate: new Date().toISOString().split('T')[0], url: '#' };
     setEmployees(prev => prev.map(emp => emp.id === selectedEmployee.id ? { ...emp, documents: [...emp.documents, newDoc] } : emp));
     setSelectedEmployee(prev => prev ? { ...prev, documents: [...prev.documents, newDoc] } : prev);
   };
