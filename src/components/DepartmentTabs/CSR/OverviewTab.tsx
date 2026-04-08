@@ -1,204 +1,106 @@
 import React from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
-import { 
-  Heart, 
-  Users, 
-  Clock, 
-  DollarSign, 
-  TrendingUp, 
-  Target,
-  Award,
-  Activity
-} from 'lucide-react';
-import { mockCSRDashboardData } from './data';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { mockCSRDashboardData } from './data';
 
 export const OverviewTab: React.FC = () => {
   const { overview } = mockCSRDashboardData;
 
   const kpiStats = [
-    {
-      title: 'إجمالي المبادرات',
-      value: overview.totalInitiatives,
-      unit: 'مبادرة',
-      description: `${overview.activeInitiatives} مبادرة نشطة`
-    },
-    {
-      title: 'إجمالي المستفيدين',
-      value: overview.totalBeneficiaries.toLocaleString('ar-SA'),
-      unit: 'مستفيد',
-      description: 'مستفيد مباشر وغير مباشر'
-    },
-    {
-      title: 'مؤشر الأثر الاجتماعي',
-      value: overview.socialImpactIndex.toFixed(1),
-      unit: 'نقطة',
-      description: 'من 10 نقاط'
-    }
+    { title: 'إجمالي المبادرات', value: overview.totalInitiatives, unit: 'مبادرة', description: `${overview.activeInitiatives} مبادرة نشطة` },
+    { title: 'إجمالي المستفيدين', value: overview.totalBeneficiaries.toLocaleString('ar-SA'), unit: 'مستفيد', description: 'مستفيد مباشر وغير مباشر' },
+    { title: 'مؤشر الأثر الاجتماعي', value: overview.socialImpactIndex.toFixed(1), unit: 'نقطة', description: 'من 10 نقاط' },
   ];
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
+  const formatCurrency = (amount: number) =>
+    new Intl.NumberFormat('ar-SA', { style: 'currency', currency: 'SAR', minimumFractionDigits: 0 }).format(amount);
 
   const statsCards = [
-    {
-      title: 'إجمالي المبادرات',
-      value: overview.totalInitiatives,
-      icon: Heart,
-      color: 'text-red-600 bg-red-100',
-      description: `${overview.activeInitiatives} مبادرة نشطة`
-    },
-    {
-      title: 'إجمالي المستفيدين',
-      value: overview.totalBeneficiaries.toLocaleString('ar-SA'),
-      icon: Users,
-      color: 'text-blue-600 bg-blue-100',
-      description: 'مستفيد مباشر وغير مباشر'
-    },
-    {
-      title: 'ساعات التطوع',
-      value: overview.totalVolunteerHours.toLocaleString('ar-SA'),
-      icon: Clock,
-      color: 'text-green-600 bg-green-100',
-      description: 'ساعة تطوعية'
-    },
-    {
-      title: 'إجمالي الاستثمار',
-      value: formatCurrency(overview.totalBudget),
-      icon: DollarSign,
-      color: 'text-purple-600 bg-purple-100',
-      description: 'استثمار مجتمعي'
-    },
-    {
-      title: 'مؤشر الأثر الاجتماعي',
-      value: overview.socialImpactIndex.toFixed(1),
-      icon: TrendingUp,
-      color: 'text-orange-600 bg-orange-100',
-      description: 'من 10 نقاط'
-    },
-    {
-      title: 'العائد الاجتماعي',
-      value: `${overview.averageSROI.toFixed(1)}:1`,
-      icon: Target,
-      color: 'text-teal-600 bg-teal-100',
-      description: 'متوسط SROI'
-    }
+    { title: 'إجمالي المبادرات', value: overview.totalInitiatives, description: `${overview.activeInitiatives} مبادرة نشطة`, color: '#f1b5b9' },
+    { title: 'إجمالي المستفيدين', value: overview.totalBeneficiaries.toLocaleString('ar-SA'), description: 'مستفيد مباشر وغير مباشر', color: '#a4e2f6' },
+    { title: 'ساعات التطوع', value: overview.totalVolunteerHours.toLocaleString('ar-SA'), description: 'ساعة تطوعية', color: '#bdeed3' },
+    { title: 'إجمالي الاستثمار', value: formatCurrency(overview.totalBudget), description: 'استثمار مجتمعي', color: '#d9d2fd' },
+    { title: 'مؤشر الأثر', value: overview.socialImpactIndex.toFixed(1), description: 'من 10 نقاط', color: '#fbe2aa' },
+    { title: 'العائد الاجتماعي', value: `${overview.averageSROI.toFixed(1)}:1`, description: 'متوسط SROI', color: '#a4e2f6' },
+  ];
+
+  const recentActivities = [
+    { msg: 'تم إكمال ورشة المهارات الرقمية', time: 'منذ ساعتين', color: '#bdeed3' },
+    { msg: 'إضافة شريك جديد - جمعية البيئة', time: 'منذ 4 ساعات', color: '#a4e2f6' },
+    { msg: 'تحديث مؤشرات الأداء لمبادرة الطاقة النظيفة', time: 'منذ 6 ساعات', color: '#fbe2aa' },
+  ];
+
+  const achievements = [
+    { msg: 'تحقيق هدف 500 مستفيد', sub: 'برنامج محو الأمية الرقمية', color: '#fbe2aa' },
+    { msg: 'زيادة مؤشر الأثر بنسبة 15%', sub: 'مقارنة بالربع السابق', color: '#bdeed3' },
+    { msg: 'انضمام 15 متطوع جديد', sub: 'هذا الشهر', color: '#a4e2f6' },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* مؤشرات الأداء الأساسية */}
+    <div className="space-y-5">
       <KPIStatsSection stats={kpiStats} />
 
-      {/* باقي المحتوى */}
-      {/* Welcome Section */}
-      <GenericCard className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-red-100 rounded-full">
-            <Heart className="h-8 w-8 text-red-600" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold font-arabic text-gray-900 mb-2">
-              مرحباً بك في لوحة إدارة المسؤولية الاجتماعية
-            </h3>
-            <p className="text-gray-600 font-arabic">
-              تتبع وإدارة المبادرات الاجتماعية وقياس الأثر المجتمعي لمؤسسة سوبرا
-            </p>
-          </div>
+      {/* Welcome */}
+      <div className="rounded-[24px] p-6 flex items-center gap-4" style={{ backgroundColor: 'rgba(241,181,185,0.12)', border: '1px solid rgba(241,181,185,0.3)' }}>
+        <div className="w-10 h-10 rounded-full bg-[#f1b5b9] flex items-center justify-center shrink-0">
+          <span className="text-white text-lg">❤</span>
         </div>
-      </GenericCard>
-
-      {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {statsCards.map((stat, index) => {
-          const IconComponent = stat.icon;
-          return (
-            <GenericCard key={index} className="text-center hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-center mb-4">
-                <div className={`p-3 rounded-full ${stat.color}`}>
-                  <IconComponent className="h-6 w-6" />
-                </div>
-              </div>
-              <h3 className="text-2xl font-bold font-arabic text-gray-900 mb-1">
-                {stat.value}
-              </h3>
-              <p className="text-gray-900 font-semibold font-arabic mb-1">
-                {stat.title}
-              </p>
-              <p className="text-sm text-gray-600 font-arabic">
-                {stat.description}
-              </p>
-            </GenericCard>
-          );
-        })}
+        <div>
+          <h3 className="text-sm font-bold font-arabic text-[#0B0F12] mb-0.5">لوحة إدارة المسؤولية الاجتماعية</h3>
+          <p className="text-[11px] text-[rgba(11,15,18,0.50)] font-arabic">تتبع وإدارة المبادرات الاجتماعية وقياس الأثر المجتمعي</p>
+        </div>
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <GenericCard>
-          <div className="flex items-center gap-3 mb-4">
-            <Activity className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-bold font-arabic">النشاط الأخير</h3>
-          </div>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="font-arabic text-sm text-gray-900">تم إكمال ورشة المهارات الرقمية</p>
-                <p className="font-arabic text-xs text-gray-500">منذ ساعتين</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="font-arabic text-sm text-gray-900">إضافة شريك جديد - جمعية البيئة</p>
-                <p className="font-arabic text-xs text-gray-500">منذ 4 ساعات</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-              <div className="flex-1">
-                <p className="font-arabic text-sm text-gray-900">تحديث مؤشرات الأداء لمبادرة الطاقة النظيفة</p>
-                <p className="font-arabic text-xs text-gray-500">منذ 6 ساعات</p>
-              </div>
-            </div>
-          </div>
-        </GenericCard>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        {statsCards.map((stat, index) => (
+          <NumericStatCard
+            key={index}
+            title={stat.title}
+            value={stat.value}
+            description={stat.description}
+            accentColor={stat.color}
+            size="sm"
+          />
+        ))}
+      </div>
 
-        <GenericCard>
-          <div className="flex items-center gap-3 mb-4">
-            <Award className="h-5 w-5 text-yellow-600" />
-            <h3 className="text-lg font-bold font-arabic">الإنجازات الحديثة</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Recent Activity */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+            النشاط الأخير
+          </span>
+          <div className="space-y-2 mt-4">
+            {recentActivities.map((a, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+                <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: a.color }} />
+                <div className="flex-1">
+                  <p className="text-[12px] font-arabic text-[rgba(11,15,18,0.70)]">{a.msg}</p>
+                  <p className="text-[10px] text-[rgba(11,15,18,0.30)] mt-0.5">{a.time}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-              <Award className="h-5 w-5 text-yellow-600" />
-              <div className="flex-1">
-                <p className="font-arabic text-sm text-gray-900 font-semibold">تحقيق هدف 500 مستفيد</p>
-                <p className="font-arabic text-xs text-gray-600">برنامج محو الأمية الرقمية</p>
+        </div>
+
+        {/* Achievements */}
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+            الإنجازات الحديثة
+          </span>
+          <div className="space-y-2 mt-4">
+            {achievements.map((a, i) => (
+              <div key={i} className="flex items-start gap-3 p-3 rounded-[14px]" style={{ backgroundColor: `${a.color}15` }}>
+                <span className="w-1.5 h-full min-h-[20px] rounded-full shrink-0" style={{ backgroundColor: a.color }} />
+                <div className="flex-1">
+                  <p className="text-[12px] font-arabic font-medium text-[rgba(11,15,18,0.70)]">{a.msg}</p>
+                  <p className="text-[10px] text-[rgba(11,15,18,0.40)]">{a.sub}</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-              <div className="flex-1">
-                <p className="font-arabic text-sm text-gray-900 font-semibold">زيادة مؤشر الأثر بنسبة 15%</p>
-                <p className="font-arabic text-xs text-gray-600">مقارنة بالربع السابق</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-              <Users className="h-5 w-5 text-blue-600" />
-              <div className="flex-1">
-                <p className="font-arabic text-sm text-gray-900 font-semibold">انضمام 15 متطوع جديد</p>
-                <p className="font-arabic text-xs text-gray-600">هذا الشهر</p>
-              </div>
-            </div>
+            ))}
           </div>
-        </GenericCard>
+        </div>
       </div>
     </div>
   );
