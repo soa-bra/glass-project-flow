@@ -4,7 +4,7 @@ import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
-  FileText, Plus, Search, Download, Calendar, BarChart3, PieChart, TrendingUp,
+  FileText, Plus, Search, Download, Calendar, BarChart3, TrendingUp,
   Users, DollarSign, Clock, RefreshCw, Eye, Share
 } from 'lucide-react';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
