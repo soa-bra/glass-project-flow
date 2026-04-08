@@ -1,69 +1,51 @@
 import React from 'react';
+import { NumericStatCard } from '@/components/shared/visual-data';
+
 interface ProjectStats {
   expectedRevenue: number;
   complaints: number;
   delayedProjects: number;
 }
+
 interface OperationStatsSectionProps {
   stats: ProjectStats;
 }
 
 /**
  * مكون عرض الإحصائيات الرئيسية للعمليات
- * يعرض الإيرادات المتوقعة، الشكاوى، والمشاريع المتأخرة
  */
-export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({
-  stats
-}) => {
-  // إضافة حماية ضد البيانات غير المعرّفة
+export const OperationStatsSection: React.FC<OperationStatsSectionProps> = ({ stats }) => {
   if (!stats) {
-    return <div className="grid grid-cols-3 gap-6 mb-6 my-0 px-[4px] mx-[10px]">
-        <div className="text-center py-8 text-gray-500 font-arabic">
+    return (
+      <div className="grid grid-cols-3 gap-4">
+        <div className="text-center py-8 text-[rgba(11,15,18,0.40)] font-arabic">
           جارٍ تحميل الإحصائيات...
         </div>
-      </div>;
+      </div>
+    );
   }
-  return <div className="grid grid-cols-3 gap-6 mb-6">
-      {/* ميزانية المشروع */}
-      <div className="text-right p-6">
-        <div className="mb-2">
-          <span className="text-sm text-black font-arabic font-medium">ميزانية المشروع</span>
-        </div>
-        <div className="flex items-baseline gap-2 mb-1">
-          <div className="text-5xl font-normal text-gray-900 font-arabic">
-            {stats.expectedRevenue || 0}
-          </div>
-          <div className="text-xs text-black font-arabic font-bold">الف</div>
-        </div>
-        <div className="text-xs font-Regular text-black font-arabic">ريال سعودي عن الربع الأول</div>
-      </div>
 
-      {/* عدد الأيام المتبقية */}
-      <div className="text-right p-6">
-        <div className="mb-2">
-          <span className="text-sm text-black font-arabic font-medium">عدد الأيام المتبقية</span>
-        </div>
-        <div className="flex items-baseline gap-2 mb-1">
-          <div className="text-5xl font-normal text-gray-900 font-arabic">
-            {String(stats.complaints || 0).padStart(2, '0')}
-          </div>
-          <div className="text-xs text-black font-arabic font-bold">يوم</div>
-        </div>
-        <div className="text-xs font-Regular text-black font-arabic">حتى انتهاء المشروع الحالي</div>
-      </div>
-
-      {/* المشاريع المتأخرة */}
-      <div className="text-right p-6">
-        <div className="mb-2">
-          <span className="text-sm text-black font-arabic font-medium">المشاريع المتأخرة</span>
-        </div>
-        <div className="flex items-baseline gap-2 mb-1">
-          <div className="text-5xl font-normal text-gray-900 font-arabic">
-            {String(stats.delayedProjects || 0).padStart(2, '0')}
-          </div>
-          <div className="text-xs text-black font-arabic font-bold">مشاريع</div>
-        </div>
-        <div className="text-xs font-Regular text-black font-arabic">تحتاج إلى تدخل ومعالجة</div>
-      </div>
-    </div>;
+  return (
+    <div className="grid grid-cols-3 gap-4 mb-6">
+      <NumericStatCard
+        title="ميزانية المشروع"
+        value={stats.expectedRevenue || 0}
+        unit="الف"
+        description="ريال سعودي عن الربع الأول"
+      />
+      <NumericStatCard
+        title="عدد الأيام المتبقية"
+        value={String(stats.complaints || 0).padStart(2, '0')}
+        unit="يوم"
+        description="حتى انتهاء المشروع الحالي"
+      />
+      <NumericStatCard
+        title="المشاريع المتأخرة"
+        value={String(stats.delayedProjects || 0).padStart(2, '0')}
+        unit="مشاريع"
+        description="تحتاج إلى تدخل ومعالجة"
+        accentColor="var(--visual-data-secondary-2)"
+      />
+    </div>
+  );
 };
