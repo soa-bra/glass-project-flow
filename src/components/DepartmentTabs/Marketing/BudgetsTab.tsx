@@ -129,8 +129,8 @@ export const BudgetsTab: React.FC = () => {
             ))}
           </div>
           <div className="flex justify-end gap-2 mt-4">
-            <BaseActionButton variant="outline" onClick={() => setIsRedistributeOpen(false)}>إلغاء</BaseActionButton>
-            <BaseActionButton variant="primary" onClick={handleSaveRedistribution}>حفظ التوزيع</BaseActionButton>
+            <UnifiedButton variant="outline" onClick={() => setIsRedistributeOpen(false)}>إلغاء</UnifiedButton>
+            <UnifiedButton variant="primary" onClick={handleSaveRedistribution}>حفظ التوزيع</UnifiedButton>
           </div>
         </DialogContent>
       </Dialog>
