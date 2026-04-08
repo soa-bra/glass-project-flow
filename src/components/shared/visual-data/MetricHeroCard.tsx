@@ -6,6 +6,8 @@ interface MetricHeroCardProps {
   value: string | number;
   unit?: string;
   description?: string;
+  badgeText?: string;
+  badgeColor?: string;
   className?: string;
   children?: React.ReactNode;
 }
@@ -19,6 +21,8 @@ export const MetricHeroCard: React.FC<MetricHeroCardProps> = ({
   value,
   unit,
   description,
+  badgeText,
+  badgeColor,
   className,
   children,
 }) => {
@@ -48,6 +52,11 @@ export const MetricHeroCard: React.FC<MetricHeroCardProps> = ({
           <p className="text-[11px] text-[rgba(11,15,18,0.35)] font-arabic mt-1.5">
             {description}
           </p>
+        )}
+        {badgeText && (
+          <div className="mt-2 inline-block px-3 py-1 rounded-full" style={{ backgroundColor: badgeColor || 'rgba(11,15,18,0.08)' }}>
+            <span className="text-[10px] font-medium text-[#0B0F12]">{badgeText}</span>
+          </div>
         )}
       </div>
 

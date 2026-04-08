@@ -26,9 +26,8 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
       title="أعلى المشاريع الحرجة"
       data={chartData}
       color="#0B0F12"
-      maxValue={100}
+      orientation="horizontal"
       showValues
-      valueFormatter={(v) => `${v}%`}
     />
   );
 };
