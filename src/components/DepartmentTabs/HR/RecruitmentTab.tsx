@@ -201,7 +201,7 @@ export const RecruitmentTab: React.FC = () => {
               <Calendar className="h-4 w-4" />
               <span className="font-arabic">جدولة مقابلة</span>
             </BaseActionButton>
-            <BaseActionButton variant="destructive" className="flex items-center gap-2">
+            <BaseActionButton variant="delete" className="flex items-center gap-2">
               <XCircle className="h-4 w-4" />
               <span className="font-arabic">رفض المرشح</span>
             </BaseActionButton>
@@ -275,14 +275,14 @@ export const RecruitmentTab: React.FC = () => {
           </div>
           <div className="flex gap-2">
             <BaseActionButton
-              variant={selectedView === 'jobs' ? 'default' : 'outline'}
+              variant={selectedView === 'jobs' ? 'primary' : 'outline'}
               onClick={() => setSelectedView('jobs')}
               className="font-arabic"
             >
               الوظائف المفتوحة
             </BaseActionButton>
             <BaseActionButton
-              variant={selectedView === 'candidates' ? 'default' : 'outline'}
+              variant={selectedView === 'candidates' ? 'primary' : 'outline'}
               onClick={() => setSelectedView('candidates')}
               className="font-arabic"
             >

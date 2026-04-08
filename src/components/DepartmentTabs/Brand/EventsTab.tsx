@@ -144,19 +144,19 @@ export const EventsTab: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <BaseActionButton 
-            variant={selectedFilter === 'all' ? 'default' : 'outline'}
+            variant={selectedFilter === 'all' ? 'primary' : 'outline'}
             onClick={() => setSelectedFilter('all')}
           >
             جميع الفعاليات
           </BaseActionButton>
           <BaseActionButton 
-            variant={selectedFilter === 'upcoming' ? 'default' : 'outline'}
+            variant={selectedFilter === 'upcoming' ? 'primary' : 'outline'}
             onClick={() => setSelectedFilter('upcoming')}
           >
             القادمة
           </BaseActionButton>
           <BaseActionButton 
-            variant={selectedFilter === 'past' ? 'default' : 'outline'}
+            variant={selectedFilter === 'past' ? 'primary' : 'outline'}
             onClick={() => setSelectedFilter('past')}
           >
             السابقة
