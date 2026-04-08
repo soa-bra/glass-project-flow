@@ -32,7 +32,13 @@ export const ReportsTab: React.FC = () => {
   };
 
   const handleCreateReport = () => {
-    toast.success('تم إنشاء التقرير المخصص بنجاح');
+    const allData = reports.map(r => [r.name, r.period, r.lastGenerated, r.status]);
+    downloadAsCSV(
+      ['اسم التقرير', 'الفترة', 'آخر إنشاء', 'الحالة'],
+      allData,
+      `تقرير-مالي-مخصص-${new Date().toISOString().split('T')[0]}`
+    );
+    toast.success('تم إنشاء وتحميل التقرير المخصص بنجاح');
   };
 
   return (
