@@ -4,7 +4,7 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Users, Search, Plus, Mail, Phone, Star, Calendar, TrendingUp } from 'lucide-react';
+import { Users, Search, Plus, Mail, Phone, MapPin, Star, Calendar, TrendingUp } from 'lucide-react';
 import { mockCustomers } from './data';
 import type { Customer } from './types';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
