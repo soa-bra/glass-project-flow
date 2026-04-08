@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { FileText, Plus, Search, Filter, Download, Eye } from 'lucide-react';
+import { Plus, Search, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
-import { getStatusColor, getStatusText, formatCurrency, formatDate } from './utils';
+import type { Contract } from './types';
+import { getStatusText, formatCurrency, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
@@ -40,15 +41,17 @@ export const ContractsTab: React.FC = () => {
   ];
 
   const handleCreateContract = (data: Record<string, string>) => {
-    const newContract = {
+    const newContract: Contract = {
       id: `CON-${Date.now().toString().slice(-4)}`,
       title: data.title,
       client: data.client,
-      type: data.type,
-      status: 'draft' as const,
+      type: data.type as Contract['type'],
+      status: 'draft',
       value: Number(data.value),
       startDate: data.startDate,
       endDate: data.endDate,
+      signatories: [],
+      riskLevel: 'low',
     };
     setContracts(prev => [newContract, ...prev]);
   };

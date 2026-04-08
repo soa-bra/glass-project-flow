@@ -1,17 +1,16 @@
 
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
-import { Users, Search, Filter, Plus, Eye, Edit, Phone, Mail, MapPin, Download } from 'lucide-react';
+import { Users, Search, Filter, Plus, Eye, Edit, Phone, Mail } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { mockEmployees } from './data';
-import { Employee } from './types';
-import { getHRStatusColor, getHRStatusText } from './utils';
+import type { Employee, Document as HRDocument } from './types';
+import { getHRStatusText } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
+import { GenericDetailModal } from '../shared/GenericDetailModal';
 import { GenericFilterPopover, FilterOption } from '../shared/GenericFilterPopover';
-import { toast } from 'sonner';
 
 export const EmployeesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,7 +97,7 @@ export const EmployeesTab: React.FC = () => {
 
   const handleAddDoc = (data: Record<string, string>) => {
     if (!selectedEmployee) return;
-    const newDoc = { name: data.name, type: data.type as any, uploadDate: new Date().toISOString().split('T')[0], url: '#' };
+    const newDoc: HRDocument = { id: `doc-${Date.now()}`, name: data.name, type: data.type as HRDocument['type'], uploadDate: new Date().toISOString().split('T')[0], url: '#' };
     setEmployees(prev => prev.map(emp => emp.id === selectedEmployee.id ? { ...emp, documents: [...emp.documents, newDoc] } : emp));
     setSelectedEmployee(prev => prev ? { ...prev, documents: [...prev.documents, newDoc] } : prev);
   };
