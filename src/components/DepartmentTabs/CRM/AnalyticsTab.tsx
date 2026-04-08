@@ -1,36 +1,16 @@
-
 import React, { useState } from 'react';
 import { GenericCard } from '@/components/ui/GenericCard';
 import { Button } from '@/components/ui/button';
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  LineChart, 
-  Line, 
-  PieChart, 
-  Pie, 
-  Cell,
-  Area,
-  AreaChart
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
+  LineChart, Line, PieChart, Pie, Cell, Area, AreaChart
 } from 'recharts';
 import { 
-  TrendingUp, 
-  Users, 
-  DollarSign, 
-  Target, 
-  Calendar,
-  Activity,
-  Heart,
-  MessageSquare,
-  Download,
-  RefreshCw
+  TrendingUp, Users, DollarSign, Target, Activity, Heart, MessageSquare, Download, RefreshCw
 } from 'lucide-react';
 import { mockCRMAnalytics, mockNPS } from './data';
+import { downloadAsCSV } from '../shared/downloadUtils';
+import { toast } from 'sonner';
 
 export const AnalyticsTab: React.FC = () => {
   const [timeRange, setTimeRange] = useState('6months');
@@ -51,13 +31,6 @@ export const AnalyticsTab: React.FC = () => {
     { segment: 'الشركات المتوسطة', revenue: 2800000, customers: 32, color: '#3B82F6' },
     { segment: 'الشركات الصغيرة', revenue: 1200000, customers: 89, color: '#60A5FA' },
     { segment: 'الشركات الناشئة', revenue: 450000, customers: 24, color: '#93C5FD' }
-  ];
-
-  const customerLifetimeValue = [
-    { segment: 'مميز', clv: 850000, count: 12 },
-    { segment: 'ذهبي', clv: 520000, count: 28 },
-    { segment: 'فضي', clv: 280000, count: 67 },
-    { segment: 'برونزي', clv: 120000, count: 89 }
   ];
 
   const salesPerformance = [
@@ -94,6 +67,19 @@ export const AnalyticsTab: React.FC = () => {
     { stage: 'صفقات مغلقة', count: 94, rate: 50 }
   ];
 
+  const handleRefresh = () => {
+    toast.success('تم تحديث البيانات بنجاح');
+  };
+
+  const handleExport = () => {
+    downloadAsCSV(
+      ['الشهر', 'المستهدف', 'الفعلي', 'الفرص'],
+      salesPerformance.map(r => [r.month, String(r.target), String(r.actual), String(r.opportunities)]),
+      'تقرير-تحليلات-CRM'
+    );
+    toast.success('تم تصدير التقرير بنجاح');
+  };
+
   return (
     <div className="space-y-6">
       {/* Header and Controls */}
@@ -121,11 +107,11 @@ export const AnalyticsTab: React.FC = () => {
           </select>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" className="font-arabic">
+          <Button variant="outline" className="font-arabic" onClick={handleRefresh}>
             <RefreshCw className="ml-2 h-4 w-4" />
             تحديث البيانات
           </Button>
-          <Button className="bg-green-600 hover:bg-green-700 text-white font-arabic">
+          <Button className="bg-green-600 hover:bg-green-700 text-white font-arabic" onClick={handleExport}>
             <Download className="ml-2 h-4 w-4" />
             تصدير التقرير
           </Button>

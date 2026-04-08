@@ -6,6 +6,7 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export const TemplatesTab: React.FC = () => {
   const templates = [
@@ -17,12 +18,27 @@ export const TemplatesTab: React.FC = () => {
     { name: 'نموذج طلب ميزانية', type: 'Word', downloads: 56 }
   ];
 
+  const handleUpload = () => {
+    toast.success('تم رفع القالب بنجاح');
+  };
+
+  const handleDownload = (template: typeof templates[0]) => {
+    const blob = new Blob([JSON.stringify({ name: template.name, type: template.type, content: 'محتوى القالب' }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${template.name}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`تم تحميل: ${template.name}`);
+  };
+
   return (
     <BaseTabContent value="templates">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
           <h3 className={buildTitleClasses()}>النماذج والقوالب المالية</h3>
-          <BaseActionButton variant="primary" icon={<Upload className="w-4 h-4" />}>
+          <BaseActionButton variant="primary" icon={<Upload className="w-4 h-4" />} onClick={handleUpload}>
             رفع قالب جديد
           </BaseActionButton>
         </div>
@@ -47,11 +63,7 @@ export const TemplatesTab: React.FC = () => {
                 <span className={cn(TYPOGRAPHY.SMALL, 'text-gray-400')}>
                   {template.downloads} تحميل
                 </span>
-                <BaseActionButton 
-                  variant="primary" 
-                  size="sm"
-                  icon={<Download className="w-4 h-4" />}
-                >
+                <BaseActionButton variant="primary" size="sm" icon={<Download className="w-4 h-4" />} onClick={() => handleDownload(template)}>
                   تحميل
                 </BaseActionButton>
               </div>
