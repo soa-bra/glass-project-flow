@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BaseActionButton } from '@/components/shared/BaseActionButton';
-import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, Tooltip, XAxis, YAxis } from 'recharts';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, Tooltip, XAxis } from 'recharts';
 import { Download, RefreshCw } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';

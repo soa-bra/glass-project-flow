@@ -1,10 +1,9 @@
 import React from 'react';
-import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
+import { AlertTriangle, FileText, Shield, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { BaseBox, BaseStatsCard, BaseListItem } from '@/components/shared';
-import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { BaseBox, BaseListItem } from '@/components/shared';
 import { mockLegalMetrics, mockAlerts } from './data';
-import { getStatusColor, getStatusText, getPriorityColor } from './utils';
 import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
