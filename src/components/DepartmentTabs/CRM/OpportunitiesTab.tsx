@@ -185,26 +185,22 @@ export const OpportunitiesTab: React.FC = () => {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <GenericCard>
-          <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-            <TrendingUp className="ml-2 h-5 w-5" />
-            مسار المبيعات
-          </h3>
+        <DataCardFrame title="مسار المبيعات" icon={<TrendingUp className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="stage" className="font-arabic" />
-              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,15,18,0.08)" />
+              <XAxis dataKey="stage" className="font-arabic" axisLine={false} tickLine={false} tick={{ fill: 'rgba(11,15,18,0.35)', fontSize: 10 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(11,15,18,0.35)', fontSize: 10 }} />
               <Tooltip 
                 formatter={(value, name) => [
                   name === 'count' ? `${value} فرصة` : `${(value as number / 1000000).toFixed(1)}م ر.س`,
                   name === 'count' ? 'عدد الفرص' : 'القيمة الإجمالية'
                 ]} 
               />
-              <Bar dataKey="count" fill="#3B82F6" name="count" />
+              <Bar dataKey="count" fill="#3B82F6" name="count" barSize={20} radius={[999, 999, 999, 999]} />
             </BarChart>
           </ResponsiveContainer>
-        </GenericCard>
+        </DataCardFrame>
 
         <GenericCard>
           <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
