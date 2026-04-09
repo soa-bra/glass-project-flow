@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
