@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { 
@@ -105,21 +105,20 @@ export const PartnershipsTab: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <GenericCard className="text-center"><Building className="h-6 w-6 text-blue-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{partners.length}</h3><p className="text-gray-600 font-arabic">إجمالي الشركاء</p></GenericCard>
-        <GenericCard className="text-center"><CheckCircle className="h-6 w-6 text-green-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{partners.filter(p => p.contractStatus === 'signed').length}</h3><p className="text-gray-600 font-arabic">عقود نشطة</p></GenericCard>
-        <GenericCard className="text-center"><Star className="h-6 w-6 text-yellow-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{(partners.reduce((s, p) => s + p.rating, 0) / partners.length).toFixed(1)}</h3><p className="text-gray-600 font-arabic">متوسط التقييم</p></GenericCard>
-        <GenericCard className="text-center"><Users className="h-6 w-6 text-purple-600 mx-auto mb-2" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{partners.filter(p => p.capacity === 'high').length}</h3><p className="text-gray-600 font-arabic">قدرة عالية</p></GenericCard>
+        <NumericStatCard title="إجمالي الشركاء" value={partners.length} icon={<Building className="h-5 w-5" />} accentColor="#3B82F6" />
+        <NumericStatCard title="عقود نشطة" value={partners.filter(p => p.contractStatus === 'signed').length} icon={<CheckCircle className="h-5 w-5" />} accentColor="#10B981" />
+        <NumericStatCard title="متوسط التقييم" value={(partners.reduce((s, p) => s + p.rating, 0) / partners.length).toFixed(1)} icon={<Star className="h-5 w-5" />} accentColor="#EAB308" />
+        <NumericStatCard title="قدرة عالية" value={partners.filter(p => p.capacity === 'high').length} icon={<Users className="h-5 w-5" />} accentColor="#8B5CF6" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredPartners.map((partner) => {
           const ContractIcon = getContractStatusIcon(partner.contractStatus);
           return (
-            <GenericCard key={partner.id} className="hover:shadow-lg transition-shadow">
+            <DataCardFrame key={partner.id} title={partner.name} className="hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-semibold font-arabic text-gray-900">{partner.name}</h4>
                     <span className={`px-2 py-1 text-xs rounded-full ${getTypeColor(partner.type)}`}>{getTypeText(partner.type)}</span>
                   </div>
                   <div className="flex items-center gap-2 mb-2">
@@ -155,20 +154,19 @@ export const PartnershipsTab: React.FC = () => {
                 <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => setEditingPartner(partner)}><Edit className="h-3 w-3 ml-1" /> تعديل</BaseActionButton>
                 <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleViewContract(partner)}><FileText className="h-3 w-3 ml-1" /> العقد</BaseActionButton>
               </div>
-            </GenericCard>
+            </DataCardFrame>
           );
         })}
       </div>
 
-      <GenericCard>
-        <h3 className="text-lg font-bold font-arabic mb-4">مخصص الموارد</h3>
+      <DataCardFrame title="مخصص الموارد" icon={<Building className="h-5 w-5" />}>
         <p className="text-gray-600 font-arabic mb-4">ربط احتياجات المبادرات بالموارد المتاحة والموردين المعتمدين</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح قائمة الموردين المعتمدين')}><Building className="ml-2 h-4 w-4" /> إدارة الموردين</BaseActionButton>
           <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح أداة تخصيص الموارد')}><Users className="ml-2 h-4 w-4" /> تخصيص الموارد</BaseActionButton>
           <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم تصدير تقرير الموارد')}><FileText className="ml-2 h-4 w-4" /> تقارير الموارد</BaseActionButton>
         </div>
-      </GenericCard>
+      </DataCardFrame>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة شريك جديد" fields={addFields} onSubmit={handleAddPartner} submitLabel="إضافة" successMessage="تمت إضافة الشريك بنجاح" />
       {editingPartner && (
