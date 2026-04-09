@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Eye, Download, Copy, Edit, Calendar, User } from 'lucide-react';
 import { toast } from 'sonner';
@@ -55,18 +55,13 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {templates.map((template) => (
-        <GenericCard key={template.id} className="hover:shadow-lg transition-shadow">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <h4 className="font-semibold font-arabic text-gray-900">{template.name}</h4>
-                <span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(template.category)}`}>
-                  {getCategoryText(template.category)}
-                </span>
-              </div>
-              <p className="text-sm text-gray-600 font-arabic mb-3">{template.description}</p>
-            </div>
+        <DataCardFrame key={template.id} title={template.name} className="hover:shadow-lg transition-shadow">
+          <div className="flex items-center gap-2 mb-2">
+            <span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(template.category)}`}>
+              {getCategoryText(template.category)}
+            </span>
           </div>
+          <p className="text-sm text-gray-600 font-arabic mb-3">{template.description}</p>
 
           <div className="flex items-center justify-between text-sm text-gray-500 font-arabic mb-4">
             <div className="flex items-center"><User className="h-3 w-3 ml-1" /><span>{template.createdBy}</span></div>
@@ -103,7 +98,7 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
               <Edit className="h-3 w-3 ml-1" />تعديل
             </BaseActionButton>
           </div>
-        </GenericCard>
+        </DataCardFrame>
       ))}
     </div>
   );

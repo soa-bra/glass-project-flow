@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Users, Calendar, DollarSign, TrendingUp, Eye, Edit, Play, Pause, CheckCircle, Clock } from 'lucide-react';
@@ -74,20 +73,10 @@ export const InitiativesTab: React.FC = () => {
 
   const handleAddInitiative = (data: Record<string, string>) => {
     const newInit: any = {
-      id: `csr-${Date.now()}`,
-      title: data.title,
-      description: data.description,
-      status: 'planning',
-      category: data.category,
-      budget: Number(data.budget),
-      allocatedBudget: 0,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      beneficiaries: Number(data.beneficiaries) || 0,
-      sdgGoals: [],
-      manager: data.manager,
-      team: [],
-      partnerships: [],
+      id: `csr-${Date.now()}`, title: data.title, description: data.description, status: 'planning',
+      category: data.category, budget: Number(data.budget), allocatedBudget: 0,
+      startDate: data.startDate, endDate: data.endDate, beneficiaries: Number(data.beneficiaries) || 0,
+      sdgGoals: [], manager: data.manager, team: [], partnerships: [],
       impact: { socialImpactIndex: 0, sroi: 0, volunteerHours: 0, directBeneficiaries: 0, indirectBeneficiaries: 0 },
       theoryOfChange: { problem: '', inputs: [], activities: [], outputs: [], outcomes: [], impact: [] },
     };
@@ -109,16 +98,11 @@ export const InitiativesTab: React.FC = () => {
   };
 
   const getViewFields = (init: CSRInitiative): DetailField[] => [
-    { label: 'العنوان', value: init.title },
-    { label: 'الوصف', value: init.description },
-    { label: 'الفئة', value: getCategoryText(init.category) },
-    { label: 'الحالة', value: getStatusText(init.status) },
-    { label: 'الميزانية', value: formatCurrency(init.budget) },
-    { label: 'المستفيدين', value: init.beneficiaries.toLocaleString('ar-SA') },
-    { label: 'المدير', value: init.manager },
-    { label: 'الفريق', value: `${init.team.length} أعضاء` },
-    { label: 'مؤشر الأثر الاجتماعي', value: `${init.impact.socialImpactIndex}/10` },
-    { label: 'SROI', value: `${init.impact.sroi}x` },
+    { label: 'العنوان', value: init.title }, { label: 'الوصف', value: init.description },
+    { label: 'الفئة', value: getCategoryText(init.category) }, { label: 'الحالة', value: getStatusText(init.status) },
+    { label: 'الميزانية', value: formatCurrency(init.budget) }, { label: 'المستفيدين', value: init.beneficiaries.toLocaleString('ar-SA') },
+    { label: 'المدير', value: init.manager }, { label: 'الفريق', value: `${init.team.length} أعضاء` },
+    { label: 'مؤشر الأثر الاجتماعي', value: `${init.impact.socialImpactIndex}/10` }, { label: 'SROI', value: `${init.impact.sroi}x` },
     { label: 'تاريخ البداية', value: new Date(init.startDate).toLocaleDateString('ar-SA') },
     { label: 'تاريخ النهاية', value: new Date(init.endDate).toLocaleDateString('ar-SA') },
   ];
@@ -132,19 +116,10 @@ export const InitiativesTab: React.FC = () => {
             <Input placeholder="البحث في المبادرات..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-10" />
           </div>
           <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white">
-            <option value="all">جميع الحالات</option>
-            <option value="active">نشط</option>
-            <option value="planning">تخطيط</option>
-            <option value="completed">مكتمل</option>
-            <option value="suspended">معلق</option>
+            <option value="all">جميع الحالات</option><option value="active">نشط</option><option value="planning">تخطيط</option><option value="completed">مكتمل</option><option value="suspended">معلق</option>
           </select>
           <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white">
-            <option value="all">جميع الفئات</option>
-            <option value="education">تعليم</option>
-            <option value="environment">بيئة</option>
-            <option value="economic_empowerment">تمكين اقتصادي</option>
-            <option value="health">صحة</option>
-            <option value="community">مجتمع</option>
+            <option value="all">جميع الفئات</option><option value="education">تعليم</option><option value="environment">بيئة</option><option value="economic_empowerment">تمكين اقتصادي</option><option value="health">صحة</option><option value="community">مجتمع</option>
           </select>
         </div>
         <BaseActionButton onClick={() => setIsAddOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-arabic">
@@ -157,25 +132,18 @@ export const InitiativesTab: React.FC = () => {
           const StatusIcon = getStatusIcon(initiative.status);
           const progressPercentage = initiative.budget > 0 ? (initiative.allocatedBudget / initiative.budget) * 100 : 0;
           return (
-            <GenericCard key={initiative.id} className="hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-semibold font-arabic text-gray-900">{initiative.title}</h4>
-                    <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(initiative.status)}`}>
-                      <StatusIcon className="inline h-3 w-3 ml-1" />{getStatusText(initiative.status)}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 font-arabic mb-3">{initiative.description}</p>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(initiative.category)}`}>{getCategoryText(initiative.category)}</span>
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      {initiative.sdgGoals.map((goal, index) => (
-                        <span key={index} className="px-1 py-0.5 bg-blue-50 text-blue-700 rounded">{goal}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+            <DataCardFrame key={initiative.id} title={initiative.title} className="hover:shadow-lg transition-shadow">
+              <div className="flex items-center gap-2 mb-3">
+                <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(initiative.status)}`}>
+                  <StatusIcon className="inline h-3 w-3 ml-1" />{getStatusText(initiative.status)}
+                </span>
+                <span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(initiative.category)}`}>{getCategoryText(initiative.category)}</span>
+              </div>
+              <p className="text-sm text-gray-600 font-arabic mb-3">{initiative.description}</p>
+              <div className="flex items-center gap-2 mb-3">
+                {initiative.sdgGoals.map((goal, index) => (
+                  <span key={index} className="px-1 py-0.5 bg-blue-50 text-blue-700 text-xs rounded">{goal}</span>
+                ))}
               </div>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="flex items-center gap-2"><Users className="h-4 w-4 text-blue-600" /><div><p className="text-xs text-gray-500 font-arabic">المستفيدين</p><p className="font-semibold font-arabic">{initiative.beneficiaries.toLocaleString('ar-SA')}</p></div></div>
@@ -199,36 +167,25 @@ export const InitiativesTab: React.FC = () => {
                   <Edit className="h-3 w-3 ml-1" /> تعديل
                 </BaseActionButton>
               </div>
-            </GenericCard>
+            </DataCardFrame>
           );
         })}
       </div>
 
-      <GenericCard>
-        <h3 className="text-lg font-bold font-arabic mb-4">أداة بناء نظرية التغيير</h3>
+      <DataCardFrame title="أداة بناء نظرية التغيير" icon={<TrendingUp className="h-5 w-5" />}>
         <p className="text-gray-600 font-arabic mb-4">استخدم هذه الأداة لتصميم وتطوير نظرية التغيير للمبادرات الجديدة</p>
         <BaseActionButton onClick={() => setIsToCOpen(true)} className="bg-green-600 hover:bg-green-700 text-white font-arabic">
           <Plus className="ml-2 h-4 w-4" /> بناء نظرية تغيير جديدة
         </BaseActionButton>
-      </GenericCard>
+      </DataCardFrame>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة مبادرة جديدة" fields={addFields} onSubmit={handleAddInitiative} submitLabel="إضافة المبادرة" successMessage="تمت إضافة المبادرة بنجاح" />
-
       {editingInit && (
-        <GenericFormModal
-          isOpen={!!editingInit}
-          onClose={() => setEditingInit(null)}
-          title={`تعديل: ${editingInit.title}`}
+        <GenericFormModal isOpen={!!editingInit} onClose={() => setEditingInit(null)} title={`تعديل: ${editingInit.title}`}
           fields={addFields.map(f => ({ ...f, defaultValue: String((editingInit as any)[f.name] || '') }))}
-          onSubmit={handleEditInitiative}
-          submitLabel="حفظ التعديلات"
-          successMessage="تم تحديث المبادرة بنجاح"
-        />
+          onSubmit={handleEditInitiative} submitLabel="حفظ التعديلات" successMessage="تم تحديث المبادرة بنجاح" />
       )}
-
-      {viewingInit && (
-        <GenericDetailModal isOpen={!!viewingInit} onClose={() => setViewingInit(null)} title={`تفاصيل: ${viewingInit.title}`} fields={getViewFields(viewingInit)} />
-      )}
+      {viewingInit && <GenericDetailModal isOpen={!!viewingInit} onClose={() => setViewingInit(null)} title={`تفاصيل: ${viewingInit.title}`} fields={getViewFields(viewingInit)} />}
 
       <Dialog open={isToCOpen} onOpenChange={setIsToCOpen}>
         <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl">

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Plus, Search, Eye, Share2, Heart, MessageCircle, Edit, Image, Video, Calendar, User, TrendingUp } from 'lucide-react';
@@ -80,16 +81,16 @@ export const StoriesTab: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <GenericCard className="text-center"><Eye className="h-8 w-8 text-blue-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{stories.reduce((s, st) => s + st.engagement.views, 0).toLocaleString('ar-SA')}</h3><p className="text-gray-600 font-arabic">إجمالي المشاهدات</p></GenericCard>
-        <GenericCard className="text-center"><Share2 className="h-8 w-8 text-green-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{stories.reduce((s, st) => s + st.engagement.shares, 0)}</h3><p className="text-gray-600 font-arabic">المشاركات</p></GenericCard>
-        <GenericCard className="text-center"><Heart className="h-8 w-8 text-red-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{stories.reduce((s, st) => s + st.engagement.likes, 0)}</h3><p className="text-gray-600 font-arabic">الإعجابات</p></GenericCard>
-        <GenericCard className="text-center"><MessageCircle className="h-8 w-8 text-purple-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{stories.reduce((s, st) => s + st.engagement.comments, 0)}</h3><p className="text-gray-600 font-arabic">التعليقات</p></GenericCard>
+        <NumericStatCard title="إجمالي المشاهدات" value={stories.reduce((s, st) => s + st.engagement.views, 0).toLocaleString('ar-SA')} icon={<Eye className="h-5 w-5" />} accentColor="#3B82F6" />
+        <NumericStatCard title="المشاركات" value={stories.reduce((s, st) => s + st.engagement.shares, 0)} icon={<Share2 className="h-5 w-5" />} accentColor="#10B981" />
+        <NumericStatCard title="الإعجابات" value={stories.reduce((s, st) => s + st.engagement.likes, 0)} icon={<Heart className="h-5 w-5" />} accentColor="#EF4444" />
+        <NumericStatCard title="التعليقات" value={stories.reduce((s, st) => s + st.engagement.comments, 0)} icon={<MessageCircle className="h-5 w-5" />} accentColor="#8B5CF6" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredStories.map((story) => (
-          <GenericCard key={story.id} className="hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-2 mb-2"><h4 className="font-semibold font-arabic text-gray-900">{story.title}</h4><span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(story.status)}`}>{getStatusText(story.status)}</span></div>
+          <DataCardFrame key={story.id} title={story.title} className="hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-2 mb-2"><span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(story.status)}`}>{getStatusText(story.status)}</span></div>
             <p className="text-sm text-gray-600 font-arabic mb-4 line-clamp-3">{story.summary}</p>
             <div className="flex items-center gap-4 mb-4">
               {story.images.length > 0 && <div className="flex items-center gap-1 text-sm text-gray-500"><Image className="h-4 w-4" /><span className="font-arabic">{story.images.length} صورة</span></div>}
@@ -114,17 +115,16 @@ export const StoriesTab: React.FC = () => {
               <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => setEditingStory(story)}><Edit className="h-3 w-3 ml-1" /> تعديل</BaseActionButton>
               <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleShare(story)}><Share2 className="h-3 w-3 ml-1" /> مشاركة</BaseActionButton>
             </div>
-          </GenericCard>
+          </DataCardFrame>
         ))}
       </div>
 
-      <GenericCard>
-        <div className="flex items-center gap-3 mb-4"><TrendingUp className="h-6 w-6 text-blue-600" /><h3 className="text-lg font-bold font-arabic">إرشادات المحتوى</h3></div>
+      <DataCardFrame title="إرشادات المحتوى" icon={<TrendingUp className="h-5 w-5" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div><h4 className="font-semibold font-arabic text-gray-900 mb-2">معايير القصص الفعالة</h4><ul className="space-y-1 text-sm font-arabic text-gray-600"><li>• تركز على التأثير الإنساني والتغيير الحقيقي</li><li>• تحتوي على بيانات وأرقام داعمة</li><li>• تتضمن اقتباسات مباشرة من المستفيدين</li><li>• تستخدم الصور والفيديوهات المؤثرة</li><li>• تربط بأهداف التنمية المستدامة</li></ul></div>
           <div><h4 className="font-semibold font-arabic text-gray-900 mb-2">مسار الموافقة</h4><div className="space-y-2"><div className="flex items-center gap-2"><div className="w-2 h-2 bg-gray-500 rounded-full"></div><span className="text-sm font-arabic text-gray-600">المؤلف ينشئ المسودة</span></div><div className="flex items-center gap-2"><div className="w-2 h-2 bg-yellow-500 rounded-full"></div><span className="text-sm font-arabic text-gray-600">وحدة العلامة التجارية تراجع</span></div><div className="flex items-center gap-2"><div className="w-2 h-2 bg-blue-500 rounded-full"></div><span className="text-sm font-arabic text-gray-600">الوحدة القانونية تعتمد</span></div><div className="flex items-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full"></div><span className="text-sm font-arabic text-gray-600">النشر على المنصات</span></div></div></div>
         </div>
-      </GenericCard>
+      </DataCardFrame>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إنشاء قصة جديدة" fields={addFields} onSubmit={handleAddStory} submitLabel="إنشاء" successMessage="تم إنشاء القصة بنجاح" />
       {editingStory && <GenericFormModal isOpen={!!editingStory} onClose={() => setEditingStory(null)} title={`تعديل: ${editingStory.title}`} fields={addFields.map(f => ({ ...f, defaultValue: f.name === 'tags' ? editingStory.tags.join(', ') : String((editingStory as any)[f.name] || '') }))} onSubmit={handleEditStory} submitLabel="حفظ" successMessage="تم تحديث القصة بنجاح" />}

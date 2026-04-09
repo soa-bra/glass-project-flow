@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { FileText, Plus, Search, Download, Edit, Copy, Upload, Eye, Calendar, User } from 'lucide-react';
@@ -99,8 +100,7 @@ export const TemplatesTab: React.FC = () => {
       </div>
 
       {showUploadForm && (
-        <GenericCard>
-          <h3 className="text-lg font-bold font-arabic mb-4">رفع قالب جديد</h3>
+        <DataCardFrame title="رفع قالب جديد" icon={<Upload className="h-5 w-5" />}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div><label className="block text-sm font-semibold font-arabic mb-2">اسم القالب</label><Input placeholder="اسم وصفي" value={uploadName} onChange={e => setUploadName(e.target.value)} /></div>
             <div><label className="block text-sm font-semibold font-arabic mb-2">الفئة</label><select value={uploadCategory} onChange={e => setUploadCategory(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg font-arabic bg-white"><option value="proposal">مقترح</option><option value="agreement">اتفاقية</option><option value="report">تقرير</option><option value="evaluation">تقييم</option><option value="contract">عقد</option></select></div>
@@ -111,19 +111,19 @@ export const TemplatesTab: React.FC = () => {
             <BaseActionButton onClick={handleUploadSubmit} className="bg-green-600 hover:bg-green-700 text-white font-arabic">رفع القالب</BaseActionButton>
             <BaseActionButton variant="outline" onClick={() => setShowUploadForm(false)} className="font-arabic">إلغاء</BaseActionButton>
           </div>
-        </GenericCard>
+        </DataCardFrame>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <GenericCard className="text-center"><FileText className="h-8 w-8 text-blue-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{templateStats.total}</h3><p className="text-gray-600 font-arabic">إجمالي القوالب</p><div className="mt-2 text-sm text-blue-600 font-arabic">{filteredTemplates.length} نشط</div></GenericCard>
-        <GenericCard className="text-center"><Download className="h-8 w-8 text-green-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{templateStats.mostUsed.usageCount}</h3><p className="text-gray-600 font-arabic">أكثر استخداماً</p><div className="mt-2 text-sm text-green-600 font-arabic">{templateStats.mostUsed.name}</div></GenericCard>
-        <GenericCard className="text-center"><Copy className="h-8 w-8 text-purple-600 mx-auto mb-4" /><h3 className="text-2xl font-bold font-arabic text-gray-900">{templateStats.categories}</h3><p className="text-gray-600 font-arabic">الفئات المتاحة</p></GenericCard>
+        <NumericStatCard title="إجمالي القوالب" value={templateStats.total} description={`${filteredTemplates.length} نشط`} icon={<FileText className="h-5 w-5" />} accentColor="#3B82F6" />
+        <NumericStatCard title="أكثر استخداماً" value={templateStats.mostUsed.usageCount} description={templateStats.mostUsed.name} icon={<Download className="h-5 w-5" />} accentColor="#10B981" />
+        <NumericStatCard title="الفئات المتاحة" value={templateStats.categories} icon={<Copy className="h-5 w-5" />} accentColor="#8B5CF6" />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredTemplates.map((template) => (
-          <GenericCard key={template.id} className="hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-2 mb-2"><h4 className="font-semibold font-arabic text-gray-900">{template.name}</h4><span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(template.category)}`}>{getCategoryText(template.category)}</span></div>
+          <DataCardFrame key={template.id} title={template.name} className="hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-2 mb-2"><span className={`px-2 py-1 text-xs rounded-full ${getCategoryColor(template.category)}`}>{getCategoryText(template.category)}</span></div>
             <p className="text-sm text-gray-600 font-arabic mb-3">{template.description}</p>
             <div className="flex items-center justify-between text-sm text-gray-500 font-arabic mb-4"><div className="flex items-center"><User className="h-3 w-3 ml-1" /><span>{template.createdBy}</span></div><div className="flex items-center"><Calendar className="h-3 w-3 ml-1" /><span>{new Date(template.lastModified).toLocaleDateString('ar-SA')}</span></div></div>
             <div className="flex items-center justify-between text-sm text-gray-500 font-arabic mb-4"><div>استخدم {template.usageCount} مرة</div><div>{template.variables.length} متغير</div></div>
@@ -134,18 +134,17 @@ export const TemplatesTab: React.FC = () => {
               <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleCopy(template)}><Copy className="h-3 w-3 ml-1" /> نسخ</BaseActionButton>
               <BaseActionButton size="sm" variant="outline" className="text-blue-600 hover:text-blue-700 font-arabic" onClick={() => setEditingTemplate(template)}><Edit className="h-3 w-3 ml-1" /> تعديل</BaseActionButton>
             </div>
-          </GenericCard>
+          </DataCardFrame>
         ))}
       </div>
 
-      <GenericCard>
-        <h3 className="text-lg font-bold font-arabic mb-4">دليل المتغيرات المتاحة للمبادرات الاجتماعية</h3>
+      <DataCardFrame title="دليل المتغيرات المتاحة للمبادرات الاجتماعية" icon={<FileText className="h-5 w-5" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div><h4 className="font-semibold font-arabic text-gray-900 mb-2">معلومات المبادرة</h4><div className="space-y-1 text-sm font-arabic"><div className="flex justify-between"><span className="text-gray-600">اسم المبادرة:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{initiative_name}}"}</code></div><div className="flex justify-between"><span className="text-gray-600">الفئة:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{category}}"}</code></div><div className="flex justify-between"><span className="text-gray-600">الميزانية:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{budget}}"}</code></div></div></div>
           <div><h4 className="font-semibold font-arabic text-gray-900 mb-2">معلومات الشراكة</h4><div className="space-y-1 text-sm font-arabic"><div className="flex justify-between"><span className="text-gray-600">اسم الشريك:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{partner_name}}"}</code></div><div className="flex justify-between"><span className="text-gray-600">نوع الشراكة:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{partnership_type}}"}</code></div><div className="flex justify-between"><span className="text-gray-600">المدة:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{duration}}"}</code></div></div></div>
           <div><h4 className="font-semibold font-arabic text-gray-900 mb-2">مؤشرات الأداء</h4><div className="space-y-1 text-sm font-arabic"><div className="flex justify-between"><span className="text-gray-600">المستفيدين:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{beneficiaries}}"}</code></div><div className="flex justify-between"><span className="text-gray-600">مؤشر الأثر:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{impact_index}}"}</code></div><div className="flex justify-between"><span className="text-gray-600">SROI:</span><code className="bg-gray-100 px-2 py-1 rounded text-xs">{"{{sroi_value}}"}</code></div></div></div>
         </div>
-      </GenericCard>
+      </DataCardFrame>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إنشاء قالب جديد" fields={addFields} onSubmit={handleAddTemplate} submitLabel="إنشاء" successMessage="تم إنشاء القالب بنجاح" />
       {editingTemplate && <GenericFormModal isOpen={!!editingTemplate} onClose={() => setEditingTemplate(null)} title={`تعديل: ${editingTemplate.name}`} fields={addFields.map(f => ({ ...f, defaultValue: String((editingTemplate as any)[f.name] || '') }))} onSubmit={handleEditTemplate} submitLabel="حفظ" successMessage="تم تحديث القالب بنجاح" />}
