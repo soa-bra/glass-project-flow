@@ -110,67 +110,52 @@ export const AnalyticsTab: React.FC = () => {
 
       {/* Charts row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">نمو العملاء</span>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={240}>
-              <AreaChart data={customerGrowthData}>
-                <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis hide />
-                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
-                <Area type="monotone" dataKey="total" stroke="#3DA8F5" fill="#3DA8F5" fillOpacity={0.15} strokeWidth={2.5} />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <DataCardFrame title="نمو العملاء">
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={customerGrowthData}>
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Area type="monotone" dataKey="total" stroke="#3DA8F5" fill="#3DA8F5" fillOpacity={0.15} strokeWidth={2.5} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </DataCardFrame>
 
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">أداء المبيعات</span>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={salesPerformance} barSize={14}>
-                <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis hide />
-                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} formatter={(v: any) => [`${(v / 1000000).toFixed(1)}م`, '']} />
-                <Bar dataKey="target" fill="rgba(11,15,18,0.08)" radius={[7, 7, 7, 7]} />
-                <Bar dataKey="actual" fill="#3DA8F5" radius={[7, 7, 7, 7]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <DataCardFrame title="أداء المبيعات">
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={salesPerformance} barSize={20}>
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} formatter={(v: any) => [`${(v / 1000000).toFixed(1)}م`, '']} />
+              <Bar dataKey="target" fill="rgba(11,15,18,0.08)" radius={[999, 999, 999, 999]} />
+              <Bar dataKey="actual" fill="#3DA8F5" radius={[999, 999, 999, 999]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </DataCardFrame>
       </div>
 
       {/* Charts row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">الإيرادات حسب الشريحة</span>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie data={revenueBySegment} cx="50%" cy="50%" outerRadius={85} innerRadius={50} strokeWidth={0} dataKey="revenue"
-                  label={({ segment, percent }) => `${segment} ${(percent * 100).toFixed(0)}%`}>
-                  {revenueBySegment.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                </Pie>
-                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <DataCardFrame title="الإيرادات حسب الشريحة">
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart>
+              <Pie data={revenueBySegment} cx="50%" cy="50%" outerRadius={85} innerRadius={50} strokeWidth={0} dataKey="revenue"
+                label={({ segment, percent }) => `${segment} ${(percent * 100).toFixed(0)}%`}>
+                {revenueBySegment.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+              </Pie>
+              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </DataCardFrame>
 
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">اتجاه رضا العملاء</span>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={satisfactionTrend}>
-                <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis hide />
-                <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
-                <Line type="monotone" dataKey="nps" stroke="#3DBE8B" strokeWidth={2.5} dot={false} />
-                <Line type="monotone" dataKey="satisfaction" stroke="#3DA8F5" strokeWidth={2.5} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <DataCardFrame title="اتجاه رضا العملاء">
+          <ResponsiveContainer width="100%" height={240}>
+            <LineChart data={satisfactionTrend}>
+              <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Line type="monotone" dataKey="nps" stroke="#3DBE8B" strokeWidth={2.5} dot={false} />
+              <Line type="monotone" dataKey="satisfaction" stroke="#3DA8F5" strokeWidth={2.5} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </DataCardFrame>
       </div>
 
       {/* Funnel & Churn */}
@@ -180,10 +165,7 @@ export const AnalyticsTab: React.FC = () => {
       </div>
 
       {/* AI Insights */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-        <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase mb-4 block">
-          رؤى الذكاء الاصطناعي
-        </span>
+      <DataCardFrame title="رؤى الذكاء الاصطناعي">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {[
             { title: 'فرصة نمو', text: 'العملاء في الشريحة الفضية يظهرون استعداداً للترقية. حملة مستهدفة لـ 67 عميل.', color: '#3DA8F5' },
@@ -196,7 +178,7 @@ export const AnalyticsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </DataCardFrame>
     </div>
   );
 };
