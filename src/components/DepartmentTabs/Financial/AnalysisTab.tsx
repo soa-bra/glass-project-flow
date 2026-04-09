@@ -3,9 +3,9 @@ import { Download, Target } from 'lucide-react';
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
-import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { SPACING } from '@/components/shared/design-system/constants';
-import { Reveal, Stagger } from '@/components/shared/motion';
+import { Reveal } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
 import { mockExpenseCategories } from './data';
 import { formatCurrency } from './utils';
@@ -32,73 +32,60 @@ export const AnalysisTab: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pie Chart */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">
-            توزيع المصروفات
-          </span>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={280}>
-              <RechartsPieChart>
-                <Pie
-                  data={mockExpenseCategories}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  outerRadius={90}
-                  innerRadius={50}
-                  strokeWidth={0}
-                  dataKey="value"
-                >
-                  {mockExpenseCategories.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0B0F12',
-                    border: 'none',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    color: '#FFFFFF',
-                    padding: '8px 12px',
-                  }}
-                  itemStyle={{ color: '#FFFFFF' }}
-                />
-              </RechartsPieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <DataCardFrame title="توزيع المصروفات">
+          <ResponsiveContainer width="100%" height={280}>
+            <RechartsPieChart>
+              <Pie
+                data={mockExpenseCategories}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                outerRadius={90}
+                innerRadius={50}
+                strokeWidth={0}
+                dataKey="value"
+              >
+                {mockExpenseCategories.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#0B0F12',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  color: '#FFFFFF',
+                  padding: '8px 12px',
+                }}
+                itemStyle={{ color: '#FFFFFF' }}
+              />
+            </RechartsPieChart>
+          </ResponsiveContainer>
+        </DataCardFrame>
 
         {/* Scenarios */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col">
-          <div className="flex items-center gap-2 mb-6">
-            <Target className="h-5 w-5 text-[#0B0F12]" />
-            <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">
-              التنبؤات المالية
-            </span>
-          </div>
-          <Stagger gap={0.1} className="space-y-4 flex-1">
+        <DataCardFrame title="التنبؤات المالية" icon={<Target className="h-5 w-5" />}>
+          <div className="space-y-4">
             {scenarios.map((scenario, index) => (
-              <Stagger.Item key={index}>
-                <div className="rounded-[18px] border border-[#DADCE0] p-5 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-[rgba(11,15,18,0.50)] font-arabic mb-1">{scenario.title}</p>
-                    <p className="text-[28px] leading-none font-bold text-[#0B0F12] font-arabic">
-                      {formatCurrency(scenario.revenue)}
-                    </p>
-                  </div>
-                  <div
-                    className="text-sm font-bold font-arabic px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: `${scenario.color}20`, color: scenario.color }}
-                  >
-                    {scenario.growth}
-                  </div>
+              <div key={index} className="rounded-[18px] border border-[#DADCE0] p-5 flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-[rgba(11,15,18,0.50)] font-arabic mb-1">{scenario.title}</p>
+                  <p className="text-[28px] leading-none font-bold text-[#0B0F12] font-arabic">
+                    {formatCurrency(scenario.revenue)}
+                  </p>
                 </div>
-              </Stagger.Item>
+                <div
+                  className="text-sm font-bold font-arabic px-3 py-1.5 rounded-full"
+                  style={{ backgroundColor: `${scenario.color}20`, color: scenario.color }}
+                >
+                  {scenario.growth}
+                </div>
+              </div>
             ))}
-          </Stagger>
-        </div>
+          </div>
+        </DataCardFrame>
       </div>
     </BaseTabContent>
   );

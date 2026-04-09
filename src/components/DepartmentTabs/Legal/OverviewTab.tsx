@@ -1,10 +1,9 @@
 import React from 'react';
-import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
+import { AlertTriangle, FileText, Shield, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { BaseBox, BaseStatsCard, BaseListItem } from '@/components/shared';
-import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { BaseBox, BaseListItem } from '@/components/shared';
 import { mockLegalMetrics, mockAlerts } from './data';
-import { getStatusColor, getStatusText, getPriorityColor } from './utils';
 import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
@@ -57,15 +56,12 @@ export const OverviewTab: React.FC = () => {
           title="توزيع العقود حسب الحالة"
           icon={<FileText className={LAYOUT.ICON_SIZE} />}
         >
-          <BaseStatsCard 
-            stats={[
-              { title: 'موقعة', value: metrics.contractsCount.signed },
-              { title: 'في الانتظار', value: metrics.contractsCount.pending },
-              { title: 'منتهية', value: metrics.contractsCount.expired },
-              { title: 'قيد المراجعة', value: metrics.contractsCount.underReview }
-            ]}
-            columns={2}
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <NumericStatCard title="موقعة" value={metrics.contractsCount.signed} size="sm" />
+            <NumericStatCard title="في الانتظار" value={metrics.contractsCount.pending} size="sm" />
+            <NumericStatCard title="منتهية" value={metrics.contractsCount.expired} size="sm" />
+            <NumericStatCard title="قيد المراجعة" value={metrics.contractsCount.underReview} size="sm" />
+          </div>
         </BaseBox>
 
         {/* درجة الامتثال ومؤشرات المخاطر */}
@@ -98,15 +94,12 @@ export const OverviewTab: React.FC = () => {
           title="الإنجازات الشهرية"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
         >
-          <BaseStatsCard 
-            stats={[
-              { title: 'عقد موقع', value: metrics.monthlyStats.contractsSigned },
-              { title: 'قضية محلولة', value: metrics.monthlyStats.casesResolved },
-              { title: 'فحص امتثال', value: metrics.monthlyStats.complianceChecks },
-              { title: 'تقييم مخاطر', value: metrics.monthlyStats.riskAssessments }
-            ]}
-            columns={2}
-          />
+          <div className="grid grid-cols-2 gap-3">
+            <NumericStatCard title="عقد موقع" value={metrics.monthlyStats.contractsSigned} size="sm" />
+            <NumericStatCard title="قضية محلولة" value={metrics.monthlyStats.casesResolved} size="sm" />
+            <NumericStatCard title="فحص امتثال" value={metrics.monthlyStats.complianceChecks} size="sm" />
+            <NumericStatCard title="تقييم مخاطر" value={metrics.monthlyStats.riskAssessments} size="sm" />
+          </div>
         </BaseBox>
 
         {/* التنبيهات القانونية */}

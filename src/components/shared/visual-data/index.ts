@@ -6,3 +6,4 @@ export { MinimalLineChart } from './MinimalLineChart';
 export { ComparisonMetricCard } from './ComparisonMetricCard';
 export { NumericStatCard } from './NumericStatCard';
 export { RadialProgressCard } from './RadialProgressCard';
+export { DataCardFrame } from './DataCardFrame';
