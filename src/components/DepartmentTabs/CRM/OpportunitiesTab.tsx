@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
@@ -8,7 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { mockOpportunities, mockCRMAnalytics } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
-import { toast } from 'sonner';
+
 
 export const OpportunitiesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -152,77 +153,56 @@ export const OpportunitiesTab: React.FC = () => {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Target className="h-8 w-8 text-purple-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.totalOpportunities}</h3>
-          <p className="text-gray-600 font-arabic">إجمالي الفرص</p>
-          <div className="mt-2 text-sm text-blue-600 font-arabic">
-            {filteredOpportunities.length} نشطة
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <TrendingUp className="h-8 w-8 text-green-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.conversionRate}%</h3>
-          <p className="text-gray-600 font-arabic">معدل التحويل</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">
-            {mockCRMAnalytics.wonOpportunities} فرصة ناجحة
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <DollarSign className="h-8 w-8 text-blue-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">
-            {(mockCRMAnalytics.averageDealSize / 1000).toFixed(0)}ك
-          </h3>
-          <p className="text-gray-600 font-arabic">متوسط قيمة الصفقة</p>
-          <div className="mt-2 text-sm text-gray-500 font-arabic">ر.س</div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Calendar className="h-8 w-8 text-orange-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">18</h3>
-          <p className="text-gray-600 font-arabic">فرص هذا الشهر</p>
-          <div className="mt-2 text-sm text-orange-600 font-arabic">+22% عن الماضي</div>
-        </GenericCard>
+        <NumericStatCard
+          title="إجمالي الفرص"
+          value={mockCRMAnalytics.totalOpportunities}
+          description={`${filteredOpportunities.length} نشطة`}
+          icon={<Target className="h-5 w-5" />}
+          accentColor="#8B5CF6"
+        />
+        <NumericStatCard
+          title="معدل التحويل"
+          value={`${mockCRMAnalytics.conversionRate}%`}
+          description={`${mockCRMAnalytics.wonOpportunities} فرصة ناجحة`}
+          icon={<TrendingUp className="h-5 w-5" />}
+          accentColor="#10B981"
+        />
+        <NumericStatCard
+          title="متوسط قيمة الصفقة"
+          value={`${(mockCRMAnalytics.averageDealSize / 1000).toFixed(0)}ك`}
+          unit="ر.س"
+          icon={<DollarSign className="h-5 w-5" />}
+          accentColor="#3B82F6"
+        />
+        <NumericStatCard
+          title="فرص هذا الشهر"
+          value={18}
+          description="+22% عن الماضي"
+          icon={<Calendar className="h-5 w-5" />}
+          accentColor="#F59E0B"
+        />
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <GenericCard>
-          <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-            <TrendingUp className="ml-2 h-5 w-5" />
-            مسار المبيعات
-          </h3>
+        <DataCardFrame title="مسار المبيعات" icon={<TrendingUp className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="stage" className="font-arabic" />
-              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,15,18,0.08)" />
+              <XAxis dataKey="stage" className="font-arabic" axisLine={false} tickLine={false} tick={{ fill: 'rgba(11,15,18,0.35)', fontSize: 10 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(11,15,18,0.35)', fontSize: 10 }} />
               <Tooltip 
                 formatter={(value, name) => [
                   name === 'count' ? `${value} فرصة` : `${(value as number / 1000000).toFixed(1)}م ر.س`,
                   name === 'count' ? 'عدد الفرص' : 'القيمة الإجمالية'
                 ]} 
               />
-              <Bar dataKey="count" fill="#3B82F6" name="count" />
+              <Bar dataKey="count" fill="#3B82F6" name="count" barSize={20} radius={[999, 999, 999, 999]} />
             </BarChart>
           </ResponsiveContainer>
-        </GenericCard>
+        </DataCardFrame>
 
-        <GenericCard>
-          <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-            <Users className="ml-2 h-5 w-5" />
-            مصادر الفرص
-          </h3>
+        <DataCardFrame title="مصادر الفرص" icon={<Users className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -240,15 +220,11 @@ export const OpportunitiesTab: React.FC = () => {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-        </GenericCard>
+        </DataCardFrame>
       </div>
 
       {/* Opportunities List */}
-      <GenericCard>
-        <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-          <FileText className="ml-2 h-5 w-5" />
-          قائمة الفرص ({filteredOpportunities.length})
-        </h3>
+      <DataCardFrame title={`قائمة الفرص (${filteredOpportunities.length})`} icon={<FileText className="h-5 w-5" />}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -312,7 +288,7 @@ export const OpportunitiesTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </GenericCard>
+      </DataCardFrame>
 
       {/* Add Opportunity Modal */}
       <GenericFormModal
