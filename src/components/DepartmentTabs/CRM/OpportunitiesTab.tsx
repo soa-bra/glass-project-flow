@@ -224,7 +224,7 @@ export const OpportunitiesTab: React.FC = () => {
       </div>
 
       {/* Opportunities List */}
-      <GenericCard>
+      <DataCardFrame title={`قائمة الفرص (${filteredOpportunities.length})`} icon={<FileText className="h-5 w-5" />}>
         <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
           <FileText className="ml-2 h-5 w-5" />
           قائمة الفرص ({filteredOpportunities.length})
@@ -292,7 +292,7 @@ export const OpportunitiesTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </GenericCard>
+      </DataCardFrame>
 
       {/* Add Opportunity Modal */}
       <GenericFormModal
