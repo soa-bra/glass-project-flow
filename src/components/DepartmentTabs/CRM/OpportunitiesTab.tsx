@@ -9,7 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { mockOpportunities, mockCRMAnalytics } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
-import { toast } from 'sonner';
+
 
 export const OpportunitiesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -225,10 +225,6 @@ export const OpportunitiesTab: React.FC = () => {
 
       {/* Opportunities List */}
       <DataCardFrame title={`قائمة الفرص (${filteredOpportunities.length})`} icon={<FileText className="h-5 w-5" />}>
-        <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-          <FileText className="ml-2 h-5 w-5" />
-          قائمة الفرص ({filteredOpportunities.length})
-        </h3>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
