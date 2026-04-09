@@ -153,47 +153,34 @@ export const OpportunitiesTab: React.FC = () => {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Target className="h-8 w-8 text-purple-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.totalOpportunities}</h3>
-          <p className="text-gray-600 font-arabic">إجمالي الفرص</p>
-          <div className="mt-2 text-sm text-blue-600 font-arabic">
-            {filteredOpportunities.length} نشطة
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <TrendingUp className="h-8 w-8 text-green-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">{mockCRMAnalytics.conversionRate}%</h3>
-          <p className="text-gray-600 font-arabic">معدل التحويل</p>
-          <div className="mt-2 text-sm text-green-600 font-arabic">
-            {mockCRMAnalytics.wonOpportunities} فرصة ناجحة
-          </div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <DollarSign className="h-8 w-8 text-blue-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">
-            {(mockCRMAnalytics.averageDealSize / 1000).toFixed(0)}ك
-          </h3>
-          <p className="text-gray-600 font-arabic">متوسط قيمة الصفقة</p>
-          <div className="mt-2 text-sm text-gray-500 font-arabic">ر.س</div>
-        </GenericCard>
-
-        <GenericCard className="text-center">
-          <div className="flex items-center justify-center mb-4">
-            <Calendar className="h-8 w-8 text-orange-600" />
-          </div>
-          <h3 className="text-2xl font-bold font-arabic text-gray-900">18</h3>
-          <p className="text-gray-600 font-arabic">فرص هذا الشهر</p>
-          <div className="mt-2 text-sm text-orange-600 font-arabic">+22% عن الماضي</div>
-        </GenericCard>
+        <NumericStatCard
+          title="إجمالي الفرص"
+          value={mockCRMAnalytics.totalOpportunities}
+          description={`${filteredOpportunities.length} نشطة`}
+          icon={<Target className="h-5 w-5" />}
+          accentColor="#8B5CF6"
+        />
+        <NumericStatCard
+          title="معدل التحويل"
+          value={`${mockCRMAnalytics.conversionRate}%`}
+          description={`${mockCRMAnalytics.wonOpportunities} فرصة ناجحة`}
+          icon={<TrendingUp className="h-5 w-5" />}
+          accentColor="#10B981"
+        />
+        <NumericStatCard
+          title="متوسط قيمة الصفقة"
+          value={`${(mockCRMAnalytics.averageDealSize / 1000).toFixed(0)}ك`}
+          unit="ر.س"
+          icon={<DollarSign className="h-5 w-5" />}
+          accentColor="#3B82F6"
+        />
+        <NumericStatCard
+          title="فرص هذا الشهر"
+          value={18}
+          description="+22% عن الماضي"
+          icon={<Calendar className="h-5 w-5" />}
+          accentColor="#F59E0B"
+        />
       </div>
 
       {/* Charts Row */}
