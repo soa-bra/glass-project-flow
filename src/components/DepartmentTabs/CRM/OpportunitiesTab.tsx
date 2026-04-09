@@ -202,11 +202,7 @@ export const OpportunitiesTab: React.FC = () => {
           </ResponsiveContainer>
         </DataCardFrame>
 
-        <GenericCard>
-          <h3 className="text-xl font-bold font-arabic mb-4 flex items-center">
-            <Users className="ml-2 h-5 w-5" />
-            مصادر الفرص
-          </h3>
+        <DataCardFrame title="مصادر الفرص" icon={<Users className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -224,7 +220,7 @@ export const OpportunitiesTab: React.FC = () => {
               <Tooltip />
             </PieChart>
           </ResponsiveContainer>
-        </GenericCard>
+        </DataCardFrame>
       </div>
 
       {/* Opportunities List */}
