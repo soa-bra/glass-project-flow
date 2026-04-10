@@ -3,6 +3,8 @@ import { AlertTriangle, FileText, Shield, TrendingUp, Bell, CheckCircle, Clock }
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { BaseBox, BaseListItem } from '@/components/shared';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockLegalMetrics, mockAlerts } from './data';
 import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
 
@@ -50,9 +52,10 @@ export const OverviewTab: React.FC = () => {
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
       
-      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
+      <AppDashboardGrid columns={12} density="spacious">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* إحصائيات العقود */}
-        <BaseBox 
+        <BaseBox
           title="توزيع العقود حسب الحالة"
           icon={<FileText className={LAYOUT.ICON_SIZE} />}
         >
@@ -63,7 +66,9 @@ export const OverviewTab: React.FC = () => {
             <NumericStatCard title="قيد المراجعة" value={metrics.contractsCount.underReview} size="sm" />
           </div>
         </BaseBox>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* درجة الامتثال ومؤشرات المخاطر */}
         <BaseBox 
           title="مؤشرات الامتثال والمخاطر"
@@ -86,11 +91,13 @@ export const OverviewTab: React.FC = () => {
             </div>
           </div>
         </BaseBox>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
-      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
+      <AppDashboardGrid columns={12} density="spacious">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* الإحصائيات الشهرية */}
-        <BaseBox 
+        <BaseBox
           title="الإنجازات الشهرية"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
         >
@@ -101,7 +108,9 @@ export const OverviewTab: React.FC = () => {
             <NumericStatCard title="تقييم مخاطر" value={metrics.monthlyStats.riskAssessments} size="sm" />
           </div>
         </BaseBox>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* التنبيهات القانونية */}
         <BaseBox 
           title="تنبيهات قانونية عاجلة"
@@ -126,6 +135,7 @@ export const OverviewTab: React.FC = () => {
             ))}
           </div>
         </BaseBox>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
     </div>;
 };
