@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 
 // Type-safe helper until types.ts is regenerated with new tables
-const fromTable = (table: string) => supabase.from(table as any);
+const fromTable = (table: string) => (supabase as any).from(table);
 
 export interface InviteLink {
   id: string;
