@@ -4,6 +4,8 @@ import { DelayedMilestones } from './Projects/DelayedMilestones';
 import { ProjectProgressSummary } from './Projects/ProjectProgressSummary';
 import { AIDelayAdvisor } from './Projects/AIDelayAdvisor';
 import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface CriticalProject {
   id: string;
@@ -55,7 +57,6 @@ interface ProjectsTabProps {
 }
 
 export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
-  // تحويل البيانات إلى تنسيق KPI
   const kpiStats = data ? [{
     title: 'إجمالي المشاريع',
     value: String(data.summary.totalProjects),
@@ -87,13 +88,15 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
     >
       {data && (
         <div className="space-y-6">
-          {/* الرسوم البيانية الأساسية */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <MiniGanttChart criticalProjects={data.criticalProjects} />
-            <DelayedMilestones delayedMilestones={data.delayedMilestones} />
-          </div>
-          
-          {/* مستشار التأخير بالذكاء الاصطناعي */}
+          <AppDashboardGrid columns={12} density="spacious">
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <MiniGanttChart criticalProjects={data.criticalProjects} />
+            </AppGridItem>
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <DelayedMilestones delayedMilestones={data.delayedMilestones} />
+            </AppGridItem>
+          </AppDashboardGrid>
+
           <AIDelayAdvisor aiAdvice={data.aiAdvice} />
         </div>
       )}

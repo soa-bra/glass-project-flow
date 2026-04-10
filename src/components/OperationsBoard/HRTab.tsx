@@ -1,6 +1,8 @@
 import React from 'react';
 import { ResourceHeatMap, SkillGapRadar, WorkloadBalance } from './HR/ResourceHeatMap';
 import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface ResourceUtilization {
   employeeId: string;
@@ -53,7 +55,6 @@ interface HRTabProps {
 }
 
 const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
-  // تحويل البيانات إلى تنسيق KPI
   const kpiStats = data ? [{
     title: 'أعضاء نشطين',
     value: String(data.stats.active),
@@ -85,13 +86,15 @@ const HRTab: React.FC<HRTabProps> = ({ data, loading }) => {
     >
       {data && (
         <div className="space-y-6">
-          {/* الرسوم البيانية الأساسية */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <ResourceHeatMap resourceData={data.resourceUtilization} />
-            <SkillGapRadar skillGaps={data.skillGaps} />
-          </div>
-          
-          {/* توازن أعباء العمل */}
+          <AppDashboardGrid columns={12} density="spacious">
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <ResourceHeatMap resourceData={data.resourceUtilization} />
+            </AppGridItem>
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <SkillGapRadar skillGaps={data.skillGaps} />
+            </AppGridItem>
+          </AppDashboardGrid>
+
           <WorkloadBalance workloadData={data.workloadBalance} />
         </div>
       )}
