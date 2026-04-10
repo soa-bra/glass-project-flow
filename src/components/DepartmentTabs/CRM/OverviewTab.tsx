@@ -1,6 +1,8 @@
 import React from 'react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 import { mockCRMAnalytics, mockNPS } from './data';
 
@@ -42,7 +44,8 @@ export const OverviewTab: React.FC = () => {
     <div className="space-y-5">
       <KPIStatsSection stats={kpiStats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         <DataCardFrame title="مسار المبيعات">
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -54,7 +57,9 @@ export const OverviewTab: React.FC = () => {
             </ResponsiveContainer>
           </div>
         </DataCardFrame>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         <DataCardFrame title="رضا العملاء">
           <div className="flex flex-col items-center">
             <div className="relative" style={{ width: 180, height: 180 }}>
@@ -85,7 +90,8 @@ export const OverviewTab: React.FC = () => {
             </div>
           </div>
         </DataCardFrame>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       <DataCardFrame title="الاتجاهات الشهرية">
         <div style={{ height: 200 }}>

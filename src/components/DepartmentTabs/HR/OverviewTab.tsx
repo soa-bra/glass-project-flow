@@ -3,6 +3,8 @@ import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { UserPlus, Calendar, Award, Users } from 'lucide-react';
 import { mockHRStats, mockWorkforceAnalytics } from './data';
 
@@ -66,9 +68,10 @@ export const OverviewTab: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* Recent Activities */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
             الأنشطة الأخيرة
           </span>
@@ -87,9 +90,11 @@ export const OverviewTab: React.FC = () => {
             ))}
           </div>
         </div>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* Upcoming Events */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
             الأحداث القادمة
           </span>
@@ -107,7 +112,8 @@ export const OverviewTab: React.FC = () => {
             ))}
           </div>
         </div>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Workforce Distribution */}
       <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
