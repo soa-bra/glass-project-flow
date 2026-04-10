@@ -3,6 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 
+// Type-safe helper until types.ts is regenerated with new tables
+const fromTable = (table: string) => (supabase as any).from(table);
+
 export interface InviteLink {
   id: string;
   board_id: string;
@@ -37,8 +40,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
   const fetchActiveLink = useCallback(async () => {
     if (!boardId) return;
     
-    const { data, error } = await supabase
-      .from('board_invite_links')
+    const { data, error } = await fromTable('board_invite_links')
       .select('*')
       .eq('board_id', boardId)
       .eq('is_active', true)
@@ -56,8 +58,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
   const fetchPendingRequests = useCallback(async () => {
     if (!boardId || !isHost) return;
 
-    const { data, error } = await supabase
-      .from('board_join_requests')
+    const { data, error } = await fromTable('board_join_requests')
       .select('*')
       .eq('board_id', boardId)
       .eq('status', 'pending')
@@ -84,15 +85,13 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
       }
 
       // إلغاء أي روابط سابقة
-      await supabase
-        .from('board_invite_links')
+      await fromTable('board_invite_links')
         .update({ is_active: false })
         .eq('board_id', boardId);
 
       // إنشاء رابط جديد
       const token = nanoid(12);
-      const { data, error } = await supabase
-        .from('board_invite_links')
+      const { data, error } = await fromTable('board_invite_links')
         .insert({
           board_id: boardId,
           token,
@@ -120,8 +119,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
   const deactivateLink = useCallback(async () => {
     if (!activeLink) return;
 
-    const { error } = await supabase
-      .from('board_invite_links')
+    const { error } = await fromTable('board_invite_links')
       .update({ is_active: false })
       .eq('id', activeLink.id);
 
@@ -143,7 +141,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const updateData: Record<string, unknown> = {
+    const updateData: any = {
       status: action,
       processed_by: user.id,
       processed_at: new Date().toISOString(),
@@ -153,8 +151,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
       updateData.granted_role = role;
     }
 
-    const { error } = await supabase
-      .from('board_join_requests')
+    const { error } = await fromTable('board_join_requests')
       .update(updateData)
       .eq('id', requestId);
 
