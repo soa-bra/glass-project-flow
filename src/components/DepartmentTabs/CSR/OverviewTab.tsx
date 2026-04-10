@@ -88,9 +88,11 @@ export const OverviewTab: React.FC = () => {
             ))}
           </div>
         </div>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* Achievements */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
             الإنجازات الحديثة
           </span>
@@ -106,7 +108,8 @@ export const OverviewTab: React.FC = () => {
             ))}
           </div>
         </div>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
     </div>
   );
 };
