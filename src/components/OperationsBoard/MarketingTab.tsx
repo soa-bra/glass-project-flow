@@ -5,6 +5,8 @@ import { AttributionChart } from './Marketing/AttributionChart';
 import { MarketingKPIs } from './Marketing/MarketingKPIs';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Download } from 'lucide-react';
 interface ROASData {
   channel: string;
@@ -89,18 +91,19 @@ export const MarketingTab: React.FC<MarketingTabProps> = ({
     >
       {data && (
         <div className="space-y-6">
-          {/* الرسوم البيانية الأساسية */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <MarketingROAS roasData={data.roasData} />
-            <AttributionChart attribution={data.attribution} />
-          </div>
+          <AppDashboardGrid columns={12} density="spacious">
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <MarketingROAS roasData={data.roasData} />
+            </AppGridItem>
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <AttributionChart attribution={data.attribution} />
+            </AppGridItem>
+          </AppDashboardGrid>
           
-          {/* الحملات النشطة */}
           <ActiveCampaigns campaigns={data.campaigns} />
           
-          {/* أدوات التصدير والتحليل */}
-          <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-            <div className="text-sm font-normal text-gray-600">
+          <div className="flex justify-between items-center pt-4 border-t border-[#DADCE0]">
+            <div className="text-sm font-normal text-[rgba(11,15,18,0.6)]">
               تم تحديث البيانات منذ {new Date().toLocaleTimeString('ar-SA')}
             </div>
             <BaseActionButton
