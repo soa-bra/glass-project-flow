@@ -7,3 +7,5 @@ export { ComparisonMetricCard } from './ComparisonMetricCard';
 export { NumericStatCard } from './NumericStatCard';
 export { RadialProgressCard } from './RadialProgressCard';
 export { DataCardFrame } from './DataCardFrame';
+export { ChartTooltipShell, CHART_CURSOR_STYLE } from './ChartTooltipShell';
+export type { ChartTooltipShellProps } from './ChartTooltipShell';
