@@ -74,8 +74,7 @@ export const smartElementsApi = {
     const defaultData = getDefaultSmartElementData(type);
 
     // Create board object first
-    const { data: boardObject, error: boardObjectError } = await supabase
-      .from('board_objects')
+    const { data: boardObject, error: boardObjectError } = await fromTable('board_objects')
       .insert({
         board_id: boardId,
         type: 'smart',
@@ -93,8 +92,7 @@ export const smartElementsApi = {
     }
 
     // Create smart element data
-    const { data: smartData, error: smartDataError } = await supabase
-      .from('smart_element_data')
+    const { data: smartData, error: smartDataError } = await fromTable('smart_element_data')
       .insert({
         board_object_id: boardObject.id,
         smart_type: type,
@@ -107,7 +105,7 @@ export const smartElementsApi = {
     if (smartDataError || !smartData) {
       console.error('Failed to create smart element data:', smartDataError);
       // Rollback board object creation
-      await supabase.from('board_objects').delete().eq('id', boardObject.id);
+      await fromTable('board_objects').delete().eq('id', boardObject.id);
       return null;
     }
 
@@ -126,8 +124,7 @@ export const smartElementsApi = {
    * Read smart element data by board object ID
    */
   read: async (boardObjectId: string): Promise<SmartElementRecord | null> => {
-    const { data, error } = await supabase
-      .from('smart_element_data')
+    const { data, error } = await fromTable('smart_element_data')
       .select('*')
       .eq('board_object_id', boardObjectId)
       .maybeSingle();
@@ -146,8 +143,7 @@ export const smartElementsApi = {
       const validated = parseSmartElementData('kanban', migrated.data);
 
       if (migrated.migrated) {
-        const { data: updatedRow } = await supabase
-          .from('smart_element_data')
+        const { data: updatedRow } = await fromTable('smart_element_data')
           .update({
             data: validated as Json,
             version: data.version + 1,
@@ -198,8 +194,7 @@ export const smartElementsApi = {
    * Read smart element by its own ID
    */
   readById: async (elementId: string): Promise<SmartElementRecord | null> => {
-    const { data, error } = await supabase
-      .from('smart_element_data')
+    const { data, error } = await fromTable('smart_element_data')
       .select('*')
       .eq('id', elementId)
       .maybeSingle();
@@ -217,8 +212,7 @@ export const smartElementsApi = {
       const validated = parseSmartElementData('kanban', migrated.data);
 
       if (migrated.migrated) {
-        const { data: updatedRow } = await supabase
-          .from('smart_element_data')
+        const { data: updatedRow } = await fromTable('smart_element_data')
           .update({
             data: validated as Json,
             version: data.version + 1,
@@ -291,8 +285,7 @@ export const smartElementsApi = {
     // Validate merged data
     const validatedData = parseSmartElementData(current.smartType, mergedData);
 
-    const { data, error } = await supabase
-      .from('smart_element_data')
+    const { data, error } = await fromTable('smart_element_data')
       .update({
         data: validatedData as Json,
         version: current.version + 1,
@@ -330,8 +323,7 @@ export const smartElementsApi = {
    * Delete smart element (cascade deletes smart_element_data)
    */
   delete: async (boardObjectId: string): Promise<boolean> => {
-    const { error } = await supabase
-      .from('board_objects')
+    const { error } = await fromTable('board_objects')
       .delete()
       .eq('id', boardObjectId);
 
@@ -368,8 +360,7 @@ export const smartElementsApi = {
    * Get all smart elements for a board
    */
   listByBoard: async (boardId: string): Promise<SmartElementRecord[]> => {
-    const { data: boardObjects, error: boardError } = await supabase
-      .from('board_objects')
+    const { data: boardObjects, error: boardError } = await fromTable('board_objects')
       .select('id')
       .eq('board_id', boardId)
       .eq('type', 'smart');
@@ -382,8 +373,7 @@ export const smartElementsApi = {
     const boardObjectIds = boardObjects.map((obj) => obj.id);
     if (boardObjectIds.length === 0) return [];
 
-    const { data: smartElements, error: smartError } = await supabase
-      .from('smart_element_data')
+    const { data: smartElements, error: smartError } = await fromTable('smart_element_data')
       .select('*')
       .in('board_object_id', boardObjectIds);
 
@@ -402,8 +392,7 @@ export const smartElementsApi = {
           const validated = parseSmartElementData('kanban', migrated.data);
 
           if (migrated.migrated) {
-            const { data: updatedRow } = await supabase
-              .from('smart_element_data')
+            const { data: updatedRow } = await fromTable('smart_element_data')
               .update({
                 data: validated as Json,
                 version: el.version + 1,
