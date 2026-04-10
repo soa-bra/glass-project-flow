@@ -4,6 +4,8 @@ import { TrendingUp, DollarSign, Users, BarChart3, Target, Zap } from 'lucide-re
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 export const OverviewTab: React.FC = () => {
   const kpiStats = [{
     title: 'العائد على الإنفاق',
@@ -122,8 +124,8 @@ export const OverviewTab: React.FC = () => {
 
       {/* KPIs Grid */}
       <div className="mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {kpis.map((kpi, index) => <BaseBox key={index} variant="operations" className="transition-all duration-300">
+        <AppDashboardGrid columns={12} density="spacious">
+          {kpis.map((kpi, index) => <AppGridItem key={index} colSpan={4} tabletSpan={3}><BaseBox variant="operations" className="transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="mb-2">
@@ -138,8 +140,8 @@ export const OverviewTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-            </BaseBox>)}
-        </div>
+            </BaseBox></AppGridItem>)}
+        </AppDashboardGrid>
       </div>
 
       {/* Active Campaigns */}
