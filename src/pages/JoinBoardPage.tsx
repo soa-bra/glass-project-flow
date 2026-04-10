@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { nanoid } from 'nanoid';
-
-const fromTable = (table: string) => (supabase as any).from(table);
-const rpcCall = (fn: string, params: any) => (supabase as any).rpc(fn, params);
 import { Loader2, Link2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -40,7 +37,8 @@ export const JoinBoardPage: React.FC = () => {
       }
 
       // Use secure RPC function to validate token (prevents token enumeration)
-      const { data, error } = await rpcCall('validate_board_invite_token', { token_input: token })
+      const { data, error } = await supabase
+        .rpc('validate_board_invite_token', { token_input: token })
         .maybeSingle();
 
       if (error || !data || !data.is_valid) {
@@ -104,7 +102,8 @@ export const JoinBoardPage: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      const { data, error } = await fromTable('board_join_requests')
+      const { data, error } = await supabase
+        .from('board_join_requests')
         .insert({
           board_id: inviteLink.board_id,
           invite_link_id: inviteLink.id,

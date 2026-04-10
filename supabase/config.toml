@@ -1,1 +1,4 @@
 project_id = "zdqkrrehlivayconjcgm"
+
+[functions.smart-elements-ai]
+verify_jwt = false

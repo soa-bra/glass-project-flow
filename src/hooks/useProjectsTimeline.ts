@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-const fromTable = (table: string) => (supabase as any).from(table);
-
 export interface ProjectWithPhases {
   id: string;
   name: string;
@@ -50,7 +48,8 @@ export const useProjectsTimeline = () => {
     
     try {
       // جلب المشاريع
-      const { data: projectsData, error: projectsError } = await fromTable('projects')
+      const { data: projectsData, error: projectsError } = await supabase
+        .from('projects')
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -59,7 +58,8 @@ export const useProjectsTimeline = () => {
       // جلب المراحل لكل مشروع
       const projectsWithPhases: ProjectWithPhases[] = await Promise.all(
         (projectsData || []).map(async (project) => {
-          const { data: phasesData } = await fromTable('project_phases')
+          const { data: phasesData } = await supabase
+            .from('project_phases')
             .select('*')
             .eq('project_id', project.id)
             .order('order_index', { ascending: true });
