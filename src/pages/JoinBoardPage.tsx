@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { nanoid } from 'nanoid';
+
+const fromTable = (table: string) => supabase.from(table as any);
+const rpcCall = (fn: string, params: any) => supabase.rpc(fn as any, params);
 import { Loader2, Link2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
