@@ -1,6 +1,8 @@
 import React from 'react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { NumericStatCard } from '@/components/shared/visual-data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockCSRDashboardData } from './data';
 
 export const OverviewTab: React.FC = () => {
@@ -52,8 +54,9 @@ export const OverviewTab: React.FC = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <AppDashboardGrid columns={12} density="default">
         {statsCards.map((stat, index) => (
+          <AppGridItem key={index} colSpan={4} tabletSpan={2}>
           <NumericStatCard
             key={index}
             title={stat.title}
@@ -62,12 +65,14 @@ export const OverviewTab: React.FC = () => {
             accentColor={stat.color}
             size="sm"
           />
+          </AppGridItem>
         ))}
-      </div>
+      </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* Recent Activity */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
             النشاط الأخير
           </span>
