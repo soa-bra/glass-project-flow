@@ -1,7 +1,7 @@
 import React from 'react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { NumericStatCard } from '@/components/shared/visual-data';
-import { Progress } from '@/components/ui/progress';
+import { AppDashboardGrid, AppGridItem } from '@/components/shared/layout';
 
 export const OverviewTab: React.FC = () => {
   const culturalHarmonyIndex = 87;
@@ -45,68 +45,73 @@ export const OverviewTab: React.FC = () => {
     <div className="space-y-5">
       <KPIStatsSection stats={kpiStats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <AppDashboardGrid density="spacious">
         {/* Cultural Identity Health */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
-            صحة الهوية الثقافية
-          </span>
-          <div className="space-y-4 mt-5">
-            {healthMetrics.map((m, i) => (
-              <div key={i} className="space-y-1.5">
-                <div className="flex justify-between items-center">
-                  <span className="text-[12px] text-[rgba(11,15,18,0.60)] font-arabic">{m.label}</span>
-                  <span className="text-[12px] font-bold text-[#0B0F12]">{m.value}%</span>
+        <AppGridItem colSpan={6}>
+          <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
+            <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+              صحة الهوية الثقافية
+            </span>
+            <div className="space-y-4 mt-5">
+              {healthMetrics.map((m, i) => (
+                <div key={i} className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[12px] text-[rgba(11,15,18,0.60)] font-arabic">{m.label}</span>
+                    <span className="text-[12px] font-bold text-[#0B0F12]">{m.value}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-[rgba(11,15,18,0.04)] rounded-full">
+                    <div
+                      className="h-2 rounded-full"
+                      style={{ width: `${m.value}%`, backgroundColor: '#bdeed3', transition: 'width 0.6s ease' }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full h-2 bg-[rgba(11,15,18,0.04)] rounded-full">
-                  <div
-                    className="h-2 rounded-full"
-                    style={{ width: `${m.value}%`, backgroundColor: '#bdeed3', transition: 'width 0.6s ease' }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </AppGridItem>
 
         {/* Recent Activities */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
-          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
-            النشاطات الأخيرة
-          </span>
-          <div className="space-y-2 mt-4">
-            {activities.map((a, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
-                <div className="w-5 h-5 rounded-full bg-[#0B0F12] flex items-center justify-center shrink-0">
-                  <span className="text-white text-[8px]">●</span>
+        <AppGridItem colSpan={6}>
+          <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
+            <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+              النشاطات الأخيرة
+            </span>
+            <div className="space-y-2 mt-4">
+              {activities.map((a, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+                  <div className="w-5 h-5 rounded-full bg-[#0B0F12] flex items-center justify-center shrink-0">
+                    <span className="text-white text-[8px]">●</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-arabic text-[rgba(11,15,18,0.70)]">{a.msg}</p>
+                    <p className="text-[10px] text-[rgba(11,15,18,0.30)]">{a.time}</p>
+                  </div>
+                  <span
+                    className="text-[10px] px-2 py-0.5 rounded-full font-arabic shrink-0"
+                    style={{ backgroundColor: `${a.color}30`, color: 'rgba(11,15,18,0.70)' }}
+                  >
+                    {a.badge}
+                  </span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-arabic text-[rgba(11,15,18,0.70)]">{a.msg}</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.30)]">{a.time}</p>
-                </div>
-                <span
-                  className="text-[10px] px-2 py-0.5 rounded-full font-arabic shrink-0"
-                  style={{ backgroundColor: `${a.color}30`, color: 'rgba(11,15,18,0.70)' }}
-                >
-                  {a.badge}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Performance */}
-      <div className="grid grid-cols-3 gap-4">
+      <AppDashboardGrid density="spacious">
         {performanceStats.map((s, i) => (
-          <NumericStatCard
-            key={i}
-            title={s.title}
-            value={s.value}
-            description={s.change}
-          />
+          <AppGridItem key={i} colSpan={4}>
+            <NumericStatCard
+              title={s.title}
+              value={s.value}
+              description={s.change}
+            />
+          </AppGridItem>
         ))}
-      </div>
+      </AppDashboardGrid>
 
       {/* AI Insights */}
       <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
