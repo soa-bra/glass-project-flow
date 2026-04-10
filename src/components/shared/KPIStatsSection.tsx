@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface KPIStat {
@@ -63,7 +63,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           <div className="flex items-center gap-3 mt-auto">
             {/* Trend icon */}
             <div className="w-[42px] h-[42px] rounded-full border-[1.5px] border-[rgba(11,15,18,0.25)] flex items-center justify-center shrink-0">
-              <TrendingUp className="w-[18px] h-[18px] text-[rgba(11,15,18,0.55)]" strokeWidth={2} />
+              <ArrowUpRight className="w-[18px] h-[18px] text-[rgba(11,15,18,0.55)]" strokeWidth={2} />
             </div>
 
             {/* Number + unit */}
