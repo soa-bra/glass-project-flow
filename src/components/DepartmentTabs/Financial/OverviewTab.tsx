@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Bell } from 'lucide-react';
 import { ResponsiveContainer, BarChart as RechartsBarChart, Bar, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
@@ -45,7 +47,8 @@ export const OverviewTab: React.FC = () => {
     <div className={`space-y-5 ${SPACING.SECTION_MARGIN}`}>
       <KPIStatsSection stats={kpiStats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         <DataCardFrame title="الميزانية مقابل الفعلي">
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -58,7 +61,9 @@ export const OverviewTab: React.FC = () => {
             </ResponsiveContainer>
           </div>
         </DataCardFrame>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         <DataCardFrame title="توقعات التدفق النقدي">
           <div style={{ height: 220 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -81,7 +86,8 @@ export const OverviewTab: React.FC = () => {
             </div>
           </div>
         </DataCardFrame>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Alerts */}
       <DataCardFrame title="تنبيهات الذكاء الاصطناعي" icon={<Bell className="h-4 w-4" />}>
