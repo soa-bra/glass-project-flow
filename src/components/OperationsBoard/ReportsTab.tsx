@@ -4,6 +4,8 @@ import { ReportLibrary, ReportStats } from './Reports/ReportLibrary';
 import { CustomReportWizard } from './Reports/CustomReportWizard';
 import { AIReportGenerator } from './Reports/AIReportGenerator';
 import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface ReportTemplate {
   id: string;
@@ -45,14 +47,13 @@ interface ReportsTabProps {
 }
 
 export const ReportsTab: React.FC<ReportsTabProps> = ({ data, loading }) => {
-  // تحويل البيانات إلى تنسيق KPI
   const kpiStats = data ? [{
     title: "إجمالي التقارير",
     value: String(data.statistics.totalReports),
     unit: "تقرير",
     description: "تقارير متاحة في المكتبة"
   }, {
-    title: "التحميلات الشهرية", 
+    title: "التحميلات الشهرية",
     value: String(data.statistics.monthlyDownloads),
     unit: "تحميل",
     description: "مرات التحميل هذا الشهر"
@@ -77,12 +78,15 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ data, loading }) => {
     >
       {data && (
         <div className="space-y-6">
-          {/* الأدوات الأساسية */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <ReportLibrary templates={data.templates} />
-            <CustomReportWizard />
-          </div>
-          
+          <AppDashboardGrid columns={12} density="spacious">
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <ReportLibrary templates={data.templates} />
+            </AppGridItem>
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <CustomReportWizard />
+            </AppGridItem>
+          </AppDashboardGrid>
+
           {/* مولد التقارير الذكي */}
           <AIReportGenerator suggestions={data.aiSuggestions} />
         </div>

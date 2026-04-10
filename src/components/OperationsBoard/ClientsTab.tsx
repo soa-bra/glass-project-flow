@@ -5,6 +5,8 @@ import { NPSScores } from './Clients/NPSScores';
 import { ClientPortfolioHealth } from './Clients/ClientPortfolioHealth';
 import { ClientSentiment } from './Clients/ClientSentiment';
 import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface FunnelStage {
   stage: string;
@@ -53,14 +55,13 @@ interface ClientsTabProps {
 }
 
 export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
-  // تحويل البيانات إلى تنسيق KPI
   const kpiStats = data ? [{
     title: "إجمالي العملاء",
     value: String(data.portfolioHealth.totalClients),
     unit: "عميل",
     description: "العملاء النشطين والسابقين"
   }, {
-    title: "العقود النشطة", 
+    title: "العقود النشطة",
     value: String(data.portfolioHealth.activeContracts),
     unit: "عقد",
     description: "عقود قيد التنفيذ"
@@ -85,12 +86,15 @@ export const ClientsTab: React.FC<ClientsTabProps> = ({ data, loading }) => {
     >
       {data && (
         <div className="space-y-6">
-          {/* الرسوم البيانية الأساسية */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <OpportunityFunnel funnelData={data.opportunityFunnel} />
-            <NPSScores nps={data.npsScores} />
-          </div>
-          
+          <AppDashboardGrid columns={12} density="spacious">
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <OpportunityFunnel funnelData={data.opportunityFunnel} />
+            </AppGridItem>
+            <AppGridItem colSpan={6} tabletSpan={6}>
+              <NPSScores nps={data.npsScores} />
+            </AppGridItem>
+          </AppDashboardGrid>
+
           {/* تحليل المشاعر */}
           <ClientSentiment sentimentData={data.sentimentData} />
         </div>
