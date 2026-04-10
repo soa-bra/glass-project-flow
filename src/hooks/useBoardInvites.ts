@@ -143,7 +143,12 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const updateData: Record<string, unknown> = {
+    const updateData: {
+      status: string;
+      processed_by: string;
+      processed_at: string;
+      granted_role?: string;
+    } = {
       status: action,
       processed_by: user.id,
       processed_at: new Date().toISOString(),
