@@ -156,6 +156,119 @@ export type Database = {
           },
         ]
       }
+      board_invite_links: {
+        Row: {
+          board_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          token: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          token: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          token?: string
+        }
+        Relationships: []
+      }
+      board_join_requests: {
+        Row: {
+          board_id: string
+          created_at: string
+          granted_role: string | null
+          id: string
+          invite_link_id: string | null
+          processed_at: string | null
+          processed_by: string | null
+          requester_name: string
+          requester_session_id: string
+          status: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          granted_role?: string | null
+          id?: string
+          invite_link_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          requester_name: string
+          requester_session_id: string
+          status?: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          granted_role?: string | null
+          id?: string
+          invite_link_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          requester_name?: string
+          requester_session_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_join_requests_invite_link_id_fkey"
+            columns: ["invite_link_id"]
+            isOneToOne: false
+            referencedRelation: "board_invite_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_objects: {
+        Row: {
+          board_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          metadata: Json | null
+          position: Json
+          size: Json
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          position?: Json
+          size?: Json
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json | null
+          position?: Json
+          size?: Json
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       brand_book_exports: {
         Row: {
           brand_book_id: string
@@ -448,6 +561,103 @@ export type Database = {
           },
         ]
       }
+      project_phases: {
+        Row: {
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          order_index: number
+          project_id: string
+          start_date: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          order_index?: number
+          project_id: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          order_index?: number
+          project_id?: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_phases_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          budget: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          organization_id: string | null
+          start_date: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          organization_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          organization_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_permissions: {
         Row: {
           created_at: string | null
@@ -518,6 +728,44 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_element_data: {
+        Row: {
+          board_object_id: string
+          created_at: string
+          data: Json
+          id: string
+          smart_type: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          board_object_id: string
+          created_at?: string
+          data?: Json
+          id?: string
+          smart_type: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          board_object_id?: string
+          created_at?: string
+          data?: Json
+          id?: string
+          smart_type?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_element_data_board_object_id_fkey"
+            columns: ["board_object_id"]
+            isOneToOne: false
+            referencedRelation: "board_objects"
             referencedColumns: ["id"]
           },
         ]

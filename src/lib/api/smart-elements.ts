@@ -1,4 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
+
+const fromTable = (table: string) => supabase.from(table as any);
 import {
   SmartElementType,
   SmartElementDataSchemaMap,

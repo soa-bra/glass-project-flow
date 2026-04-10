@@ -3,6 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { nanoid } from 'nanoid';
 import { toast } from 'sonner';
 
+// Type-safe helper until types.ts is regenerated with new tables
+const fromTable = (table: string) => supabase.from(table as any);
+
 export interface InviteLink {
   id: string;
   board_id: string;

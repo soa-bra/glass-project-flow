@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+const fromTable = (table: string) => supabase.from(table as any);
+
 export interface ProjectWithPhases {
   id: string;
   name: string;
