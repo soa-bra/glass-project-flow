@@ -148,7 +148,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
         <div className="space-y-6">
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
                 <IconComponent className="w-6 h-6 text-black" />
@@ -165,7 +165,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
           </div>
 
           {/* Main Content Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="space-y-6">
               {/* Settings Form Content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

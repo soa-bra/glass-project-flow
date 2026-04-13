@@ -95,7 +95,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
         <div className="space-y-6">
 
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
                 <Database className="w-6 h-6 text-black" />
@@ -112,7 +112,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
           </div>
 
           {/* AI Compliance Monitor Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 مراقب الامتثال الذكي
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Compliance Monitor</span>
@@ -135,7 +135,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
           </div>
 
           {/* Data Retention Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">سياسات الاحتفاظ بالبيانات</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,7 +204,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
           </div>
 
           {/* Backup Settings Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">النسخ الاحتياطي والاستعادة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

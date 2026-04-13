@@ -15,7 +15,7 @@ export const TemplatesList: React.FC<TemplatesListProps> = ({ templates }) => {
     <div>
       <h3 className="text-xl font-arabic font-medium text-right mb-4">النماذج الجاهزة</h3>
       
-      <div className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out">
+      <div className="bg-white border border-[#DADCE0] rounded-[24px] p-4 transition-all duration-200 ease-in-out">
         <ul className="space-y-3">
           {templates.map(template => (
             <li key={template.id} className="border-b border-gray-200/60 last:border-0 pb-2 last:pb-0">

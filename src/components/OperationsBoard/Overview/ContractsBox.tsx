@@ -12,19 +12,15 @@ export interface ContractsBoxProps {
   className?: string;
 }
 
-export const ContractsBox: React.FC<ContractsBoxProps> = ({ 
-  contracts, 
-  className = '' 
-}) => {
+export const ContractsBox: React.FC<ContractsBoxProps> = ({ contracts, className = '' }) => {
   const hasExpired = contracts.expired > 0;
 
   return (
     <BaseBox 
       title="العقود"
-      variant="glass"
+      variant="standard"
       size="sm"
       rounded="lg"
-      neonRing={hasExpired ? 'warning' : 'success'}
       className={`flex flex-col justify-between ${className}`}
     >
       <div className="space-y-4 flex-1">
@@ -33,9 +29,7 @@ export const ContractsBox: React.FC<ContractsBoxProps> = ({
             <FileText size={16} className="text-[var(--visual-data-secondary-1)]" />
             <span className="text-sm text-[hsl(var(--ink-60))]">موقعة</span>
           </div>
-          <span className="text-xl font-bold text-[var(--visual-data-secondary-1)]">
-            {contracts.signed}
-          </span>
+          <span className="text-xl font-bold text-[var(--visual-data-secondary-1)]">{contracts.signed}</span>
         </div>
 
         <div className="flex items-center justify-between">
@@ -43,17 +37,13 @@ export const ContractsBox: React.FC<ContractsBoxProps> = ({
             <Clock size={16} className="text-[var(--visual-data-secondary-5)]" />
             <span className="text-sm text-[hsl(var(--ink-60))]">منتهية</span>
           </div>
-          <span className="text-xl font-bold text-[var(--visual-data-secondary-5)]">
-            {contracts.expired}
-          </span>
+          <span className="text-xl font-bold text-[var(--visual-data-secondary-5)]">{contracts.expired}</span>
         </div>
       </div>
 
       {hasExpired && (
         <div className="mt-4 p-3 bg-[var(--visual-data-secondary-5)]/10 rounded-xl">
-          <p className="text-xs text-[var(--visual-data-secondary-5)] font-medium">
-            يوجد عقود تحتاج تجديد
-          </p>
+          <p className="text-xs text-[var(--visual-data-secondary-5)] font-medium">يوجد عقود تحتاج تجديد</p>
         </div>
       )}
     </BaseBox>

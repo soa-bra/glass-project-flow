@@ -114,7 +114,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           />
           
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <ShieldCheck className="w-6 h-6 text-black" />
@@ -131,7 +131,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* تنبيهات الأمان بالذكاء الاصطناعي */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 تنبيهات الأمان الذكي
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Anomaly Model</span>
@@ -151,7 +151,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* Two-Factor Authentication Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <SecurityDisclaimer 
               type="mock" 
               feature="المصادقة الثنائية"
@@ -160,7 +160,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             <h3 className="text-md font-bold text-black mb-4">التحقق الثنائي (MFA)</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">حالة MFA</h4>
                   <div className={`w-4 h-4 rounded-full ${formData.mfa.enabled ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -183,7 +183,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </button>
               </div>
 
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                 <h4 className="text-sm font-bold text-black mb-3">طرق التحقق</h4>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2">
@@ -219,7 +219,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* إدارة مفاتيح API */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <SecurityDisclaimer 
               type="demo" 
               feature="مفاتيح API"
@@ -237,7 +237,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             
             <div className="space-y-3">
               {formData.apiKeys.map(key => (
-                <div key={key.id} className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
+                <div key={key.id} className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">{key.name}</h4>
                     <p className="text-xs text-gray-500">أُنشئ: {key.created} | آخر استخدام: {key.lastUsed}</p>
@@ -264,12 +264,12 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* الأجهزة الموثوقة */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">الأجهزة الموثوقة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {formData.trustedDevices.map(device => (
-                <div key={device.id} className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+                <div key={device.id} className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-black">{device.name}</h4>
@@ -284,12 +284,12 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* Session Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">الجلسات النشطة</h3>
             
             <div className="space-y-3">
               {formData.activeSessions.map(session => (
-                <div key={session.id} className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
+                <div key={session.id} className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">{session.device} - {session.browser}</h4>
                     <p className="text-xs text-gray-600">{session.ip} | {session.location}</p>
@@ -310,19 +310,19 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
 
           {/* إحصائيات الأمان */}
           <div className="grid grid-cols-4 gap-4">
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">98%</div>
               <p className="text-xs font-normal text-gray-400">مستوى الأمان</p>
             </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">2</div>
               <p className="text-xs font-normal text-gray-400">تنبيهات نشطة</p>
             </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">3</div>
               <p className="text-xs font-normal text-gray-400">أجهزة موثوقة</p>
             </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">5</div>
               <p className="text-xs font-normal text-gray-400">مفاتيح API</p>
             </div>

@@ -83,7 +83,7 @@ export const TemplatesArchivePanel: React.FC = () => {
 
       {/* Search Bar */}
       <div className="px-6 mb-6">
-        <div className="bg-[#FFFFFF] p-4 rounded-[40px] ring-1 ring-[#DADCE0]">
+        <div className="bg-[#FFFFFF] p-4 rounded-[24px] ring-1 ring-[#DADCE0]">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -96,7 +96,7 @@ export const TemplatesArchivePanel: React.FC = () => {
       {/* Content List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
-          {mockTemplatesData.map(item => <div key={item.id} className="bg-[#FFFFFF] p-6 rounded-[40px] ring-1 ring-[#DADCE0]">
+          {mockTemplatesData.map(item => <div key={item.id} className="bg-[#FFFFFF] p-6 rounded-[24px] ring-1 ring-[#DADCE0]">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">

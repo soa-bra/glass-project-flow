@@ -132,7 +132,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         <div className="space-y-6">
 
           {/* Users Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-md font-bold text-black">إدارة المستخدمين</h3>
               <button className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium flex items-center gap-2">
@@ -176,7 +176,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
           </div>
 
           {/* Roles Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">إدارة الأدوار</h3>
             
             <div className="space-y-3">

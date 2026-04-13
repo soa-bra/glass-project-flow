@@ -136,7 +136,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           />
           
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <User className="w-6 h-6 text-black" />
@@ -153,12 +153,12 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* Basic Information Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">البيانات الشخصية</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* صورة المستخدم */}
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-8 h-8 text-gray-500" />
@@ -174,7 +174,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
               </div>
 
               {/* معلومات الاتصال */}
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                 <h4 className="text-sm font-bold text-black mb-3">معلومات الاتصال</h4>
                 <div className="space-y-3">
                   <input 
@@ -234,11 +234,11 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* Password Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">إدارة كلمات المرور</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                 <h4 className="text-sm font-bold text-black mb-3">تغيير كلمة المرور</h4>
                 <div className="space-y-3">
                   <input 
@@ -287,7 +287,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
               </div>
 
               {/* مولد كلمات المرور بالذكاء الاصطناعي */}
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
                 <h4 className="text-sm font-bold text-black mb-3">🤖 مولد كلمات المرور الذكي</h4>
                 <p className="text-xs text-black mb-3">اقتراح كلمة مرور قوية باستخدام GPT-Pass-Suggest</p>
                 <button
@@ -308,10 +308,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* Language Preferences Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">تفضيلات اللغة</h3>
             
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
               <div className="flex items-center gap-4">
                 <Globe className="w-6 h-6 text-black" />
                 <div className="flex-1">
@@ -334,15 +334,15 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
 
           {/* إحصائيات الحساب */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">127</div>
               <p className="text-xs font-normal text-gray-400">يوم في النظام</p>
             </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">89%</div>
               <p className="text-xs font-normal text-gray-400">معدل النشاط</p>
             </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
+            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
               <div className="text-2xl font-bold text-black mb-1">24</div>
               <p className="text-xs font-normal text-gray-400">مشروع مكتمل</p>
             </div>

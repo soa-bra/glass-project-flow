@@ -16,10 +16,10 @@ interface ClientPortfolioHealthProps {
 export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
   portfolioHealth
 }) => {
-  return <div className="glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+  return <div className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
       {/* إجمالي العملاء */}
-      <Card className="glass-enhanced rounded-[40px] border-0">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-0">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">إجمالي العملاء</p>
@@ -31,7 +31,7 @@ export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
       </Card>
 
       {/* العقود النشطة */}
-      <Card className="glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
         <CardContent className="p-4 border-0">
           <div className="flex items-center justify-between">
             <div className="text-right">
@@ -44,8 +44,8 @@ export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
       </Card>
 
       {/* متوسط قيمة العقد */}
-      <Card className="glass-enhanced rounded-[40px] border-0">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-0">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">متوسط قيمة العقد</p>
@@ -57,8 +57,8 @@ export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
       </Card>
 
       {/* معدل التجديد */}
-      <Card className="glass-enhanced rounded-[40px] border-0">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-0">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">معدل التجديد</p>
@@ -71,8 +71,8 @@ export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
       </Card>
 
       {/* معدل التسرب */}
-      <Card className="glass-enhanced rounded-[40px] border-0">
-        <CardContent className="p-4 glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-0">
+        <CardContent className="p-4 bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">معدل التسرب</p>
@@ -85,8 +85,8 @@ export const ClientPortfolioHealth: React.FC<ClientPortfolioHealthProps> = ({
       </Card>
 
       {/* رضا العملاء */}
-      <Card className="glass-enhanced rounded-[40px] border-0">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff] border-0">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-0">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0">
           <div className="flex items-center justify-between mb-2">
             <div className="text-right">
               <p className="text-sm text-gray-600">رضا العملاء</p>

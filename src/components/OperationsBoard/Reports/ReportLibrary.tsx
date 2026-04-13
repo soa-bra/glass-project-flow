@@ -34,7 +34,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
         return 'bg-gray-100 text-gray-800';
     }
   };
-  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <Card className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <FileText className="w-5 h-5" />
@@ -44,7 +44,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
       <CardContent>
         <div className="flex gap-2 mb-4">
           <div className="flex-1">
-            <Input placeholder="ابحث في التقارير..." className="text-right rounded-[40px] bg-[#ffffff] border-[#DADCE0]" />
+            <Input placeholder="ابحث في التقارير..." className="text-right rounded-[24px] bg-[#ffffff] border-[#DADCE0]" />
           </div>
           <Button variant="outline" size="icon" className="w-[37px] h-[37px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#000000]/50 bg-transparent">
             <Search className="w-4 h-4" />
@@ -106,8 +106,8 @@ export const ReportStats: React.FC<ReportStatsProps> = ({
   statistics
 }) => {
   return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px]">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff]">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">إجمالي التقارير</p>
@@ -118,8 +118,8 @@ export const ReportStats: React.FC<ReportStatsProps> = ({
         </CardContent>
       </Card>
 
-      <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px]">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff]">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">التحميلات الشهرية</p>
@@ -130,8 +130,8 @@ export const ReportStats: React.FC<ReportStatsProps> = ({
         </CardContent>
       </Card>
 
-      <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px]">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff]">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">التقارير المخصصة</p>
@@ -142,8 +142,8 @@ export const ReportStats: React.FC<ReportStatsProps> = ({
         </CardContent>
       </Card>
 
-      <Card className="glass-enhanced rounded-[40px]">
-        <CardContent className="glass-enhanced rounded-[40px] bg-[#f3ffff]">
+      <Card className="bg-white border border-[#DADCE0] rounded-[24px]">
+        <CardContent className="bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff]">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">التقارير المجدولة</p>

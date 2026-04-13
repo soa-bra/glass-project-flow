@@ -28,7 +28,7 @@ export const CustomReportForm: React.FC = () => {
     <div>
       <h3 className="text-xl font-arabic font-medium text-right mb-4">إنشاء تقرير مخصص</h3>
       
-      <div className="glass-enhanced rounded-[40px] p-6 transition-all duration-200 ease-in-out">
+      <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 transition-all duration-200 ease-in-out">
         {/* نطاق التاريخ */}
         <div className="mb-6">
           <h4 className="font-medium text-right mb-2">الفترة الزمنية</h4>

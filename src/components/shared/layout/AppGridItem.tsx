@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-export type GridItemRole = 'metric' | 'chart' | 'list' | 'hero' | 'feature' | 'default';
+export type GridItemRole = 'metric' | 'chart' | 'list' | 'hero' | 'feature' | 'detail' | 'form' | 'default';
 
 export interface AppGridItemProps {
   children: React.ReactNode;
@@ -10,12 +10,18 @@ export interface AppGridItemProps {
   colSpan?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
   /** Columns to span on tablet (md). Defaults to colSpan clamped to 6. */
   tabletSpan?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Columns to span on mobile. Defaults to 1 (full-width in 1-col grid). */
+  mobileSpan?: 1;
   /** Rows to span. Default 1. */
   rowSpan?: 1 | 2 | 3 | 4;
   /** Minimum height CSS value */
   minHeight?: string;
-  /** Semantic role (for future layout presets) */
+  /** Semantic role for layout presets */
   role?: GridItemRole;
+  /** Shorthand: span all 12 columns (full width) */
+  fullWidth?: boolean;
+  /** Mobile order override */
+  mobileOrder?: number;
 }
 
 // Desktop (lg) col-span classes
@@ -53,14 +59,18 @@ const rowSpanClasses: Record<number, string> = {
 };
 
 /**
- * AppGridItem — a single cell in AppDashboardGrid
+ * AppGridItem — خلية واحدة في AppDashboardGrid
  *
- * Supports responsive column spans and row spans.
- * Mobile always stacks to full width (col-span-1 in a 1-col grid).
+ * يدعم تحديد المساحة بشكل متجاوب مع الشاشات المختلفة.
+ * الجوال دائماً عمود واحد (col-span-1 في شبكة من عمود واحد).
  *
  * ```tsx
  * <AppGridItem colSpan={3} rowSpan={2} role="chart">
  *   <CapsuleBarChart ... />
+ * </AppGridItem>
+ * 
+ * <AppGridItem fullWidth>
+ *   <FullWidthSection />
  * </AppGridItem>
  * ```
  */
@@ -69,24 +79,30 @@ export const AppGridItem: React.FC<AppGridItemProps> = ({
   className,
   colSpan = 1,
   tabletSpan,
+  mobileSpan: _mobileSpan,
   rowSpan = 1,
   minHeight,
   role: _role,
+  fullWidth = false,
+  mobileOrder,
 }) => {
-  // Auto-compute tablet span: clamp desktop span to max 6
-  const effectiveTabletSpan = tabletSpan ?? Math.min(colSpan, 6) as 1 | 2 | 3 | 4 | 5 | 6;
+  const effectiveColSpan = fullWidth ? 12 : colSpan;
+  const effectiveTabletSpan = tabletSpan ?? Math.min(effectiveColSpan, 6) as 1 | 2 | 3 | 4 | 5 | 6;
 
   return (
     <div
       className={cn(
         'col-span-1', // mobile: always 1 col
         tabletSpanClasses[effectiveTabletSpan],
-        desktopSpanClasses[colSpan],
+        desktopSpanClasses[effectiveColSpan],
         rowSpanClasses[rowSpan],
         'min-h-0 h-full',
         className
       )}
-      style={minHeight ? { minHeight } : undefined}
+      style={{
+        ...(minHeight ? { minHeight } : {}),
+        ...(mobileOrder != null ? { order: mobileOrder } : {}),
+      }}
     >
       {children}
     </div>

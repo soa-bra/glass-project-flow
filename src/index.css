@@ -315,31 +315,31 @@
 @layer components {
   /* SoaBra UI Components - v1.2.6 */
   .sb-surface-panel {
-    @apply bg-[var(--sb-column-3-bg)] rounded-[41px];
+    @apply bg-[var(--sb-column-3-bg)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-strong);
   }
   
   .sb-surface-card {
-    @apply bg-[var(--sb-box-standard)] rounded-[41px];
+    @apply bg-[var(--sb-box-standard)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
   .sb-surface-project-card {
-    @apply bg-[var(--sb-project-card-bg)] rounded-[41px];
+    @apply bg-[var(--sb-project-card-bg)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
   .sb-surface-task-card {
-    @apply bg-[var(--sb-task-card-bg)] rounded-[41px];
+    @apply bg-[var(--sb-task-card-bg)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
   
   .sb-surface-box {
-    @apply bg-[var(--sb-box-standard)] rounded-[41px];
+    @apply bg-[var(--sb-box-standard)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
@@ -455,7 +455,7 @@
   }
   
   .project-column {
-    @apply rounded-[41px];
+    @apply rounded-[24px];
     background: var(--sb-column-2-bg);
   }
   

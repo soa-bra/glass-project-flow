@@ -35,36 +35,21 @@ const alerts: Alert[] = [{
   time: 'منذ 3 ساعات'
 }];
 
-const getAlertColor = (type: Alert['type']) => {
-  switch (type) {
-    case 'critical':
-      return '#f1b5b9';
-    case 'warning':
-      return '#fbe2aa';
-    case 'info':
-      return '#d0e1e9';
-    default:
-      return '##ffffff border-[#DADCE0]';
-  }
-};
-
 export const AlertsBox: React.FC = () => {
-  return <BaseBox variant="glass" size="md" className="h-full min-h-0 border-[#DADCE0]" style={{
-    backgroundColor: '#ffffff'
-  }}>
+  return <BaseBox variant="standard" size="md" className="h-full min-h-0">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-arabic font-semibold text-gray-800">التنبيهات</h3>
-        <span className="text-sm text-gray-500 font-arabic">5 جديدة</span>
+        <h3 className="text-lg font-arabic font-semibold text-[hsl(var(--ink))]">التنبيهات</h3>
+        <span className="text-sm text-[hsl(var(--ink-60))] font-arabic">5 جديدة</span>
       </div>
       
       <div className="space-y-4 overflow-y-auto flex-1">
         {alerts.map(alert => (
-          <div key={alert.id} className="flex items-center justify-between py-3 px-3 rounded-lg border border-gray-100 bg-gray-50/30">
+          <div key={alert.id} className="flex items-center justify-between py-3 px-3 rounded-lg border border-[#DADCE0] bg-white">
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-800 font-arabic">
+              <p className="text-sm font-medium text-[hsl(var(--ink))] font-arabic">
                 {alert.message}
               </p>
-              <p className="text-xs text-gray-500 font-arabic mt-1">
+              <p className="text-xs text-[hsl(var(--ink-60))] font-arabic mt-1">
                 {alert.time}
               </p>
             </div>

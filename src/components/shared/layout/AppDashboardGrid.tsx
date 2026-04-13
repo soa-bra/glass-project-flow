@@ -21,6 +21,8 @@ export interface AppDashboardGridProps {
   viewportHeight?: string;
   /** Auto-flow rows (default) or dense packing */
   autoFlow?: 'row' | 'dense';
+  /** Minimum row height for grid-auto-rows. Default '140px'. Use 'auto' for no constraint. */
+  minRowHeight?: string;
 }
 
 /**
@@ -46,6 +48,7 @@ export const AppDashboardGrid: React.FC<AppDashboardGridProps> = ({
   columns = 12,
   viewportHeight,
   autoFlow = 'row',
+  minRowHeight = '140px',
 }) => {
   const colClass = {
     4: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
@@ -54,7 +57,10 @@ export const AppDashboardGrid: React.FC<AppDashboardGridProps> = ({
     12: 'grid-cols-1 md:grid-cols-6 lg:grid-cols-12',
   }[columns];
 
-  const flowClass = autoFlow === 'dense' ? 'auto-rows-auto grid-flow-dense' : 'auto-rows-auto';
+  const flowClass = autoFlow === 'dense' ? 'grid-flow-dense' : '';
+  const rowStyle = minRowHeight && minRowHeight !== 'auto' 
+    ? { gridAutoRows: `minmax(${minRowHeight}, auto)` }
+    : { gridAutoRows: 'auto' };
 
   return (
     <div
@@ -65,7 +71,10 @@ export const AppDashboardGrid: React.FC<AppDashboardGridProps> = ({
         flowClass,
         className
       )}
-      style={viewportHeight ? { height: viewportHeight, minHeight: 0 } : undefined}
+      style={{
+        ...rowStyle,
+        ...(viewportHeight ? { height: viewportHeight, minHeight: 0 } : {}),
+      }}
       dir="rtl"
     >
       {children}
