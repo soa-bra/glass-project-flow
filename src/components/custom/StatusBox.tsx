@@ -47,7 +47,7 @@ export const StatusBox: React.FC<StatusBoxProps> = ({ title, status, children })
   const Icon = config.icon;
 
   return (
-    <Card className="glass-enhanced rounded-[40px] border-l-4 border-l-primary">
+    <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-l-4 border-l-primary">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-right font-arabic text-lg flex items-center gap-2">
