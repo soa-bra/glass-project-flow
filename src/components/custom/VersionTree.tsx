@@ -178,7 +178,7 @@ export const VersionTree: React.FC<VersionTreeProps> = ({ documents = [] }) => {
                   </div>
 
                   {/* محتوى الإصدار */}
-                  <div className="flex-1 bg-white/20 rounded-xl p-4 hover:bg-white/30 transition-colors">
+                  <div className="flex-1 bg-gray-50 border border-[#DADCE0] rounded-xl p-4 hover:bg-gray-100 transition-colors">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex gap-2">
                         <BaseBadge variant="secondary" className={statusConfig.color}>

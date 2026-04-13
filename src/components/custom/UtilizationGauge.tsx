@@ -122,12 +122,12 @@ export const UtilizationGauge: React.FC<UtilizationGaugeProps> = ({ value = 75 }
 
       {/* الإحصائيات التفصيلية */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white/20 rounded-xl p-3 text-center">
+        <div className="bg-gray-50 rounded-xl p-3 text-center">
           <Clock className="w-5 h-5 mx-auto mb-1 text-blue-500" />
           <p className="text-lg font-bold">{stats.usedCapacity}%</p>
           <p className="text-xs text-gray-600">الطاقة المستخدمة</p>
         </div>
-        <div className="bg-white/20 rounded-xl p-3 text-center">
+        <div className="bg-gray-50 rounded-xl p-3 text-center">
           <Target className="w-5 h-5 mx-auto mb-1 text-green-500" />
           <p className="text-lg font-bold">{stats.availableCapacity}%</p>
           <p className="text-xs text-gray-600">الطاقة المتاحة</p>
@@ -149,7 +149,7 @@ export const UtilizationGauge: React.FC<UtilizationGaugeProps> = ({ value = 75 }
       </div>
 
       {/* التوصيات */}
-      <div className="bg-white/20 rounded-xl p-4">
+      <div className="bg-gray-50 border border-[#DADCE0] rounded-xl p-4">
         <h4 className="font-medium text-sm mb-2 text-right flex items-center gap-2">
           <Icon className="w-4 h-4" />
           توصية الذكاء الاصطناعي

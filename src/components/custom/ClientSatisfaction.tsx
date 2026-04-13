@@ -57,7 +57,7 @@ export const ClientSatisfaction: React.FC<ClientSatisfactionProps> = ({ value = 
       </div>
 
       {/* تفاصيل إضافية */}
-      <div className="bg-white/20 rounded-xl p-3 space-y-2">
+      <div className="bg-gray-50 border border-[#DADCE0] rounded-xl p-3 space-y-2">
         <h4 className="font-medium text-sm text-right">تفاصيل التقييم:</h4>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div className="text-center">

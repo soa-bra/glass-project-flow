@@ -135,7 +135,7 @@ export const ChangeRequestList: React.FC<ChangeRequestListProps> = ({ projectId 
             const StatusIcon = statusConfig.icon;
 
             return (
-              <Card key={request.id} className="bg-white/20 hover:bg-white/30 transition-colors">
+              <Card key={request.id} className="bg-gray-50 border border-[#DADCE0] hover:bg-gray-100 transition-colors">
                 <CardContent className="p-4">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between">
