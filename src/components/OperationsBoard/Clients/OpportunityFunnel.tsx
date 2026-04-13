@@ -23,7 +23,7 @@ export const OpportunityFunnel: React.FC<OpportunityFunnelProps> = ({
       label: "القيمة"
     }
   };
-  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <Card className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic">قمع الفرص التجارية</CardTitle>
       </CardHeader>

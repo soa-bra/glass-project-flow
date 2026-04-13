@@ -179,7 +179,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
   // استخراج التاقز المتاحة من جميع الملفات
   const availableTags = Array.from(new Set(docs.flatMap(doc => doc.tags)));
-  return <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+  return <div className="bg-[#FFFFFF] rounded-[24px] p-6 border border-[#DADCE0]">
       {/* شريط التنقل */}
       {currentFolderId && <div className="flex items-center gap-2 mb-4">
           <Button size="sm" variant="outline" onClick={handleBackClick} className="rounded-full bg-black text-sm text-white">

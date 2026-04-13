@@ -28,7 +28,7 @@ export const CustomReportWizard: React.FC = () => {
   const [reportName, setReportName] = useState('');
   const [reportType, setReportType] = useState('');
   const [description, setDescription] = useState('');
-  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <Card className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <FileSpreadsheet className="w-5 h-5" />
@@ -41,7 +41,7 @@ export const CustomReportWizard: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1 text-right">
               اسم التقرير
             </label>
-            <Input value={reportName} onChange={e => setReportName(e.target.value)} placeholder="أدخل اسم التقرير" className="text-right rounded-[40px] bg-[#ffffff] border-[#DADCE0]" />
+            <Input value={reportName} onChange={e => setReportName(e.target.value)} placeholder="أدخل اسم التقرير" className="text-right rounded-[24px] bg-[#ffffff] border-[#DADCE0]" />
           </div>
 
           <div>
@@ -49,7 +49,7 @@ export const CustomReportWizard: React.FC = () => {
               نوع التقرير
             </label>
             <Select value={reportType} onValueChange={setReportType}>
-              <SelectTrigger className="text-right rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+              <SelectTrigger className="text-right rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
                 <SelectValue placeholder="اختر نوع التقرير" />
               </SelectTrigger>
               <SelectContent>

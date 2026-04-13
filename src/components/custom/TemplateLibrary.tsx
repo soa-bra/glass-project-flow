@@ -51,7 +51,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       newTemplates.forEach(template => onTemplateAdded(template));
     }
   };
-  return <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+  return <div className="bg-[#FFFFFF] rounded-[24px] p-6 border border-[#DADCE0]">
       {/* شريط البحث وأيقونة الرفع */}
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1">

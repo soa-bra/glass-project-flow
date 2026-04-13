@@ -47,7 +47,7 @@ export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
         width: '100%',
         maxWidth: '100%',
         backgroundColor: '#aec2cf',
-        borderRadius: '40px',
+        borderRadius: '24px',
         padding: '10px',
         position: 'relative',
         direction: 'rtl',

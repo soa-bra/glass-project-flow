@@ -54,7 +54,7 @@ export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({
         return status;
     }
   };
-  return <div className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <div className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">الحملات النشطة</h3>
         <BaseActionButton variant="primary">
