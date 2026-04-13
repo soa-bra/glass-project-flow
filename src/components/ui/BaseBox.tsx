@@ -4,7 +4,7 @@ import { Reveal } from '@/components/shared/motion';
 import { buildTitleClasses, LAYOUT } from '@/components/shared/design-system/constants';
 
 type Size = 'none' | 'sm' | 'md' | 'lg';
-type Variant = 'standard' | 'glass' | 'flat' | 'exception';
+type Variant = 'standard' | 'glass' | 'flat' | 'operations' | 'unified' | 'legal' | 'exception';
 type Color = 'info' | 'success' | 'warning' | 'error' | 'crimson';
 type NeonRing = 'info' | 'success' | 'warning' | 'error';
 type Rounded = 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -58,8 +58,13 @@ const sizeClasses: Record<Size, string> = {
   lg: 'p-9'
 };
 
+const STANDARD_SURFACE = 'bg-white border border-[#DADCE0] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300';
+
 const variantClasses: Record<Variant, string> = {
-  standard: 'bg-white border border-[#DADCE0] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300',
+  standard: STANDARD_SURFACE,
+  operations: STANDARD_SURFACE,
+  unified: STANDARD_SURFACE,
+  legal: STANDARD_SURFACE,
   exception: 'bg-transparent border-transparent shadow-none',
   /** ⚠️ glass — للأسطح المنبثقة فقط */
   glass: 'bg-white/40 backdrop-blur-[20px] border border-white/20',
