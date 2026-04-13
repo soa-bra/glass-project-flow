@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 
 interface KPIStat {
@@ -59,37 +59,29 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
             {stat.title}
           </span>
 
-          {/* Value + Icon row */}
-          <div className="flex items-center gap-3 mt-auto">
-            {/* Trend icon */}
-            <div className="w-[42px] h-[42px] rounded-full border-[1.5px] border-[rgba(11,15,18,0.25)] flex items-center justify-center shrink-0">
-              <ArrowUpRight className="w-[18px] h-[18px] text-[rgba(11,15,18,0.55)]" strokeWidth={2} />
-            </div>
-
-            {/* Number + unit */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-baseline gap-1.5">
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.2 + index * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
-                  className="text-[44px] font-bold leading-none text-[#0B0F12] tracking-tight"
-                >
-                  {stat.value}
-                </motion.span>
-                {stat.unit && (
-                  <span className="text-[13px] font-medium text-[rgba(11,15,18,0.45)] font-arabic">
-                    {stat.unit}
-                  </span>
-                )}
-              </div>
-              {stat.description && (
-                <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1 leading-snug">
-                  {stat.description}
-                </p>
+          {/* Value + unit */}
+          <div className="mt-auto">
+            <div className="flex items-baseline gap-1.5">
+              <motion.span
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 + index * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
+                className="text-[44px] font-bold leading-none text-[#0B0F12] tracking-tight"
+              >
+                {stat.value}
+              </motion.span>
+              {stat.unit && (
+                <span className="text-[13px] font-medium text-[rgba(11,15,18,0.45)] font-arabic">
+                  {stat.unit}
+                </span>
               )}
             </div>
+            {stat.description && (
+              <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1 leading-snug">
+                {stat.description}
+              </p>
+            )}
           </div>
         </motion.div>
       ))}
