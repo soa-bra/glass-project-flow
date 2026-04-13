@@ -29,7 +29,7 @@ export const ProjectBudgetChart: React.FC<ProjectBudgetChartProps> = ({ projects
         const barColor = spentPercentage > 90 ? 'bg-red-500' : spentPercentage > 75 ? 'bg-orange-400' : 'bg-green-500';
         
         return (
-          <div key={project.id} className="glass-enhanced rounded-[40px] p-4 transition-all duration-200 ease-in-out hover:bg-white/50">
+          <div key={project.id} className="bg-white border border-[#DADCE0] rounded-[24px] p-4 transition-all duration-200 ease-in-out hover:bg-gray-50">
             <div className="flex justify-between items-center mb-2">
               <div className="text-left text-sm">
                 <span className="font-medium">{spentPercentage}%</span>
