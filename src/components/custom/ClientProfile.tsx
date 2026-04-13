@@ -97,7 +97,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const entityTypeConfig = getEntityTypeConfig(client.entityType);
   return <div className="space-y-4">
       {/* بيانات العميل الأساسية */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0] relative">
+      <div className="bg-[#FFFFFF] rounded-[24px] p-6 border border-[#DADCE0] relative">
         {/* زر عرض الملف في الزاوية العليا */}
         <div className="absolute top-4 left-4">
           <Button 

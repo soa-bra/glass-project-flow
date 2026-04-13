@@ -31,7 +31,7 @@ export const MarketingROAS: React.FC<MarketingROASProps> = ({
         return <div className="w-4 h-4 rounded-full bg-gray-400" />;
     }
   };
-  return <div className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <div className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">عائد الاستثمار التسويقي (ROAS)</h3>
       </div>

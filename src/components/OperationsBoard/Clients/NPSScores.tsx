@@ -55,7 +55,7 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
     }
   };
   const averageNPS = nps.length > 0 ? Math.round(nps.reduce((sum, item) => sum + item.score, 0) / nps.length) : 0;
-  return <Card className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
+  return <Card className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
       <CardHeader>
         <CardTitle className="text-right font-arabic flex items-center gap-2">
           <Star className="w-5 h-5" />

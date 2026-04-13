@@ -13,7 +13,7 @@ export const TaskListContainer: React.FC<TaskListContainerProps> = ({ children }
         width: '100%',
         maxWidth: '100%',
         backgroundColor: '#eaecef',
-        borderRadius: '40px',
+        borderRadius: '24px',
         padding: '10px', // قللت من 20px إلى 10px
         position: 'relative',
         direction: 'rtl',
