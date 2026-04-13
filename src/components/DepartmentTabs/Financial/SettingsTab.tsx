@@ -60,7 +60,7 @@ export const SettingsTab: React.FC = () => {
                 نوع الحساب
               </label>
               <Select>
-                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white border border-[#DADCE0] focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
                   <SelectValue placeholder="اختر نوع الحساب" />
                 </SelectTrigger>
                 <SelectContent 
@@ -129,7 +129,7 @@ export const SettingsTab: React.FC = () => {
                 العملة الأساسية
               </label>
               <Select>
-                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white border border-[#DADCE0] focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
                   <SelectValue placeholder="اختر العملة" />
                 </SelectTrigger>
                 <SelectContent 

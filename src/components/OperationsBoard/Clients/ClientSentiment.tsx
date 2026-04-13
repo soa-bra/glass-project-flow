@@ -85,7 +85,7 @@ export const ClientSentiment: React.FC<ClientSentimentProps> = ({
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sentimentData.map(client => <div key={client.clientId} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
+          {sentimentData.map(client => <div key={client.clientId} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
               <div className="flex items-start justify-between mb-3">
                 <div className="text-right flex-1">
                   <h4 className="font-medium text-sm">{client.clientName}</h4>

@@ -14,15 +14,15 @@ export const TemplateUploader: React.FC = () => {
         </Button>
       </div>
       <div className="grid grid-cols-3 gap-2 text-xs text-center">
-        <div className="p-2 bg-white/20 rounded">
+        <div className="p-2 bg-gray-50 rounded">
           <FileText className="w-4 h-4 mx-auto mb-1" />
           <p>مستندات</p>
         </div>
-        <div className="p-2 bg-white/20 rounded">
+        <div className="p-2 bg-gray-50 rounded">
           <FileText className="w-4 h-4 mx-auto mb-1" />
           <p>قوالب</p>
         </div>
-        <div className="p-2 bg-white/20 rounded">
+        <div className="p-2 bg-gray-50 rounded">
           <FileText className="w-4 h-4 mx-auto mb-1" />
           <p>نماذج</p>
         </div>

@@ -172,7 +172,7 @@ export const SearchWithAI: React.FC = () => {
               <div
                 key={suggestion.id}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="bg-white/20 rounded-xl p-3 hover:bg-white/30 transition-colors cursor-pointer"
+                className="bg-gray-50 border border-[#DADCE0] rounded-xl p-3 hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <div className="flex items-start justify-between">
                   <BaseBadge variant="info" className="bg-blue-100 text-blue-800">
@@ -218,7 +218,7 @@ export const SearchWithAI: React.FC = () => {
               {searchResults.map((result) => (
                 <div
                   key={result.id}
-                  className="bg-white/20 rounded-xl p-4 hover:bg-white/30 transition-colors"
+                  className="bg-gray-50 border border-[#DADCE0] rounded-xl p-4 hover:bg-gray-100 transition-colors"
                 >
                   <div className="space-y-2">
                     <div className="flex items-start justify-between">
