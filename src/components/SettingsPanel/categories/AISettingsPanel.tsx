@@ -115,7 +115,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         <div className="space-y-6">
 
           {/* Active Experiments Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🧪 التجارب النشطة
               <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Lab</span>
@@ -150,7 +150,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
           </div>
 
           {/* AI Training Wizard Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🚀 معالج التدريب
               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Training Wizard</span>
@@ -190,7 +190,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
           </div>
 
           {/* Model Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">إدارة النماذج</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -251,7 +251,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
           </div>
 
           {/* Performance Settings Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">إعدادات الأداء</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -290,7 +290,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
           </div>
 
           {/* Training Status Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">حالة التدريب</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

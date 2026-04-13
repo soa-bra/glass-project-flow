@@ -85,7 +85,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
         <div className="space-y-6">
 
           {/* Theme Mode Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">وضع المظهر</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -111,7 +111,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
           </div>
 
           {/* Color Schemes Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">أنظمة الألوان</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -151,7 +151,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
           </div>
 
           {/* AI Personalization Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 التخصيص بالذكاء الاصطناعي
               <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Personalization</span>
@@ -191,7 +191,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
           </div>
 
           {/* Accessibility Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
             <h3 className="text-md font-bold text-black mb-4">إعدادات إمكانية الوصول</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

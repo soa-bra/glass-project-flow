@@ -91,7 +91,7 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
     stage: 'planning',
     createdAt: unifiedTask.createdAt
   });
-  return <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] h-full flex flex-col">
+  return <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] h-full flex flex-col">
       {/* Header with actions */}
       <div className="p-6 border-b border-black/10">
         <div className="flex items-start justify-between mb-4">
