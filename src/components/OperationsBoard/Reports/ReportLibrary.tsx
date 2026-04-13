@@ -55,7 +55,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({
         </div>
 
         <div className="space-y-4 max-h-[400px] overflow-y-auto">
-          {templates.map(template => <div key={template.id} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
+          {templates.map(template => <div key={template.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
               <div className="flex items-start justify-between mb-2">
                 <div className="text-right flex-1">
                   <h4 className="font-medium text-sm">{template.name}</h4>

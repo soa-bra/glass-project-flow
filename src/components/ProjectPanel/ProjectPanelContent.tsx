@@ -50,11 +50,11 @@ export default function ProjectPanelContent({ project }: ProjectPanelContentProp
         <Reveal delay={0.15}>
           <div className="flex justify-between items-center mt-2 flex-shrink-0">
             <TabsList className="bg-transparent p-0 h-auto gap-1">
-              <TabsTrigger value="financial" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الوضع المالي</TabsTrigger>
-              <TabsTrigger value="client" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">العميل</TabsTrigger>
-              <TabsTrigger value="team" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">الفريق</TabsTrigger>
-              <TabsTrigger value="attachments" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">المرفقات</TabsTrigger>
-              <TabsTrigger value="templates" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white/30 rounded-full px-4 py-2">القوالب</TabsTrigger>
+              <TabsTrigger value="financial" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 rounded-full px-4 py-2">الوضع المالي</TabsTrigger>
+              <TabsTrigger value="client" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 rounded-full px-4 py-2">العميل</TabsTrigger>
+              <TabsTrigger value="team" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 rounded-full px-4 py-2">الفريق</TabsTrigger>
+              <TabsTrigger value="attachments" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 rounded-full px-4 py-2">المرفقات</TabsTrigger>
+              <TabsTrigger value="templates" className="text-base data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-gray-100 rounded-full px-4 py-2">القوالب</TabsTrigger>
             </TabsList>
             <Stagger delay={0.25} gap={0.12} className="flex gap-2">
               <Stagger.Item><QuickActionButton>➕ إضافة مهمة</QuickActionButton></Stagger.Item>

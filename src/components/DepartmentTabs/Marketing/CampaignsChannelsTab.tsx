@@ -236,7 +236,7 @@ export const CampaignsChannelsTab: React.FC = () => {
             {getMonthDays().map(day => {
               const dayCampaigns = getCampaignForDay(day);
               return (
-                <div key={day} className={`min-h-[80px] p-2 rounded-xl border border-black/5 ${dayCampaigns.length > 0 ? 'bg-[#bdeed3]/20' : 'bg-white/30'}`}>
+                <div key={day} className={`min-h-[80px] p-2 rounded-xl border border-black/5 ${dayCampaigns.length > 0 ? 'bg-[#bdeed3]/20' : 'bg-gray-50'}`}>
                   <span className="text-xs font-medium text-black">{day}</span>
                   {dayCampaigns.slice(0, 2).map((c, i) => (
                     <div key={i} className="mt-1 text-[10px] bg-black/10 rounded px-1 py-0.5 truncate font-arabic">{c.name}</div>

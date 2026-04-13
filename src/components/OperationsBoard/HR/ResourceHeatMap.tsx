@@ -47,7 +47,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
       }
     >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {resourceData.map(resource => <div key={resource.employeeId} className="bg-white/20 rounded-2xl p-4">
+          {resourceData.map(resource => <div key={resource.employeeId} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-right">
                   <h4 className="font-medium">{resource.name}</h4>
@@ -175,7 +175,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
         </ChartContainer>
 
         <div className="mt-4 space-y-3">
-          {skillGaps.map((skill, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-2xl">
+          {skillGaps.map((skill, index) => <div key={index} className="flex items-center justify-between p-3 bg-gray-50 border border-[#DADCE0] rounded-2xl">
               <div className="text-right">
                 <p className="font-medium text-sm">{skill.skill}</p>
                 <p className="text-xs text-gray-600">
@@ -253,7 +253,7 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
           {workloadData.map((dept, index) => {
           const utilizationRate = dept.current / dept.capacity * 100;
           const isOverloaded = utilizationRate > 90;
-          return <div key={index} className="bg-white/20 rounded-2xl p-4">
+          return <div key={index} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4">
                 <div className="text-right mb-2">
                   <h4 className="font-medium text-sm">{dept.department}</h4>
                   <p className="text-xs text-gray-600">كفاءة: {dept.efficiency}%</p>

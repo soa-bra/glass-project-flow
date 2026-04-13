@@ -64,7 +64,7 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
       </CardHeader>
       <CardContent>
         {/* المتوسط العام */}
-        <div className="bg-white/20 rounded-2xl p-4 mb-4">
+        <div className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 mb-4">
           <div className="flex items-center justify-between">
             <div className="text-right">
               <p className="text-sm text-gray-600">المتوسط العام</p>
@@ -83,7 +83,7 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
 
         {/* قائمة العملاء */}
         <div className="space-y-3 max-h-[400px] overflow-y-auto">
-          {nps.map(item => <div key={item.id} className="bg-white/20 rounded-2xl p-4 transition-all duration-200 hover:bg-white/30">
+          {nps.map(item => <div key={item.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 transition-all duration-200 hover:bg-gray-100">
               <div className="flex items-start justify-between mb-2">
                 <div className="text-right flex-1">
                   <h4 className="font-medium text-sm">{item.client}</h4>
@@ -97,7 +97,7 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
                 </div>
               </div>
               
-              {item.feedback && <div className="flex items-start gap-2 mt-3 p-2 bg-white/20 rounded-lg">
+              {item.feedback && <div className="flex items-start gap-2 mt-3 p-2 bg-gray-50 rounded-lg">
                   <MessageCircle className="w-4 h-4 text-gray-500 mt-0.5" />
                   <p className="text-xs text-gray-700 leading-relaxed">{item.feedback}</p>
                 </div>}
