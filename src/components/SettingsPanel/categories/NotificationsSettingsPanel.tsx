@@ -86,7 +86,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -95,11 +95,11 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 overflow-auto pb-6 px-6" >
         <div className="space-y-6">
 
           {/* AI Smart Notifications Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 نظام الإشعارات الذكي
               <BaseBadge variant="warning" size="sm">AI Smart Notify</BaseBadge>
@@ -139,7 +139,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* General Notifications Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">تفضيلات الإشعارات</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -200,7 +200,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* Project Notifications Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">إشعارات المشاريع</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,7 +252,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* Smart Timing Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">إعدادات التوقيت</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -329,7 +329,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* Notification History Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">سجل الإشعارات الأخيرة</h3>
             
             <div className="space-y-3">

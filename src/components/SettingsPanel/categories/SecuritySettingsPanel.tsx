@@ -95,7 +95,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -104,7 +104,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 overflow-auto pb-6 px-6" >
         <div className="space-y-6">
           
           {/* Security Disclaimer */}
@@ -114,7 +114,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           />
           
           {/* Header Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <ShieldCheck className="w-6 h-6 text-black" />
@@ -131,7 +131,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* تنبيهات الأمان بالذكاء الاصطناعي */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 تنبيهات الأمان الذكي
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Anomaly Model</span>
@@ -151,7 +151,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* Two-Factor Authentication Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <SecurityDisclaimer 
               type="mock" 
               feature="المصادقة الثنائية"
@@ -219,7 +219,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* إدارة مفاتيح API */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <SecurityDisclaimer 
               type="demo" 
               feature="مفاتيح API"
@@ -264,7 +264,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* الأجهزة الموثوقة */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">الأجهزة الموثوقة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,7 +284,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* Session Management Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">الجلسات النشطة</h3>
             
             <div className="space-y-3">

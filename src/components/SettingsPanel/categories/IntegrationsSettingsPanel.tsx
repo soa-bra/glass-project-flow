@@ -121,7 +121,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -130,13 +130,13 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 overflow-auto pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Header Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <div className="flex items-center gap-4 mb-3">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
+              <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <Link2 className="w-6 h-6 text-black" />
               </div>
               <div className="flex-1">
@@ -151,7 +151,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           </div>
 
           {/* AI Setup Assistant Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 مساعد الإعداد التلقائي
               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Setup Assistant</span>
@@ -191,7 +191,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           </div>
 
           {/* Available Integrations Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">التكاملات المتاحة</h3>
             
             <div className="space-y-4">
@@ -235,7 +235,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           </div>
 
           {/* API Settings Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">إعدادات API</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,7 +314,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           </div>
 
           {/* Webhooks Card */}
-          <div className="rounded-[24px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
             <h3 className="text-md font-bold text-black mb-4">Webhooks</h3>
             
             <div className="space-y-4">
