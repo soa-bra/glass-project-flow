@@ -3,7 +3,7 @@ import { Search, Plus, Users, Calendar, Clock, TrendingUp } from 'lucide-react';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { BaseBox } from '@/components/ui/BaseBox';
-import { InnerCard } from '@/components/ui/InnerCard';
+import { AppCardSurface } from '@/components/shared/surfaces';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { useHRLite } from '@/hooks/useHRLite';
 
@@ -186,7 +186,7 @@ export const HRLiteMainPanel: React.FC = () => {
                     </UnifiedBadge>
                   </div>
                   
-                  <InnerCard>
+                  <AppCardSurface density="compact">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-black/70 font-arabic">القسم:</span>
@@ -205,7 +205,7 @@ export const HRLiteMainPanel: React.FC = () => {
                         </span>
                       </div>
                     </div>
-                  </InnerCard>
+                  </AppCardSurface>
                 </div>
               </BaseBox>
             ))}

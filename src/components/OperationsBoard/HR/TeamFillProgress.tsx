@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
-import { InnerCard } from '@/components/ui/InnerCard';
-import { TrendingUp } from 'lucide-react';
+import { AppCardSurface } from '@/components/shared/surfaces';
 
 interface HRStats {
   active: number;
@@ -18,11 +17,8 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
   const percentageFilled = Math.round((stats.active / totalTeamSize) * 100);
 
   return (
-    <InnerCard 
-      title="نسبة ملء الشواغر"
-      icon={<TrendingUp className="w-4 h-4 text-white" />}
-      className="p-6"
-    >
+    <AppCardSurface density="standard">
+      <h4 className="font-medium text-black font-arabic mb-4">نسبة ملء الشواغر</h4>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <span className="text-2xl font-bold text-black">{percentageFilled}%</span>
@@ -40,6 +36,6 @@ export const TeamFillProgress: React.FC<TeamFillProgressProps> = ({ stats }) => 
           <span className="text-black font-medium font-arabic">{stats.vacancies} شاغر</span>
         </div>
       </div>
-    </InnerCard>
+    </AppCardSurface>
   );
 };
