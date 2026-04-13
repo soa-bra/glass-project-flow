@@ -1,118 +1,233 @@
 
 
-# Visual Data System Refactor — Full Application Plan
+# Unified Surface System + Grid Architecture — Execution Plan
 
-## Current State Summary
+## Scope Summary
 
-The app has a well-built `visual-data/` component library with 8 premium card components (NumericStatCard, MetricHeroCard, CapsuleBarChart, MinimalLineChart, RingMetricCard, ArcGaugeCard, RadialProgressCard, ComparisonMetricCard). However, adoption is inconsistent:
+Two phases executed together as one architectural refactor:
+- **Phase 1**: Surface System Pass — enforce white/gray/black static surface philosophy
+- **Phase 2**: Grid System Pass — unified 12-column grid with presets
 
-- **KPIStatsSection** (used in 14 files) renders its own flat stat cards with basic styling — no motion, weaker hierarchy
-- **BaseStatsCard** (used in Legal OverviewTab) is a legacy component with centered text and minimal styling
-- **~10 inline recharts** blocks across overview tabs render raw recharts without the shared card wrappers
-- The visual-data components themselves are already close to the target but need minor refinements
+Applies to: Operations, Project Dashboard, Departments, Archive, Settings.
 
-## Audit: Component Families Found
+**Explicitly excluded**: KPIStatsSection, chart internals, modal redesign, action logic, canvas/planning surfaces.
 
-| Component | Files Using | Status |
-|-----------|------------|--------|
-| KPIStatsSection | 14 files (all dept overviews, operations) | **Non-compliant** — flat cards, no motion, weak hierarchy |
-| BaseStatsCard | 1 file (Legal) | **Legacy** — basic centered grid |
-| NumericStatCard | ~12 files | Compliant ✓ |
-| MetricHeroCard | ~6 files | Compliant ✓ |
-| CapsuleBarChart | ~4 files | Compliant ✓ |
-| MinimalLineChart | ~3 files | Compliant ✓ |
-| RingMetricCard | ~2 files | Compliant ✓ |
-| ArcGaugeCard | ~2 files | Compliant ✓ |
-| RadialProgressCard | ~2 files | Compliant ✓ |
-| ComparisonMetricCard | ~2 files | Compliant ✓ |
-| Inline recharts (no wrapper) | ~10 files | **Non-compliant** — raw charts in plain divs |
+---
 
-## Plan
+## Audit — Current Violations Found
 
-### Phase 1 — Restore KPIStatsSection
+### Surface Violations (confirmed via codebase search)
 
-Rewrite `KPIStatsSection` to render `NumericStatCard` components internally instead of its own custom flat cards. This gives every KPI section across 14 files the premium visual treatment (framer-motion reveal, bold 40px metrics, proper hierarchy) without changing any consuming code.
+| Violation | Count | Files |
+|-----------|-------|-------|
+| `variant="glass"` on static cards | 12 uses | 10 files in OperationsBoard/Overview + Legal |
+| `glass-enhanced` on static content | 91 matches | 8 files (Finance, Reports, Clients, StatusBox) |
+| `rounded-[41px]` non-standard radius | 489 matches | 24 files (Settings, TaskDetails, index.css `sb-surface-box`) |
+| `rounded-[40px]` non-standard radius | 266 matches | 22 files (Archive, Settings, Reports) |
+| `GenericCard` still exists | 1 component | No active consumers found beyond its own file |
+| `InnerCard` with `rounded-[41px]` | 2 consumers | HRLiteMainPanel, HR/TeamFillProgress |
+| `sb-surface-box` CSS class uses `rounded-[41px]` | 1 CSS rule | index.css line 342 |
+| Hand-built `ring-1` + CSS var cards | ~50+ instances | All Settings panels, Archive panels |
+| `bg-white/20`, `bg-white/30` on static surfaces | scattered | Multiple files |
 
-**Files changed:** `src/components/shared/KPIStatsSection.tsx`
+### Grid Violations
 
-### Phase 2 — Retire BaseStatsCard usage
+| Violation | Scope |
+|-----------|-------|
+| Settings panels: no grid system, manual `grid-cols-*` | 8 panels |
+| Archive panels: no grid system, manual layouts | 9 panels |
+| Project dashboard: no grid system | ProjectManagementBoard, ProjectCardGrid |
+| Operations sub-tabs (Finance, Reports, Clients): manual grids | ~6 files |
 
-Replace `BaseStatsCard` usage in `Legal/OverviewTab.tsx` with `NumericStatCard` grid. Remove or deprecate `BaseStatsCard`.
+### What Already Works
 
-**Files changed:** `src/components/DepartmentTabs/Legal/OverviewTab.tsx`
+- `SURFACE_CLASSES.STATIC_CARD` token: correctly defined but unused in components
+- `surface-tokens.ts`: complete spec with STATIC/OVERLAY separation
+- `AppDashboardGrid` + `AppGridItem`: functional, RTL-safe (`dir="rtl"`)
+- Some Operations Overview + Department tabs already migrated to grid
 
-### Phase 3 — Wrap inline recharts in visual-data cards
+---
 
-Create a lightweight `DataCardFrame` wrapper that provides the standard card container (rounded-[24px], white bg, border, p-6, motion reveal, title zone) for inline chart usage. Then migrate inline recharts blocks in these files:
+## Execution Steps
 
-- `Financial/OverviewTab.tsx` (2 chart blocks)
-- `CRM/OverviewTab.tsx` (3 chart blocks)
-- `CRM/AnalyticsTab.tsx`
-- `CRM/OpportunitiesTab.tsx`
-- `CRM/ServiceTab.tsx`
-- `Training/ReportsTab.tsx`
-- `Financial/AnalysisTab.tsx`
+### Step 1 — Fix Foundation: CSS + BaseBox
 
-The migration wraps existing `<div className="rounded-[24px]...">` containers with `DataCardFrame`, standardizing the title/padding/motion pattern.
+**1a. Fix `sb-surface-box` in `index.css`**
+- Change `rounded-[41px]` → `rounded-[24px]` in the `.sb-surface-box` rule
+- Same fix for `.sb-surface-task-card`
 
-**New file:** `src/components/shared/visual-data/DataCardFrame.tsx`
+**1b. Normalize BaseBox variants**
+- Default `rounded` from `'xl'` (40px) → `'lg'` (24px)
+- Update `roundedClasses.xl` from `rounded-[40px]` → `rounded-[24px]` (or remove `xl` entirely)
+- Change `standard` variant to use `SURFACE_CLASSES.STATIC_CARD` directly
+- Merge `operations`, `unified`, `legal` into one `standard` variant (they're nearly identical)
+- Add JSDoc deprecation on `glass` for static use
+- Keep `glass` variant code intact for overlay contexts
 
-### Phase 4 — Minor visual refinements to existing primitives
+### Step 2 — Create Surface Primitives
 
-- Increase default tooltip contrast and padding consistency across all chart components
-- Ensure all bar charts use `barSize={20}` + `radius={[999,999,999,999]}` consistently
-- Standardize axis styling (hide axisLine/tickLine, use `rgba(11,15,18,0.35)` for tick text at 10px)
+Create `src/components/shared/surfaces/` with:
 
-**Files changed:** Minor tweaks to `CapsuleBarChart.tsx`, `MinimalLineChart.tsx`
+**`AppCardSurface.tsx`**
+- Props: `density` (compact|standard|spacious), `interactive` (static|hoverable|selectable), `role`, `overflow`, `className`, `children`, `header`, `footer`
+- Renders: `bg-white border border-[#DADCE0] rounded-[24px]` + shadow + padding per density
+- No glass, no transparency
 
-### Phase 5 — Verify responsive behavior
+**`AppSectionSurface.tsx`**
+- Flatter grouping surface: `bg-white border border-[#DADCE0] rounded-[18px]`, no shadow
 
-Ensure `NumericStatCard` grid columns degrade properly: 4-col → 2-col → 1-col. All visual-data cards already use `min-h` and flex layout, so this is primarily verifying the grid wrappers in consuming files.
+**`AppCardHeader.tsx`**
+- Props: `title`, `icon`, `actions`, `size`
+- Standardized spacing, title hierarchy, action alignment
 
-## Technical Details
+**`AppCardBody.tsx`**
+- Content wrapper with overflow control
 
-### KPIStatsSection rewrite approach
-```tsx
-// Instead of custom Stagger.Item cards, delegate to NumericStatCard:
-<Stagger className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${className}`}>
-  {stats.map((stat, i) => (
-    <NumericStatCard
-      key={i}
-      title={stat.title}
-      value={stat.value}
-      unit={stat.unit}
-      description={stat.description}
-    />
-  ))}
-</Stagger>
+**`AppCardFooter.tsx`**
+- Action bar with standardized button alignment
+
+**`AppActionGroup.tsx`**
+- Inline action cluster (primary/secondary/icon-only)
+
+**`index.ts`** — barrel export
+
+### Step 3 — Enhance Grid System
+
+**3a. Extend `AppGridItem`**
+- Add props: `desktopSpan`, `mobileSpan`, `mobileOrder`, `density`, `priority`, `variant`, `fullWidth`
+- `fullWidth` = shorthand for `colSpan={12}`
+
+**3b. Create `AppGridSection.tsx`**
+- Full-width labeled section row within a grid (optional title spanning 12 cols)
+
+**3c. Add `minRowHeight` to `AppDashboardGrid`**
+- New prop: `minRowHeight` (default `'140px'`)
+- Applied as `grid-auto-rows: minmax(${minRowHeight}, auto)`
+
+**3d. Create `GridLayoutPreset` types + presets**
+
+File: `src/components/shared/layout/presets.ts`
+
+```text
+operations:  density=default, minRowHeight=140px
+project:     density=default, minRowHeight=160px
+departments: density=spacious, minRowHeight=140px
+archive:     density=compact, minRowHeight=120px
+settings:    density=spacious, minRowHeight=auto
 ```
 
-### DataCardFrame spec
-- Wraps any chart content with the standard card shell
-- Props: `title`, `subtitle?`, `heroValue?`, `heroUnit?`, `className?`, `children`
-- Container: `rounded-[24px] bg-white border border-[#DADCE0] p-6`, framer-motion reveal
-- Title: `text-xs font-semibold text-[rgba(11,15,18,0.50)] uppercase tracking-wide`
+Each preset defines: density, minRowHeight, default footprint patterns.
 
-## Files Changed (estimated ~20 files)
+**3e. Row Model — Role-Based Height Rules**
 
-1. `src/components/shared/KPIStatsSection.tsx` — rewrite
-2. `src/components/shared/visual-data/DataCardFrame.tsx` — new
-3. `src/components/shared/visual-data/index.ts` — add export
-4. `src/components/DepartmentTabs/Legal/OverviewTab.tsx` — replace BaseStatsCard
-5. `src/components/DepartmentTabs/Financial/OverviewTab.tsx` — wrap charts
-6. `src/components/DepartmentTabs/CRM/OverviewTab.tsx` — wrap charts
-7. `src/components/DepartmentTabs/CRM/AnalyticsTab.tsx` — wrap charts
-8. `src/components/DepartmentTabs/CRM/OpportunitiesTab.tsx` — wrap charts
-9. `src/components/DepartmentTabs/CRM/ServiceTab.tsx` — wrap charts
-10. `src/components/DepartmentTabs/Training/ReportsTab.tsx` — wrap charts
-11. `src/components/DepartmentTabs/Financial/AnalysisTab.tsx` — wrap charts
-12. Minor tweaks to `CapsuleBarChart.tsx`, `MinimalLineChart.tsx`
+```text
+KPI/stat tile:      minHeight 140px, rowSpan=1
+Summary card:       minHeight 160px, rowSpan=1
+Chart card shell:   minHeight 280px, rowSpan=2
+Table/list card:    minHeight 320px, rowSpan=2
+Feature card:       minHeight 200px, rowSpan=1
+Detail card:        minHeight auto, rowSpan varies
+```
 
-## Impact
+### Step 4 — Migrate Operations Dashboard
 
-- **14 KPI sections** instantly upgraded via KPIStatsSection rewrite (zero changes to consumers)
-- **~10 inline charts** wrapped in consistent card frames
-- **1 legacy component** (BaseStatsCard) retired
-- **1 new shared primitive** (DataCardFrame) for future chart cards
-- All existing visual-data components preserved — no breaking changes
+**4a. Overview** (10 files)
+- Replace all `variant="glass"` → `variant="standard"` (or wrap in `AppCardSurface`)
+- Remove inline `style={{ backgroundColor: '#ffffff' }}` overrides
+- Remove `neonRing` from static cards where inappropriate
+
+Files: `FinancialOverviewBox`, `AlertsBox`, `TimelineBox`, `ProjectSummaryBox`, `ContractsBox`, `AISuggestedBox`, `ExtraBoxOne-Four`
+
+**4b. Sub-tabs** (8 files)
+- Finance: `ProjectBudgetChart`, `OverBudgetAlert` — remove `glass-enhanced`, fix `rounded-[40px]`
+- Reports: `TemplatesList`, `ReportLibrary`, `CustomReportForm` — remove `glass-enhanced`, migrate to `AppCardSurface`
+- Clients: `ClientSentiment`, `ClientPortfolioHealth` — remove `glass-enhanced`, fix cards
+- Legal: `UpcomingContracts` — remove `variant="glass"`
+
+### Step 5 — Migrate Settings Panels
+
+All 8 panels follow the same pattern: replace hand-built `rounded-[41px] p-6 ring-1 style={{ background: 'var(--sb-box-standard)' }}` with `AppCardSurface`.
+
+- `AccountSettingsPanel` — also fix `rounded-[40px]` inner cards
+- `SecuritySettingsPanel` — 6+ hand-built cards
+- `AISettingsPanel` — 5+ hand-built cards
+- `ThemeSettingsPanel`, `NotificationsSettingsPanel`, `IntegrationsSettingsPanel`, `DataGovernanceSettingsPanel`, `UsersRolesSettingsPanel`
+- `SettingsPanelLayout` — replace `var(--sb-bg-00)` background with `bg-white`
+- Wrap content in `AppDashboardGrid` with settings preset
+
+### Step 6 — Migrate Archive Panels
+
+All 9 category panels: replace `rounded-[40px] ring-1 ring-[#DADCE0]` hand-built cards with `AppCardSurface`.
+
+- `ArchivePanelLayout` — replace `var(--sb-column-3-bg)` with `bg-white`
+- `PoliciesArchivePanel`, `OrganizationalArchivePanel` — fix search bars + list items
+- `FinancialArchivePanel`, `ProjectsArchivePanel`, `HRArchivePanel`, `LegalArchivePanel`, `KnowledgeArchivePanel`, `TemplatesArchivePanel`, `DocumentsArchivePanel`
+- Wrap in `AppDashboardGrid` with archive preset
+
+### Step 7 — Migrate Project Dashboard
+
+- `ProjectManagementBoard` — wrap tab content in `AppDashboardGrid`
+- `ProjectCardGrid` — migrate cards to `AppCardSurface`
+- `TaskDetailsPanel` — fix `rounded-[41px]` → `rounded-[24px]`
+- `TaskDetailsBox` — fix `rounded-[41px]`
+
+### Step 8 — Verify Departments Consistency
+
+- Scan all department tabs for remaining `glass`, `rounded-[41px]`, `rounded-[40px]`
+- Fix any local wrappers not yet aligned
+
+### Step 9 — Cleanup Deprecated Components
+
+- Delete `GenericCard.tsx` (no active consumers found)
+- Migrate `InnerCard` consumers (2 files: `HRLiteMainPanel`, `TeamFillProgress`) to `AppCardSurface`, then delete or deprecate `InnerCard`
+- Remove `glass-enhanced` CSS class if no remaining consumers
+- Clean `BaseBox` variant list: remove redundant `operations`, `unified`, `legal` (all → `standard`)
+
+### Step 10 — Responsive + RTL Verification
+
+Verify across all 5 major screens:
+- Desktop (12-col), Tablet (6-col), Mobile (stacked)
+- RTL: header alignment, action zones, grid placement, section titles, icon alignment
+- No hidden LTR assumptions in grid or surface primitives
+
+---
+
+## Estimated File Changes
+
+| Category | Estimated Files |
+|----------|----------------|
+| New surface primitives | 7 files |
+| Grid system enhancements | 3 files |
+| Grid presets | 1 file |
+| `index.css` fix | 1 file |
+| `BaseBox.tsx` normalization | 1 file |
+| Operations Overview | 10 files |
+| Operations sub-tabs | 8 files |
+| Settings panels + layout | 9 files |
+| Archive panels + layout | 10 files |
+| Project dashboard | 4 files |
+| Department verification | ~3-5 files |
+| Deprecated cleanup | 3 files |
+| **Total** | **~60-65 files** |
+
+---
+
+## Phase Protection Rules
+
+Will NOT touch in this pass:
+- KPIStatsSection internals
+- Chart/data-visualization internals
+- Modal/dialog internals
+- Tooltip systems
+- z-index overhaul
+- Action button logic
+- Form redesign
+- Canvas/planning surfaces
+
+Will ONLY touch:
+- Surface shells (bg, border, radius, shadow)
+- Grid layout wrappers
+- Structural migration
+- Removing static glass violations
+- Keeping overlays glass without redesigning them
 
