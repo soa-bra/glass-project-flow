@@ -111,36 +111,44 @@ export const EventsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Events Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseBox>
-          <div>
-            <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">12</div>
-            <div className="text-sm text-gray-600">فعاليات هذا العام</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">2,847</div>
-            <div className="text-sm text-gray-600">إجمالي الحضور</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">4.7</div>
-            <div className="text-sm text-gray-600">تقييم الحضور</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">89%</div>
-            <div className="text-sm text-gray-600">الأثر الثقافي</div>
-          </div>
-        </BaseBox>
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">12</div>
+              <div className="text-sm text-gray-600">فعاليات هذا العام</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">2,847</div>
+              <div className="text-sm text-gray-600">إجمالي الحضور</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">4.7</div>
+              <div className="text-sm text-gray-600">تقييم الحضور</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">89%</div>
+              <div className="text-sm text-gray-600">الأثر الثقافي</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Controls */}
       <div className="flex items-center justify-between">

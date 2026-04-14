@@ -106,18 +106,19 @@ export const PartnershipsTab: React.FC = () => {
         </BaseActionButton>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <NumericStatCard title="إجمالي الشركاء" value={partners.length} icon={<Building className="h-5 w-5" />} accentColor="#3B82F6" />
-        <NumericStatCard title="عقود نشطة" value={partners.filter(p => p.contractStatus === 'signed').length} icon={<CheckCircle className="h-5 w-5" />} accentColor="#10B981" />
-        <NumericStatCard title="متوسط التقييم" value={(partners.reduce((s, p) => s + p.rating, 0) / partners.length).toFixed(1)} icon={<Star className="h-5 w-5" />} accentColor="#EAB308" />
-        <NumericStatCard title="قدرة عالية" value={partners.filter(p => p.capacity === 'high').length} icon={<Users className="h-5 w-5" />} accentColor="#8B5CF6" />
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي الشركاء" value={partners.length} icon={<Building className="h-5 w-5" />} accentColor="#3B82F6" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="عقود نشطة" value={partners.filter(p => p.contractStatus === 'signed').length} icon={<CheckCircle className="h-5 w-5" />} accentColor="#10B981" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="متوسط التقييم" value={(partners.reduce((s, p) => s + p.rating, 0) / partners.length).toFixed(1)} icon={<Star className="h-5 w-5" />} accentColor="#EAB308" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="قدرة عالية" value={partners.filter(p => p.capacity === 'high').length} icon={<Users className="h-5 w-5" />} accentColor="#8B5CF6" /></AppGridItem>
+      </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <AppDashboardGrid columns={12}>
         {filteredPartners.map((partner) => {
           const ContractIcon = getContractStatusIcon(partner.contractStatus);
           return (
-            <DataCardFrame key={partner.id} title={partner.name} className="hover:shadow-lg transition-shadow">
+            <AppGridItem key={partner.id} colSpan={6}>
+            <DataCardFrame title={partner.name} className="hover:shadow-lg transition-shadow">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -157,9 +158,10 @@ export const PartnershipsTab: React.FC = () => {
                 <BaseActionButton size="sm" variant="outline" className="font-arabic" onClick={() => handleViewContract(partner)}><FileText className="h-3 w-3 ml-1" /> العقد</BaseActionButton>
               </div>
             </DataCardFrame>
+            </AppGridItem>
           );
         })}
-      </div>
+      </AppDashboardGrid>
 
       <DataCardFrame title="مخصص الموارد" icon={<Building className="h-5 w-5" />}>
         <p className="text-gray-600 font-arabic mb-4">ربط احتياجات المبادرات بالموارد المتاحة والموردين المعتمدين</p>
