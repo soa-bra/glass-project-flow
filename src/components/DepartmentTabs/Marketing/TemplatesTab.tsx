@@ -1,6 +1,9 @@
 
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { FileText, Download, Eye, Copy, Plus, Search } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -65,61 +68,67 @@ export const TemplatesTab: React.FC = () => {
 
       <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-2 mb-6"><FileText className="h-6 w-6 text-black" /><h3 className="text-xl font-bold text-black font-arabic">فئات النماذج والقوالب</h3></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <AppDashboardGrid columns={12} minRowHeight="auto">
           {templateCategories.map((category, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" onClick={() => toast.info(`فئة: ${category.name} - ${category.count} قالب`)}>
-              <div className="flex items-center justify-between mb-3"><category.icon className={`h-6 w-6 ${category.color}`} /><BaseBadge variant="default" size="sm">{category.count}</BaseBadge></div>
-              <h4 className="font-medium font-arabic text-sm">{category.name}</h4>
-            </div>
+            <AppGridItem key={index} colSpan={3} tabletSpan={3}>
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" onClick={() => toast.info(`فئة: ${category.name} - ${category.count} قالب`)}>
+                <div className="flex items-center justify-between mb-3"><category.icon className={`h-6 w-6 ${category.color}`} /><BaseBadge variant="default" size="sm">{category.count}</BaseBadge></div>
+                <h4 className="font-medium font-arabic text-sm">{category.name}</h4>
+              </div>
+            </AppGridItem>
           ))}
-        </div>
+        </AppDashboardGrid>
       </BaseBox>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <BaseBox variant="operations" className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2"><Download className="h-5 w-5 text-black" /><h3 className="text-xl font-bold text-black font-arabic">الأكثر استخداماً</h3></div>
-            <BaseActionButton variant="outline" size="sm" onClick={() => setShowAll(p => ({ ...p, popular: !p.popular }))}>عرض الكل</BaseActionButton>
-          </div>
-          <div className="space-y-3">
-            {(showAll.popular ? filtered : filtered.slice(0, 3)).map((template, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3"><FileText className="h-4 w-4 text-gray-600" /><div><h4 className="font-medium font-arabic text-sm">{template.name}</h4><div className="flex items-center gap-3 text-xs text-gray-500 mt-1"><span className="font-arabic">{template.category}</span><span>{template.downloads} تحميل</span><BaseBadge variant={template.status === 'محدث' ? 'success' : 'warning'} size="sm">{template.status}</BaseBadge></div></div></div>
-                <div className="flex items-center gap-1">
-                  <BaseActionButton size="sm" variant="outline" onClick={() => handlePreview(template.name)}><Eye className="h-4 w-4" /></BaseActionButton>
-                  <BaseActionButton size="sm" variant="outline" onClick={() => handleDownload(template)}><Download className="h-4 w-4" /></BaseActionButton>
-                  <BaseActionButton size="sm" variant="outline" onClick={() => handleCopy(template)}><Copy className="h-4 w-4" /></BaseActionButton>
+      <AppDashboardGrid columns={12} minRowHeight="auto">
+        <AppGridItem colSpan={6}>
+          <BaseBox variant="operations" className="p-6 h-full">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2"><Download className="h-5 w-5 text-black" /><h3 className="text-xl font-bold text-black font-arabic">الأكثر استخداماً</h3></div>
+              <BaseActionButton variant="outline" size="sm" onClick={() => setShowAll(p => ({ ...p, popular: !p.popular }))}>عرض الكل</BaseActionButton>
+            </div>
+            <div className="space-y-3">
+              {(showAll.popular ? filtered : filtered.slice(0, 3)).map((template, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3"><FileText className="h-4 w-4 text-gray-600" /><div><h4 className="font-medium font-arabic text-sm">{template.name}</h4><div className="flex items-center gap-3 text-xs text-gray-500 mt-1"><span className="font-arabic">{template.category}</span><span>{template.downloads} تحميل</span><BaseBadge variant={template.status === 'محدث' ? 'success' : 'warning'} size="sm">{template.status}</BaseBadge></div></div></div>
+                  <div className="flex items-center gap-1">
+                    <BaseActionButton size="sm" variant="outline" onClick={() => handlePreview(template.name)}><Eye className="h-4 w-4" /></BaseActionButton>
+                    <BaseActionButton size="sm" variant="outline" onClick={() => handleDownload(template)}><Download className="h-4 w-4" /></BaseActionButton>
+                    <BaseActionButton size="sm" variant="outline" onClick={() => handleCopy(template)}><Copy className="h-4 w-4" /></BaseActionButton>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </BaseBox>
+              ))}
+            </div>
+          </BaseBox>
+        </AppGridItem>
 
-        <BaseBox variant="operations" className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2"><Plus className="h-5 w-5 text-black" /><h3 className="text-xl font-bold text-black font-arabic">المضافة حديثاً</h3></div>
-            <BaseActionButton variant="outline" size="sm" onClick={() => setShowAll(p => ({ ...p, recent: !p.recent }))}>عرض الكل</BaseActionButton>
-          </div>
-          <div className="space-y-3">
-            {recentTemplates.map((template, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3"><FileText className="h-4 w-4 text-gray-600" /><div><h4 className="font-medium font-arabic text-sm">{template.name}</h4><div className="flex items-center gap-3 text-xs text-gray-500 mt-1"><span className="font-arabic">{template.category}</span><span>{template.createdDate}</span><span className="font-arabic">{template.createdBy}</span></div></div></div>
-                <div className="flex items-center gap-1">
-                  <BaseActionButton size="sm" variant="outline" onClick={() => handlePreview(template.name)}><Eye className="h-4 w-4" /></BaseActionButton>
-                  <BaseActionButton size="sm" variant="outline" onClick={() => handleDownload(template)}><Download className="h-4 w-4" /></BaseActionButton>
+        <AppGridItem colSpan={6}>
+          <BaseBox variant="operations" className="p-6 h-full">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2"><Plus className="h-5 w-5 text-black" /><h3 className="text-xl font-bold text-black font-arabic">المضافة حديثاً</h3></div>
+              <BaseActionButton variant="outline" size="sm" onClick={() => setShowAll(p => ({ ...p, recent: !p.recent }))}>عرض الكل</BaseActionButton>
+            </div>
+            <div className="space-y-3">
+              {recentTemplates.map((template, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center gap-3"><FileText className="h-4 w-4 text-gray-600" /><div><h4 className="font-medium font-arabic text-sm">{template.name}</h4><div className="flex items-center gap-3 text-xs text-gray-500 mt-1"><span className="font-arabic">{template.category}</span><span>{template.createdDate}</span><span className="font-arabic">{template.createdBy}</span></div></div></div>
+                  <div className="flex items-center gap-1">
+                    <BaseActionButton size="sm" variant="outline" onClick={() => handlePreview(template.name)}><Eye className="h-4 w-4" /></BaseActionButton>
+                    <BaseActionButton size="sm" variant="outline" onClick={() => handleDownload(template)}><Download className="h-4 w-4" /></BaseActionButton>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </BaseBox>
-      </div>
+              ))}
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">41</h3><p className="text-sm text-black font-arabic">إجمالي القوالب</p></BaseBox>
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">312</h3><p className="text-sm text-black font-arabic">إجمالي التحميلات</p></BaseBox>
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">8</h3><p className="text-sm text-black font-arabic">مضاف هذا الشهر</p></BaseBox>
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">4.8</h3><p className="text-sm text-black font-arabic">متوسط التقييم</p></BaseBox>
-      </div>
+      <AppDashboardGrid columns={12} minRowHeight="auto">
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي القوالب" value={41} description="قالب" accentColor="#a4e2f6" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي التحميلات" value={312} description="تحميل" accentColor="#bdeed3" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="مضاف هذا الشهر" value={8} description="قالب" accentColor="#fbe2aa" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="متوسط التقييم" value="4.8" description="من 5" accentColor="#d9d2fd" /></AppGridItem>
+      </AppDashboardGrid>
     </div>
   );
 };

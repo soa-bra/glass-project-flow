@@ -3,8 +3,11 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { Input } from '@/components/ui/input';
-import { Palette, Upload, Search, Filter, Download, Eye, Edit, Trash2, Image, FileText, Type } from 'lucide-react';
+import { Palette, Upload, Search, Filter, Download, Eye, Edit, Image, FileText, Type } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { GenericFilterPopover, FilterOption } from '../shared/GenericFilterPopover';
@@ -97,32 +100,28 @@ export const VisualAssetsTab: React.FC = () => {
             triggerButton={<UnifiedButton variant="outline" size="sm"><Filter className="h-4 w-4 mr-2" /> تصفية</UnifiedButton>}
           />
         </div>
-        <UnifiedButton onClick={() => setIsUploadOpen(true)}>
-          <Upload className="h-4 w-4 mr-2" /> رفع أصل جديد
-        </UnifiedButton>
+        <UnifiedButton onClick={() => setIsUploadOpen(true)}><Upload className="h-4 w-4 mr-2" /> رفع أصل جديد</UnifiedButton>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1">
+      <AppDashboardGrid columns={12} minRowHeight="auto">
+        <AppGridItem colSpan={3}>
           <BaseBox>
             <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2">فئات الأصول</h3></div>
-            <div>
-              <div className="space-y-2">
-                {assetCategories.map((category) => (
-                  <button key={category.id} onClick={() => setSelectedCategory(category.id)} className={`w-full flex items-center justify-between p-3 rounded-lg text-right transition-colors ${selectedCategory === category.id ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'hover:bg-gray-50'}`}>
-                    <span className="font-medium">{category.name}</span>
-                    <UnifiedBadge variant="info">{category.count}</UnifiedBadge>
-                  </button>
-                ))}
-              </div>
+            <div className="space-y-2">
+              {assetCategories.map((category) => (
+                <button key={category.id} onClick={() => setSelectedCategory(category.id)} className={`w-full flex items-center justify-between p-3 rounded-lg text-right transition-colors ${selectedCategory === category.id ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'hover:bg-gray-50'}`}>
+                  <span className="font-medium">{category.name}</span>
+                  <UnifiedBadge variant="info">{category.count}</UnifiedBadge>
+                </button>
+              ))}
             </div>
           </BaseBox>
-        </div>
+        </AppGridItem>
 
-        <div className="lg:col-span-3 space-y-6">
-          <BaseBox>
-            <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2"><Palette className="h-5 w-5" /> الأصول البصرية ({filteredAssets.length})</h3></div>
-            <div>
+        <AppGridItem colSpan={9}>
+          <div className="space-y-6">
+            <BaseBox>
+              <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2"><Palette className="h-5 w-5" /> الأصول البصرية ({filteredAssets.length})</h3></div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredAssets.map((asset) => (
                   <div key={asset.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -151,52 +150,31 @@ export const VisualAssetsTab: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </BaseBox>
+            </BaseBox>
 
-          <BaseBox>
-            <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2">إحصائيات الاستخدام</h3></div>
-            <div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-blue-600">{assets.reduce((s, a) => s + a.downloads, 0).toLocaleString()}</div>
-                  <div className="text-sm text-gray-600">إجمالي التحميلات</div>
-                </div>
-                <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-green-600">89%</div>
-                  <div className="text-sm text-gray-600">معدل الاستخدام</div>
-                </div>
-                <div className="text-center space-y-2">
-                  <div className="text-3xl font-bold text-purple-600">{assets.length}</div>
-                  <div className="text-sm text-gray-600">إجمالي الأصول</div>
-                </div>
-              </div>
-            </div>
-          </BaseBox>
-        </div>
-      </div>
+            <AppDashboardGrid columns={12} minRowHeight="auto">
+              <AppGridItem colSpan={4}>
+                <NumericStatCard title="إجمالي التحميلات" value={assets.reduce((s, a) => s + a.downloads, 0)} description="تحميل" accentColor="#a4e2f6" />
+              </AppGridItem>
+              <AppGridItem colSpan={4}>
+                <NumericStatCard title="معدل الاستخدام" value="89%" description="نسبة" accentColor="#bdeed3" />
+              </AppGridItem>
+              <AppGridItem colSpan={4}>
+                <NumericStatCard title="إجمالي الأصول" value={assets.length} description="أصل" accentColor="#d9d2fd" />
+              </AppGridItem>
+            </AppDashboardGrid>
+          </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       <GenericFormModal isOpen={isUploadOpen} onClose={() => setIsUploadOpen(false)} title="رفع أصل بصري جديد" fields={uploadFields} onSubmit={handleUpload} submitLabel="رفع الأصل" successMessage="تم رفع الأصل بنجاح" />
-
-      {editingAsset && (
-        <GenericFormModal isOpen={!!editingAsset} onClose={() => setEditingAsset(null)} title={`تعديل: ${editingAsset.name}`} fields={editFields} onSubmit={handleEditAsset} submitLabel="حفظ التعديلات" successMessage="تم تحديث الأصل" />
-      )}
-
+      {editingAsset && <GenericFormModal isOpen={!!editingAsset} onClose={() => setEditingAsset(null)} title={`تعديل: ${editingAsset.name}`} fields={editFields} onSubmit={handleEditAsset} submitLabel="حفظ التعديلات" successMessage="تم تحديث الأصل" />}
       {viewingAsset && (
-        <GenericDetailModal
-          isOpen={!!viewingAsset}
-          onClose={() => setViewingAsset(null)}
-          title={`تفاصيل: ${viewingAsset.name}`}
-          fields={[
-            { label: 'الاسم', value: viewingAsset.name },
-            { label: 'النوع', value: viewingAsset.type },
-            { label: 'الصيغة', value: viewingAsset.format },
-            { label: 'الحجم', value: viewingAsset.size },
-            { label: 'التحميلات', value: viewingAsset.downloads },
-            { label: 'آخر استخدام', value: viewingAsset.lastUsed },
-            { label: 'الحالة', value: viewingAsset.status === 'approved' ? 'معتمد' : 'قيد المراجعة' },
-          ]}
-        />
+        <GenericDetailModal isOpen={!!viewingAsset} onClose={() => setViewingAsset(null)} title={`تفاصيل: ${viewingAsset.name}`} fields={[
+          { label: 'الاسم', value: viewingAsset.name }, { label: 'النوع', value: viewingAsset.type }, { label: 'الصيغة', value: viewingAsset.format },
+          { label: 'الحجم', value: viewingAsset.size }, { label: 'التحميلات', value: viewingAsset.downloads }, { label: 'آخر استخدام', value: viewingAsset.lastUsed },
+          { label: 'الحالة', value: viewingAsset.status === 'approved' ? 'معتمد' : 'قيد المراجعة' },
+        ]} />
       )}
     </div>
   );

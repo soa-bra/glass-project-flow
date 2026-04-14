@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { BookOpen, Users, Clock, Star, Plus, Eye, Edit, X } from 'lucide-react';
 import { mockCourses } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
@@ -49,21 +53,10 @@ export const CoursesTab: React.FC = () => {
   const handleCreateCourse = (data: Record<string, string>) => {
     const newCourse: any = {
       id: `course-${Date.now()}`,
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      type: data.type,
-      status: 'draft',
-      instructor: data.instructor,
-      duration: Number(data.duration),
-      maxStudents: Number(data.maxStudents) || undefined,
-      skills: [],
-      scormCompliant: false,
-      xApiEnabled: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      modules: [],
-      prerequisites: [],
+      title: data.title, description: data.description, category: data.category, type: data.type,
+      status: 'draft', instructor: data.instructor, duration: Number(data.duration),
+      maxStudents: Number(data.maxStudents) || undefined, skills: [], scormCompliant: false, xApiEnabled: false,
+      createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), modules: [], prerequisites: [],
     };
     setCourses(prev => [newCourse, ...prev]);
   };
@@ -107,24 +100,23 @@ export const CoursesTab: React.FC = () => {
         <BaseActionButton onClick={() => setIsCreateOpen(true)} className="flex items-center gap-2"><Plus className="h-4 w-4" /> إنشاء دورة جديدة</BaseActionButton>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        {[{ label: 'دورات التأهيل', count: courses.filter(c => c.category === 'onboarding').length, color: 'text-blue-600' },
-          { label: 'دورات تقنية', count: courses.filter(c => c.category === 'technical').length, color: 'text-green-600' },
-          { label: 'دورات إدارية', count: courses.filter(c => c.category === 'management').length, color: 'text-purple-600' },
-          { label: 'برامج مؤسسية', count: courses.filter(c => c.category === 'corporate').length, color: 'text-orange-600' },
-          { label: 'ورش عمل', count: courses.filter(c => c.category === 'workshop').length, color: 'text-red-600' },
+      <AppDashboardGrid columns={12} minRowHeight="auto">
+        {[{ label: 'دورات التأهيل', count: courses.filter(c => c.category === 'onboarding').length, accent: '#a4e2f6' },
+          { label: 'دورات تقنية', count: courses.filter(c => c.category === 'technical').length, accent: '#bdeed3' },
+          { label: 'دورات إدارية', count: courses.filter(c => c.category === 'management').length, accent: '#d9d2fd' },
+          { label: 'برامج مؤسسية', count: courses.filter(c => c.category === 'corporate').length, accent: '#fbe2aa' },
+          { label: 'ورش عمل', count: courses.filter(c => c.category === 'workshop').length, accent: '#f8c4c0' },
         ].map((item, i) => (
-          <div key={i} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-            <div className={`text-2xl font-bold ${item.color}`}>{item.count}</div>
-            <div className="text-sm text-gray-600">{item.label}</div>
-          </div>
+          <AppGridItem key={i} colSpan={2} tabletSpan={3}>
+            <NumericStatCard title={item.label} value={item.count} description="دورة" accentColor={item.accent} />
+          </AppGridItem>
         ))}
-      </div>
+      </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <AppDashboardGrid columns={12} minRowHeight="auto">
         {courses.map((course) => (
-          <div key={course.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] hover:shadow-lg transition-shadow">
-            <div className="p-6 pb-2">
+          <AppGridItem key={course.id} colSpan={4} tabletSpan={3}>
+            <AppCardSurface density="standard" interactive="hoverable" className="h-full flex flex-col">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="text-lg font-semibold">{course.title}</div>
@@ -137,10 +129,8 @@ export const CoursesTab: React.FC = () => {
                   {course.status === 'published' ? 'منشور' : course.status === 'draft' ? 'مسودة' : 'مؤرشف'}
                 </Badge>
               </div>
-            </div>
-            <div className="px-6 pb-6">
-              <p className="text-gray-600 text-sm mb-4 line-clamp-3">{course.description}</p>
-              <div className="space-y-3">
+              <p className="text-gray-600 text-sm mb-4 line-clamp-3 mt-4">{course.description}</p>
+              <div className="space-y-3 flex-1">
                 <div className="flex items-center justify-between text-sm"><span className="flex items-center gap-1"><BookOpen className="h-4 w-4" /> المدرب: {course.instructor}</span></div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="flex items-center gap-1"><Clock className="h-4 w-4" /> {course.duration} ساعة</span>
@@ -158,22 +148,20 @@ export const CoursesTab: React.FC = () => {
                 <BaseActionButton size="sm" className="flex-1" onClick={() => setViewingCourse(course)}>عرض التفاصيل</BaseActionButton>
                 <BaseActionButton size="sm" variant="outline" onClick={() => setEditingCourse(course)}>تعديل</BaseActionButton>
               </div>
-            </div>
-          </div>
+            </AppCardSurface>
+          </AppGridItem>
         ))}
-      </div>
+      </AppDashboardGrid>
 
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]">
-        <div className="p-6 pb-2"><div className="text-lg font-semibold">محرر الدورات البصري</div></div>
-        <div className="px-6 pb-6">
-          <div className="text-center py-8">
-            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Course Builder</h3>
-            <p className="text-gray-600 mb-4">استخدم المحرر البصري لإنشاء دورات تفاعلية تتضمن وحدات ودروس واختبارات</p>
-            <BaseActionButton onClick={() => setIsCourseBuilderOpen(true)}>إطلاق محرر الدورات</BaseActionButton>
-          </div>
+      <AppCardSurface density="standard">
+        <div className="mb-2"><div className="text-lg font-semibold">محرر الدورات البصري</div></div>
+        <div className="text-center py-8">
+          <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium mb-2">Course Builder</h3>
+          <p className="text-gray-600 mb-4">استخدم المحرر البصري لإنشاء دورات تفاعلية تتضمن وحدات ودروس واختبارات</p>
+          <BaseActionButton onClick={() => setIsCourseBuilderOpen(true)}>إطلاق محرر الدورات</BaseActionButton>
         </div>
-      </div>
+      </AppCardSurface>
 
       <GenericFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="إنشاء دورة تدريبية جديدة" fields={createFields} onSubmit={handleCreateCourse} submitLabel="إنشاء الدورة" successMessage="تم إنشاء الدورة بنجاح" />
 
