@@ -10,7 +10,7 @@ export const NotificationsBox: React.FC = () => {
   ];
 
   return (
-    <div className="h-full p-6 rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+    <AppCardSurface density="compact" className="h-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">التنبيهات</h3>
         <div className="bg-[#f1b5b9] px-2.5 py-1 rounded-full">
@@ -33,7 +33,7 @@ export const NotificationsBox: React.FC = () => {
             </div>
           );
         })}
-      </div>
+    </AppCardSurface>
     </div>
   );
 };

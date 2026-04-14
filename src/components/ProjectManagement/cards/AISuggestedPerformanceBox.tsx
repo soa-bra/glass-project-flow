@@ -99,11 +99,8 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
   };
 
   return (
-    <div 
-      className="h-full p-4 rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] flex flex-col overflow-hidden"
-      style={{
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}
+    <AppCardSurface density="compact" className="h-full flex flex-col overflow-hidden"
+      style={{ fontFamily: 'IBM Plex Sans Arabic' }}
     >
       {/* الرأس */}
       <div className="flex items-center justify-between mb-3">
@@ -137,6 +134,6 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
       <div className="text-xs text-gray-500 font-arabic">
         {trend}
       </div>
-    </div>
+    </AppCardSurface>
   );
 };

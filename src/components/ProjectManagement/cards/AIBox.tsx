@@ -22,7 +22,7 @@ export const AIBox: React.FC<AICardProps> = ({ project }) => {
   };
 
   return (
-    <div className="h-full rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+    <AppCardSurface density="compact" className="h-full">
       <div className="flex items-center gap-2 mb-5">
         <div className="w-8 h-8 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center text-sm">🤖</div>
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">اقتراحات الذكاء الاصطناعي</h3>
@@ -47,7 +47,7 @@ export const AIBox: React.FC<AICardProps> = ({ project }) => {
             </div>
           );
         })}
-      </div>
+    </AppCardSurface>
     </div>
   );
 };

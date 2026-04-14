@@ -34,7 +34,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   return (
     <div className="flex-1 overflow-auto space-y-6">
       {/* Header */}
-      <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+      <AppCardSurface density="compact">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">إدارة المهام</h3>
           <div className="flex items-center gap-4">
@@ -61,7 +61,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
         <p className="text-sm text-[rgba(11,15,18,0.6)]">
           إدارة شاملة للمهام مع أدوات ذكية للتخطيط والمتابعة والتحليل
         </p>
-      </div>
+      </AppCardSurface>
 
       {/* Task Statistics - Bold Metrics */}
       <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
