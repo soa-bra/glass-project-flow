@@ -1,233 +1,92 @@
 
 
-# Unified Surface System + Grid Architecture — Execution Plan
+# Surface + Grid Completion — Execution Plan
 
-## Scope Summary
+## Current State Summary
 
-Two phases executed together as one architectural refactor:
-- **Phase 1**: Surface System Pass — enforce white/gray/black static surface philosophy
-- **Phase 2**: Grid System Pass — unified 12-column grid with presets
+**Clean (no action needed):**
+- `GenericCard`, `InnerCard`, `glass-enhanced`, `rounded-[40px]`, `rounded-[41px]` — all removed
+- `variant="glass"` — only in BaseBox stories (acceptable) + BaseBox definition
+- `BaseBox` — properly normalized, all legacy variants map to `STANDARD_SURFACE`
+- Surface primitives (`AppCardSurface`, `AppSectionSurface`, etc.) — complete
+- Grid primitives (`AppDashboardGrid`, `AppGridItem`, `AppGridSection`, `GRID_PRESETS`) — complete
+- Operations `OverviewGrid` — already migrated to shared grid
 
-Applies to: Operations, Project Dashboard, Departments, Archive, Settings.
+**Needs migration (4 areas):**
 
-**Explicitly excluded**: KPIStatsSection, chart internals, modal redesign, action logic, canvas/planning surfaces.
-
----
-
-## Audit — Current Violations Found
-
-### Surface Violations (confirmed via codebase search)
-
-| Violation | Count | Files |
-|-----------|-------|-------|
-| `variant="glass"` on static cards | 12 uses | 10 files in OperationsBoard/Overview + Legal |
-| `glass-enhanced` on static content | 91 matches | 8 files (Finance, Reports, Clients, StatusBox) |
-| `rounded-[41px]` non-standard radius | 489 matches | 24 files (Settings, TaskDetails, index.css `sb-surface-box`) |
-| `rounded-[40px]` non-standard radius | 266 matches | 22 files (Archive, Settings, Reports) |
-| `GenericCard` still exists | 1 component | No active consumers found beyond its own file |
-| `InnerCard` with `rounded-[41px]` | 2 consumers | HRLiteMainPanel, HR/TeamFillProgress |
-| `sb-surface-box` CSS class uses `rounded-[41px]` | 1 CSS rule | index.css line 342 |
-| Hand-built `ring-1` + CSS var cards | ~50+ instances | All Settings panels, Archive panels |
-| `bg-white/20`, `bg-white/30` on static surfaces | scattered | Multiple files |
-
-### Grid Violations
-
-| Violation | Scope |
-|-----------|-------|
-| Settings panels: no grid system, manual `grid-cols-*` | 8 panels |
-| Archive panels: no grid system, manual layouts | 9 panels |
-| Project dashboard: no grid system | ProjectManagementBoard, ProjectCardGrid |
-| Operations sub-tabs (Finance, Reports, Clients): manual grids | ~6 files |
-
-### What Already Works
-
-- `SURFACE_CLASSES.STATIC_CARD` token: correctly defined but unused in components
-- `surface-tokens.ts`: complete spec with STATIC/OVERLAY separation
-- `AppDashboardGrid` + `AppGridItem`: functional, RTL-safe (`dir="rtl"`)
-- Some Operations Overview + Department tabs already migrated to grid
+| Area | Issue | Scope |
+|------|-------|-------|
+| **Department Tabs** | 72 files with local `grid grid-cols-*` for top-level card layouts; ~15 files with `bg-white/N` (most inside Dialogs = OK, ~3-5 on static surfaces) | ~35 files (top-level grids only) |
+| **Settings** | 9 panels using hand-built `grid grid-cols-*` + inline surface classes; 2 files with `bg-white/50` on static elements | ~9 files |
+| **Archive** | Layout shell not using shared grid; archive panels use inline surface styling; internal metadata grids are content-level (OK) | ~4 files |
+| **Project** | `ProjectCardGrid` uses `grid-cols-3 grid-rows-4`; `ProjectManagementBoard` uses local grid; task tabs use local grids | ~8 files |
+| **Operations** | 6 files with remaining `bg-white/N` on static surfaces (AttributionChart, ActiveCampaigns, MarketingROAS, CustomReportForm, TimelineBox, BudgetBox) | ~6 files |
 
 ---
 
-## Execution Steps
+## Execution Order
 
-### Step 1 — Fix Foundation: CSS + BaseBox
+### Batch 1: Surface Violations Cleanup (~12 files)
 
-**1a. Fix `sb-surface-box` in `index.css`**
-- Change `rounded-[41px]` → `rounded-[24px]` in the `.sb-surface-box` rule
-- Same fix for `.sb-surface-task-card`
+Fix remaining `bg-white/N` on **static** surfaces across all areas:
+- **Operations:** `AttributionChart.tsx`, `ActiveCampaigns.tsx`, `MarketingROAS.tsx`, `CustomReportForm.tsx` — replace `bg-white/60`, `bg-white/80`, `bg-white/70`, `bg-white/50` with `bg-gray-50 border border-[#DADCE0]` or `bg-white`
+- **Operations TimelineBox:** `bg-white/30` on form inputs inside a Popover — this is overlay context, leave as-is
+- **Operations BudgetBox:** `bg-white/20` on Progress inside colored gradient card — this is on colored bg, leave as-is
+- **Settings:** `AccountSettingsPanel.tsx` (`bg-white/50`→`bg-gray-50`), `SecuritySettingsPanel.tsx` (`bg-white/50`→`bg-gray-50`)
+- **Departments (static only):** Any `bg-white/N` on non-Dialog surfaces — verify each file, fix ~3-5
 
-**1b. Normalize BaseBox variants**
-- Default `rounded` from `'xl'` (40px) → `'lg'` (24px)
-- Update `roundedClasses.xl` from `rounded-[40px]` → `rounded-[24px]` (or remove `xl` entirely)
-- Change `standard` variant to use `SURFACE_CLASSES.STATIC_CARD` directly
-- Merge `operations`, `unified`, `legal` into one `standard` variant (they're nearly identical)
-- Add JSDoc deprecation on `glass` for static use
-- Keep `glass` variant code intact for overlay contexts
+### Batch 2: Settings Migration (~9 files)
 
-### Step 2 — Create Surface Primitives
+Replace hand-built grids + inline surfaces with shared primitives:
+- `GenericSettingsPanel.tsx` — wrap content in `AppDashboardGrid`, replace colored `div` blocks with `AppCardSurface`
+- Category panels (`ThemeSettingsPanel`, `AccountSettingsPanel`, `SecuritySettingsPanel`, `DataGovernanceSettingsPanel`, `UsersRolesSettingsPanel`, etc.) — replace `grid grid-cols-*` with `AppDashboardGrid + AppGridItem`, replace inline `rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0]` divs with `AppCardSurface`
 
-Create `src/components/shared/surfaces/` with:
+### Batch 3: Archive Migration (~4 files)
 
-**`AppCardSurface.tsx`**
-- Props: `density` (compact|standard|spacious), `interactive` (static|hoverable|selectable), `role`, `overflow`, `className`, `children`, `header`, `footer`
-- Renders: `bg-white border border-[#DADCE0] rounded-[24px]` + shadow + padding per density
-- No glass, no transparency
+- `ArchivePanelLayout.tsx` — simplify redundant nesting
+- Archive category panels — replace inline surface `div` patterns (`bg-[#FFFFFF] p-6 rounded-[24px] ring-1 ring-[#DADCE0]`) with `AppCardSurface`
+- Internal metadata grids (grid-cols-2/3/4 inside cards) are content-level — leave as-is
 
-**`AppSectionSurface.tsx`**
-- Flatter grouping surface: `bg-white border border-[#DADCE0] rounded-[18px]`, no shadow
+### Batch 4: Project Dashboard Migration (~8 files)
 
-**`AppCardHeader.tsx`**
-- Props: `title`, `icon`, `actions`, `size`
-- Standardized spacing, title hierarchy, action alignment
+- `ProjectCardGrid.tsx` — replace `grid grid-cols-3 grid-rows-4` with `AppDashboardGrid + AppGridItem` using project preset
+- `ProjectManagementBoard.tsx` — replace `grid grid-cols-3` stat header with `AppDashboardGrid`
+- `TaskManagementTab.tsx` — replace `grid grid-cols-2 md:grid-cols-4` stats with `AppDashboardGrid + AppGridItem`
+- `ReportsTab.tsx` — same pattern for stats grids
+- Content-level grids inside cards (metadata, filters) — leave as-is
 
-**`AppCardBody.tsx`**
-- Content wrapper with overflow control
+### Batch 5: Department Tabs Top-Level Grids (~25-35 files)
 
-**`AppCardFooter.tsx`**
-- Action bar with standardized button alignment
+For each department tab file that wraps cards/BaseBox in `grid grid-cols-*`:
+- Replace outer card-arrangement `div` with `AppDashboardGrid + AppGridItem`
+- Keep `BaseBox` usage (it's compliant via STANDARD_SURFACE)
+- Only migrate **top-level board grids**, not internal content grids
+- Priority files: overview tabs, stats sections, card grids across all 9 departments
 
-**`AppActionGroup.tsx`**
-- Inline action cluster (primary/secondary/icon-only)
+### Batch 6: Operations Completion (~3-5 files)
 
-**`index.ts`** — barrel export
+- `ReportLibrary.tsx` — uses `Card` from shadcn with inline surface classes → normalize to `AppCardSurface` or `BaseBox`
+- `OperationStatsSection.tsx` — uses `grid grid-cols-3` → `AppDashboardGrid`
+- Remaining operations files — verify, fix any missed local grids
 
-### Step 3 — Enhance Grid System
+### Batch 7: Verification & Deliverables
 
-**3a. Extend `AppGridItem`**
-- Add props: `desktopSpan`, `mobileSpan`, `mobileOrder`, `density`, `priority`, `variant`, `fullWidth`
-- `fullWidth` = shorthand for `colSpan={12}`
-
-**3b. Create `AppGridSection.tsx`**
-- Full-width labeled section row within a grid (optional title spanning 12 cols)
-
-**3c. Add `minRowHeight` to `AppDashboardGrid`**
-- New prop: `minRowHeight` (default `'140px'`)
-- Applied as `grid-auto-rows: minmax(${minRowHeight}, auto)`
-
-**3d. Create `GridLayoutPreset` types + presets**
-
-File: `src/components/shared/layout/presets.ts`
-
-```text
-operations:  density=default, minRowHeight=140px
-project:     density=default, minRowHeight=160px
-departments: density=spacious, minRowHeight=140px
-archive:     density=compact, minRowHeight=120px
-settings:    density=spacious, minRowHeight=auto
-```
-
-Each preset defines: density, minRowHeight, default footprint patterns.
-
-**3e. Row Model — Role-Based Height Rules**
-
-```text
-KPI/stat tile:      minHeight 140px, rowSpan=1
-Summary card:       minHeight 160px, rowSpan=1
-Chart card shell:   minHeight 280px, rowSpan=2
-Table/list card:    minHeight 320px, rowSpan=2
-Feature card:       minHeight 200px, rowSpan=1
-Detail card:        minHeight auto, rowSpan varies
-```
-
-### Step 4 — Migrate Operations Dashboard
-
-**4a. Overview** (10 files)
-- Replace all `variant="glass"` → `variant="standard"` (or wrap in `AppCardSurface`)
-- Remove inline `style={{ backgroundColor: '#ffffff' }}` overrides
-- Remove `neonRing` from static cards where inappropriate
-
-Files: `FinancialOverviewBox`, `AlertsBox`, `TimelineBox`, `ProjectSummaryBox`, `ContractsBox`, `AISuggestedBox`, `ExtraBoxOne-Four`
-
-**4b. Sub-tabs** (8 files)
-- Finance: `ProjectBudgetChart`, `OverBudgetAlert` — remove `glass-enhanced`, fix `rounded-[40px]`
-- Reports: `TemplatesList`, `ReportLibrary`, `CustomReportForm` — remove `glass-enhanced`, migrate to `AppCardSurface`
-- Clients: `ClientSentiment`, `ClientPortfolioHealth` — remove `glass-enhanced`, fix cards
-- Legal: `UpcomingContracts` — remove `variant="glass"`
-
-### Step 5 — Migrate Settings Panels
-
-All 8 panels follow the same pattern: replace hand-built `rounded-[41px] p-6 ring-1 style={{ background: 'var(--sb-box-standard)' }}` with `AppCardSurface`.
-
-- `AccountSettingsPanel` — also fix `rounded-[40px]` inner cards
-- `SecuritySettingsPanel` — 6+ hand-built cards
-- `AISettingsPanel` — 5+ hand-built cards
-- `ThemeSettingsPanel`, `NotificationsSettingsPanel`, `IntegrationsSettingsPanel`, `DataGovernanceSettingsPanel`, `UsersRolesSettingsPanel`
-- `SettingsPanelLayout` — replace `var(--sb-bg-00)` background with `bg-white`
-- Wrap content in `AppDashboardGrid` with settings preset
-
-### Step 6 — Migrate Archive Panels
-
-All 9 category panels: replace `rounded-[40px] ring-1 ring-[#DADCE0]` hand-built cards with `AppCardSurface`.
-
-- `ArchivePanelLayout` — replace `var(--sb-column-3-bg)` with `bg-white`
-- `PoliciesArchivePanel`, `OrganizationalArchivePanel` — fix search bars + list items
-- `FinancialArchivePanel`, `ProjectsArchivePanel`, `HRArchivePanel`, `LegalArchivePanel`, `KnowledgeArchivePanel`, `TemplatesArchivePanel`, `DocumentsArchivePanel`
-- Wrap in `AppDashboardGrid` with archive preset
-
-### Step 7 — Migrate Project Dashboard
-
-- `ProjectManagementBoard` — wrap tab content in `AppDashboardGrid`
-- `ProjectCardGrid` — migrate cards to `AppCardSurface`
-- `TaskDetailsPanel` — fix `rounded-[41px]` → `rounded-[24px]`
-- `TaskDetailsBox` — fix `rounded-[41px]`
-
-### Step 8 — Verify Departments Consistency
-
-- Scan all department tabs for remaining `glass`, `rounded-[41px]`, `rounded-[40px]`
-- Fix any local wrappers not yet aligned
-
-### Step 9 — Cleanup Deprecated Components
-
-- Delete `GenericCard.tsx` (no active consumers found)
-- Migrate `InnerCard` consumers (2 files: `HRLiteMainPanel`, `TeamFillProgress`) to `AppCardSurface`, then delete or deprecate `InnerCard`
-- Remove `glass-enhanced` CSS class if no remaining consumers
-- Clean `BaseBox` variant list: remove redundant `operations`, `unified`, `legal` (all → `standard`)
-
-### Step 10 — Responsive + RTL Verification
-
-Verify across all 5 major screens:
-- Desktop (12-col), Tablet (6-col), Mobile (stacked)
-- RTL: header alignment, action zones, grid placement, section titles, icon alignment
-- No hidden LTR assumptions in grid or surface primitives
+Run codebase searches for all rogue patterns and produce final report.
 
 ---
 
-## Estimated File Changes
+## Scope Protection
 
-| Category | Estimated Files |
-|----------|----------------|
-| New surface primitives | 7 files |
-| Grid system enhancements | 3 files |
-| Grid presets | 1 file |
-| `index.css` fix | 1 file |
-| `BaseBox.tsx` normalization | 1 file |
-| Operations Overview | 10 files |
-| Operations sub-tabs | 8 files |
-| Settings panels + layout | 9 files |
-| Archive panels + layout | 10 files |
-| Project dashboard | 4 files |
-| Department verification | ~3-5 files |
-| Deprecated cleanup | 3 files |
-| **Total** | **~60-65 files** |
+Will NOT touch:
+- `bg-white/N` inside Dialog/DialogContent/Popover (overlay surfaces — glass OK)
+- `bg-white/N` on colored gradient backgrounds (BudgetBox, sidebar — contextual OK)
+- Chart internals, KPIStatsSection, modal structures, tooltip systems
+- Internal content-level grids (metadata inside cards)
+- Business logic, action workflows
 
 ---
 
-## Phase Protection Rules
+## Estimated Impact
 
-Will NOT touch in this pass:
-- KPIStatsSection internals
-- Chart/data-visualization internals
-- Modal/dialog internals
-- Tooltip systems
-- z-index overhaul
-- Action button logic
-- Form redesign
-- Canvas/planning surfaces
-
-Will ONLY touch:
-- Surface shells (bg, border, radius, shadow)
-- Grid layout wrappers
-- Structural migration
-- Removing static glass violations
-- Keeping overlays glass without redesigning them
+~55-65 files changed total across all batches. Execution will proceed batch-by-batch in implementation mode.
 
