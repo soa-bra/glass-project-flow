@@ -152,7 +152,7 @@ export const TemplatesArchivePanel: React.FC = () => {
                   </Button>
                 </div>
               </div>
-            </div>)}
+            </AppCardSurface>)}
         </div>
       </div>
     </div>;
