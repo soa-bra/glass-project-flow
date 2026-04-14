@@ -97,7 +97,7 @@ export const TemplatesArchivePanel: React.FC = () => {
       {/* Content List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
-          {mockTemplatesData.map(item => <div key={item.id} >
+          {mockTemplatesData.map(item => <AppCardSurface key={item.id} interactive="hoverable" density="standard">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
