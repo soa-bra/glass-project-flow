@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
@@ -53,36 +55,44 @@ export const CorporateTab: React.FC = () => {
       </div>
 
       {/* Programs Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseBox>
-          <div>
-            <Building2 className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{corporatePrograms.length}</div>
-            <div className="text-sm text-gray-600">برامج نشطة</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{corporatePrograms.reduce((acc, p) => acc + p.participantCount, 0)}</div>
-            <div className="text-sm text-gray-600">إجمالي المشاركين</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <DollarSign className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{(corporatePrograms.reduce((acc, p) => acc + p.contractValue, 0) / 1000).toFixed(0)}k</div>
-            <div className="text-sm text-gray-600">القيمة الإجمالية (ر.س)</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Calendar className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{corporatePrograms.filter(p => p.status === 'in_progress').length}</div>
-            <div className="text-sm text-gray-600">قيد التنفيذ</div>
-          </div>
-        </BaseBox>
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Building2 className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{corporatePrograms.length}</div>
+              <div className="text-sm text-gray-600">برامج نشطة</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{corporatePrograms.reduce((acc, p) => acc + p.participantCount, 0)}</div>
+              <div className="text-sm text-gray-600">إجمالي المشاركين</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <DollarSign className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{(corporatePrograms.reduce((acc, p) => acc + p.contractValue, 0) / 1000).toFixed(0)}k</div>
+              <div className="text-sm text-gray-600">القيمة الإجمالية (ر.س)</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Calendar className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{corporatePrograms.filter(p => p.status === 'in_progress').length}</div>
+              <div className="text-sm text-gray-600">قيد التنفيذ</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Programs List */}
       <div className="grid grid-cols-1 gap-6">

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { Input } from '@/components/ui/input';
@@ -69,15 +71,15 @@ export const PartnersTab: React.FC = () => {
         </BaseActionButton>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <NumericStatCard title="إجمالي الشركاء" value={partners.length} icon={<Users className="h-5 w-5" />} accentColor="#3B82F6" />
-        <NumericStatCard title="الشركاء النشطين" value={partners.filter(p => p.status === 'active').length} icon={<TrendingUp className="h-5 w-5" />} accentColor="#10B981" />
-        <NumericStatCard title="المشاريع المشتركة" value={partners.reduce((sum, p) => sum + p.projectsCount, 0)} icon={<Star className="h-5 w-5" />} accentColor="#F97316" />
-        <NumericStatCard title="قيد المراجعة" value={partners.filter(p => p.status === 'pending').length} icon={<Calendar className="h-5 w-5" />} accentColor="#8B5CF6" />
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي الشركاء" value={partners.length} icon={<Users className="h-5 w-5" />} accentColor="#3B82F6" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="الشركاء النشطين" value={partners.filter(p => p.status === 'active').length} icon={<TrendingUp className="h-5 w-5" />} accentColor="#10B981" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="المشاريع المشتركة" value={partners.reduce((sum, p) => sum + p.projectsCount, 0)} icon={<Star className="h-5 w-5" />} accentColor="#F97316" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="قيد المراجعة" value={partners.filter(p => p.status === 'pending').length} icon={<Calendar className="h-5 w-5" />} accentColor="#8B5CF6" /></AppGridItem>
+      </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={4}>
           <DataCardFrame title={`قائمة الشركاء (${filteredPartners.length})`} icon={<Users className="h-5 w-5" />}>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {filteredPartners.map((partner) => (
@@ -103,9 +105,9 @@ export const PartnersTab: React.FC = () => {
               {filteredPartners.length === 0 && <div className="text-center py-8 text-gray-500 font-arabic">لا توجد شركاء مطابقة للبحث</div>}
             </div>
           </DataCardFrame>
-        </div>
+        </AppGridItem>
 
-        <div className="lg:col-span-2">
+        <AppGridItem colSpan={8}>
           {selectedPartnerData ? (
             <div className="space-y-6">
               <DataCardFrame title={selectedPartnerData.entityName}>
@@ -171,8 +173,8 @@ export const PartnersTab: React.FC = () => {
               </div>
             </DataCardFrame>
           )}
-        </div>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
     </div>
   );
 };

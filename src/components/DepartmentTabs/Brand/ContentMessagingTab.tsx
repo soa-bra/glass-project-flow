@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
@@ -86,7 +88,7 @@ export const ContentMessagingTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Content Strategy Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <AppDashboardGrid columns={12}>
         <BaseBox>
           <div className="mb-4">
             <h3 className="text-lg font-semibold flex items-center gap-2">
@@ -152,7 +154,7 @@ export const ContentMessagingTab: React.FC = () => {
             </UnifiedButton>
           </div>
         </BaseBox>
-      </div>
+      </AppDashboardGrid>
 
       {/* Content Library */}
       <BaseBox>

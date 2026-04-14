@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { NumericStatCard } from '@/components/shared/visual-data';
@@ -91,12 +93,12 @@ export const TemplatesTab: React.FC = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <NumericStatCard title="قوالب الدورات" value={courseTemplates.length} description="قالب متاح" accentColor="#a4e2f6" />
-        <NumericStatCard title="قوالب الشهادات" value={certificateTemplates.length} description="قالب متاح" accentColor="#fbe2aa" />
-        <NumericStatCard title="قوالب التقييم" value={assessmentTemplates.length} description="قالب متاح" accentColor="#bdeed3" />
-        <NumericStatCard title="إجمالي الاستخدامات" value={totalUsage} description="استخدام" accentColor="#d9d2fd" />
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}><NumericStatCard title="قوالب الدورات" value={courseTemplates.length} description="قالب متاح" accentColor="#a4e2f6" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="قوالب الشهادات" value={certificateTemplates.length} description="قالب متاح" accentColor="#fbe2aa" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="قوالب التقييم" value={assessmentTemplates.length} description="قالب متاح" accentColor="#bdeed3" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي الاستخدامات" value={totalUsage} description="استخدام" accentColor="#d9d2fd" /></AppGridItem>
+      </AppDashboardGrid>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
         <TabsList className="grid w-full grid-cols-3 rounded-full bg-[rgba(11,15,18,0.04)] p-1">

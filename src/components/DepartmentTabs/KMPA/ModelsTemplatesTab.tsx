@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { BaseBox } from "@/components/ui/BaseBox";
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseActionButton } from "@/components/shared/BaseActionButton";
 import { BaseBadge } from "@/components/ui/BaseBadge";
 import { Progress } from "@/components/ui/progress";
@@ -245,36 +247,44 @@ export const ModelsTemplatesTab: React.FC = () => {
           ) : (
             <>
               {/* Metrics Overview */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <BaseBox>
-                  <div className="p-4 text-center">
-                    <Calculator className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{metrics.length}</div>
-                    <div className="text-sm text-gray-600">إجمالي المقاييس</div>
-                  </div>
-                </BaseBox>
-                <BaseBox>
-                  <div className="p-4 text-center">
-                    <FileSpreadsheet className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{metrics.length}</div>
-                    <div className="text-sm text-gray-600">ملفات Excel</div>
-                  </div>
-                </BaseBox>
-                <BaseBox>
-                  <div className="p-4 text-center">
-                    <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{metrics.reduce((sum, m) => sum + m.usage, 0)}</div>
-                    <div className="text-sm text-gray-600">إجمالي الاستخدامات</div>
-                  </div>
-                </BaseBox>
-                <BaseBox>
-                  <div className="p-4 text-center">
-                    <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">5</div>
-                    <div className="text-sm text-gray-600">فئات رئيسية</div>
-                  </div>
-                </BaseBox>
-              </div>
+              <AppDashboardGrid columns={12}>
+                <AppGridItem colSpan={3}>
+                  <BaseBox>
+                    <div className="p-4 text-center">
+                      <Calculator className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">{metrics.length}</div>
+                      <div className="text-sm text-gray-600">إجمالي المقاييس</div>
+                    </div>
+                  </BaseBox>
+                </AppGridItem>
+                <AppGridItem colSpan={3}>
+                  <BaseBox>
+                    <div className="p-4 text-center">
+                      <FileSpreadsheet className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">{metrics.length}</div>
+                      <div className="text-sm text-gray-600">ملفات Excel</div>
+                    </div>
+                  </BaseBox>
+                </AppGridItem>
+                <AppGridItem colSpan={3}>
+                  <BaseBox>
+                    <div className="p-4 text-center">
+                      <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">{metrics.reduce((sum, m) => sum + m.usage, 0)}</div>
+                      <div className="text-sm text-gray-600">إجمالي الاستخدامات</div>
+                    </div>
+                  </BaseBox>
+                </AppGridItem>
+                <AppGridItem colSpan={3}>
+                  <BaseBox>
+                    <div className="p-4 text-center">
+                      <TrendingUp className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+                      <div className="text-2xl font-bold">5</div>
+                      <div className="text-sm text-gray-600">فئات رئيسية</div>
+                    </div>
+                  </BaseBox>
+                </AppGridItem>
+              </AppDashboardGrid>
 
               {/* Search */}
               <BaseBox>
