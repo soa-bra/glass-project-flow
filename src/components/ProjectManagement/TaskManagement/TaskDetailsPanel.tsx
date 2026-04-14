@@ -318,7 +318,7 @@ const TaskActivityTab: React.FC<{
   return <div className="space-y-4">
       <h4 className="text-sm font-semibold text-black">سجل الأنشطة</h4>
       <div className="space-y-3">
-        {activities.map((activity, index) => <div key={index} className="flex gap-3 p-3 bg-white/50 rounded-lg">
+        {activities.map((activity, index) => <div key={index} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-2 h-2 bg-black rounded-full mt-2 flex-shrink-0" />
             <div className="flex-1">
               <p className="text-sm text-black">{activity.action}</p>
@@ -378,7 +378,7 @@ const TaskAttachmentsTab: React.FC<{
       </div>
       
       {attachments.length > 0 ? <div className="space-y-2">
-          {attachments.map(attachment => <div key={attachment.id} className="flex items-center gap-3 p-3 bg-white/50 rounded-lg">
+          {attachments.map(attachment => <div key={attachment.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
               <div className="w-9 h-9 rounded-full bg-transparent border border-black  flex items-center justify-center">
                 <Paperclip className="text-black w-5 h-4" />
               </div>
@@ -453,7 +453,7 @@ const TaskCommentsTab: React.FC<{
       </div>
       
       {/* Add comment form */}
-      <div className="bg-white/50 rounded-lg p-4">
+      <div className="bg-gray-50 rounded-lg p-4">
         <textarea placeholder="أضف تعليقاً جديداً..." className="w-full bg-transparent border border-black/10 rounded-lg p-3 text-sm text-black resize-none" rows={3} value={newComment} onChange={e => setNewComment(e.target.value)} />
         <div className="flex justify-end mt-2">
           <Button size="sm" onClick={handleAddComment} disabled={!newComment.trim()} className="bg-black text-white hover:bg-black/80 rounded-full">
@@ -465,7 +465,7 @@ const TaskCommentsTab: React.FC<{
       
       {/* Comments list */}
       {comments.length > 0 ? <div className="space-y-3">
-          {comments.map(comment => <div key={comment.id} className="bg-white/50 rounded-lg p-4">
+          {comments.map(comment => <div key={comment.id} className="bg-gray-50 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 bg-black/10 rounded-full flex items-center justify-center">
                   <User className="w-3 h-3 text-black/60" />

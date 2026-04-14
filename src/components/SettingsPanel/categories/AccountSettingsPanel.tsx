@@ -298,7 +298,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                   اقتراح كلمة مرور قوية
                 </button>
                 {suggestedPassword && (
-                  <div className="p-2 bg-white/50 rounded-lg">
+                  <div className="p-2 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-600">مقترح:</p>
                     <code className="text-sm font-mono text-black">{suggestedPassword}</code>
                   </div>

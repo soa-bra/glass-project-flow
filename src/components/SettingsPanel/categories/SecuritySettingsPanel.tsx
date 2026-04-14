@@ -138,7 +138,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             </h3>
             <div className="space-y-3">
               {securityAlerts.map(alert => (
-                <div key={alert.id} className="bg-white/50 rounded-lg p-3 flex items-center gap-3">
+                <div key={alert.id} className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
                   <AlertTriangle className={`w-5 h-5 ${alert.severity === 'high' ? 'text-red-500' : 'text-yellow-500'}`} />
                   <div className="flex-1">
                     <p className="text-sm font-medium text-black">{alert.message}</p>
@@ -242,7 +242,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                     <h4 className="text-sm font-bold text-black">{key.name}</h4>
                     <p className="text-xs text-gray-500">أُنشئ: {key.created} | آخر استخدام: {key.lastUsed}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <code className="text-xs bg-white/50 p-1 rounded">
+                      <code className="text-xs bg-gray-50 p-1 rounded">
                         {showApiKey[key.id] ? 'sk-1234567890abcdef' : '••••••••••••••••'}
                       </code>
                       <button

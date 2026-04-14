@@ -169,11 +169,11 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
             <div className="space-y-6">
               {/* Settings Form Content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10">
+                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0]">
                   <h4 className="text-sm font-bold text-black mb-2">إعدادات أساسية</h4>
                   <p className="text-xs font-normal text-gray-400">الإعدادات الأساسية للـ {categoryInfo.title}</p>
                 </div>
-                <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10">
+                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0]">
                   <h4 className="text-sm font-bold text-black mb-2">خيارات متقدمة</h4>
                   <p className="text-xs font-normal text-gray-400">إعدادات متقدمة للمستخدمين المتخصصين</p>
                 </div>
@@ -181,7 +181,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
               {/* AI Training Wizard (only for AI section) */}
               {categoryInfo.hasWizard && (
-                <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-6 border border-black/10">
+                <div className="rounded-2xl p-6 bg-white border border-[#DADCE0]">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-black mb-2">معالج التدريب</h4>
@@ -200,15 +200,15 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
               {/* Settings Preview */}
               <div className="grid grid-cols-3 gap-4">
-                <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10 text-center">
+                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0] text-center">
                   <div className="text-2xl font-bold text-black mb-1">12</div>
                   <p className="text-xs font-normal text-gray-400">إعدادات مفعلة</p>
                 </div>
-                <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
+                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0] text-center">
                   <div className="text-2xl font-bold text-black mb-1">3</div>
                   <p className="text-xs font-normal text-gray-400">تحتاج مراجعة</p>
                 </div>
-                <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-black/10 text-center">
+                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0] text-center">
                   <div className="text-2xl font-bold text-black mb-1">5</div>
                   <p className="text-xs font-normal text-gray-400">مسودات</p>
                 </div>

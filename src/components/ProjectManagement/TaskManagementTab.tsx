@@ -6,6 +6,8 @@ import { Project } from '@/types/project';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
 import { MetricHeroCard } from '@/components/shared/visual-data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface TaskManagementTabProps {
   project: Project;
@@ -61,35 +63,43 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
       </div>
 
       {/* Task Statistics - Bold Metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricHeroCard
-          title="إجمالي المهام"
-          value={String(tasks.length)}
-          unit="مهمة"
-          badgeText="نشطة"
-          badgeColor="#bdeed3"
-        />
-        <MetricHeroCard
-          title="المكتملة"
-          value={String(completed)}
-          unit="مهمة"
-          badgeText={`${completionPct}%`}
-          badgeColor="#a4e2f6"
-        />
-        <MetricHeroCard
-          title="المتأخرة"
-          value={String(late)}
-          unit="مهمة"
-          badgeText="عاجلة"
-          badgeColor="#f1b5b9"
-        />
-        <MetricHeroCard
-          title="معدل الإنجاز"
-          value={`${avgProgress}%`}
-          badgeText="ممتاز"
-          badgeColor="#d9d2fd"
-        />
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard
+            title="إجمالي المهام"
+            value={String(tasks.length)}
+            unit="مهمة"
+            badgeText="نشطة"
+            badgeColor="#bdeed3"
+          />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard
+            title="المكتملة"
+            value={String(completed)}
+            unit="مهمة"
+            badgeText={`${completionPct}%`}
+            badgeColor="#a4e2f6"
+          />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard
+            title="المتأخرة"
+            value={String(late)}
+            unit="مهمة"
+            badgeText="عاجلة"
+            badgeColor="#f1b5b9"
+          />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard
+            title="معدل الإنجاز"
+            value={`${avgProgress}%`}
+            badgeText="ممتاز"
+            badgeColor="#d9d2fd"
+          />
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Main Content Area */}
       <div className="flex-1 min-h-0">
