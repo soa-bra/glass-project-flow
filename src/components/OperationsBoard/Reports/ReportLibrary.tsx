@@ -80,6 +80,8 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({ templates }) => {
   );
 };
 
+import { NumericStatCard } from '@/components/shared/visual-data';
+
 interface ReportStatistics {
   totalReports: number;
   monthlyDownloads: number;
@@ -95,48 +97,16 @@ export const ReportStats: React.FC<ReportStatsProps> = ({ statistics }) => {
   return (
     <AppDashboardGrid columns={12} density="default">
       <AppGridItem colSpan={3}>
-        <AppCardSurface density="standard">
-          <div className="flex items-center justify-between">
-            <div className="text-right">
-              <p className="text-sm text-gray-600">إجمالي التقارير</p>
-              <p className="text-2xl font-bold">{statistics.totalReports}</p>
-            </div>
-            <FileText className="w-8 h-8 text-primary" />
-          </div>
-        </AppCardSurface>
+        <NumericStatCard title="إجمالي التقارير" value={statistics.totalReports} unit="تقرير" size="sm" />
       </AppGridItem>
       <AppGridItem colSpan={3}>
-        <AppCardSurface density="standard">
-          <div className="flex items-center justify-between">
-            <div className="text-right">
-              <p className="text-sm text-gray-600">التحميلات الشهرية</p>
-              <p className="text-2xl font-bold">{statistics.monthlyDownloads}</p>
-            </div>
-            <Download className="w-8 h-8 text-green-500" />
-          </div>
-        </AppCardSurface>
+        <NumericStatCard title="التحميلات الشهرية" value={statistics.monthlyDownloads} accentColor="#3DBE8B" size="sm" />
       </AppGridItem>
       <AppGridItem colSpan={3}>
-        <AppCardSurface density="standard">
-          <div className="flex items-center justify-between">
-            <div className="text-right">
-              <p className="text-sm text-gray-600">التقارير المخصصة</p>
-              <p className="text-2xl font-bold">{statistics.customReports}</p>
-            </div>
-            <FileText className="w-8 h-8 text-blue-500" />
-          </div>
-        </AppCardSurface>
+        <NumericStatCard title="التقارير المخصصة" value={statistics.customReports} accentColor="#3DA8F5" size="sm" />
       </AppGridItem>
       <AppGridItem colSpan={3}>
-        <AppCardSurface density="standard">
-          <div className="flex items-center justify-between">
-            <div className="text-right">
-              <p className="text-sm text-gray-600">التقارير المجدولة</p>
-              <p className="text-2xl font-bold">{statistics.scheduledReports}</p>
-            </div>
-            <FileText className="w-8 h-8 text-purple-500" />
-          </div>
-        </AppCardSurface>
+        <NumericStatCard title="التقارير المجدولة" value={statistics.scheduledReports} size="sm" />
       </AppGridItem>
     </AppDashboardGrid>
   );
