@@ -281,24 +281,20 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
           </div>
 
           {/* Statistics */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">99.8%</div>
-              <p className="text-xs font-normal text-gray-400">امتثال البيانات</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">24h</div>
-              <p className="text-xs font-normal text-gray-400">آخر نسخة احتياطية</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">2.3TB</div>
-              <p className="text-xs font-normal text-gray-400">حجم البيانات</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">0</div>
-              <p className="text-xs font-normal text-gray-400">مخالفات نشطة</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="امتثال البيانات" value="99.8%" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="آخر نسخة احتياطية" value="24h" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="حجم البيانات" value="2.3TB" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="مخالفات نشطة" value={0} />
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

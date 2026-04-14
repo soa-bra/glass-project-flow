@@ -337,22 +337,13 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           {/* إحصائيات الحساب */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
             <AppGridItem colSpan={4}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">127</div>
-                <p className="text-xs font-normal text-gray-400">يوم في النظام</p>
-              </div>
+              <NumericStatCard size="sm" title="يوم في النظام" value={127} />
             </AppGridItem>
             <AppGridItem colSpan={4}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">89%</div>
-                <p className="text-xs font-normal text-gray-400">معدل النشاط</p>
-              </div>
+              <NumericStatCard size="sm" title="معدل النشاط" value="89%" />
             </AppGridItem>
             <AppGridItem colSpan={4}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">24</div>
-                <p className="text-xs font-normal text-gray-400">مشروع مكتمل</p>
-              </div>
+              <NumericStatCard size="sm" title="مشروع مكتمل" value={24} />
             </AppGridItem>
           </AppDashboardGrid>
 

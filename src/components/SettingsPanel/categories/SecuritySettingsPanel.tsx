@@ -313,28 +313,16 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           {/* إحصائيات الأمان */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
             <AppGridItem colSpan={3}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">98%</div>
-                <p className="text-xs font-normal text-gray-400">مستوى الأمان</p>
-              </div>
+              <NumericStatCard size="sm" title="مستوى الأمان" value="98%" />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">2</div>
-                <p className="text-xs font-normal text-gray-400">تنبيهات نشطة</p>
-              </div>
+              <NumericStatCard size="sm" title="تنبيهات نشطة" value={2} />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">3</div>
-                <p className="text-xs font-normal text-gray-400">أجهزة موثوقة</p>
-              </div>
+              <NumericStatCard size="sm" title="أجهزة موثوقة" value={3} />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-                <div className="text-2xl font-bold text-black mb-1">5</div>
-                <p className="text-xs font-normal text-gray-400">مفاتيح API</p>
-              </div>
+              <NumericStatCard size="sm" title="مفاتيح API" value={5} />
             </AppGridItem>
           </AppDashboardGrid>
 

@@ -199,20 +199,17 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
               )}
 
               {/* Settings Preview */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0] text-center">
-                  <div className="text-2xl font-bold text-black mb-1">12</div>
-                  <p className="text-xs font-normal text-gray-400">إعدادات مفعلة</p>
-                </div>
-                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0] text-center">
-                  <div className="text-2xl font-bold text-black mb-1">3</div>
-                  <p className="text-xs font-normal text-gray-400">تحتاج مراجعة</p>
-                </div>
-                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0] text-center">
-                  <div className="text-2xl font-bold text-black mb-1">5</div>
-                  <p className="text-xs font-normal text-gray-400">مسودات</p>
-                </div>
-              </div>
+              <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+                <AppGridItem colSpan={4}>
+                  <NumericStatCard size="sm" title="إعدادات مفعلة" value={12} />
+                </AppGridItem>
+                <AppGridItem colSpan={4}>
+                  <NumericStatCard size="sm" title="تحتاج مراجعة" value={3} />
+                </AppGridItem>
+                <AppGridItem colSpan={4}>
+                  <NumericStatCard size="sm" title="مسودات" value={5} />
+                </AppGridItem>
+              </AppDashboardGrid>
             </div>
           </div>
 

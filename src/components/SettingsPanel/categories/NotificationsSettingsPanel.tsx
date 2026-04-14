@@ -355,28 +355,16 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
             <AppGridItem colSpan={3}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">47</div>
-                <p className="text-xs font-normal text-gray-600">هذا الأسبوع</p>
-              </div>
+              <NumericStatCard size="sm" title="هذا الأسبوع" value={47} />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">5</div>
-                <p className="text-xs font-normal text-gray-600">غير مقروءة</p>
-              </div>
+              <NumericStatCard size="sm" title="غير مقروءة" value={5} />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">92%</div>
-                <p className="text-xs font-normal text-gray-600">معدل القراءة</p>
-              </div>
+              <NumericStatCard size="sm" title="معدل القراءة" value="92%" />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">3.2</div>
-                <p className="text-xs font-normal text-gray-600">متوسط يومي</p>
-              </div>
+              <NumericStatCard size="sm" title="متوسط يومي" value="3.2" />
             </AppGridItem>
           </AppDashboardGrid>
 
