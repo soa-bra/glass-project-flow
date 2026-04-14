@@ -76,7 +76,7 @@ export const OrganizationalArchivePanel: React.FC = () => {
 
       {/* Search Bar */}
       <div className="px-6 mb-6">
-        <div >
+        <AppCardSurface density="compact">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -89,14 +89,14 @@ export const OrganizationalArchivePanel: React.FC = () => {
               />
             </div>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* Content List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
           {mockOrganizationalData.map((item) => (
-            <div key={item.id} >
+            <AppCardSurface key={item.id} interactive="hoverable" density="standard">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
@@ -149,7 +149,7 @@ export const OrganizationalArchivePanel: React.FC = () => {
                   </Button>
                 </div>
               </div>
-            </div>
+            </AppCardSurface>
           ))}
         </div>
       </div>

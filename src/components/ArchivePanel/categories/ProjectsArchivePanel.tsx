@@ -30,7 +30,7 @@ export const ProjectsArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div >
+        <AppCardSurface density="compact">
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(11,15,18,0.3)] w-5 h-5" />
             <input
@@ -41,14 +41,14 @@ export const ProjectsArchivePanel: React.FC = () => {
               className="w-full pr-12 pl-4 py-3 rounded-full ring-1 ring-[rgba(11,15,18,0.1)] focus:outline-none focus:ring-2 focus:ring-[rgba(11,15,18,0.2)] text-sm"
             />
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* Projects List */}
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
           {mockProjects.map((project) => (
-            <div key={project.id} >
+            <AppCardSurface key={project.id} interactive="hoverable" density="standard">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
@@ -99,7 +99,7 @@ export const ProjectsArchivePanel: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
+        </AppCardSurface>
       </div>
     </div>
   );

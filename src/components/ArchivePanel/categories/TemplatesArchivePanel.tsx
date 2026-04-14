@@ -84,14 +84,14 @@ export const TemplatesArchivePanel: React.FC = () => {
 
       {/* Search Bar */}
       <div className="px-6 mb-6">
-        <div >
+        <AppCardSurface density="compact">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input type="text" placeholder="البحث في النماذج والقوالب..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full pr-12 pl-4 py-3 rounded-full bg-transparent ring-1 ring-[#DADCE0] focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic" />
             </div>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* Content List */}
