@@ -292,7 +292,8 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent 
         className="max-w-4xl max-h-[90vh] p-0 bg-white/40 backdrop-blur-[20px] border border-white/20 rounded-[24px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.1)]"
-        style={{ zIndex: 9999 }}
+        style={{
+ }}
       >
         {/* Header */}
         <DialogHeader className="flex flex-row items-center justify-between p-6 border-b border-white/20">
