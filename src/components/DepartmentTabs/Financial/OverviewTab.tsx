@@ -5,20 +5,12 @@ import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
 import { SPACING } from '@/components/shared/design-system/constants';
-
-const tooltipStyle = {
-  backgroundColor: '#0B0F12',
-  border: 'none',
-  borderRadius: '10px',
-  color: '#fff',
-  fontSize: 13,
-  padding: '8px 12px',
-};
 
 export const OverviewTab: React.FC = () => {
   const [alerts] = useState<Alert[]>([
@@ -54,7 +46,7 @@ export const OverviewTab: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart data={mockBudgetData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
-                <Tooltip contentStyle={tooltipStyle} formatter={value => formatCurrency(Number(value))} labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }} />
+                <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
                 <Bar dataKey="budget" fill="rgba(189,238,211,0.4)" radius={[999, 999, 999, 999]} barSize={20} />
                 <Bar dataKey="actual" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={20} />
               </RechartsBarChart>
@@ -69,7 +61,7 @@ export const OverviewTab: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockCashFlowData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
-                <Tooltip contentStyle={tooltipStyle} formatter={value => formatCurrency(Number(value))} labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }} />
+                <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
                 <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} dot={false} />
                 <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} dot={false} />
               </LineChart>

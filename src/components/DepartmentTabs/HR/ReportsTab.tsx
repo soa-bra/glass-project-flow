@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Download, Eye, X } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockWorkforceAnalytics, mockHRStats } from './data';
 import { toast } from 'sonner';
 
@@ -61,12 +63,12 @@ export const ReportsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricHeroCard title="إجمالي الموظفين" value={analytics.totalEmployees} />
-        <MetricHeroCard title="معدل الدوران" value={`${analytics.turnoverRate}%`} />
-        <MetricHeroCard title="متوسط العمر" value={analytics.averageAge} unit="سنة" />
-        <MetricHeroCard title="معدل الحضور" value={`${stats.attendanceRate}%`} />
-      </div>
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="إجمالي الموظفين" value={analytics.totalEmployees} /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="معدل الدوران" value={`${analytics.turnoverRate}%`} /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="متوسط العمر" value={analytics.averageAge} unit="سنة" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="معدل الحضور" value={`${stats.attendanceRate}%`} /></AppGridItem>
+      </AppDashboardGrid>
 
       {/* Reports List */}
       <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">

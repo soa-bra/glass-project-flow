@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link2, Key, Shield, CheckCircle, AlertCircle, Settings, Zap, Download, Upload } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
@@ -367,24 +368,13 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
             <AppGridItem colSpan={4}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">
-                  {integrations.filter(i => i.status === 'connected').length}
-                </div>
-                <p className="text-xs font-normal text-gray-400">تكاملات نشطة</p>
-              </div>
+              <NumericStatCard size="sm" title="تكاملات نشطة" value={integrations.filter(i => i.status === 'connected').length} />
             </AppGridItem>
             <AppGridItem colSpan={4}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">12</div>
-                <p className="text-xs font-normal text-gray-400">تكاملات متاحة</p>
-              </div>
+              <NumericStatCard size="sm" title="تكاملات متاحة" value={12} />
             </AppGridItem>
             <AppGridItem colSpan={4}>
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-                <div className="text-2xl font-bold text-black mb-1">99.2%</div>
-                <p className="text-xs font-normal text-gray-400">وقت التشغيل</p>
-              </div>
+              <NumericStatCard size="sm" title="وقت التشغيل" value="99.2%" />
             </AppGridItem>
           </AppDashboardGrid>
 
