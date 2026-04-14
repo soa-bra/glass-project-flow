@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
