@@ -6,7 +6,7 @@ import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
-import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
+import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartTooltipShell, CHART_CURSOR_STYLE, RingMetricCard } from '@/components/shared/visual-data';
 import { mockOpportunities, mockCRMAnalytics } from './data';
