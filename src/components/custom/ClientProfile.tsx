@@ -4,6 +4,7 @@ import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, MapPin, Building, Calendar, User } from 'lucide-react';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 interface ClientData {
   id: string;
   name: string;
@@ -97,7 +98,7 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
   const entityTypeConfig = getEntityTypeConfig(client.entityType);
   return <div className="space-y-4">
       {/* بيانات العميل الأساسية */}
-      <div className="bg-[#FFFFFF] rounded-[24px] p-6 border border-[#DADCE0] relative">
+      <AppCardSurface density="compact" className="relative">
         {/* زر عرض الملف في الزاوية العليا */}
         <div className="absolute top-4 left-4">
           <Button 
@@ -180,24 +181,24 @@ export const ClientProfile: React.FC<ClientProfileProps> = ({
             </div>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[#FFFFFF] rounded-[35px] p-6 text-center border border-[#DADCE0] ">
+        <AppCardSurface density="compact" className="text-center">
           <p className="text-2xl font-bold text-primary">{client.totalProjects}</p>
           <p className="text-xs text-gray-600">إجمالي المشاريع</p>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[35px] p-6 text-center border border-[#DADCE0] ">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <p className="text-2xl font-bold text-black">
             {client.sentiment ? Math.round(client.sentiment * 100) : 0}%
           </p>
           <p className="text-xs text-gray-600">مستوى الرضا</p>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[35px] p-6 text-center border border-[#DADCE0] ">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <p className="text-2xl font-bold text-primary">4.8</p>
           <p className="text-xs text-gray-600">التقييم العام</p>
-        </div>
+        </AppCardSurface>
       </div>
     </div>;
 };

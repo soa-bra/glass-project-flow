@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { AlertTriangle, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
@@ -47,21 +47,21 @@ export const StatusBox: React.FC<StatusBoxProps> = ({ title, status, children })
   const Icon = config.icon;
 
   return (
-    <Card className="bg-white border border-[#DADCE0] rounded-[24px] border-l-4 border-l-primary">
-      <CardHeader className="pb-2">
+    <AppCardSurface density="compact" className="border-l-4 border-l-primary">
+      <div className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-right font-arabic text-lg flex items-center gap-2">
+          <h3 className="text-right font-arabic text-lg font-semibold flex items-center gap-2">
             <Icon className={`w-5 h-5 ${config.iconColor}`} />
             {title}
-          </CardTitle>
+          </h3>
           <BaseBadge variant="secondary" className={config.badgeColor}>
             {config.badgeText}
           </BaseBadge>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div>
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </AppCardSurface>
   );
 };
