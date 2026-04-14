@@ -36,7 +36,7 @@ export const CapsuleBarChart: React.FC<CapsuleBarChartProps> = ({
   const maxVal = Math.max(...data.map(d => Math.max(d.value, d.target ?? 0)), 1);
 
   return (
-    <AppCardSurface density="standard" className={cn('flex flex-col', className)} asChild>
+    <AppCardSurface density="standard" className={cn('flex flex-col', className)}>
       <motion.div
         variants={cardVariants}
         initial="hidden"

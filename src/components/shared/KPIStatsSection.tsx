@@ -52,7 +52,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-[24px] bg-white border border-[#DADCE0] p-6 sm:p-7 flex flex-col gap-3 min-h-[140px] sm:min-h-[150px] md:min-h-[160px] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]"
+          className="p-6 sm:p-7 flex flex-col gap-3 min-h-[140px] sm:min-h-[150px] md:min-h-[160px]"
         >
           {/* Title — small, muted, secondary */}
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic">
