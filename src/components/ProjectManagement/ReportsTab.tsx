@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MetricHeroCard } from '@/components/shared/visual-data';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface ReportsTabProps {
   project: any;
@@ -30,7 +31,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
           </div>
         </div>
         <p className="text-sm text-[rgba(11,15,18,0.6)]">جميع التقارير محدثة وجاهزة للتصدير</p>
-      </div>
+      </AppCardSurface>
 
       {/* Stats */}
       <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
@@ -70,7 +71,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
             </AppGridItem>
           ))}
         </AppDashboardGrid>
-      </div>
+      </AppCardSurface>
 
       {/* Reports List */}
       <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
@@ -108,12 +109,12 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
             </div>
           ))}
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* Auto Reports Settings */}
       <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">الإعدادات والتقارير الآلية</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           <div className="space-y-3">
             <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التقارير الدورية</h4>
             {[
