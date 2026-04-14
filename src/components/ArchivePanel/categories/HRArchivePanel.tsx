@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Users, Calendar, User, Award, BookOpen, FileText } from 'lucide-react';
@@ -82,7 +83,7 @@ export const HRArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="bg-white border border-[#DADCE0] rounded-[24px] p-4 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+        <AppCardSurface density="compact">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -96,7 +97,7 @@ export const HRArchivePanel: React.FC = () => {
               />
             </div>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* HR Records List */}
@@ -105,7 +106,7 @@ export const HRArchivePanel: React.FC = () => {
           {mockHRRecords.map((record) => {
             const IconComponent = getTypeIcon(record.type);
             return (
-              <div key={record.id} className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+              <AppCardSurface key={record.id} interactive="hoverable" density="standard">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -192,7 +193,7 @@ export const HRArchivePanel: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </AppCardSurface>
             );
           })}
         </div>
