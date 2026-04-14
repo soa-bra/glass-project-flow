@@ -1,131 +1,142 @@
 
 
-# Surface + Grid Completion Pass — Revised Plan
+# Phase 3 — Data Display System Completion + KPIStatsSection Restoration
 
-## Scope
+## Audit Summary
 
-Migration completion pass to adopt `AppCardSurface`, `AppDashboardGrid`, and `AppGridItem` across all remaining areas. No surface/grid primitive rebuilds. No data-display, overlay, or action work.
+### Primitive Status
 
----
+| Primitive | Status | Consumers | Verdict |
+|---|---|---|---|
+| **KPIStatsSection** | Has shadow + surface | 12 files | Needs restoration (tile weight, metric scale) |
+| **NumericStatCard** | Compliant | ~10 files | Reusable as-is |
+| **MetricHeroCard** | Compliant | ~8 files | Reusable as-is |
+| **ComparisonMetricCard** | Compliant | 1 file (imported but unused in Financial/KPICards) | Needs adoption |
+| **DataCardFrame** | Compliant | ~5 files | Reusable as-is |
+| **CapsuleBarChart** | Compliant | ~4 files | Reusable as-is |
+| **MinimalLineChart** | Has local CustomTooltip instead of ChartTooltipShell | ~3 files | Needs normalization |
+| **RingMetricCard** | Compliant | **0 consumers** | Must be adopted |
+| **ArcGaugeCard** | Compliant | 1 file (Brand/ReportsTab) | Needs more adoption |
+| **RadialProgressCard** | Compliant | 1 file (SatisfactionBox) | Needs more adoption |
+| **ChartTooltipShell** | Compliant | ~12 files | Already well-adopted for raw Recharts; MinimalLineChart uses local tooltip instead |
 
-## Batch 1: Settings — Surface + Grid Migration (~8 files)
+### Regressions & Non-Compliant Patterns Found
 
-**Surface**: All 8 settings panels still use hand-built `<div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[...]">` for every card section. Replace each with `<AppCardSurface density="standard">`.
+1. **~59 files with `text-2xl font-bold` hand-built stat blocks** — major violation. Key offenders:
+   - `HR/RecruitmentTab.tsx` (5 BaseBox stat cards with icons + colored text)
+   - `OperationsBoard/Clients/ClientPortfolioHealth.tsx` (6 hand-built stats)
+   - `OperationsBoard/Reports/ReportLibrary.tsx` (4 hand-built stats)
+   - `Legal/ContractsTab.tsx` (4 hand-built ring-1 stat blocks)
+   - `Legal/ComplianceTab.tsx` (4 hand-built stat blocks)
+   - `Legal/OverviewTab.tsx` (hand-built metric)
+   - `Brand/ContentMessagingTab.tsx` (4 colored stat blocks)
+   - `Marketing/ReportsTab.tsx` (4 BaseBox stat blocks)
+   - `OperationsBoard/Overview/FinancialOverviewBox.tsx` (3 inline stats)
+   - `OperationsBoard/Overview/ExtraBoxTwo.tsx` (1 inline stat)
 
-**Grid**: Multiple panels still use top-level `grid grid-cols-1 md:grid-cols-2` and `grid grid-cols-1 md:grid-cols-3` as board-level layout for arranging card sections. Replace these with `AppDashboardGrid` + `AppGridItem`. Internal form grids inside a card body stay as-is.
+2. **MinimalLineChart** uses a local `CustomTooltip` instead of `ChartTooltipShell` — inconsistency.
 
-Files:
-- `SecuritySettingsPanel.tsx` — 7 hand-built cards + board grids
-- `NotificationsSettingsPanel.tsx` — 5 hand-built cards + 4 board grids
-- `ThemeSettingsPanel.tsx` — 4 hand-built cards + 4 board grids
-- `DataGovernanceSettingsPanel.tsx` — 5 hand-built cards + 3 board grids
-- `AccountSettingsPanel.tsx` — hand-built cards + board grids
-- `UsersRolesSettingsPanel.tsx` — hand-built cards
-- `IntegrationsSettingsPanel.tsx` — hand-built cards
-- `AISettingsPanel.tsx` — hand-built cards + board grids
-- `GenericSettingsPanel.tsx` — hand-built cards + board grid
+3. **PieChart/Doughnut charts in CRM, Marketing, Training** use raw Recharts PieChart where `RingMetricCard` could replace simpler cases.
 
-**Rule**: If `grid grid-cols-*` arranges multiple `AppCardSurface` sections at the page level, it is board-level and must become `AppDashboardGrid`. If it arranges form fields or options inside a single card, it is content-level and stays.
-
----
-
-## Batch 2: Archive — Surface + Shell Migration (~8 files)
-
-**Record cards**: All 8 archive panels use `<div className="bg-[#FFFFFF] p-6 rounded-[24px] ring-1 ring-[#DADCE0]">` for record cards. Replace with `<AppCardSurface interactive="hoverable">`.
-
-**Search bar shells**: Use `<AppCardSurface density="compact">` to replace the search bar wrapper `bg-[#FFFFFF] p-4 rounded-[24px] ring-1 ring-[#DADCE0]`.
-
-**Top-level shell/layout wrappers**: Verify and fix the archive panel layout wrapper (`ArchivePanelLayout.tsx` and each panel's outer `<div className="h-full flex flex-col bg-transparent">`). If any top-level shell still uses a hand-built white background or non-compliant wrapper, migrate it. Internal metadata grids inside record cards stay.
-
-Files:
-- `OrganizationalArchivePanel.tsx`
-- `ProjectsArchivePanel.tsx`
-- `HRArchivePanel.tsx`
-- `LegalArchivePanel.tsx`
-- `FinancialArchivePanel.tsx`
-- `KnowledgeArchivePanel.tsx`
-- `PoliciesArchivePanel.tsx`
-- `TemplatesArchivePanel.tsx`
-- `ArchivePanelLayout.tsx` (verify shell compliance)
-- `DocumentsArchivePanel.tsx` (uses `BaseSearchBar` — verify only)
+4. **HR/TrainingTab.tsx** uses raw `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6` instead of `AppDashboardGrid`.
 
 ---
 
-## Batch 3: Departments — Priority Migration Set (~6-8 files)
+## Implementation Plan
 
-Priority files with known top-level board-level local grids or hand-built card shells:
+### Step 1: KPIStatsSection Restoration
 
-- `Training/CoursesTab.tsx` — stat cards in `grid grid-cols-1 md:grid-cols-5` + course cards grid
-- `Training/LMSTab.tsx` — stat cards in local grid
-- `Training/SchedulingTab.tsx` — stat cards in `grid grid-cols-1 md:grid-cols-4`
-- `Training/TemplatesTab.tsx` — template card grid
-- `KMPA/KnowledgeRepositoryTab.tsx` — document card grid
-- `KMPA/ModelsTemplatesTab.tsx` — local grids + `text-2xl font-bold` stat blocks
-- `Brand/VisualAssetsTab.tsx` — sidebar+content layout + stat cards with `text-3xl font-bold`
-- `Marketing/TemplatesTab.tsx` — `grid grid-cols-1 md:grid-cols-4` stat blocks + card grids
+Strengthen the KPI tile system:
+- Increase `min-h` from 130/140/150px to 140/150/160px for more breathing room
+- Ensure metric size matches the token spec: `text-[32px] sm:text-[36px] md:text-[44px]` (already present — verify)
+- Add `shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]` (already present)
+- Increase padding from `p-6` to `p-6 sm:p-7` for more tile weight
+- Add gap between title and value zone (`gap-3`) for clearer hierarchy
+- Ensure responsive grid: `grid-cols-2 sm:grid-cols-2 md:grid-cols-4` with `gap-4 sm:gap-5`
 
-**After priority set**: Run a final search for remaining `grid grid-cols` patterns across all department tabs that function as board-level layout (not content-level). Fix any additional leftovers found.
+### Step 2: MinimalLineChart Tooltip Normalization
+
+Replace local `CustomTooltip` inside `MinimalLineChart.tsx` with `ChartTooltipShell`, passing `formatValue` via the existing prop. This ensures all charts app-wide use the same dark premium tooltip.
+
+### Step 3: Migrate Hand-Built Stat Blocks (Priority Files)
+
+Replace `text-2xl font-bold` hand-built stat cards with `NumericStatCard` or `MetricHeroCard`:
+
+**Operations:**
+- `ClientPortfolioHealth.tsx` — 6 stat cards → `NumericStatCard`
+- `ReportLibrary.tsx` — 4 stat cards → `NumericStatCard`
+
+**Departments:**
+- `HR/RecruitmentTab.tsx` — 5 BaseBox stat cards → `NumericStatCard` inside `AppDashboardGrid`
+- `Legal/ContractsTab.tsx` — 4 ring-1 stat blocks → `NumericStatCard`
+- `Legal/ComplianceTab.tsx` — 4 stat blocks → `NumericStatCard`
+- `Brand/ContentMessagingTab.tsx` — 4 colored stat blocks → `NumericStatCard`
+- `Marketing/ReportsTab.tsx` — 4 BaseBox stat blocks → `NumericStatCard`
+- `HR/TrainingTab.tsx` — already uses `MetricHeroCard` but raw grid → wrap in `AppDashboardGrid`
+
+### Step 4: Adopt Unused/Underused Primitives
+
+**RingMetricCard** (0 consumers → adopt):
+- `CRM/AnalyticsTab.tsx` — replace raw PieChart doughnut for "الإيرادات حسب الشريحة" with `RingMetricCard`
+- `CRM/OpportunitiesTab.tsx` — replace raw PieChart for "مصادر الفرص" with `RingMetricCard`
+- `OperationsBoard/Marketing/AttributionChart.tsx` — replace raw PieChart with `RingMetricCard`
+
+**ArcGaugeCard** (1 consumer → more adoption):
+- `Legal/ComplianceTab.tsx` — compliance percentage → `ArcGaugeCard`
+- `OperationsBoard/HR/TeamFillProgress.tsx` — fill percentage → `ArcGaugeCard`
+
+**RadialProgressCard** (1 consumer → more adoption):
+- `OperationsBoard/Overview/ExtraBoxTwo.tsx` — "معدل الإنجاز 78%" → `RadialProgressCard`
+
+**ComparisonMetricCard** (imported but unused):
+- `DepartmentTabs/Financial/KPICards.tsx` — import exists but not used; apply to revenue/expense cards showing month-over-month change
+
+### Step 5: Chart Standardization
+
+Ensure all raw Recharts usage follows premium specs:
+- Bar charts: `barSize={20}`, `radius={[999,999,999,999]}`, no CartesianGrid, muted axes
+- Line charts: `strokeWidth={2.5}`, no dots, activeDot with white stroke
+- All tooltips: `<Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />`
+
+Files to audit and fix:
+- `DepartmentTabs/Financial/OverviewTab.tsx` (verify chart specs)
+- `OperationsBoard/HR/ResourceHeatMap.tsx` (uses ChartContainer — normalize)
+- `ProjectManagement/cards/AISuggestedPerformanceBox.tsx` (raw Recharts without tooltip)
+
+### Step 6: Responsive Rules
+
+Codify in every visual-data primitive:
+- **Desktop (md+):** Full metric sizes (44px KPI, 36-40px hero), standard padding
+- **Tablet (sm-md):** Metric scales down (36px KPI, 32-36px hero), cards go 2-col
+- **Mobile (<sm):** Metric at 32px minimum, cards full-width, chart height compressed to 80px min
+
+Already partially implemented in KPIStatsSection and MetricHeroCard via responsive text classes. Will verify and extend to CapsuleBarChart and RadialProgressCard.
 
 ---
 
-## Batch 4: Operations — Verify + Fix (~6 files)
+## Migration Map Summary
 
-Operations has **6 files** with remaining hand-built `bg-white border border-[#DADCE0] rounded-[24px]` card shells that are NOT using `AppCardSurface`:
-
-- `Reports/TemplatesList.tsx` — hand-built card shell
-- `Reports/CustomReportForm.tsx` — hand-built card shell
-- `Finance/ProjectBudgetChart.tsx` — hand-built card shells per project
-- `Finance/OverBudgetAlert.tsx` — hand-built card shell
-- `Clients/ClientSentiment.tsx` — duplicated `bg-white border` on Card
-- `Clients/ClientPortfolioHealth.tsx` — 6 Card components with duplicated/conflicting `bg-white border border-[#DADCE0] rounded-[24px] bg-[#f3ffff] border-0` classes
-
-**Action**: Replace all hand-built static card shells with `AppCardSurface`. Fix the broken `ClientPortfolioHealth.tsx` which has contradictory class stacking.
-
----
-
-## Batch 5: Project — Verify + Fix
-
-Project appears clean from the search (no `bg-white border...rounded-[24px]` matches). Run a targeted verification pass to confirm no remaining top-level grid or surface violations. Fix any found.
+| Area | Files to Change | What Gets Applied |
+|---|---|---|
+| **Operations** | ClientPortfolioHealth, ReportLibrary, ExtraBoxTwo, TeamFillProgress, ResourceHeatMap | NumericStatCard, RadialProgressCard, ArcGaugeCard, chart normalization |
+| **Project** | AISuggestedPerformanceBox | ChartTooltipShell adoption |
+| **Departments/HR** | RecruitmentTab, TrainingTab | NumericStatCard, AppDashboardGrid |
+| **Departments/Legal** | ContractsTab, ComplianceTab | NumericStatCard, ArcGaugeCard |
+| **Departments/Brand** | ContentMessagingTab | NumericStatCard |
+| **Departments/Marketing** | ReportsTab, AttributionChart | NumericStatCard, RingMetricCard |
+| **Departments/CRM** | AnalyticsTab, OpportunitiesTab | RingMetricCard |
+| **Departments/Financial** | KPICards | ComparisonMetricCard adoption |
+| **Shared** | MinimalLineChart | ChartTooltipShell replacement |
+| **Archive** | No stat violations found | Verified clean |
+| **Settings** | No stat violations found (already migrated to NumericStatCard) | Verified clean |
 
 ---
 
-## Batch 6: Final Search Verification
+## Estimated Scope
 
-Run final searches for remaining debt patterns across the entire `src/components` directory:
-- `bg-white border border-[#DADCE0] rounded-[24px]` outside shared primitives (should be 0)
-- `bg-[#FFFFFF].*rounded-[24px].*ring-1` outside shared primitives (should be 0)
-- Board-level `grid grid-cols-*` wrapping multiple cards at page level (should be 0 — only content-level grids remain)
-
----
-
-## Scope Protection
-
-Will NOT touch:
-- KPIStatsSection, DataCardFrame, chart internals, visual-data primitives
-- Modals, dialogs, popovers, overlays
-- Action logic, buttons, forms (content-level)
-- Business logic, data structures
-- BaseBox internals
-- Content-level metadata/form grids inside card bodies
-
----
-
-## Deliverables
-
-1. **Files changed** — full list with change category
-2. **Areas fully migrated** — Settings, Archive, Departments (priority set + leftovers), Operations
-3. **Areas verified only** — Project (if clean)
-4. **Remaining exceptions** — file, issue, reason deferred
-5. **Final verification results** — search counts for remaining hand-built surfaces and board-level local grids
-
----
-
-## Estimated Impact
-
-- **Settings**: ~8-9 files (surface + grid)
-- **Archive**: ~8-10 files (surface + shell)
-- **Departments**: ~6-8 priority files + any leftovers found
-- **Operations**: ~6 files (surface)
-- **Project**: verify-only (0 changes expected)
-- **Total**: ~28-35 files
+- **~20 files** modified
+- **~1 shared primitive** normalized (MinimalLineChart tooltip)
+- **~1 shared primitive** restored (KPIStatsSection)
+- **~30+ hand-built stat blocks** replaced with shared primitives
+- **3 primitives** adopted from zero/near-zero usage (RingMetricCard, ArcGaugeCard expansion, RadialProgressCard expansion)
 
