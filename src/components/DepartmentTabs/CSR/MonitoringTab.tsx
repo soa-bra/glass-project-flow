@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Award } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -58,23 +59,10 @@ export const MonitoringTab: React.FC = () => {
               </div>
 
               {/* Mini KPIs */}
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="text-center">
-                  <p className="text-[24px] font-bold text-[#3DBE8B]">
-                    {initiative.kpis.filter(k => k.achieved >= k.target).length}/{initiative.kpis.length}
-                  </p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">KPIs المحققة</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[24px] font-bold text-[#9B59B6]">{initiative.impact.sroi}:1</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">SROI</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[24px] font-bold text-[#3DA8F5]">
-                    {((initiative.allocatedBudget / initiative.budget) * 100).toFixed(0)}%
-                  </p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">تقدم الميزانية</p>
-                </div>
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <NumericStatCard title="KPIs المحققة" value={`${initiative.kpis.filter(k => k.achieved >= k.target).length}/${initiative.kpis.length}`} accentColor="#3DBE8B" size="sm" />
+                <NumericStatCard title="SROI" value={`${initiative.impact.sroi}:1`} accentColor="#9B59B6" size="sm" />
+                <NumericStatCard title="تقدم الميزانية" value={`${((initiative.allocatedBudget / initiative.budget) * 100).toFixed(0)}%`} accentColor="#3DA8F5" size="sm" />
               </div>
 
               {/* KPI Progress Bars */}
