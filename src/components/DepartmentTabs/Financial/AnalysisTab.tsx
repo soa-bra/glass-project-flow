@@ -1,17 +1,19 @@
 import React from 'react';
 import { Download, Target } from 'lucide-react';
-import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from 'recharts';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { RingMetricCard } from '@/components/shared/visual-data';
 import { SPACING } from '@/components/shared/design-system/constants';
 import { Reveal } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
 import { mockExpenseCategories } from './data';
 import { formatCurrency } from './utils';
 
+const COLORS = ['#3DBE8B', '#3DA8F5', '#F6C445', '#E5564D', '#9B59B6'];
+
 export const AnalysisTab: React.FC = () => {
-  const colors = ['#3DBE8B', '#3DA8F5', '#F6C445', '#E5564D', '#9B59B6'];
+  const totalExpenses = mockExpenseCategories.reduce((s, c) => s + c.value, 0);
 
   const scenarios = [
     { title: 'السيناريو المتفائل', growth: '+25%', revenue: 3062500, color: '#3DBE8B' },
@@ -31,39 +33,17 @@ export const AnalysisTab: React.FC = () => {
       </Reveal>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pie Chart */}
-        <DataCardFrame title="توزيع المصروفات">
-          <ResponsiveContainer width="100%" height={280}>
-            <RechartsPieChart>
-              <Pie
-                data={mockExpenseCategories}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={90}
-                innerRadius={50}
-                strokeWidth={0}
-                dataKey="value"
-              >
-                {mockExpenseCategories.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#0B0F12',
-                  border: 'none',
-                  borderRadius: '10px',
-                  fontSize: '14px',
-                  color: '#FFFFFF',
-                  padding: '8px 12px',
-                }}
-                itemStyle={{ color: '#FFFFFF' }}
-              />
-            </RechartsPieChart>
-          </ResponsiveContainer>
-        </DataCardFrame>
+        {/* Ring Metric — expense distribution */}
+        <RingMetricCard
+          title="توزيع المصروفات"
+          centerValue={formatCurrency(totalExpenses)}
+          centerUnit="ر.س"
+          layers={mockExpenseCategories.map((cat, i) => ({
+            value: Math.round((cat.value / totalExpenses) * 100),
+            color: COLORS[i % COLORS.length],
+            label: cat.name,
+          }))}
+        />
 
         {/* Scenarios */}
         <DataCardFrame title="التنبؤات المالية" icon={<Target className="h-5 w-5" />}>

@@ -6,9 +6,9 @@ import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
-import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
+import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE, RingMetricCard } from '@/components/shared/visual-data';
 import { mockOpportunities, mockCRMAnalytics } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
@@ -210,25 +210,16 @@ export const OpportunitiesTab: React.FC = () => {
         </AppGridItem>
 
         <AppGridItem colSpan={6}>
-        <DataCardFrame title="مصادر الفرص" icon={<Users className="h-5 w-5" />}>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={opportunityBySource}
-                cx="50%"
-                cy="50%"
-                outerRadius={80}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              >
-                {opportunityBySource.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
-            </PieChart>
-          </ResponsiveContainer>
-        </DataCardFrame>
+          <RingMetricCard
+            title="مصادر الفرص"
+            centerValue={opportunityBySource.reduce((s, d) => s + d.value, 0)}
+            centerUnit="فرصة"
+            layers={opportunityBySource.map(s => ({
+              value: s.value,
+              color: s.color,
+              label: s.name,
+            }))}
+          />
         </AppGridItem>
       </AppDashboardGrid>
 
