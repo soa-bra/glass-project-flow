@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { Plus, Search, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
@@ -31,10 +32,8 @@ export const ContractsTab: React.FC = () => {
     { name: 'title', label: 'عنوان العقد', type: 'text', required: true, placeholder: 'أدخل عنوان العقد' },
     { name: 'client', label: 'العميل', type: 'text', required: true, placeholder: 'اسم العميل' },
     { name: 'type', label: 'النوع', type: 'select', required: true, options: [
-      { value: 'service', label: 'خدمات' },
-      { value: 'employment', label: 'توظيف' },
-      { value: 'partnership', label: 'شراكة' },
-      { value: 'confidentiality', label: 'سرية' },
+      { value: 'service', label: 'خدمات' }, { value: 'employment', label: 'توظيف' },
+      { value: 'partnership', label: 'شراكة' }, { value: 'confidentiality', label: 'سرية' },
       { value: 'supplier', label: 'مورد' },
     ]},
     { name: 'value', label: 'القيمة (ر.س)', type: 'number', required: true, placeholder: '0' },
@@ -45,16 +44,9 @@ export const ContractsTab: React.FC = () => {
 
   const handleCreateContract = (data: Record<string, string>) => {
     const newContract: Contract = {
-      id: `CON-${Date.now().toString().slice(-4)}`,
-      title: data.title,
-      client: data.client,
-      type: data.type as Contract['type'],
-      status: 'draft',
-      value: Number(data.value),
-      startDate: data.startDate,
-      endDate: data.endDate,
-      signatories: [],
-      riskLevel: 'low',
+      id: `CON-${Date.now().toString().slice(-4)}`, title: data.title, client: data.client,
+      type: data.type as Contract['type'], status: 'draft', value: Number(data.value),
+      startDate: data.startDate, endDate: data.endDate, signatories: [], riskLevel: 'low',
     };
     setContracts(prev => [newContract, ...prev]);
   };
@@ -69,14 +61,10 @@ export const ContractsTab: React.FC = () => {
   };
 
   const getViewFields = (contract: any): DetailField[] => [
-    { label: 'رقم العقد', value: contract.id },
-    { label: 'العنوان', value: contract.title },
-    { label: 'العميل', value: contract.client },
-    { label: 'النوع', value: getStatusText(contract.type) },
-    { label: 'القيمة', value: formatCurrency(contract.value) },
-    { label: 'الحالة', value: getStatusText(contract.status) },
-    { label: 'تاريخ البداية', value: contract.startDate || 'غير محدد' },
-    { label: 'تاريخ الانتهاء', value: formatDate(contract.endDate) },
+    { label: 'رقم العقد', value: contract.id }, { label: 'العنوان', value: contract.title },
+    { label: 'العميل', value: contract.client }, { label: 'النوع', value: getStatusText(contract.type) },
+    { label: 'القيمة', value: formatCurrency(contract.value) }, { label: 'الحالة', value: getStatusText(contract.status) },
+    { label: 'تاريخ البداية', value: contract.startDate || 'غير محدد' }, { label: 'تاريخ الانتهاء', value: formatDate(contract.endDate) },
   ];
 
   const getContractStatusColor = (status: string) => {
@@ -94,15 +82,12 @@ export const ContractsTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">إدارة العقود والاتفاقيات</h3>
         <button onClick={() => setIsCreateOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
-          <Plus className="w-4 h-4" />
-          عقد جديد
+          <Plus className="w-4 h-4" /> عقد جديد
         </button>
       </div>
 
-      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[24px] shadow-sm hover:shadow-md transition-shadow duration-300">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-black font-arabic">البحث والتصفية</h3>
-        </div>
+      <AppCardSurface density="spacious" interactive="hoverable">
+        <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">البحث والتصفية</h3></div>
         <div>
           <div className="flex items-center gap-4">
             <div className="relative flex-1">
@@ -110,50 +95,29 @@ export const ContractsTab: React.FC = () => {
               <input type="text" placeholder="البحث في العقود..." className="w-full pl-4 pr-10 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 focus:border-black/20 text-black font-arabic" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
             </div>
             <select className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-              <option value="all">جميع الحالات</option>
-              <option value="signed">موقع</option>
-              <option value="pending">في الانتظار</option>
-              <option value="expired">منتهي</option>
-              <option value="draft">مسودة</option>
+              <option value="all">جميع الحالات</option><option value="signed">موقع</option><option value="pending">في الانتظار</option><option value="expired">منتهي</option><option value="draft">مسودة</option>
             </select>
             <select className="px-4 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic" value={typeFilter} onChange={e => setTypeFilter(e.target.value)}>
-              <option value="all">جميع الأنواع</option>
-              <option value="service">خدمات</option>
-              <option value="employment">توظيف</option>
-              <option value="partnership">شراكة</option>
-              <option value="confidentiality">سرية</option>
-              <option value="supplier">مورد</option>
+              <option value="all">جميع الأنواع</option><option value="service">خدمات</option><option value="employment">توظيف</option><option value="partnership">شراكة</option><option value="confidentiality">سرية</option><option value="supplier">مورد</option>
             </select>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
-      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[24px] shadow-sm hover:shadow-md transition-shadow duration-300">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">إحصائيات العقود</h3>
-        </div>
+      <AppCardSurface density="spacious" interactive="hoverable">
+        <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">إحصائيات العقود</h3></div>
         <div>
           <AppDashboardGrid columns={12}>
-            <AppGridItem colSpan={3}>
-              <NumericStatCard title="عقود موقعة" value={contracts.filter(c => c.status === 'signed').length} accentColor="#3DBE8B" size="sm" />
-            </AppGridItem>
-            <AppGridItem colSpan={3}>
-              <NumericStatCard title="في الانتظار" value={contracts.filter(c => c.status === 'pending').length} accentColor="#F6C445" size="sm" />
-            </AppGridItem>
-            <AppGridItem colSpan={3}>
-              <NumericStatCard title="منتهية" value={contracts.filter(c => c.status === 'expired').length} accentColor="#E5564D" size="sm" />
-            </AppGridItem>
-            <AppGridItem colSpan={3}>
-              <NumericStatCard title="القيمة الإجمالية" value={contracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()} unit="ر.س" size="sm" />
-            </AppGridItem>
+            <AppGridItem colSpan={3}><NumericStatCard title="عقود موقعة" value={contracts.filter(c => c.status === 'signed').length} accentColor="#3DBE8B" size="sm" /></AppGridItem>
+            <AppGridItem colSpan={3}><NumericStatCard title="في الانتظار" value={contracts.filter(c => c.status === 'pending').length} accentColor="#F6C445" size="sm" /></AppGridItem>
+            <AppGridItem colSpan={3}><NumericStatCard title="منتهية" value={contracts.filter(c => c.status === 'expired').length} accentColor="#E5564D" size="sm" /></AppGridItem>
+            <AppGridItem colSpan={3}><NumericStatCard title="القيمة الإجمالية" value={contracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()} unit="ر.س" size="sm" /></AppGridItem>
           </AppDashboardGrid>
         </div>
-      </div>
+      </AppCardSurface>
 
-      <div className="bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-9 rounded-[24px] shadow-sm hover:shadow-md transition-shadow duration-300">
-        <div className="mb-6">
-          <h3 className="text-xl font-semibold text-black font-arabic">قائمة العقود ({filteredContracts.length})</h3>
-        </div>
+      <AppCardSurface density="spacious" interactive="hoverable">
+        <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">قائمة العقود ({filteredContracts.length})</h3></div>
         <div>
           <div className="overflow-x-auto">
             <table className="w-full text-right">
@@ -171,27 +135,16 @@ export const ContractsTab: React.FC = () => {
               <tbody>
                 {filteredContracts.map(contract => (
                   <tr key={contract.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
-                    <td className="py-0 my-0 mx-0">
-                      <div className="font-medium text-black font-arabic">{contract.title}</div>
-                      <div className="text-sm text-black/70 font-arabic">{contract.id}</div>
-                    </td>
+                    <td className="py-0 my-0 mx-0"><div className="font-medium text-black font-arabic">{contract.title}</div><div className="text-sm text-black/70 font-arabic">{contract.id}</div></td>
                     <td className="py-4 text-black font-arabic">{contract.client}</td>
-                    <td className="py-4 bg-transparent">
-                      <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">{getStatusText(contract.type)}</span>
-                    </td>
-                    <td className="py-4">
-                      <span className={`px-3 py-1 text-xs rounded-full font-arabic ${getContractStatusColor(contract.status)}`}>{getStatusText(contract.status)}</span>
-                    </td>
+                    <td className="py-4 bg-transparent"><span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">{getStatusText(contract.type)}</span></td>
+                    <td className="py-4"><span className={`px-3 py-1 text-xs rounded-full font-arabic ${getContractStatusColor(contract.status)}`}>{getStatusText(contract.status)}</span></td>
                     <td className="py-4 font-medium text-black font-arabic">{formatCurrency(contract.value)}</td>
                     <td className="py-4 text-black font-arabic">{formatDate(contract.endDate)}</td>
                     <td className="mx-0 px-0 py-[25px] my-0 bg-transparent">
                       <div className="flex items-center gap-2">
-                        <div onClick={() => setViewingContract(contract)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-                          <Eye className="w-4 h-4 text-black" />
-                        </div>
-                        <div onClick={() => handleDownloadContract(contract)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer">
-                          <Download className="w-4 h-4 text-black" />
-                        </div>
+                        <div onClick={() => setViewingContract(contract)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Eye className="w-4 h-4 text-black" /></div>
+                        <div onClick={() => handleDownloadContract(contract)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Download className="w-4 h-4 text-black" /></div>
                       </div>
                     </td>
                   </tr>
@@ -200,30 +153,12 @@ export const ContractsTab: React.FC = () => {
             </table>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
-      <GenericFormModal
-        isOpen={isCreateOpen}
-        onClose={() => setIsCreateOpen(false)}
-        title="إنشاء عقد جديد"
-        fields={createFields}
-        onSubmit={handleCreateContract}
-        submitLabel="إنشاء العقد"
-        successMessage="تم إنشاء العقد بنجاح"
-      />
-
+      <GenericFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="إنشاء عقد جديد" fields={createFields} onSubmit={handleCreateContract} submitLabel="إنشاء العقد" successMessage="تم إنشاء العقد بنجاح" />
       {viewingContract && (
-        <GenericDetailModal
-          isOpen={!!viewingContract}
-          onClose={() => setViewingContract(null)}
-          title={`تفاصيل العقد: ${viewingContract.title}`}
-          fields={getViewFields(viewingContract)}
-          actions={
-            <BaseActionButton onClick={() => { handleDownloadContract(viewingContract); }} variant="outline" className="font-arabic rounded-full">
-              <Download className="w-4 h-4 ml-2" />
-              تنزيل
-            </BaseActionButton>
-          }
+        <GenericDetailModal isOpen={!!viewingContract} onClose={() => setViewingContract(null)} title={`تفاصيل العقد: ${viewingContract.title}`} fields={getViewFields(viewingContract)}
+          actions={<BaseActionButton onClick={() => { handleDownloadContract(viewingContract); }} variant="outline" className="font-arabic rounded-full"><Download className="w-4 h-4 ml-2" />تنزيل</BaseActionButton>}
         />
       )}
     </div>

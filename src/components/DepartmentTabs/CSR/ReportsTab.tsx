@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { Plus, Search, Download, Eye, Calendar, Globe, Target } from 'lucide-react';
 
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
@@ -37,52 +38,29 @@ export const ReportsTab: React.FC = () => {
   ];
 
   const handleCreate = (data: Record<string, string>) => {
-    const newReport = {
-      id: `rep-${Date.now().toString().slice(-4)}`,
-      title: data.title,
-      type: data.type,
-      period: { start: data.startDate, end: data.endDate },
-      generatedDate: new Date().toISOString().split('T')[0],
-      status: 'draft',
-      metrics: { totalBudget: 0, totalBeneficiaries: 0, totalVolunteerHours: 0, averageSROI: 0 },
-    };
+    const newReport = { id: `rep-${Date.now().toString().slice(-4)}`, title: data.title, type: data.type, period: { start: data.startDate, end: data.endDate }, generatedDate: new Date().toISOString().split('T')[0], status: 'draft', metrics: { totalBudget: 0, totalBeneficiaries: 0, totalVolunteerHours: 0, averageSROI: 0 } };
     setReports(prev => [newReport, ...prev]);
   };
 
   const handleCreateQuick = (typeId: string) => {
     const type = reportTypes.find(t => t.id === typeId);
-    const newReport = {
-      id: `rep-${Date.now().toString().slice(-4)}`,
-      title: `${type?.label || 'تقرير'} - ${new Date().toLocaleDateString('ar-SA')}`,
-      type: typeId,
-      period: { start: new Date().toISOString().split('T')[0], end: new Date().toISOString().split('T')[0] },
-      generatedDate: new Date().toISOString().split('T')[0],
-      status: 'draft',
-      metrics: { totalBudget: 0, totalBeneficiaries: 0, totalVolunteerHours: 0, averageSROI: 0 },
-    };
+    const newReport = { id: `rep-${Date.now().toString().slice(-4)}`, title: `${type?.label || 'تقرير'} - ${new Date().toLocaleDateString('ar-SA')}`, type: typeId, period: { start: new Date().toISOString().split('T')[0], end: new Date().toISOString().split('T')[0] }, generatedDate: new Date().toISOString().split('T')[0], status: 'draft', metrics: { totalBudget: 0, totalBeneficiaries: 0, totalVolunteerHours: 0, averageSROI: 0 } };
     setReports(prev => [newReport, ...prev]);
     toast.success(`تم إنشاء ${type?.label || 'التقرير'} بنجاح`);
   };
 
   const handleDownload = (report: any) => {
-    downloadAsCSV(
-      ['الرقم', 'العنوان', 'النوع', 'الفترة', 'الميزانية', 'المستفيدين', 'SROI'],
-      [[report.id, report.title, report.type, `${report.period.start} - ${report.period.end}`, String(report.metrics.totalBudget), String(report.metrics.totalBeneficiaries), String(report.metrics.averageSROI)]],
-      `تقرير-CSR-${report.id}`
-    );
+    downloadAsCSV(['الرقم', 'العنوان', 'النوع', 'الفترة', 'الميزانية', 'المستفيدين', 'SROI'], [[report.id, report.title, report.type, `${report.period.start} - ${report.period.end}`, String(report.metrics.totalBudget), String(report.metrics.totalBeneficiaries), String(report.metrics.averageSROI)]], `تقرير-CSR-${report.id}`);
     toast.success(`تم تحميل: ${report.title}`);
   };
 
   const getViewFields = (report: any): DetailField[] => [
-    { label: 'الرقم', value: report.id },
-    { label: 'العنوان', value: report.title },
+    { label: 'الرقم', value: report.id }, { label: 'العنوان', value: report.title },
     { label: 'النوع', value: reportTypes.find(t => t.id === report.type)?.label || report.type },
     { label: 'الفترة', value: `${new Date(report.period.start).toLocaleDateString('ar-SA')} - ${new Date(report.period.end).toLocaleDateString('ar-SA')}` },
-    { label: 'الحالة', value: getStatusText(report.status) },
-    { label: 'الميزانية', value: formatCurrency(report.metrics.totalBudget) },
+    { label: 'الحالة', value: getStatusText(report.status) }, { label: 'الميزانية', value: formatCurrency(report.metrics.totalBudget) },
     { label: 'المستفيدين', value: report.metrics.totalBeneficiaries.toLocaleString('ar-SA') },
-    { label: 'ساعات التطوع', value: String(report.metrics.totalVolunteerHours) },
-    { label: 'SROI', value: `${report.metrics.averageSROI}:1` },
+    { label: 'ساعات التطوع', value: String(report.metrics.totalVolunteerHours) }, { label: 'SROI', value: `${report.metrics.averageSROI}:1` },
   ];
 
   const sdgGoals = [
@@ -108,7 +86,7 @@ export const ReportsTab: React.FC = () => {
       {/* Report Types */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {reportTypes.map(type => (
-          <div key={type.id} className="rounded-[24px] bg-white border border-[#DADCE0] p-5 text-center hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow cursor-pointer">
+          <AppCardSurface key={type.id} density="compact" interactive="hoverable" className="text-center">
             <div className="w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ backgroundColor: `${type.color}15` }}>
               <Target className="h-5 w-5" style={{ color: type.color }} />
             </div>
@@ -116,12 +94,12 @@ export const ReportsTab: React.FC = () => {
             <button onClick={() => handleCreateQuick(type.id)} className="text-[10px] font-arabic px-3 py-1 rounded-full border border-[#DADCE0] mt-2 hover:bg-[#d9e7ed]/50 transition-colors">
               <Plus className="w-3 h-3 inline ml-1" /> إنشاء
             </button>
-          </div>
+          </AppCardSurface>
         ))}
       </div>
 
       {/* Recent Reports */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase mb-4 block">التقارير الحديثة</span>
         <div className="space-y-4">
           {reports.filter(r => r.title.includes(searchTerm) || !searchTerm).map(report => (
@@ -138,27 +116,13 @@ export const ReportsTab: React.FC = () => {
                 </div>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="text-center">
-                  <p className="text-[20px] font-bold text-[#0B0F12]">{formatCurrency(report.metrics.totalBudget)}</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">الميزانية</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.totalBeneficiaries.toLocaleString('ar-SA')}</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">المستفيدين</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.totalVolunteerHours}</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">ساعات التطوع</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.averageSROI}:1</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">SROI</p>
-                </div>
+                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{formatCurrency(report.metrics.totalBudget)}</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">الميزانية</p></div>
+                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.totalBeneficiaries.toLocaleString('ar-SA')}</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">المستفيدين</p></div>
+                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.totalVolunteerHours}</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">ساعات التطوع</p></div>
+                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.averageSROI}:1</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">SROI</p></div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[10px] text-[rgba(11,15,18,0.35)] font-arabic flex items-center gap-1">
-                  <Calendar className="h-3 w-3" /> {new Date(report.generatedDate).toLocaleDateString('ar-SA')}
-                </span>
+                <span className="text-[10px] text-[rgba(11,15,18,0.35)] font-arabic flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(report.generatedDate).toLocaleDateString('ar-SA')}</span>
                 <div className="flex gap-2">
                   <button onClick={() => setViewingReport(report)} className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#DADCE0] text-[10px] font-arabic hover:bg-[#d9e7ed]/50 transition-colors"><Eye className="w-3 h-3" /> عرض</button>
                   <button onClick={() => handleDownload(report)} className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#0B0F12] text-white text-[10px] font-arabic"><Download className="w-3 h-3" /> تحميل</button>
@@ -167,10 +131,10 @@ export const ReportsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* SDG Mapping */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <div className="flex items-center gap-2 mb-4">
           <Globe className="h-5 w-5 text-[#0B0F12]" />
           <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">أهداف التنمية المستدامة</span>
@@ -184,7 +148,7 @@ export const ReportsTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </AppCardSurface>
 
       <GenericFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="إنشاء تقرير جديد" fields={createFields} onSubmit={handleCreate} submitLabel="إنشاء" successMessage="تم إنشاء التقرير بنجاح" />
       {viewingReport && <GenericDetailModal isOpen={!!viewingReport} onClose={() => setViewingReport(null)} title={viewingReport.title} fields={getViewFields(viewingReport)} />}

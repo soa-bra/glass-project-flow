@@ -168,7 +168,7 @@ export const ComplianceTab: React.FC = () => {
         </div>
         <div>
           <div className="space-y-3">
-            {items.filter(item => item.status === 'action_required' || item.status === 'non_compliant').slice(0, 5).map(item => <div key={item.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+            {items.filter(item => item.status === 'action_required' || item.status === 'non_compliant').slice(0, 5).map(item => <div key={item.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[18px]">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><AlertTriangle className="h-4 w-4 text-black" /></div>
                     <div className="flex-1">

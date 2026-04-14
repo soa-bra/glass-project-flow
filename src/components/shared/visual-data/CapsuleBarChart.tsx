@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface BarDataPoint {
   label: string;
@@ -35,13 +36,13 @@ export const CapsuleBarChart: React.FC<CapsuleBarChartProps> = ({
   const maxVal = Math.max(...data.map(d => Math.max(d.value, d.target ?? 0)), 1);
 
   return (
-    <motion.div
-      variants={cardVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      className={cn('rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col', className)}
-    >
+    <AppCardSurface density="standard" className={cn('flex flex-col', className)} asChild>
+      <motion.div
+        variants={cardVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.2 }}
+      >
       <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">{title}</span>
       {heroValue !== undefined && (
         <div className="flex items-baseline gap-1 mt-1 mb-4">
@@ -112,6 +113,7 @@ export const CapsuleBarChart: React.FC<CapsuleBarChartProps> = ({
           })}
         </div>
       )}
-    </motion.div>
+      </motion.div>
+    </AppCardSurface>
   );
 };
