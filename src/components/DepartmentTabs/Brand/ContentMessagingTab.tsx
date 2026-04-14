@@ -154,7 +154,7 @@ export const ContentMessagingTab: React.FC = () => {
             </UnifiedButton>
           </div>
         </BaseBox>
-      </div>
+      </AppDashboardGrid>
 
       {/* Content Library */}
       <BaseBox>

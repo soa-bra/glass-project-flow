@@ -333,7 +333,7 @@ export const CulturalResearchTab: React.FC = () => {
               </div>
             </div>
           </BaseBox>
-        </div>
+        </AppDashboardGrid>
       )}
     </div>
   );
