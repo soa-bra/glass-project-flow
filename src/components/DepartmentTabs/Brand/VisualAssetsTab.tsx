@@ -6,6 +6,7 @@ import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { Input } from '@/components/ui/input';
 import { Palette, Upload, Search, Filter, Download, Eye, Edit, Image, FileText, Type } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
