@@ -6,15 +6,12 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   MessageSquare, 
   PenTool, 
   Calendar, 
   TrendingUp,
   Eye,
-  Heart,
   Share2,
   Edit,
   CheckCircle,

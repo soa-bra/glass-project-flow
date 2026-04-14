@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
-import { Shield, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Shield, AlertTriangle } from 'lucide-react';
 import { NumericStatCard, ArcGaugeCard } from '@/components/shared/visual-data';
 import { mockComplianceItems } from './data';
 import { getStatusText, formatDate } from './utils';
