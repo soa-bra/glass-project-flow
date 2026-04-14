@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Database, Shield, FileText, Clock, AlertTriangle, CheckCircle, Lock, Unlock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface DataGovernanceSettingsPanelProps {
   isMainSidebarCollapsed: boolean;

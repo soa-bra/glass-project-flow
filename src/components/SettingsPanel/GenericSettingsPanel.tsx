@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { User, Shield, Bell, Settings, Database, Palette, Globe, Key, Monitor, CreditCard, Users, Building } from 'lucide-react';
 import { useAutosave } from './hooks/useAutosave';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface GenericSettingsPanelProps {
   category: string;

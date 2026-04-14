@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { BrainCircuit, Cpu, Database, Zap, Activity, Target, TrendingUp, Settings } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface AISettingsPanelProps {
   isMainSidebarCollapsed: boolean;

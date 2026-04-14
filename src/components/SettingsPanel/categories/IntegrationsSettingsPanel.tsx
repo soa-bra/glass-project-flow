@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link2, Key, Shield, CheckCircle, AlertCircle, Settings, Zap, Download, Upload } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
