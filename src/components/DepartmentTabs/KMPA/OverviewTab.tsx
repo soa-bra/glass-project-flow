@@ -1,10 +1,10 @@
 import React from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Download, FileText, Brain, Target } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { AppDashboardGrid, AppGridItem } from '@/components/shared/layout';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { mockKnowledgeMetrics, mockAIRecommendations, mockKnowledgeGaps } from './data/mockData';
 
 export const OverviewTab: React.FC = () => {
@@ -40,7 +40,7 @@ export const OverviewTab: React.FC = () => {
       <AppDashboardGrid density="spacious">
         {/* Top Categories */}
         <AppGridItem colSpan={6}>
-          <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] h-full">
+          <AppCardSurface density="standard" className="h-full">
             <div className="mb-4">
               <h3 className="text-lg font-semibold flex items-center gap-2">
                 <FileText className="h-5 w-5" />
@@ -59,12 +59,12 @@ export const OverviewTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </BaseBox>
+          </AppCardSurface>
         </AppGridItem>
 
         {/* AI Recommendations */}
         <AppGridItem colSpan={6}>
-          <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] h-full">
+          <AppCardSurface density="standard" className="h-full">
             <div className="mb-4">
               <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Brain className="h-5 w-5" />
@@ -90,12 +90,12 @@ export const OverviewTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </BaseBox>
+          </AppCardSurface>
         </AppGridItem>
       </AppDashboardGrid>
 
       {/* Knowledge Gaps */}
-      <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+      <AppCardSurface density="standard">
         <div className="mb-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">
             <Target className="h-5 w-5" />
@@ -125,10 +125,10 @@ export const OverviewTab: React.FC = () => {
             </AppGridItem>
           ))}
         </AppDashboardGrid>
-      </BaseBox>
+      </AppCardSurface>
 
       {/* Recent Activity */}
-      <BaseBox className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0]">
+      <AppCardSurface density="standard">
         <div className="mb-4">
           <h3 className="text-lg font-semibold flex items-center gap-2">النشاط الأخير</h3>
         </div>
@@ -149,7 +149,7 @@ export const OverviewTab: React.FC = () => {
             <span className="text-xs text-gray-500 mr-auto">أمس</span>
           </div>
         </div>
-      </BaseBox>
+      </AppCardSurface>
     </div>
   );
 };
