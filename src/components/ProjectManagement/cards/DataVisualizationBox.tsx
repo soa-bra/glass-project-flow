@@ -1,7 +1,5 @@
 import React from 'react';
-import { NumericStatCard, MinimalLineChart, CapsuleBarChart } from '@/components/shared/visual-data';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { NumericStatCard, MinimalLineChart } from '@/components/shared/visual-data';
 
 const chartData = [
   { label: 'Jan', value: 30 },
