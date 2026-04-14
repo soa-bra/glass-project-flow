@@ -122,34 +122,36 @@ export const VisualAssetsTab: React.FC = () => {
           <div className="space-y-6">
             <BaseBox>
               <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2"><Palette className="h-5 w-5" /> الأصول البصرية ({filteredAssets.length})</h3></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AppDashboardGrid columns={12} minRowHeight="auto">
                 {filteredAssets.map((asset) => (
-                  <div key={asset.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        {asset.type === 'logo' && <Image className="h-4 w-4 text-blue-600" />}
-                        {asset.type === 'template' && <FileText className="h-4 w-4 text-green-600" />}
-                        {asset.type === 'color' && <Palette className="h-4 w-4 text-purple-600" />}
-                        {!['logo', 'template', 'color'].includes(asset.type) && <Type className="h-4 w-4 text-gray-600" />}
+                  <AppGridItem key={asset.id} colSpan={4} tabletSpan={3}>
+                    <AppCardSurface density="compact" interactive="hoverable" className="h-full">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          {asset.type === 'logo' && <Image className="h-4 w-4 text-blue-600" />}
+                          {asset.type === 'template' && <FileText className="h-4 w-4 text-green-600" />}
+                          {asset.type === 'color' && <Palette className="h-4 w-4 text-purple-600" />}
+                          {!['logo', 'template', 'color'].includes(asset.type) && <Type className="h-4 w-4 text-gray-600" />}
+                        </div>
+                        <UnifiedBadge variant={asset.status === 'approved' ? 'success' : 'warning'}>
+                          {asset.status === 'approved' ? 'معتمد' : 'قيد المراجعة'}
+                        </UnifiedBadge>
                       </div>
-                      <UnifiedBadge variant={asset.status === 'approved' ? 'success' : 'warning'}>
-                        {asset.status === 'approved' ? 'معتمد' : 'قيد المراجعة'}
-                      </UnifiedBadge>
-                    </div>
-                    <h3 className="font-medium mb-2">{asset.name}</h3>
-                    <div className="space-y-1 text-sm text-gray-600 mb-3">
-                      <div className="flex justify-between"><span>الصيغة:</span><span>{asset.format}</span></div>
-                      <div className="flex justify-between"><span>الحجم:</span><span>{asset.size}</span></div>
-                      <div className="flex justify-between"><span>التحميلات:</span><span>{asset.downloads}</span></div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <UnifiedButton size="sm" variant="outline" onClick={() => setViewingAsset(asset)}><Eye className="h-3 w-3 mr-1" /> عرض</UnifiedButton>
-                      <UnifiedButton size="sm" variant="outline" onClick={() => handleDownloadAsset(asset)}><Download className="h-3 w-3" /></UnifiedButton>
-                      <UnifiedButton size="sm" variant="outline" onClick={() => setEditingAsset(asset)}><Edit className="h-3 w-3" /></UnifiedButton>
-                    </div>
-                  </div>
+                      <h3 className="font-medium mb-2">{asset.name}</h3>
+                      <div className="space-y-1 text-sm text-gray-600 mb-3">
+                        <div className="flex justify-between"><span>الصيغة:</span><span>{asset.format}</span></div>
+                        <div className="flex justify-between"><span>الحجم:</span><span>{asset.size}</span></div>
+                        <div className="flex justify-between"><span>التحميلات:</span><span>{asset.downloads}</span></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <UnifiedButton size="sm" variant="outline" onClick={() => setViewingAsset(asset)}><Eye className="h-3 w-3 mr-1" /> عرض</UnifiedButton>
+                        <UnifiedButton size="sm" variant="outline" onClick={() => handleDownloadAsset(asset)}><Download className="h-3 w-3" /></UnifiedButton>
+                        <UnifiedButton size="sm" variant="outline" onClick={() => setEditingAsset(asset)}><Edit className="h-3 w-3" /></UnifiedButton>
+                      </div>
+                    </AppCardSurface>
+                  </AppGridItem>
                 ))}
-              </div>
+              </AppDashboardGrid>
             </BaseBox>
 
             <AppDashboardGrid columns={12} minRowHeight="auto">

@@ -5,6 +5,8 @@ import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 const initialTemplates = [
   { id: 'TPL-001', name: 'عقد خدمات استشارية', category: 'contract', type: 'خدمات', description: 'نموذج عقد للخدمات الاستشارية والتطوير', lastModified: '2024-06-15', createdBy: 'فريق الشؤون القانونية', usage: 25, status: 'active' },
@@ -63,7 +65,8 @@ export const TemplatesTab: React.FC = () => {
     { label: 'مرات الاستخدام', value: String(template.usage) },
   ];
 
-  return <div className="space-y-6">
+  return (
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold text-black font-arabic">النماذج والقوالب</h3>
         <button onClick={() => setIsAddOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
@@ -83,27 +86,32 @@ export const TemplatesTab: React.FC = () => {
       </AppCardSurface>
 
       {/* شبكة النماذج */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredTemplates.map(template => <div key={template.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><FileText className="w-4 h-4 text-black" /></div>
-                <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">{template.type}</span>
+      <AppDashboardGrid columns={12} minRowHeight="auto">
+        {filteredTemplates.map(template => (
+          <AppGridItem key={template.id} colSpan={4} tabletSpan={3}>
+            <AppCardSurface density="spacious" interactive="hoverable" className="h-full">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><FileText className="w-4 h-4 text-black" /></div>
+                  <span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">{template.type}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div onClick={() => setViewingTemplate(template)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Eye className="w-4 h-4 text-black" /></div>
+                  <div onClick={() => handleDownload(template)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Download className="w-4 h-4 text-black" /></div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <div onClick={() => setViewingTemplate(template)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Eye className="w-4 h-4 text-black" /></div>
-                <div onClick={() => handleDownload(template)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Download className="w-4 h-4 text-black" /></div>
+              <h4 className="text-xl font-semibold text-black font-arabic mb-2">{template.name}</h4>
+              <p className="text-sm font-normal text-black font-arabic mb-4">{template.description}</p>
+              <div className="space-y-2 text-sm font-normal text-black font-arabic">
+                <div className="flex justify-between"><span>مرات الاستخدام:</span><span className="text-sm font-bold text-black font-arabic">{template.usage}</span></div>
               </div>
-            </div>
-            <h4 className="text-xl font-semibold text-black font-arabic mb-2">{template.name}</h4>
-            <p className="text-sm font-normal text-black font-arabic mb-4">{template.description}</p>
-            <div className="space-y-2 text-sm font-normal text-black font-arabic">
-              <div className="flex justify-between"><span>مرات الاستخدام:</span><span className="text-sm font-bold text-black font-arabic">{template.usage}</span></div>
-            </div>
-          </div>)}
-      </div>
+            </AppCardSurface>
+          </AppGridItem>
+        ))}
+      </AppDashboardGrid>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة نموذج جديد" fields={addFields} onSubmit={handleAdd} submitLabel="إضافة" successMessage="تمت إضافة النموذج بنجاح" />
       {viewingTemplate && <GenericDetailModal isOpen={!!viewingTemplate} onClose={() => setViewingTemplate(null)} title={`تفاصيل: ${viewingTemplate.name}`} fields={getViewFields(viewingTemplate)} />}
-    </div>;
+    </div>
+  );
 };
