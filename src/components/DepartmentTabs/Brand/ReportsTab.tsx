@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Download, Eye } from 'lucide-react';
-import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { ArcGaugeCard } from '@/components/shared/visual-data/ArcGaugeCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';

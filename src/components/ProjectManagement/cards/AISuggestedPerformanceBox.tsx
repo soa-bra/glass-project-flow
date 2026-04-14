@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { BarChart3, Users, Target, FileText, TrendingUp, PieChart } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, PieChart as RechartsPieChart, Cell, XAxis, YAxis } from 'recharts';
+import { BarChart3, Users, Target, FileText, TrendingUp } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, PieChart as RechartsPieChart, Cell } from 'recharts';
 import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
 
 interface AISuggestedPerformanceCardProps {
