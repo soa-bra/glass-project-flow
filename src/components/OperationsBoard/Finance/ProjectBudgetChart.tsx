@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface ProjectBudget {
   id: number;
@@ -29,7 +30,7 @@ export const ProjectBudgetChart: React.FC<ProjectBudgetChartProps> = ({ projects
         const barColor = spentPercentage > 90 ? 'bg-red-500' : spentPercentage > 75 ? 'bg-orange-400' : 'bg-green-500';
         
         return (
-          <div key={project.id} className="bg-white border border-[#DADCE0] rounded-[24px] p-4 transition-all duration-200 ease-in-out hover:bg-gray-50">
+          <AppCardSurface key={project.id} density="compact" interactive="hoverable">
             <div className="flex justify-between items-center mb-2">
               <div className="text-left text-sm">
                 <span className="font-medium">{spentPercentage}%</span>
@@ -53,7 +54,7 @@ export const ProjectBudgetChart: React.FC<ProjectBudgetChartProps> = ({ projects
               <div>{formatCurrency(project.spent)}</div>
               <div>{formatCurrency(project.budget)}</div>
             </div>
-          </div>
+          </AppCardSurface>
         );
       })}
     </div>

@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
@@ -117,7 +118,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         <div className="space-y-6">
 
           {/* Active Experiments Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🧪 التجارب النشطة
               <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Lab</span>
@@ -149,10 +150,10 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Training Wizard Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🚀 معالج التدريب
               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Training Wizard</span>
@@ -189,10 +190,10 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 تدريب نموذج جديد من الأرشيف
               </button>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Model Management Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إدارة النماذج</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -250,10 +251,10 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Performance Settings Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إعدادات الأداء</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -289,10 +290,10 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 <p className="text-xs text-gray-500 mt-2">المدة بالثواني قبل انتهاء الوقت</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Training Status Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">حالة التدريب</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -330,7 +331,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

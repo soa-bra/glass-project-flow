@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const CustomReportForm: React.FC = () => {
   const [startDate, setStartDate] = useState('');
@@ -28,7 +29,7 @@ export const CustomReportForm: React.FC = () => {
     <div>
       <h3 className="text-xl font-arabic font-medium text-right mb-4">إنشاء تقرير مخصص</h3>
       
-      <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 transition-all duration-200 ease-in-out">
+      <AppCardSurface density="standard">
         {/* نطاق التاريخ */}
         <div className="mb-6">
           <h4 className="font-medium text-right mb-2">الفترة الزمنية</h4>
@@ -116,7 +117,7 @@ export const CustomReportForm: React.FC = () => {
             تصدير التقرير
           </button>
         </div>
-      </div>
+      </AppCardSurface>
     </div>
   );
 };

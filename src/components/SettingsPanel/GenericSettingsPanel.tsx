@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState, useEffect } from 'react';
 import { User, Shield, Bell, Settings, Database, Palette, Globe, Key, Monitor, CreditCard, Users, Building } from 'lucide-react';
 import { useAutosave } from './hooks/useAutosave';
@@ -151,7 +152,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       <div className="flex-1 overflow-auto pb-6 px-6" >
         <div className="space-y-6">
           {/* Header Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <IconComponent className="w-6 h-6 text-black" />
@@ -165,10 +166,10 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                 <p className="text-xs font-normal text-gray-400">متصل</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Main Content Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <div className="space-y-6">
               {/* Settings Form Content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -214,7 +215,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                 </AppGridItem>
               </AppDashboardGrid>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

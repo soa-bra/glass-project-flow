@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
@@ -85,7 +86,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
         <div className="space-y-6">
 
           {/* Theme Mode Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">وضع المظهر</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -108,10 +109,10 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Color Schemes Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">أنظمة الألوان</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -148,10 +149,10 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Personalization Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 التخصيص بالذكاء الاصطناعي
               <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Personalization</span>
@@ -188,10 +189,10 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </label>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Accessibility Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إعدادات إمكانية الوصول</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -257,7 +258,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

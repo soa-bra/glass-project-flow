@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Database, Shield, FileText, Clock, AlertTriangle, CheckCircle, Lock, Unlock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
@@ -98,7 +99,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
         <div className="space-y-6">
 
           {/* Header Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <Database className="w-6 h-6 text-black" />
@@ -112,10 +113,10 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 <p className="text-xs font-normal text-gray-400">متوافق</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Compliance Monitor Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 مراقب الامتثال الذكي
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Compliance Monitor</span>
@@ -135,10 +136,10 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Data Retention Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">سياسات الاحتفاظ بالبيانات</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,10 +205,10 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Backup Settings Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">النسخ الاحتياطي والاستعادة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -281,7 +282,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

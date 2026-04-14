@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Link2, Key, Shield, CheckCircle, AlertCircle, Settings, Zap, Download, Upload } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -137,7 +138,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
         <div className="space-y-6">
 
           {/* Header Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <Link2 className="w-6 h-6 text-black" />
@@ -151,10 +152,10 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 <p className="text-xs font-normal text-gray-400">نشط</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Setup Assistant Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 مساعد الإعداد التلقائي
               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">AI Setup Assistant</span>
@@ -191,10 +192,10 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 </label>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Available Integrations Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">التكاملات المتاحة</h3>
             
             <div className="space-y-4">
@@ -235,10 +236,10 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* API Settings Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إعدادات API</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,10 +315,10 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Webhooks Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">Webhooks</h3>
             
             <div className="space-y-4">
@@ -363,7 +364,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 )}
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
