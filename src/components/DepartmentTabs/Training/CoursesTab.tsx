@@ -52,22 +52,22 @@ export const CoursesTab: React.FC = () => {
   const [builderModules, setBuilderModules] = useState<{ title: string; type: string; duration: string; description: string }[]>([]);
   const [newModule, setNewModule] = useState({ title: '', type: 'video', duration: '', description: '' });
 
-  // ── Form fields ──
+  // ── Form fields (course-management specific) ──
   const createFields: FormField[] = [
-    { name: 'title', label: 'اسم الدورة', type: 'text', required: true, placeholder: 'مثال: أساسيات علم اجتماع العلامة التجارية' },
-    { name: 'description', label: 'وصف الدورة', type: 'textarea', required: true, placeholder: 'اكتب وصفاً مختصراً يوضح أهداف الدورة ومحتواها...' },
-    { name: 'category', label: 'التصنيف', type: 'select', required: true, options: [
-      { value: 'onboarding', label: 'تأهيل' }, { value: 'technical', label: 'تقني' },
-      { value: 'management', label: 'إداري' }, { value: 'corporate', label: 'مؤسسي' },
-      { value: 'workshop', label: 'ورشة عمل' },
+    { name: 'title', label: 'عنوان الدورة التدريبية', type: 'text', required: true, placeholder: 'مثال: أساسيات علم اجتماع العلامة التجارية' },
+    { name: 'description', label: 'وصف الدورة وأهدافها التعليمية', type: 'textarea', required: true, placeholder: 'اشرح الأهداف التعليمية، الفئة المستهدفة، والمخرجات المتوقعة من الدورة...' },
+    { name: 'category', label: 'المسار التدريبي', type: 'select', required: true, options: [
+      { value: 'onboarding', label: 'تأهيل الموظفين الجدد' }, { value: 'technical', label: 'مهارات تقنية' },
+      { value: 'management', label: 'مهارات إدارية وقيادية' }, { value: 'corporate', label: 'ثقافة مؤسسية' },
+      { value: 'workshop', label: 'ورشة عمل تطبيقية' },
     ]},
-    { name: 'type', label: 'نوع التقديم', type: 'select', required: true, options: [
-      { value: 'internal', label: 'داخلي' }, { value: 'external', label: 'خارجي' },
-      { value: 'partnership', label: 'شراكة' },
+    { name: 'type', label: 'أسلوب التقديم', type: 'select', required: true, options: [
+      { value: 'internal', label: 'تدريب داخلي (فريق سوبرا)' }, { value: 'external', label: 'مدرب خارجي معتمد' },
+      { value: 'partnership', label: 'شراكة تدريبية' },
     ]},
-    { name: 'instructor', label: 'المدرب المسؤول', type: 'text', required: true, placeholder: 'اسم المدرب أو المسؤول' },
-    { name: 'duration', label: 'المدة الإجمالية (ساعات)', type: 'number', required: true, placeholder: '0' },
-    { name: 'maxStudents', label: 'الحد الأقصى للمتدربين', type: 'number', placeholder: '25' },
+    { name: 'instructor', label: 'المدرب / المسؤول التعليمي', type: 'text', required: true, placeholder: 'اسم المدرب أو الجهة المسؤولة' },
+    { name: 'duration', label: 'إجمالي ساعات التدريب', type: 'number', required: true, placeholder: '0' },
+    { name: 'maxStudents', label: 'السعة القصوى (عدد المتدربين)', type: 'number', placeholder: '25' },
   ];
 
   // ── Handlers ──
@@ -235,11 +235,11 @@ export const CoursesTab: React.FC = () => {
       <GenericFormModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        title="إنشاء دورة تدريبية جديدة"
+        title="تصميم دورة تدريبية جديدة"
         fields={createFields}
         onSubmit={handleCreateCourse}
-        submitLabel="إنشاء الدورة"
-        successMessage="تم إنشاء الدورة بنجاح — يمكنك الآن إضافة الوحدات من محرر الدورات"
+        submitLabel="إنشاء الدورة التدريبية"
+        successMessage="تم إنشاء الدورة بنجاح — انتقل إلى محرر الوحدات لإضافة المحتوى التعليمي"
       />
 
       {/* ════════════════════════════════════════════════
@@ -249,11 +249,11 @@ export const CoursesTab: React.FC = () => {
         <GenericFormModal
           isOpen={!!editingCourse}
           onClose={() => setEditingCourse(null)}
-          title={`تعديل: ${editingCourse.title}`}
+          title={`تعديل الدورة التدريبية: ${editingCourse.title}`}
           fields={createFields.map(f => ({ ...f, defaultValue: String((editingCourse as any)[f.name] || '') }))}
           onSubmit={handleEditCourse}
-          submitLabel="حفظ التعديلات"
-          successMessage="تم تحديث الدورة بنجاح"
+          submitLabel="حفظ تعديلات الدورة"
+          successMessage="تم تحديث بيانات الدورة التدريبية بنجاح"
         />
       )}
 
@@ -378,35 +378,40 @@ export const CoursesTab: React.FC = () => {
 
             <div className="space-y-5 mt-4">
               {/* Add module form */}
-              <div className="p-4 bg-white/30 rounded-2xl border border-black/5 space-y-3">
-                <h4 className="font-semibold font-arabic text-sm flex items-center gap-1.5">
-                  <Plus className="h-4 w-4" /> إضافة وحدة جديدة
-                </h4>
+              <div className="p-4 bg-white/30 rounded-2xl border border-black/5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold font-arabic text-sm flex items-center gap-1.5">
+                    <Plus className="h-4 w-4" /> إضافة وحدة تعليمية
+                  </h4>
+                  <span className="text-[10px] text-[rgba(11,15,18,0.4)] font-arabic">الحقول المطلوبة معلّمة بـ *</span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label className="font-arabic text-xs">عنوان الوحدة *</Label>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label className="font-arabic text-xs font-medium">عنوان الوحدة التعليمية *</Label>
                     <Input
                       value={newModule.title}
                       onChange={e => setNewModule(p => ({ ...p, title: e.target.value }))}
-                      placeholder="مثال: مقدمة في أساسيات المجال"
+                      placeholder="مثال: مقدمة في أساسيات علم اجتماع العلامة"
                       className="bg-white/40 border-black/10 rounded-xl"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="font-arabic text-xs">نوع المحتوى</Label>
+                    <Label className="font-arabic text-xs font-medium">نوع المحتوى التعليمي</Label>
                     <Select value={newModule.type} onValueChange={v => setNewModule(p => ({ ...p, type: v }))}>
                       <SelectTrigger className="bg-white/40 border-black/10 rounded-xl">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(MODULE_TYPE_MAP).map(([value, { label }]) => (
-                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        {Object.entries(MODULE_TYPE_MAP).map(([value, { label, icon: Icon }]) => (
+                          <SelectItem key={value} value={value}>
+                            <span className="flex items-center gap-2"><Icon className="h-3.5 w-3.5" /> {label}</span>
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="font-arabic text-xs">المدة (دقائق)</Label>
+                    <Label className="font-arabic text-xs font-medium">مدة الوحدة (دقائق)</Label>
                     <Input
                       type="number"
                       value={newModule.duration}
@@ -415,18 +420,18 @@ export const CoursesTab: React.FC = () => {
                       className="bg-white/40 border-black/10 rounded-xl"
                     />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="font-arabic text-xs">وصف مختصر</Label>
+                  <div className="space-y-1.5 sm:col-span-2">
+                    <Label className="font-arabic text-xs font-medium">وصف المحتوى (اختياري)</Label>
                     <Input
                       value={newModule.description}
                       onChange={e => setNewModule(p => ({ ...p, description: e.target.value }))}
-                      placeholder="وصف اختياري للوحدة"
+                      placeholder="ملخص قصير لما يتعلمه المتدرب في هذه الوحدة"
                       className="bg-white/40 border-black/10 rounded-xl"
                     />
                   </div>
                 </div>
-                <BaseActionButton onClick={handleAddModule} size="sm" className="flex items-center gap-1">
-                  <Plus className="h-3.5 w-3.5" /> إضافة
+                <BaseActionButton onClick={handleAddModule} size="sm" className="flex items-center gap-1.5">
+                  <Plus className="h-3.5 w-3.5" /> إضافة الوحدة
                 </BaseActionButton>
               </div>
 
@@ -434,11 +439,11 @@ export const CoursesTab: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <h4 className="font-semibold font-arabic text-sm">
-                    الوحدات ({builderModules.length})
+                    محتوى الدورة — {builderModules.length} {builderModules.length === 1 ? 'وحدة' : 'وحدات'}
                   </h4>
                   {builderModules.length > 0 && (
-                    <span className="text-xs text-[rgba(11,15,18,0.5)] font-arabic">
-                      إجمالي: {builderModules.reduce((s, m) => s + (Number(m.duration) || 0), 0)} دقيقة
+                    <span className="text-xs text-[rgba(11,15,18,0.5)] font-arabic bg-[rgba(11,15,18,0.04)] px-2 py-0.5 rounded-full">
+                      ⏱ {builderModules.reduce((s, m) => s + (Number(m.duration) || 0), 0)} دقيقة إجمالاً
                     </span>
                   )}
                 </div>
