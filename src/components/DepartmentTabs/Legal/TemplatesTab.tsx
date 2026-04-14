@@ -4,6 +4,7 @@ import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 const initialTemplates = [
   { id: 'TPL-001', name: 'عقد خدمات استشارية', category: 'contract', type: 'خدمات', description: 'نموذج عقد للخدمات الاستشارية والتطوير', lastModified: '2024-06-15', createdBy: 'فريق الشؤون القانونية', usage: 25, status: 'active' },
@@ -72,7 +73,7 @@ export const TemplatesTab: React.FC = () => {
       </div>
 
       {/* أدوات البحث */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="flex items-center gap-4">
           <div className="relative flex-1">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center absolute right-3 top-1/2 transform -translate-y-1/2"><Search className="w-4 h-4 text-black" /></div>

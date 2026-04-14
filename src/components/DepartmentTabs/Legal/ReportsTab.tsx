@@ -6,6 +6,7 @@ import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 const initialReports = [
   { id: 'RPT-001', title: 'تقرير العقود الشهري', description: 'تقرير شامل عن حالة العقود والاتفاقيات', type: 'monthly', category: 'contracts', lastGenerated: '2024-06-30', format: 'PDF', status: 'ready' },
@@ -75,7 +76,7 @@ export const ReportsTab: React.FC = () => {
       </div>
 
       {/* إحصائيات سريعة */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">إحصائيات التقارير</h3></div>
         <AppDashboardGrid columns={12}>
           <AppGridItem colSpan={3}>
@@ -110,7 +111,7 @@ export const ReportsTab: React.FC = () => {
       </div>
 
       {/* قائمة التقارير */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">التقارير المتاحة</h3></div>
         <div className="space-y-4">
           {reports.map(report => <div key={report.id} className="flex items-center justify-between p-4 bg-transparent border border-[#DADCE0] rounded-[24px] hover:bg-white/10 transition-colors">

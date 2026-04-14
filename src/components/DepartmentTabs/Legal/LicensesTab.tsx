@@ -9,6 +9,7 @@ import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
 import type { License } from './types';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const LicensesTab: React.FC = () => {
   const [licenses, setLicenses] = useState(mockLicenses);
@@ -93,7 +94,7 @@ export const LicensesTab: React.FC = () => {
       </div>
 
       {/* إحصائيات التراخيص */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><Award className="h-4 w-4 text-black" /></div>
@@ -133,7 +134,7 @@ export const LicensesTab: React.FC = () => {
       </div>
 
       {/* جدول التراخيص */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">قائمة التراخيص</h3></div>
         <div className="overflow-x-auto">
           <table className="w-full text-right">

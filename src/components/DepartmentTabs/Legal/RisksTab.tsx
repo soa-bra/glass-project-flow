@@ -7,6 +7,7 @@ import { getStatusColor, getStatusText, calculateRiskScore, formatDate } from '.
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const RisksTab: React.FC = () => {
   const [risks, setRisks] = useState(mockRiskAssessments);
@@ -95,7 +96,7 @@ export const RisksTab: React.FC = () => {
       </div>
 
       {/* نظرة عامة على المخاطر */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><Shield className="h-4 w-4 text-black" /></div>
@@ -121,7 +122,7 @@ export const RisksTab: React.FC = () => {
       </div>
 
       {/* مصفوفة المخاطر */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">مصفوفة المخاطر</h3></div>
         <div className="grid grid-cols-5 gap-2 mb-4">
           <div className="text-center text-sm font-medium text-black font-arabic">الاحتمالية</div>
@@ -142,7 +143,7 @@ export const RisksTab: React.FC = () => {
       </div>
 
       {/* تقييمات المخاطر */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">تقييمات المخاطر</h3></div>
         <div className="space-y-4">
           {risks.map(risk => <div key={risk.id} className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
