@@ -9,7 +9,7 @@ import { NumericStatCard } from '@/components/shared/visual-data';
 import { Input } from '@/components/ui/input';
 import { Palette, Upload, Search, Filter, Download, Eye, Edit, Image, FileText, Type } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
+import { GenericDetailModal } from '../shared/GenericDetailModal';
 import { GenericFilterPopover, FilterOption } from '../shared/GenericFilterPopover';
 import { downloadAsJSON } from '../shared/downloadUtils';
 import { toast } from 'sonner';

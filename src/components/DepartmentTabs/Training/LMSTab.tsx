@@ -8,7 +8,7 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Play, FileText, CheckCircle, Clock, Users, Settings } from 'lucide-react';
+import { FileText, Settings } from 'lucide-react';
 
 export const LMSTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState('content');

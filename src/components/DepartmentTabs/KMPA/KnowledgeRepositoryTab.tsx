@@ -7,7 +7,7 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Input } from '@/components/ui/input';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, BookOpen, Download, Eye, Calendar, User, FileText, Star, Upload } from 'lucide-react';
+import { Search, Download, Eye, Calendar, User, FileText, Star, Upload } from 'lucide-react';
 import { mockKnowledgeDocuments } from './data/mockData';
 
 export const KnowledgeRepositoryTab: React.FC = () => {

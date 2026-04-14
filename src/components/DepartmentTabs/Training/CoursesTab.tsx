@@ -1,20 +1,20 @@
 
 import React, { useState } from 'react';
-import { BaseBox } from '@/components/ui/BaseBox';
+
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data';
-import { BookOpen, Users, Clock, Star, Plus, Eye, Edit, X } from 'lucide-react';
+import { BookOpen, Users, Clock, Star, Plus, X } from 'lucide-react';
 import { mockCourses } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+
 import { toast } from 'sonner';
 
 export const CoursesTab: React.FC = () => {
