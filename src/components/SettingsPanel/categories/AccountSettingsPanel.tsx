@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { User, Camera, Key, Globe, Save } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { useAutosave } from '../hooks/useAutosave';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { ValidationSchemas, FormValidator, InputSanitizer, RateLimiter } from '../../../utils/validation';

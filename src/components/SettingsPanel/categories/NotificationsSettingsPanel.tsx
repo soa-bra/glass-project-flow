@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Bell, Smartphone, Mail, MessageSquare, Settings, Volume2, VolumeX, Clock, Target } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { useAutosave } from '../hooks/useAutosave';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';

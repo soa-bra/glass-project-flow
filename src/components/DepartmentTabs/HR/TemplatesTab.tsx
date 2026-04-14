@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, Download, Eye, Edit, Search, X } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Input } from '@/components/ui/input';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
