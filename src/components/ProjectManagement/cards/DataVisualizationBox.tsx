@@ -1,5 +1,5 @@
 import React from 'react';
-import { NumericStatCard, MinimalLineChart } from '@/components/shared/visual-data';
+import { MinimalLineChart } from '@/components/shared/visual-data';
 
 const chartData = [
   { label: 'Jan', value: 30 },
