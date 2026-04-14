@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Award } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockCSRInitiatives } from './data';
 
 export const MonitoringTab: React.FC = () => {
@@ -27,12 +29,12 @@ export const MonitoringTab: React.FC = () => {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricHeroCard title="العائد الاجتماعي (SROI)" value={totalSROI} description="لكل ريال مستثمر" />
-        <MetricHeroCard title="إجمالي المستفيدين" value={totalBeneficiaries.toLocaleString('ar-SA')} description="مباشر وغير مباشر" />
-        <MetricHeroCard title="ساعات التطوع" value={totalVolunteerHours.toLocaleString('ar-SA')} description="من موظفي سوبرا" />
-        <MetricHeroCard title="إجمالي الاستثمار" value={formatCurrency(totalBudget)} />
-      </div>
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="العائد الاجتماعي (SROI)" value={totalSROI} description="لكل ريال مستثمر" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="إجمالي المستفيدين" value={totalBeneficiaries.toLocaleString('ar-SA')} description="مباشر وغير مباشر" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="ساعات التطوع" value={totalVolunteerHours.toLocaleString('ar-SA')} description="من موظفي سوبرا" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="إجمالي الاستثمار" value={formatCurrency(totalBudget)} /></AppGridItem>
+      </AppDashboardGrid>
 
       {/* Initiative Performance */}
       <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">

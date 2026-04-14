@@ -225,7 +225,7 @@ export const OpportunitiesTab: React.FC = () => {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             </PieChart>
           </ResponsiveContainer>
         </DataCardFrame>

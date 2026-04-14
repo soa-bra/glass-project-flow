@@ -68,7 +68,7 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
         return (
           <ChartWrapper minHeight={60} minWidth={100} aspectRatio="16/9">
             <BarChart data={barData}>
-              <Bar dataKey="value" fill="#aec2cf" radius={[2, 2, 0, 0]} />
+              <Bar dataKey="value" fill="#aec2cf" radius={[999, 999, 999, 999]} barSize={20} />
             </BarChart>
           </ChartWrapper>
         );

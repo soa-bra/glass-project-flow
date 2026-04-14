@@ -6,6 +6,8 @@ import { Plus, Search } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockCustomerService } from './data';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';
@@ -101,12 +103,12 @@ export const ServiceTab: React.FC = () => {
       )}
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricHeroCard title="تذاكر مفتوحة" value={tickets.filter(t => t.status === 'open').length} description={`من أصل ${tickets.length}`} className="min-h-[130px]" />
-        <MetricHeroCard title="وقت الاستجابة" value="1.6" unit="ساعة" className="min-h-[130px]" />
-        <MetricHeroCard title="تقييم الرضا" value="4.6" unit="/5" className="min-h-[130px]" />
-        <MetricHeroCard title="معدل الحل" value="92%" className="min-h-[130px]" />
-      </div>
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="تذاكر مفتوحة" value={tickets.filter(t => t.status === 'open').length} description={`من أصل ${tickets.length}`} className="min-h-[130px]" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="وقت الاستجابة" value="1.6" unit="ساعة" className="min-h-[130px]" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="تقييم الرضا" value="4.6" unit="/5" className="min-h-[130px]" /></AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={6}><MetricHeroCard title="معدل الحل" value="92%" className="min-h-[130px]" /></AppGridItem>
+      </AppDashboardGrid>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Progress } from '@/components/ui/progress';
-import { Download, Calendar, FileText, Eye, Heart, TrendingUp, Target, Users } from 'lucide-react';
-import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { Download, Eye } from 'lucide-react';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { ArcGaugeCard } from '@/components/shared/visual-data/ArcGaugeCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 export const ReportsTab: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -33,26 +34,19 @@ export const ReportsTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* KPIs — using ArcGaugeCard for percentage metrics + NumericStatCard for trend */}
+      <AppDashboardGrid columns={12} density="default">
         {kpiData.map((kpi, i) => (
-          <div key={i} className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col justify-between min-h-[150px]">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic">{kpi.metric}</span>
-              <span className="text-xs font-bold text-[#3DBE8B]">{kpi.trend}</span>
-            </div>
-            <div className="mt-auto">
-              <div className="flex items-baseline gap-1">
-                <span className="text-[36px] leading-none font-bold text-[#0B0F12] font-arabic">{kpi.current}%</span>
-                <span className="text-[11px] text-[rgba(11,15,18,0.35)] font-arabic">/ {kpi.target}%</span>
-              </div>
-              <div className="w-full h-2 bg-[rgba(11,15,18,0.08)] rounded-full overflow-hidden mt-2">
-                <div className="h-full bg-[#3DA8F5] rounded-full transition-all" style={{ width: `${kpi.current}%` }} />
-              </div>
-            </div>
-          </div>
+          <AppGridItem key={i} colSpan={3} tabletSpan={6}>
+            <ArcGaugeCard
+              title={kpi.metric}
+              value={kpi.current}
+              subtitle={`الهدف: ${kpi.target}%`}
+              color={kpi.current >= kpi.target ? '#3DBE8B' : kpi.current >= kpi.target * 0.85 ? '#F6C445' : '#E5564D'}
+            />
+          </AppGridItem>
         ))}
-      </div>
+      </AppDashboardGrid>
 
       {/* Category Filter */}
       <div className="flex gap-2 flex-wrap">
