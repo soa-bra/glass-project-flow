@@ -43,7 +43,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
   }
 
   return (
-    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4', className)}>
+    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5', className)}>
       {stats.map((stat, index) => (
         <motion.div
           key={index}
@@ -52,7 +52,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col justify-between min-h-[130px] sm:min-h-[140px] md:min-h-[150px] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]"
+          className="rounded-[24px] bg-white border border-[#DADCE0] p-6 sm:p-7 flex flex-col gap-3 min-h-[140px] sm:min-h-[150px] md:min-h-[160px] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]"
         >
           {/* Title — small, muted, secondary */}
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic">
@@ -78,7 +78,7 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
               )}
             </div>
             {stat.description && (
-              <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1 leading-snug line-clamp-2">
+              <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1.5 leading-snug line-clamp-2">
                 {stat.description}
               </p>
             )}
