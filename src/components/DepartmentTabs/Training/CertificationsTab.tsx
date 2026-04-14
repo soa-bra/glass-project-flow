@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Award, Users, BookOpen, CheckCircle, Star, Plus, Download, Eye } from 'lucide-react';
 import { mockCertificates, mockEmployeeSkillMatrix } from './data';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const CertificationsTab: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState('certificates');
@@ -53,28 +54,28 @@ export const CertificationsTab: React.FC = () => {
       {/* Certificate Stats */}
       <AppDashboardGrid columns={12}>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <Award className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{certificates.length}</div>
             <div className="text-sm text-gray-600">شهادات صادرة</div>
           </div>
         </AppGridItem>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{certificates.length}</div>
             <div className="text-sm text-gray-600">شهادات مفعلة</div>
           </div>
         </AppGridItem>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{certificateTemplates.length}</div>
             <div className="text-sm text-gray-600">قوالب الشهادات</div>
           </div>
         </AppGridItem>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">234</div>
             <div className="text-sm text-gray-600">تحميلات الشهادات</div>
@@ -190,14 +191,14 @@ export const CertificationsTab: React.FC = () => {
       {/* Skills Overview */}
       <AppDashboardGrid columns={12}>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{skillMatrix.length}</div>
             <div className="text-sm text-gray-600">ملفات المهارات</div>
           </div>
         </AppGridItem>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">
               {Math.round(skillMatrix.reduce((acc, emp) => 
@@ -208,7 +209,7 @@ export const CertificationsTab: React.FC = () => {
           </div>
         </AppGridItem>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">
               {skillMatrix.filter(emp => 
@@ -219,7 +220,7 @@ export const CertificationsTab: React.FC = () => {
           </div>
         </AppGridItem>
         <AppGridItem colSpan={3}>
-          <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+          <AppCardSurface density="compact" className="text-center">
             <Users className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">
               {skillMatrix.filter(emp => 

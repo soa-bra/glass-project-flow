@@ -7,6 +7,7 @@ import { getStatusText, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const ComplianceTab: React.FC = () => {
   const [items, setItems] = useState(mockComplianceItems);
@@ -83,7 +84,7 @@ export const ComplianceTab: React.FC = () => {
       </div>
 
       {/* نظرة عامة على الامتثال */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
@@ -136,7 +137,7 @@ export const ComplianceTab: React.FC = () => {
       </div>
 
       {/* قائمة عناصر الامتثال */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">مصفوفة المتطلبات القانونية</h3></div>
         <div>
           <div className="overflow-x-auto">
@@ -179,7 +180,7 @@ export const ComplianceTab: React.FC = () => {
       </div>
 
       {/* العناصر التي تحتاج إجراء عاجل */}
-      <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <AppCardSurface density="spacious" interactive="hoverable">
         <div className="mb-6">
           <h3 className="text-xl font-semibold text-black font-arabic flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><AlertTriangle className="h-4 w-4 text-black" /></div>
