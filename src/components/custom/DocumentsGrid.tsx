@@ -9,6 +9,7 @@ import { useProjectFiles } from '@/hooks/useProjectFiles';
 import { CommentDialog } from './CommentDialog';
 import { EditFileDialog } from './EditFileDialog';
 import { FilterDialog, FilterOptions } from './FilterDialog';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 // تم نقل FolderData إلى projectFilesService
 
@@ -179,7 +180,7 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
 
   // استخراج التاقز المتاحة من جميع الملفات
   const availableTags = Array.from(new Set(docs.flatMap(doc => doc.tags)));
-  return <div className="bg-[#FFFFFF] rounded-[24px] p-6 border border-[#DADCE0]">
+  return <AppCardSurface density="compact">
       {/* شريط التنقل */}
       {currentFolderId && <div className="flex items-center gap-2 mb-4">
           <Button size="sm" variant="outline" onClick={handleBackClick} className="rounded-full bg-black text-sm text-white">
@@ -357,5 +358,5 @@ export const DocumentsGrid: React.FC<DocumentsGridProps> = ({
       id: '5',
       title: 'مراجعة الكود'
     }]} availableTags={availableTags} />
-    </div>;
+    </AppCardSurface>;
 };

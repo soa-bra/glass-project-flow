@@ -4,6 +4,7 @@ import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Input } from '@/components/ui/input';
 import { FileText, Download, Eye, Plus, Search } from 'lucide-react';
 import { FileUploadModal } from './FileUploadModal';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 interface Template {
   id: string;
   name: string;
@@ -51,7 +52,7 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
       newTemplates.forEach(template => onTemplateAdded(template));
     }
   };
-  return <div className="bg-[#FFFFFF] rounded-[24px] p-6 border border-[#DADCE0]">
+  return <AppCardSurface density="compact">
       {/* شريط البحث وأيقونة الرفع */}
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1">
@@ -106,5 +107,5 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
 
       {/* نافذة رفع القوالب */}
       <FileUploadModal isOpen={showUploadModal} onClose={() => setShowUploadModal(false)} projectTasks={[]} projectId="templates" onFilesUploaded={handleTemplateUploaded} />
-    </div>;
+    </AppCardSurface>;
 };
