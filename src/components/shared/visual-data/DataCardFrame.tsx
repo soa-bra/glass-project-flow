@@ -51,7 +51,7 @@ export const DataCardFrame: React.FC<DataCardFrameProps> = ({
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-[36px] font-bold text-[#0B0F12] leading-none"
+            className="text-[28px] sm:text-[32px] md:text-[36px] font-bold text-[#0B0F12] leading-none tracking-tight"
           >
             {heroValue}
           </motion.span>
@@ -62,7 +62,7 @@ export const DataCardFrame: React.FC<DataCardFrameProps> = ({
       )}
 
       {/* Chart / content zone */}
-      <div className="mt-auto pt-2 flex-1">
+      <div className="mt-auto pt-2 flex-1 min-h-[80px] md:min-h-[120px]">
         {children}
       </div>
     </motion.div>

@@ -28,7 +28,7 @@ export const MetricHeroCard: React.FC<MetricHeroCardProps> = ({
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       className={cn(
-        'rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col justify-between min-h-[160px]',
+        'rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col justify-between min-h-[140px] sm:min-h-[150px] md:min-h-[160px]',
         className
       )}
     >
@@ -43,7 +43,7 @@ export const MetricHeroCard: React.FC<MetricHeroCardProps> = ({
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
-            className="text-[44px] leading-none font-bold text-[#0B0F12] font-arabic"
+            className="text-[36px] sm:text-[40px] md:text-[44px] leading-none font-bold text-[#0B0F12] font-arabic tracking-tight"
           >
             {value}
           </motion.span>
@@ -52,7 +52,7 @@ export const MetricHeroCard: React.FC<MetricHeroCardProps> = ({
           )}
         </div>
         {description && (
-          <p className="text-[11px] text-[rgba(11,15,18,0.35)] font-arabic mt-1.5">{description}</p>
+          <p className="text-[11px] text-[rgba(11,15,18,0.35)] font-arabic mt-1.5 line-clamp-2">{description}</p>
         )}
         {badgeText && (
           <motion.div
