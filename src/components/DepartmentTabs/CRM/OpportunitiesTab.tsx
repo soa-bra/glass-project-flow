@@ -1,5 +1,7 @@
 
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -152,39 +154,48 @@ export const OpportunitiesTab: React.FC = () => {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <NumericStatCard
-          title="إجمالي الفرص"
-          value={mockCRMAnalytics.totalOpportunities}
-          description={`${filteredOpportunities.length} نشطة`}
-          icon={<Target className="h-5 w-5" />}
-          accentColor="#8B5CF6"
-        />
-        <NumericStatCard
-          title="معدل التحويل"
-          value={`${mockCRMAnalytics.conversionRate}%`}
-          description={`${mockCRMAnalytics.wonOpportunities} فرصة ناجحة`}
-          icon={<TrendingUp className="h-5 w-5" />}
-          accentColor="#10B981"
-        />
-        <NumericStatCard
-          title="متوسط قيمة الصفقة"
-          value={`${(mockCRMAnalytics.averageDealSize / 1000).toFixed(0)}ك`}
-          unit="ر.س"
-          icon={<DollarSign className="h-5 w-5" />}
-          accentColor="#3B82F6"
-        />
-        <NumericStatCard
-          title="فرص هذا الشهر"
-          value={18}
-          description="+22% عن الماضي"
-          icon={<Calendar className="h-5 w-5" />}
-          accentColor="#F59E0B"
-        />
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}>
+          <NumericStatCard
+            title="إجمالي الفرص"
+            value={mockCRMAnalytics.totalOpportunities}
+            description={`${filteredOpportunities.length} نشطة`}
+            icon={<Target className="h-5 w-5" />}
+            accentColor="#8B5CF6"
+          />
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <NumericStatCard
+            title="معدل التحويل"
+            value={`${mockCRMAnalytics.conversionRate}%`}
+            description={`${mockCRMAnalytics.wonOpportunities} فرصة ناجحة`}
+            icon={<TrendingUp className="h-5 w-5" />}
+            accentColor="#10B981"
+          />
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <NumericStatCard
+            title="متوسط قيمة الصفقة"
+            value={`${(mockCRMAnalytics.averageDealSize / 1000).toFixed(0)}ك`}
+            unit="ر.س"
+            icon={<DollarSign className="h-5 w-5" />}
+            accentColor="#3B82F6"
+          />
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <NumericStatCard
+            title="فرص هذا الشهر"
+            value={18}
+            description="+22% عن الماضي"
+            icon={<Calendar className="h-5 w-5" />}
+            accentColor="#F59E0B"
+          />
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={6}>
         <DataCardFrame title="مسار المبيعات" icon={<TrendingUp className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
@@ -201,7 +212,9 @@ export const OpportunitiesTab: React.FC = () => {
             </BarChart>
           </ResponsiveContainer>
         </DataCardFrame>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6}>
         <DataCardFrame title="مصادر الفرص" icon={<Users className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -221,7 +234,8 @@ export const OpportunitiesTab: React.FC = () => {
             </PieChart>
           </ResponsiveContainer>
         </DataCardFrame>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Opportunities List */}
       <DataCardFrame title={`قائمة الفرص (${filteredOpportunities.length})`} icon={<FileText className="h-5 w-5" />}>

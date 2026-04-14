@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Award, AlertTriangle, Calendar, DollarSign, Plus, Eye, Download } from 'lucide-react';
 import { mockLicenses } from './data';
 import { getStatusText, formatCurrency, formatDate } from './utils';
@@ -98,28 +100,36 @@ export const LicensesTab: React.FC = () => {
             إحصائيات التراخيص
           </h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Award className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{licenseStats.active}</div>
-            <div className="text-sm font-medium text-black font-arabic">تراخيص نشطة</div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><AlertTriangle className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{licenseStats.pendingRenewal}</div>
-            <div className="text-sm font-medium text-black font-arabic">تحتاج تجديد</div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Calendar className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{licenseStats.expired}</div>
-            <div className="text-sm font-medium text-black font-arabic">منتهية</div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><DollarSign className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{totalRenewalCost.toLocaleString()}</div>
-            <div className="text-sm font-medium text-black font-arabic">تكلفة التجديد (ر.س)</div>
-          </div>
-        </div>
+        <AppDashboardGrid columns={12}>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Award className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{licenseStats.active}</div>
+              <div className="text-sm font-medium text-black font-arabic">تراخيص نشطة</div>
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><AlertTriangle className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{licenseStats.pendingRenewal}</div>
+              <div className="text-sm font-medium text-black font-arabic">تحتاج تجديد</div>
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Calendar className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{licenseStats.expired}</div>
+              <div className="text-sm font-medium text-black font-arabic">منتهية</div>
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><DollarSign className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{totalRenewalCost.toLocaleString()}</div>
+              <div className="text-sm font-medium text-black font-arabic">تكلفة التجديد (ر.س)</div>
+            </div>
+          </AppGridItem>
+        </AppDashboardGrid>
       </div>
 
       {/* جدول التراخيص */}

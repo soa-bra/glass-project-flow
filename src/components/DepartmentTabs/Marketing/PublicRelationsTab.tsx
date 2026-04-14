@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Megaphone, Users, FileText, Award, TrendingUp } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
@@ -143,20 +145,22 @@ export const PublicRelationsTab: React.FC = () => {
         </div>
       </BaseBox>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <AppDashboardGrid columns={12}>
         {[
           { icon: Award, value: prCampaigns.filter(c => c.status === 'active').length, label: 'حملة نشطة' },
           { icon: Users, value: mediaContacts.length, label: 'جهة اتصال إعلامية' },
           { icon: FileText, value: pressReleases.length, label: 'بيان صحفي' },
           { icon: TrendingUp, value: '85%', label: 'معدل التفاعل' },
         ].map((stat, i) => (
-          <BaseBox key={i} variant="operations" size="sm" className="text-center">
-            <stat.icon className="h-8 w-8 text-black mx-auto mb-2" />
-            <h3 className="text-2xl font-bold text-black mb-1 font-arabic">{stat.value}</h3>
-            <p className="text-sm text-black font-arabic">{stat.label}</p>
-          </BaseBox>
+          <AppGridItem key={i} colSpan={3}>
+            <BaseBox variant="operations" size="sm" className="text-center">
+              <stat.icon className="h-8 w-8 text-black mx-auto mb-2" />
+              <h3 className="text-2xl font-bold text-black mb-1 font-arabic">{stat.value}</h3>
+              <p className="text-sm text-black font-arabic">{stat.label}</p>
+            </BaseBox>
+          </AppGridItem>
         ))}
-      </div>
+      </AppDashboardGrid>
 
       <GenericFormModal isOpen={isAddCampaignOpen} onClose={() => setIsAddCampaignOpen(false)} title="إضافة حملة علاقات عامة" fields={campaignFields} onSubmit={handleAddCampaign} submitLabel="إضافة" successMessage="تمت إضافة الحملة بنجاح" />
       <GenericFormModal isOpen={isAddContactOpen} onClose={() => setIsAddContactOpen(false)} title="إضافة جهة اتصال إعلامية" fields={contactFields} onSubmit={handleAddContact} submitLabel="إضافة" successMessage="تمت إضافة جهة الاتصال بنجاح" />
