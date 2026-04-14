@@ -1,8 +1,6 @@
 import React from 'react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { NumericStatCard } from '@/components/shared/visual-data';
-import { BaseBadge } from '@/components/ui/BaseBadge';
-import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { UserPlus, Calendar, Award, Users } from 'lucide-react';
@@ -40,10 +38,7 @@ export const OverviewTab: React.FC = () => {
   ];
 
   const typeColors: Record<string, string> = {
-    hire: '#bdeed3',
-    leave: '#fbe2aa',
-    review: '#a4e2f6',
-    training: '#d9d2fd',
+    hire: '#bdeed3', leave: '#fbe2aa', review: '#a4e2f6', training: '#d9d2fd',
   };
 
   return (
@@ -51,7 +46,7 @@ export const OverviewTab: React.FC = () => {
       <KPIStatsSection stats={kpiStats} />
 
       {/* Quick Actions */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
           الإجراءات السريعة
         </span>
@@ -66,57 +61,52 @@ export const OverviewTab: React.FC = () => {
             </button>
           ))}
         </div>
-      </div>
+      </AppCardSurface>
 
       <AppDashboardGrid columns={12} density="default">
         <AppGridItem colSpan={6} tabletSpan={6}>
-        {/* Recent Activities */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
-          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
-            الأنشطة الأخيرة
-          </span>
-          <div className="space-y-2 mt-4">
-            {recentActivities.map((activity, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
-                <span
-                  className="w-2 h-2 rounded-full mt-1.5 shrink-0"
-                  style={{ backgroundColor: typeColors[activity.type] }}
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-arabic text-[rgba(11,15,18,0.70)]">{activity.message}</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.30)] mt-0.5">{activity.time}</p>
+          <AppCardSurface density="standard" className="h-full">
+            <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+              الأنشطة الأخيرة
+            </span>
+            <div className="space-y-2 mt-4">
+              {recentActivities.map((activity, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+                  <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: typeColors[activity.type] }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[12px] font-arabic text-[rgba(11,15,18,0.70)]">{activity.message}</p>
+                    <p className="text-[10px] text-[rgba(11,15,18,0.30)] mt-0.5">{activity.time}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </AppCardSurface>
         </AppGridItem>
 
         <AppGridItem colSpan={6} tabletSpan={6}>
-        {/* Upcoming Events */}
-        <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6 h-full">
-          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
-            الأحداث القادمة
-          </span>
-          <div className="space-y-2 mt-4">
-            {upcomingEvents.map((event, index) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
-                <div>
-                  <p className="text-[12px] font-arabic font-medium text-[rgba(11,15,18,0.70)]">{event.title}</p>
-                  <p className="text-[10px] text-[rgba(11,15,18,0.30)]">{event.date}</p>
+          <AppCardSurface density="standard" className="h-full">
+            <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
+              الأحداث القادمة
+            </span>
+            <div className="space-y-2 mt-4">
+              {upcomingEvents.map((event, index) => (
+                <div key={index} className="flex items-center justify-between p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+                  <div>
+                    <p className="text-[12px] font-arabic font-medium text-[rgba(11,15,18,0.70)]">{event.title}</p>
+                    <p className="text-[10px] text-[rgba(11,15,18,0.30)]">{event.date}</p>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full border border-[#DADCE0] text-[rgba(11,15,18,0.50)] font-arabic">
+                    {event.type === 'meeting' ? 'اجتماع' : event.type === 'training' ? 'تدريب' : event.type === 'interview' ? 'مقابلة' : 'ورشة'}
+                  </span>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full border border-[#DADCE0] text-[rgba(11,15,18,0.50)] font-arabic">
-                  {event.type === 'meeting' ? 'اجتماع' : event.type === 'training' ? 'تدريب' : event.type === 'interview' ? 'مقابلة' : 'ورشة'}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </AppCardSurface>
         </AppGridItem>
       </AppDashboardGrid>
 
       {/* Workforce Distribution */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
           توزيع القوى العاملة
         </span>
@@ -129,10 +119,7 @@ export const OverviewTab: React.FC = () => {
                   <span className="text-[11px] font-arabic text-[rgba(11,15,18,0.60)]">{dept.department}</span>
                   <div className="flex items-center gap-2">
                     <div className="w-24 h-2 bg-[rgba(11,15,18,0.04)] rounded-full">
-                      <div
-                        className="h-2 rounded-full"
-                        style={{ width: `${dept.percentage}%`, backgroundColor: '#a4e2f6' }}
-                      />
+                      <div className="h-2 rounded-full" style={{ width: `${dept.percentage}%`, backgroundColor: '#a4e2f6' }} />
                     </div>
                     <span className="text-[11px] font-bold text-[#0B0F12] w-6 text-left">{dept.count}</span>
                   </div>
@@ -147,9 +134,7 @@ export const OverviewTab: React.FC = () => {
                 <div key={index} className="p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[11px] font-arabic font-medium text-[rgba(11,15,18,0.70)]">{skill.skill}</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(241,181,185,0.15)] text-[rgba(11,15,18,0.60)] font-arabic">
-                      فجوة {skill.gap.toFixed(1)}
-                    </span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(241,181,185,0.15)] text-[rgba(11,15,18,0.60)] font-arabic">فجوة {skill.gap.toFixed(1)}</span>
                   </div>
                   <div className="flex items-center gap-3 text-[10px] text-[rgba(11,15,18,0.40)]">
                     <span>الحالي: {skill.currentLevel}</span>
@@ -160,7 +145,7 @@ export const OverviewTab: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
     </div>
   );
 };

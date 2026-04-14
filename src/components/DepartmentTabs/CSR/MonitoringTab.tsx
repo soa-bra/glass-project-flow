@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Award } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockCSRInitiatives } from './data';
@@ -18,7 +19,7 @@ export const MonitoringTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <div className="flex items-center gap-3">
           <Award className="h-6 w-6 text-[#0B0F12]" />
           <div>
@@ -26,7 +27,7 @@ export const MonitoringTab: React.FC = () => {
             <p className="text-[11px] text-[rgba(11,15,18,0.50)] font-arabic">متابعة شاملة لأداء المبادرات الاجتماعية وقياس الأثر</p>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* KPIs */}
       <AppDashboardGrid columns={12} density="default">
@@ -37,7 +38,7 @@ export const MonitoringTab: React.FC = () => {
       </AppDashboardGrid>
 
       {/* Initiative Performance */}
-      <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <div className="flex items-center justify-between mb-6">
           <span className="text-xs font-medium text-[rgba(11,15,18,0.50)] font-arabic tracking-wide uppercase">أداء المبادرات</span>
           <select value={selectedInitiative} onChange={e => setSelectedInitiative(e.target.value)} className="px-3 py-1.5 border border-[#DADCE0] rounded-full bg-white font-arabic text-xs">
@@ -104,7 +105,7 @@ export const MonitoringTab: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </AppCardSurface>
     </div>
   );
 };

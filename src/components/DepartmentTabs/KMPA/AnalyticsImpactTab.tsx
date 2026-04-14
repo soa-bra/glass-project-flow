@@ -6,20 +6,11 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  TrendingUp, 
-  Eye, 
-  Download, 
-  Quote, 
-  Globe, 
-  Calendar,
-  BarChart3,
-  PieChart,
-  LineChart,
-  Brain,
-  Target,
-  Award
+  TrendingUp, Eye, Download, Quote, Globe, Calendar,
+  BarChart3, PieChart, LineChart, Brain, Target, Award
 } from 'lucide-react';
 import { mockContentAnalytics, mockKnowledgeDocuments } from './data/mockData';
 
@@ -31,12 +22,8 @@ export const AnalyticsImpactTab: React.FC = () => {
   const documents = mockKnowledgeDocuments;
 
   const impactMetrics = {
-    totalCitations: 234,
-    hIndex: 12,
-    avgCitationsPerDoc: 3.2,
-    reachScore: 87,
-    influenceScore: 92,
-    collaborationIndex: 15
+    totalCitations: 234, hIndex: 12, avgCitationsPerDoc: 3.2,
+    reachScore: 87, influenceScore: 92, collaborationIndex: 15
   };
 
   const contentSaturation = [
@@ -47,20 +34,8 @@ export const AnalyticsImpactTab: React.FC = () => {
   ];
 
   const topPerformingContent = [
-    {
-      title: 'دليل علم اجتماع العلامة التجارية',
-      views: 1247,
-      downloads: 456,
-      citations: 23,
-      engagement: 4.3
-    },
-    {
-      title: 'مقاييس الهوية الثقافية',
-      views: 892,
-      downloads: 234,
-      citations: 15,
-      engagement: 4.1
-    }
+    { title: 'دليل علم اجتماع العلامة التجارية', views: 1247, downloads: 456, citations: 23, engagement: 4.3 },
+    { title: 'مقاييس الهوية الثقافية', views: 892, downloads: 234, citations: 15, engagement: 4.1 }
   ];
 
   return (
@@ -69,49 +44,26 @@ export const AnalyticsImpactTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">التحليلات والتأثير</h3>
         <div className="flex gap-2">
-          <select 
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="px-3 py-2 border rounded-md"
-          >
+          <select value={selectedPeriod} onChange={(e) => setSelectedPeriod(e.target.value)} className="px-3 py-2 border rounded-md">
             <option value="week">أسبوع</option>
             <option value="month">شهر</option>
             <option value="quarter">ربع سنة</option>
             <option value="year">سنة</option>
           </select>
-          <BaseActionButton variant="outline">
-            تصدير التقرير
-          </BaseActionButton>
+          <BaseActionButton variant="outline">تصدير التقرير</BaseActionButton>
         </div>
       </div>
 
+      {/* Impact Metrics */}
       <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
         <AppGridItem colSpan={4}>
-          <BaseBox>
-            <div>
-              <Quote className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{impactMetrics.totalCitations}</div>
-              <div className="text-sm text-gray-600">إجمالي الاقتباسات</div>
-            </div>
-          </BaseBox>
+          <NumericStatCard title="إجمالي الاقتباسات" value={impactMetrics.totalCitations} size="sm" />
         </AppGridItem>
         <AppGridItem colSpan={4}>
-          <BaseBox>
-            <div>
-              <Award className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{impactMetrics.hIndex}</div>
-              <div className="text-sm text-gray-600">مؤشر H</div>
-            </div>
-          </BaseBox>
+          <NumericStatCard title="مؤشر H" value={impactMetrics.hIndex} size="sm" />
         </AppGridItem>
         <AppGridItem colSpan={4}>
-          <BaseBox>
-            <div>
-              <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold">{impactMetrics.reachScore}</div>
-              <div className="text-sm text-gray-600">نقاط الوصول</div>
-            </div>
-          </BaseBox>
+          <NumericStatCard title="نقاط الوصول" value={impactMetrics.reachScore} size="sm" />
         </AppGridItem>
       </AppDashboardGrid>
 
@@ -121,8 +73,7 @@ export const AnalyticsImpactTab: React.FC = () => {
         <BaseBox>
           <div className="mb-4">
             <h3 className="text-lg font-semibold flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              أداء المحتوى
+              <TrendingUp className="h-5 w-5" /> أداء المحتوى
             </h3>
           </div>
           <div>
@@ -135,59 +86,32 @@ export const AnalyticsImpactTab: React.FC = () => {
               
               <TabsContent value="views" className="space-y-4">
                 <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <LineChart className="h-12 w-12 text-blue-600 mx-auto mb-2" />
-                    <div className="text-sm text-gray-600">رسم بياني للمشاهدات</div>
-                  </div>
+                  <div className="text-center"><LineChart className="h-12 w-12 text-blue-600 mx-auto mb-2" /><div className="text-sm text-gray-600">رسم بياني للمشاهدات</div></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">{analytics.views}</div>
-                    <div className="text-sm text-gray-600">إجمالي المشاهدات</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">+15%</div>
-                    <div className="text-sm text-gray-600">نمو شهري</div>
-                  </div>
-                </div>
+                <AppDashboardGrid columns={12} density="compact" minRowHeight="auto">
+                  <AppGridItem colSpan={6}><NumericStatCard title="إجمالي المشاهدات" value={analytics.views} size="sm" accentColor="#3DA8F5" /></AppGridItem>
+                  <AppGridItem colSpan={6}><NumericStatCard title="نمو شهري" value="+15%" size="sm" accentColor="#3DBE8B" /></AppGridItem>
+                </AppDashboardGrid>
               </TabsContent>
               
               <TabsContent value="downloads" className="space-y-4">
                 <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <BarChart3 className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                    <div className="text-sm text-gray-600">رسم بياني للتحميلات</div>
-                  </div>
+                  <div className="text-center"><BarChart3 className="h-12 w-12 text-green-600 mx-auto mb-2" /><div className="text-sm text-gray-600">رسم بياني للتحميلات</div></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">{analytics.downloads}</div>
-                    <div className="text-sm text-gray-600">إجمالي التحميلات</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">23%</div>
-                    <div className="text-sm text-gray-600">معدل التحويل</div>
-                  </div>
-                </div>
+                <AppDashboardGrid columns={12} density="compact" minRowHeight="auto">
+                  <AppGridItem colSpan={6}><NumericStatCard title="إجمالي التحميلات" value={analytics.downloads} size="sm" accentColor="#3DBE8B" /></AppGridItem>
+                  <AppGridItem colSpan={6}><NumericStatCard title="معدل التحويل" value="23%" size="sm" accentColor="#3DA8F5" /></AppGridItem>
+                </AppDashboardGrid>
               </TabsContent>
               
               <TabsContent value="citations" className="space-y-4">
                 <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <PieChart className="h-12 w-12 text-purple-600 mx-auto mb-2" />
-                    <div className="text-sm text-gray-600">توزيع الاقتباسات</div>
-                  </div>
+                  <div className="text-center"><PieChart className="h-12 w-12 text-purple-600 mx-auto mb-2" /><div className="text-sm text-gray-600">توزيع الاقتباسات</div></div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">{analytics.citations}</div>
-                    <div className="text-sm text-gray-600">إجمالي الاقتباسات</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-600">3.2</div>
-                    <div className="text-sm text-gray-600">متوسط لكل وثيقة</div>
-                  </div>
-                </div>
+                <AppDashboardGrid columns={12} density="compact" minRowHeight="auto">
+                  <AppGridItem colSpan={6}><NumericStatCard title="إجمالي الاقتباسات" value={analytics.citations} size="sm" accentColor="#9B59B6" /></AppGridItem>
+                  <AppGridItem colSpan={6}><NumericStatCard title="متوسط لكل وثيقة" value="3.2" size="sm" accentColor="#F6C445" /></AppGridItem>
+                </AppDashboardGrid>
               </TabsContent>
             </Tabs>
           </div>
@@ -198,10 +122,7 @@ export const AnalyticsImpactTab: React.FC = () => {
         {/* Geographic Distribution */}
         <BaseBox>
           <div className="mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              التوزيع الجغرافي
-            </h3>
+            <h3 className="text-lg font-semibold flex items-center gap-2"><Globe className="h-5 w-5" /> التوزيع الجغرافي</h3>
           </div>
           <div>
             <div className="space-y-4">
@@ -211,13 +132,8 @@ export const AnalyticsImpactTab: React.FC = () => {
                     <span className="font-medium">{country.country}</span>
                     <span className="text-sm text-gray-600">{country.views} مشاهدة</span>
                   </div>
-                  <Progress 
-                    value={(country.views / analytics.views) * 100} 
-                    className="h-2" 
-                  />
-                  <div className="text-xs text-gray-500">
-                    {Math.round((country.views / analytics.views) * 100)}% من إجمالي المشاهدات
-                  </div>
+                  <Progress value={(country.views / analytics.views) * 100} className="h-2" />
+                  <div className="text-xs text-gray-500">{Math.round((country.views / analytics.views) * 100)}% من إجمالي المشاهدات</div>
                 </div>
               ))}
             </div>
@@ -228,12 +144,7 @@ export const AnalyticsImpactTab: React.FC = () => {
 
       {/* Content Saturation Analysis */}
       <BaseBox>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            تحليل تشبع المحتوى
-          </h3>
-        </div>
+        <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2"><Brain className="h-5 w-5" /> تحليل تشبع المحتوى</h3></div>
         <div>
           <div className="space-y-4">
             {contentSaturation.map((item, index) => (
@@ -242,20 +153,13 @@ export const AnalyticsImpactTab: React.FC = () => {
                   <span className="font-medium">{item.topic}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600">{item.saturation}%</span>
-                    <BaseBadge variant={
-                      item.trend === 'up' ? 'default' : 
-                      item.trend === 'down' ? 'error' : 'secondary'
-                    }>
-                      {item.trend === 'up' ? '↗️ صاعد' : 
-                       item.trend === 'down' ? '↘️ هابط' : '→ مستقر'}
+                    <BaseBadge variant={item.trend === 'up' ? 'default' : item.trend === 'down' ? 'error' : 'secondary'}>
+                      {item.trend === 'up' ? '↗️ صاعد' : item.trend === 'down' ? '↘️ هابط' : '→ مستقر'}
                     </BaseBadge>
                   </div>
                 </div>
                 <Progress value={item.saturation} className="h-3" />
-                <div className="text-xs text-gray-500">
-                  {item.saturation < 50 ? 'يحتاج لمزيد من المحتوى' : 
-                   item.saturation < 80 ? 'مستوى متوسط من المحتوى' : 'مستوى مرتفع من المحتوى'}
-                </div>
+                <div className="text-xs text-gray-500">{item.saturation < 50 ? 'يحتاج لمزيد من المحتوى' : item.saturation < 80 ? 'مستوى متوسط من المحتوى' : 'مستوى مرتفع من المحتوى'}</div>
               </div>
             ))}
           </div>
@@ -264,9 +168,7 @@ export const AnalyticsImpactTab: React.FC = () => {
 
       {/* Top Performing Content */}
       <BaseBox>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">المحتوى الأكثر أداءً</h3>
-        </div>
+        <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2">المحتوى الأكثر أداءً</h3></div>
         <div>
           <div className="space-y-4">
             {topPerformingContent.map((content, index) => (
@@ -274,24 +176,12 @@ export const AnalyticsImpactTab: React.FC = () => {
                 <div className="flex-1">
                   <h4 className="font-medium mb-2">{content.title}</h4>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {content.views}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Download className="h-4 w-4" />
-                      {content.downloads}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Quote className="h-4 w-4" />
-                      {content.citations}
-                    </span>
+                    <span className="flex items-center gap-1"><Eye className="h-4 w-4" />{content.views}</span>
+                    <span className="flex items-center gap-1"><Download className="h-4 w-4" />{content.downloads}</span>
+                    <span className="flex items-center gap-1"><Quote className="h-4 w-4" />{content.citations}</span>
                   </div>
                 </div>
-                <div className="text-center">
-                  <div className="text-lg font-bold text-green-600">{content.engagement}</div>
-                  <div className="text-xs text-gray-600">معدل التفاعل</div>
-                </div>
+                <NumericStatCard title="معدل التفاعل" value={content.engagement} size="sm" accentColor="#3DBE8B" className="w-32" />
               </div>
             ))}
           </div>
@@ -300,32 +190,12 @@ export const AnalyticsImpactTab: React.FC = () => {
 
       {/* AI Recommendations */}
       <BaseBox>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            توصيات تحسين الأداء
-          </h3>
-        </div>
+        <div className="mb-4"><h3 className="text-lg font-semibold flex items-center gap-2"><Brain className="h-5 w-5" /> توصيات تحسين الأداء</h3></div>
         <div>
           <div className="space-y-3">
-            <div className="p-3 border rounded-lg bg-blue-50">
-              <h4 className="font-medium mb-1">زيادة المحتوى في التسويق الرقمي الثقافي</h4>
-              <p className="text-sm text-gray-600">
-                مستوى التشبع منخفض (35%) مع زيادة الطلب على هذا المحتوى
-              </p>
-            </div>
-            <div className="p-3 border rounded-lg bg-green-50">
-              <h4 className="font-medium mb-1">تحسين توزيع المحتوى</h4>
-              <p className="text-sm text-gray-600">
-                يمكن زيادة الوصول بنسبة 25% من خلال تحسين استراتيجية التوزيع
-              </p>
-            </div>
-            <div className="p-3 border rounded-lg bg-yellow-50">
-              <h4 className="font-medium mb-1">تطوير المحتوى التفاعلي</h4>
-              <p className="text-sm text-gray-600">
-                المحتوى التفاعلي يحقق معدل تفاعل أعلى بـ 40% من المحتوى التقليدي
-              </p>
-            </div>
+            <div className="p-3 border rounded-lg bg-blue-50"><h4 className="font-medium mb-1">زيادة المحتوى في التسويق الرقمي الثقافي</h4><p className="text-sm text-gray-600">مستوى التشبع منخفض (35%) مع زيادة الطلب على هذا المحتوى</p></div>
+            <div className="p-3 border rounded-lg bg-green-50"><h4 className="font-medium mb-1">تحسين توزيع المحتوى</h4><p className="text-sm text-gray-600">يمكن زيادة الوصول بنسبة 25% من خلال تحسين استراتيجية التوزيع</p></div>
+            <div className="p-3 border rounded-lg bg-yellow-50"><h4 className="font-medium mb-1">تطوير المحتوى التفاعلي</h4><p className="text-sm text-gray-600">المحتوى التفاعلي يحقق معدل تفاعل أعلى بـ 40% من المحتوى التقليدي</p></div>
           </div>
         </div>
       </BaseBox>
