@@ -116,8 +116,9 @@ export const CoursesTab: React.FC = () => {
         id: `MOD-${builderCourse.id}-${i + 1}`,
         courseId: builderCourse.id,
         title: m.title, description: m.description, order: i + 1,
-        type: m.type, content: '', duration: Number(m.duration) || 0,
-        completionCriteria: { type: 'time_based', threshold: 100 }, resources: [],
+        type: m.type as 'video' | 'document' | 'quiz' | 'assignment' | 'live_session',
+        content: '', duration: Number(m.duration) || 0,
+        completionCriteria: { type: 'time_based' as const, threshold: 100 }, resources: [],
       })),
       updatedAt: new Date().toISOString(),
     } : c));
