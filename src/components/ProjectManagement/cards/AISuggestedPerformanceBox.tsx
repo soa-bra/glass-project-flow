@@ -3,6 +3,7 @@ import React from 'react';
 import { BarChart3, Users, Target, FileText, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, LineChart, Line, PieChart as RechartsPieChart, Cell } from 'recharts';
 import { ChartWrapper } from '@/components/shared/charts/ChartWrapper';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface AISuggestedPerformanceCardProps {
   type: 'analytics' | 'team' | 'goals' | 'reports';

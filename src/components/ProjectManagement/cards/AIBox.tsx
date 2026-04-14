@@ -1,5 +1,6 @@
 import React from 'react';
 import { Project } from '@/types/project';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface AICardProps {
   project: Project;

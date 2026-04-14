@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertCircle, Clock, CheckCircle } from 'lucide-react';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const NotificationsBox: React.FC = () => {
   const notifications = [

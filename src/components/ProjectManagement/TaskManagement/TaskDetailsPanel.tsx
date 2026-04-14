@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { UnifiedTask } from '@/types/task';
 import { COLORS } from '@/components/shared/design-system/constants';
 import { Edit, Archive, Trash2, MessageSquare, Paperclip, Activity, Calendar, User, Tag, Clock, X, Upload } from 'lucide-react';

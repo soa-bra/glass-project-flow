@@ -8,6 +8,7 @@ import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
 import { MetricHeroCard } from '@/components/shared/visual-data';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface TaskManagementTabProps {
   project: Project;
