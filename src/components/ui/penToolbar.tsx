@@ -59,7 +59,7 @@ const ToolbarButton = ({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 5 }}
           transition={{ duration: 0.15 }}
-          className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg z-[9999] pointer-events-none"
+          className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg pointer-events-none"
         >
           {label}
         </motion.div>
@@ -133,7 +133,7 @@ const BrushSizeDropdown = ({
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -5 }}
-            className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] py-1 min-w-[70px] z-[10000]"
+            className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] py-1 min-w-[70px]"
           >
             {BRUSH_SIZES.map((size) => (
               <button
@@ -168,7 +168,7 @@ const BrushSizeDropdown = ({
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg z-[9999] pointer-events-none"
+          className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg pointer-events-none"
         >
           حجم الفرشاة
         </motion.div>
@@ -206,7 +206,7 @@ const CompactColorPicker = ({
         <motion.div
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg z-[9999] pointer-events-none"
+          className="text-nowrap font-medium absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-[hsl(var(--ink))] text-white text-[10px] rounded px-1.5 py-0.5 shadow-lg pointer-events-none"
         >
           لون الفرشاة
         </motion.div>
@@ -243,7 +243,7 @@ export const PenFloatingToolbar = ({ isVisible }: PenFloatingToolbarProps) => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
           transition={{ type: "spring", damping: 25, stiffness: 400 }}
-          className="fixed top-20 left-1/2 -translate-x-1/2 z-[9999] bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1"
+          className="fixed top-20 left-1/2 -translate-x-1/2 bg-white rounded-lg shadow-lg border border-[hsl(var(--border))] flex items-center gap-1 px-1.5 py-1"
           data-pen-toolbar
           onMouseDown={(e) => e.stopPropagation()}
         >

@@ -77,7 +77,6 @@ export const ApprovalRequestModal: React.FC<ApprovalRequestModalProps> = ({
              border: '1px solid rgba(255,255,255,0.2)',
              borderRadius: '24px',
              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-             zIndex: 9999,
              transformOrigin: 'top center',
              position: 'fixed',
              top: '50%',

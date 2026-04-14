@@ -231,7 +231,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({
                           {payment.date ? format(new Date(payment.date), "PPP") : <span>اختر التاريخ</span>}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <Calendar 
                           mode="single" 
                           selected={payment.date ? new Date(payment.date) : undefined} 

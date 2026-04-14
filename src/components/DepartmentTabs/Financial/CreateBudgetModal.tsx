@@ -292,7 +292,8 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent 
         className="max-w-4xl max-h-[90vh] p-0 bg-white/40 backdrop-blur-[20px] border border-white/20 rounded-[24px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.1)]"
-        style={{ zIndex: 9999 }}
+        style={{
+ }}
       >
         {/* Header */}
         <DialogHeader className="flex flex-row items-center justify-between p-6 border-b border-white/20">
@@ -377,15 +378,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                     </SelectTrigger>
                     <SelectContent 
                       className="text-[#0B0F12] font-arabic"
-                      style={{
-                        background: 'rgba(255,255,255,0.4)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        borderRadius: '24px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                        zIndex: 10000,
-                      }}
                     >
                       {budgetTypes.map(type => (
                         <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
@@ -402,15 +394,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                     </SelectTrigger>
                     <SelectContent 
                       className="text-[#0B0F12] font-arabic"
-                      style={{
-                        background: 'rgba(255,255,255,0.4)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        borderRadius: '24px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                        zIndex: 10000,
-                      }}
                     >
                       {departments.map(dept => (
                         <SelectItem key={dept.value} value={dept.value}>{dept.label}</SelectItem>
@@ -427,15 +410,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                     </SelectTrigger>
                     <SelectContent 
                       className="text-[#0B0F12] font-arabic"
-                      style={{
-                        background: 'rgba(255,255,255,0.4)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        borderRadius: '24px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                        zIndex: 10000,
-                      }}
                     >
                       {currencies.map(currency => (
                         <SelectItem key={currency.value} value={currency.value}>{currency.label}</SelectItem>
@@ -465,7 +439,7 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                         )}
                       </BaseActionButton>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                    <PopoverContent className="w-auto p-0" align="start">
                       <CalendarComponent 
                         mode="single" 
                         selected={formData.startDate ? new Date(formData.startDate) : undefined} 
@@ -497,7 +471,7 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                         )}
                       </BaseActionButton>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                    <PopoverContent className="w-auto p-0" align="start">
                       <CalendarComponent 
                         mode="single" 
                         selected={formData.endDate ? new Date(formData.endDate) : undefined} 

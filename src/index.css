@@ -90,12 +90,12 @@
     --z-element-selected: 100;
     --z-bounding-box: 500;
     --z-toolbar: 10000;
-    --z-popover: 10001;
-    --z-tooltip: 10002;
-    --z-toast: 10003;
-    --z-modal-backdrop: 10004;
-    --z-modal-content: 10005;
-    --z-dropdown: 10001;
+    --z-modal-backdrop: 10100;
+    --z-modal-content: 10200;
+    --z-dropdown: 10300;
+    --z-popover: 10400;
+    --z-tooltip: 10500;
+    --z-toast: 10600;
     
     /* SoaBra Glass UI Variables */
     --sb-glass-bg: rgba(255,255,255,0.45);
@@ -355,12 +355,22 @@
   }
   
   .sb-popover-shell {
-    @apply rounded-[16px];
-    background: var(--sb-glass-bg);
-    backdrop-filter: blur(var(--sb-glass-blur));
-    -webkit-backdrop-filter: blur(var(--sb-glass-blur));
-    border: 1px solid var(--sb-glass-outline);
-    box-shadow: var(--sb-elev-pop);
+    @apply rounded-[24px];
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+  }
+
+  .sb-dropdown-shell {
+    @apply rounded-[24px];
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1);
+    z-index: var(--z-dropdown);
   }
   
   .sb-backdrop {
