@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Bell, Smartphone, Mail, MessageSquare, Settings, Volume2, VolumeX, Clock, Target } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -102,7 +103,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
         <div className="space-y-6">
 
           {/* AI Smart Notifications Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 نظام الإشعارات الذكي
               <BaseBadge variant="warning" size="sm">AI Smart Notify</BaseBadge>
@@ -142,7 +143,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* General Notifications Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">تفضيلات الإشعارات</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -203,7 +204,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* Project Notifications Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إشعارات المشاريع</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -255,7 +256,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* Smart Timing Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إعدادات التوقيت</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -332,7 +333,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
           </div>
 
           {/* Notification History Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">سجل الإشعارات الأخيرة</h3>
             
             <div className="space-y-3">

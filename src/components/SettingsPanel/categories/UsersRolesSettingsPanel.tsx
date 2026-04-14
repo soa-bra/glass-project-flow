@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Users, UserPlus, Shield, Key, Crown, Edit3, Trash2, Eye } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -135,7 +136,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         <div className="space-y-6">
 
           {/* Users Management Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-md font-bold text-black">إدارة المستخدمين</h3>
               <button className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium flex items-center gap-2">
@@ -179,7 +180,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
           </div>
 
           {/* Roles Management Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إدارة الأدوار</h3>
             
             <div className="space-y-3">

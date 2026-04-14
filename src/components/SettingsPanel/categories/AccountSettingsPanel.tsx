@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { User, Camera, Key, Globe, Save } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -139,7 +140,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           />
           
           {/* Header Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <User className="w-6 h-6 text-black" />
@@ -156,7 +157,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* Basic Information Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">البيانات الشخصية</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -237,7 +238,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* Password Management Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إدارة كلمات المرور</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -311,7 +312,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           </div>
 
           {/* Language Preferences Card */}
-          <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]">
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">تفضيلات اللغة</h3>
             
             <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
