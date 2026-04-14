@@ -114,7 +114,7 @@ export const ServiceTab: React.FC = () => {
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={responseTimeData}>
               <XAxis dataKey="month" tick={{ fontSize: 9, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} /><YAxis hide />
-              <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Line type="monotone" dataKey="avgTime" stroke="#3DA8F5" strokeWidth={2.5} dot={false} />
             </LineChart>
           </ResponsiveContainer>
@@ -123,7 +123,7 @@ export const ServiceTab: React.FC = () => {
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={ticketCategoryData} barSize={20}>
               <XAxis dataKey="category" tick={{ fontSize: 9, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} /><YAxis hide />
-              <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Bar dataKey="count" fill="#3DBE8B" radius={[999, 999, 999, 999]} />
             </BarChart>
           </ResponsiveContainer>
@@ -132,7 +132,7 @@ export const ServiceTab: React.FC = () => {
           <ResponsiveContainer width="100%" height={160}>
             <LineChart data={satisfactionData}>
               <XAxis dataKey="month" tick={{ fontSize: 9, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} /><YAxis hide />
-              <Tooltip contentStyle={tooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Line type="monotone" dataKey="rating" stroke="#F6C445" strokeWidth={2.5} dot={false} />
             </LineChart>
           </ResponsiveContainer>

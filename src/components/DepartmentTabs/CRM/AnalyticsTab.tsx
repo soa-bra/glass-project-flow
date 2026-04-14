@@ -106,7 +106,7 @@ export const AnalyticsTab: React.FC = () => {
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={customerGrowthData}>
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Area type="monotone" dataKey="total" stroke="#3DA8F5" fill="#3DA8F5" fillOpacity={0.15} strokeWidth={2.5} />
             </AreaChart>
           </ResponsiveContainer>
@@ -116,7 +116,7 @@ export const AnalyticsTab: React.FC = () => {
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={salesPerformance} barSize={20}>
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} formatter={(v: any) => [`${(v / 1000000).toFixed(1)}م`, '']} />
+              <Tooltip content={<ChartTooltipShell formatValue={(v) => `${(Number(v) / 1000000).toFixed(1)}م`} />} cursor={CHART_CURSOR_STYLE} />
               <Bar dataKey="target" fill="rgba(11,15,18,0.08)" radius={[999, 999, 999, 999]} />
               <Bar dataKey="actual" fill="#3DA8F5" radius={[999, 999, 999, 999]} />
             </BarChart>
@@ -133,7 +133,7 @@ export const AnalyticsTab: React.FC = () => {
                 label={({ segment, percent }) => `${segment} ${(percent * 100).toFixed(0)}%`}>
                 {revenueBySegment.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Pie>
-              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             </PieChart>
           </ResponsiveContainer>
         </DataCardFrame>
@@ -142,7 +142,7 @@ export const AnalyticsTab: React.FC = () => {
           <ResponsiveContainer width="100%" height={240}>
             <LineChart data={satisfactionTrend}>
               <XAxis dataKey="month" tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={chartTooltipStyle} itemStyle={{ color: '#FFF' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Line type="monotone" dataKey="nps" stroke="#3DBE8B" strokeWidth={2.5} dot={false} />
               <Line type="monotone" dataKey="satisfaction" stroke="#3DA8F5" strokeWidth={2.5} dot={false} />
             </LineChart>
