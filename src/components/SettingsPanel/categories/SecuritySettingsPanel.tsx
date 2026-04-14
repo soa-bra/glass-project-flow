@@ -164,7 +164,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             <h3 className="text-md font-bold text-black mb-4">التحقق الثنائي (MFA)</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">حالة MFA</h4>
                   <div className={`w-4 h-4 rounded-full ${formData.mfa.enabled ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -185,9 +185,9 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 >
                   {formData.mfa.enabled ? 'تعطيل MFA' : 'تفعيل MFA'}
                 </button>
-              </div>
+              </AppCardSurface>
 
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">طرق التحقق</h4>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                     <span className="text-sm">رسائل SMS</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -241,7 +241,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             
             <div className="space-y-3">
               {formData.apiKeys.map(key => (
-                <div key={key.id} className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
+                <AppCardSurface density="compact" key={key.id}>
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">{key.name}</h4>
                     <p className="text-xs text-gray-500">أُنشئ: {key.created} | آخر استخدام: {key.lastUsed}</p>
@@ -262,7 +262,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                   >
                     إلغاء
                   </button>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>
@@ -273,7 +273,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {formData.trustedDevices.map(device => (
-                <div key={device.id} className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+                <AppCardSurface density="compact" key={device.id}>
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-black">{device.name}</h4>
@@ -282,7 +282,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                     </div>
                     <Monitor className="w-5 h-5 text-gray-600" />
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>
@@ -293,7 +293,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             
             <div className="space-y-3">
               {formData.activeSessions.map(session => (
-                <div key={session.id} className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
+                <AppCardSurface density="compact" key={session.id}>
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">{session.device} - {session.browser}</h4>
                     <p className="text-xs text-gray-600">{session.ip} | {session.location}</p>
@@ -307,7 +307,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                       إنهاء الجلسة
                     </button>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>

@@ -162,7 +162,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* صورة المستخدم */}
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-8 h-8 text-gray-500" />
@@ -175,10 +175,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </AppCardSurface>
 
               {/* معلومات الاتصال */}
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">معلومات الاتصال</h4>
                 <div className="space-y-3">
                   <input 
@@ -233,7 +233,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     <p className="text-red-500 text-xs mt-1">{validationErrors.phone}</p>
                   )}
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -242,7 +242,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
             <h3 className="text-md font-bold text-black mb-4">إدارة كلمات المرور</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">تغيير كلمة المرور</h4>
                 <div className="space-y-3">
                   <input 
@@ -288,10 +288,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     <p className="text-red-500 text-xs mt-1">{validationErrors.confirmPassword}</p>
                   )}
                 </div>
-              </div>
+              </AppCardSurface>
 
               {/* مولد كلمات المرور بالذكاء الاصطناعي */}
-              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">🤖 مولد كلمات المرور الذكي</h4>
                 <p className="text-xs text-black mb-3">اقتراح كلمة مرور قوية باستخدام GPT-Pass-Suggest</p>
                 <button
@@ -307,7 +307,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     <code className="text-sm font-mono text-black">{suggestedPassword}</code>
                   </div>
                 )}
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -315,7 +315,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">تفضيلات اللغة</h3>
             
-            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0]">
+            <AppCardSurface density="compact">
               <div className="flex items-center gap-4">
                 <Globe className="w-6 h-6 text-black" />
                 <div className="flex-1">
@@ -333,7 +333,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                   </select>
                 </div>
               </div>
-            </div>
+            </AppCardSurface>
           </AppCardSurface>
 
           {/* إحصائيات الحساب */}

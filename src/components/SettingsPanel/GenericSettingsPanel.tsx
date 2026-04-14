@@ -173,14 +173,14 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
             <div className="space-y-6">
               {/* Settings Form Content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0]">
+                <AppCardSurface density="compact">
                   <h4 className="text-sm font-bold text-black mb-2">إعدادات أساسية</h4>
                   <p className="text-xs font-normal text-gray-400">الإعدادات الأساسية للـ {categoryInfo.title}</p>
-                </div>
-                <div className="rounded-2xl p-4 bg-white border border-[#DADCE0]">
+                </AppCardSurface>
+                <AppCardSurface density="compact">
                   <h4 className="text-sm font-bold text-black mb-2">خيارات متقدمة</h4>
                   <p className="text-xs font-normal text-gray-400">إعدادات متقدمة للمستخدمين المتخصصين</p>
-                </div>
+                </AppCardSurface>
               </div>
 
               {/* AI Training Wizard (only for AI section) */}
