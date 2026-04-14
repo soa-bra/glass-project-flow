@@ -2,8 +2,9 @@ import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { Users, Star } from 'lucide-react';
 interface ResourceUtilization {
   employeeId: string;
@@ -169,7 +170,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
             }} />
               <Radar name="الحالي" dataKey="current" stroke="var(--color-current)" fill="var(--color-current)" fillOpacity={0.3} />
               <Radar name="المطلوب" dataKey="required" stroke="var(--color-required)" fill="var(--color-required)" fillOpacity={0.3} />
-              <Tooltip content={<ChartTooltipContent />} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             </RadarChart>
           </ResponsiveContainer>
         </ChartContainer>
@@ -237,14 +238,11 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
             left: 20,
             bottom: 5
           }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="department" tick={{
-              fontSize: 12
-            }} interval={0} angle={-45} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="current" fill="var(--color-current)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="capacity" fill="var(--color-capacity)" radius={[4, 4, 0, 0]} opacity={0.3} />
+               <XAxis dataKey="department" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} interval={0} angle={-45} textAnchor="end" height={80} />
+               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+               <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
+               <Bar dataKey="current" fill="var(--color-current)" radius={[999, 999, 999, 999]} barSize={20} />
+               <Bar dataKey="capacity" fill="var(--color-capacity)" radius={[999, 999, 999, 999]} barSize={20} opacity={0.3} />
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
