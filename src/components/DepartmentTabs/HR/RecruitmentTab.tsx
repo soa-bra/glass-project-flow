@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { UserPlus, Briefcase, Users, Calendar, Star, Phone, Mail, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { mockJobPostings, mockCandidates } from './data';
@@ -214,57 +217,23 @@ export const RecruitmentTab: React.FC = () => {
   return (
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات التوظيف */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">الوظائف النشطة</p>
-              <p className="text-2xl font-bold text-blue-600">{recruitmentStats.activeJobs}</p>
-            </div>
-            <Briefcase className="h-8 w-8 text-blue-600" />
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">إجمالي الطلبات</p>
-              <p className="text-2xl font-bold text-green-600">{recruitmentStats.totalApplications}</p>
-            </div>
-            <Users className="h-8 w-8 text-green-600" />
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">المقابلات المجدولة</p>
-              <p className="text-2xl font-bold text-purple-600">{recruitmentStats.scheduledInterviews}</p>
-            </div>
-            <Calendar className="h-8 w-8 text-purple-600" />
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">عروض العمل</p>
-              <p className="text-2xl font-bold text-orange-600">{recruitmentStats.offersExtended}</p>
-            </div>
-            <Star className="h-8 w-8 text-orange-600" />
-          </div>
-        </BaseBox>
-
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">التوظيف هذا الشهر</p>
-              <p className="text-2xl font-bold text-green-800">{recruitmentStats.newHiresThisMonth}</p>
-            </div>
-            <UserPlus className="h-8 w-8 text-green-800" />
-          </div>
-        </BaseBox>
-      </div>
+      <AppDashboardGrid columns={12} density="compact">
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <NumericStatCard title="الوظائف النشطة" value={recruitmentStats.activeJobs} size="sm" accentColor="#3DA8F5" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={4}>
+          <NumericStatCard title="إجمالي الطلبات" value={recruitmentStats.totalApplications} size="sm" accentColor="#3DBE8B" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={4}>
+          <NumericStatCard title="المقابلات المجدولة" value={recruitmentStats.scheduledInterviews} size="sm" />
+        </AppGridItem>
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <NumericStatCard title="عروض العمل" value={recruitmentStats.offersExtended} size="sm" accentColor="#F6C445" />
+        </AppGridItem>
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <NumericStatCard title="التوظيف هذا الشهر" value={recruitmentStats.newHiresThisMonth} size="sm" accentColor="#3DBE8B" />
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* التبويبات */}
       <BaseBox variant="operations" className="p-6">

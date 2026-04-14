@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { Plus, Search, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
 import type { Contract } from './types';
@@ -134,28 +135,16 @@ export const ContractsTab: React.FC = () => {
         <div>
           <AppDashboardGrid columns={12}>
             <AppGridItem colSpan={3}>
-              <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
-                <div className="text-2xl font-bold text-black font-arabic">{contracts.filter(c => c.status === 'signed').length}</div>
-                <div className="text-sm font-medium text-black font-arabic">عقود موقعة</div>
-              </div>
+              <NumericStatCard title="عقود موقعة" value={contracts.filter(c => c.status === 'signed').length} accentColor="#3DBE8B" size="sm" />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
-                <div className="text-2xl font-bold text-black font-arabic">{contracts.filter(c => c.status === 'pending').length}</div>
-                <div className="text-sm font-medium text-black font-arabic">في الانتظار</div>
-              </div>
+              <NumericStatCard title="في الانتظار" value={contracts.filter(c => c.status === 'pending').length} accentColor="#F6C445" size="sm" />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
-                <div className="text-2xl font-bold text-black font-arabic">{contracts.filter(c => c.status === 'expired').length}</div>
-                <div className="text-sm font-medium text-black font-arabic">منتهية</div>
-              </div>
+              <NumericStatCard title="منتهية" value={contracts.filter(c => c.status === 'expired').length} accentColor="#E5564D" size="sm" />
             </AppGridItem>
             <AppGridItem colSpan={3}>
-              <div className="text-center p-4 bg-transparent ring-1 ring-[#DADCE0] rounded-[24px]">
-                <div className="text-2xl font-bold text-black font-arabic">{contracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()}</div>
-                <div className="text-sm font-medium text-black font-arabic">القيمة الإجمالية (ر.س)</div>
-              </div>
+              <NumericStatCard title="القيمة الإجمالية" value={contracts.reduce((sum, c) => sum + c.value, 0).toLocaleString()} unit="ر.س" size="sm" />
             </AppGridItem>
           </AppDashboardGrid>
         </div>
