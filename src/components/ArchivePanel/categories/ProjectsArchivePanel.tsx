@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Briefcase, Calendar, User, CheckCircle, DollarSign } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
@@ -29,7 +30,7 @@ export const ProjectsArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="bg-[#FFFFFF] p-3 rounded-[24px] ring-1 ring-[#DADCE0]">
+        <div >
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-[rgba(11,15,18,0.3)] w-5 h-5" />
             <input
@@ -47,7 +48,7 @@ export const ProjectsArchivePanel: React.FC = () => {
       <div className="flex-1 overflow-auto px-6 pb-6">
         <div className="space-y-4">
           {mockProjects.map((project) => (
-            <div key={project.id} className="bg-[#FFFFFF] p-6 rounded-[24px] ring-1 ring-[#DADCE0] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+            <div key={project.id} >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
