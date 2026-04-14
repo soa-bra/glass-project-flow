@@ -13,9 +13,23 @@ interface ComparisonMetricCardProps {
   className?: string;
 }
 
+const directionColors = {
+  up: '#3DBE8B',
+  down: '#E5564D',
+  neutral: 'rgba(11,15,18,0.40)',
+} as const;
+
+const directionArrows = {
+  up: '↑',
+  down: '↓',
+  neutral: '',
+} as const;
+
 export const ComparisonMetricCard: React.FC<ComparisonMetricCardProps> = ({
   title, value, unit, changeValue, changeDirection, changeLabel, accentColor, className,
 }) => {
+  const changeColor = directionColors[changeDirection];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -29,19 +43,33 @@ export const ComparisonMetricCard: React.FC<ComparisonMetricCardProps> = ({
       </div>
 
       <div className="mt-auto">
+        {/* Primary metric — dominant */}
         <div className="flex items-baseline gap-1.5">
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-[36px] font-bold leading-none"
+            className="text-[32px] sm:text-[36px] md:text-[40px] font-bold leading-none tracking-tight"
             style={{ color: accentColor || '#0B0F12' }}
           >
-            {changeValue}
+            {value}
           </motion.span>
+          {unit && <span className="text-sm text-[rgba(11,15,18,0.35)] font-arabic">{unit}</span>}
         </div>
-        {changeLabel && <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1">{changeLabel}</p>}
+
+        {/* Change indicator — secondary with directional color */}
+        <div className="flex items-center gap-1.5 mt-2">
+          <span
+            className="text-sm font-bold font-arabic"
+            style={{ color: changeColor }}
+          >
+            {directionArrows[changeDirection]} {changeValue}
+          </span>
+          {changeLabel && (
+            <span className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic">{changeLabel}</span>
+          )}
+        </div>
       </div>
     </motion.div>
   );

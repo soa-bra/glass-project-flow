@@ -4,7 +4,8 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { FileText, Download, Eye, Calendar, TrendingUp, Users, Target, DollarSign } from 'lucide-react';
 
 export const ReportsTab: React.FC = () => {
@@ -73,10 +74,9 @@ export const ReportsTab: React.FC = () => {
       <BaseBox title="الأداء الشهري">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={monthlyData}>
-            <CartesianGrid stroke="rgba(11,15,18,0.08)" strokeDasharray="3 3" />
-            <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'rgba(11,15,18,0.50)' }} />
-            <YAxis tick={{ fontSize: 11, fill: 'rgba(11,15,18,0.50)' }} />
-            <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #DADCE0', fontSize: 12 }} />
+            <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+            <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             <Line type="monotone" dataKey="enrollments" stroke="#a4e2f6" strokeWidth={2} name="التسجيلات" />
             <Line type="monotone" dataKey="completions" stroke="#bdeed3" strokeWidth={2} name="الإكمالات" />
           </LineChart>
@@ -125,11 +125,10 @@ export const ReportsTab: React.FC = () => {
               { quarter: 'Q4 2023', roi: 75 },
               { quarter: 'Q1 2024', roi: 80 },
             ]}>
-              <CartesianGrid stroke="rgba(11,15,18,0.08)" strokeDasharray="3 3" />
-              <XAxis dataKey="quarter" tick={{ fontSize: 11, fill: 'rgba(11,15,18,0.50)' }} />
-              <YAxis tick={{ fontSize: 11, fill: 'rgba(11,15,18,0.50)' }} />
-              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #DADCE0', fontSize: 12 }} />
-              <Bar dataKey="roi" fill="#a4e2f6" radius={[8, 8, 0, 0]} />
+              <XAxis dataKey="quarter" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
+              <Bar dataKey="roi" fill="#a4e2f6" radius={[999, 999, 999, 999]} barSize={20} />
             </BarChart>
           </ResponsiveContainer>
         </BaseBox>
@@ -141,7 +140,7 @@ export const ReportsTab: React.FC = () => {
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                 {departmentData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Pie>
-              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #DADCE0', fontSize: 12 }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             </PieChart>
           </ResponsiveContainer>
         </BaseBox>
@@ -186,10 +185,9 @@ export const ReportsTab: React.FC = () => {
             { department: 'الموارد البشرية', critical: 0, high: 2, medium: 4, low: 5 },
             { department: 'المالية', critical: 1, high: 2, medium: 3, low: 6 },
           ]}>
-            <CartesianGrid stroke="rgba(11,15,18,0.08)" strokeDasharray="3 3" />
-            <XAxis dataKey="department" tick={{ fontSize: 11, fill: 'rgba(11,15,18,0.50)' }} />
-            <YAxis tick={{ fontSize: 11, fill: 'rgba(11,15,18,0.50)' }} />
-            <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #DADCE0', fontSize: 12 }} />
+            <XAxis dataKey="department" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+            <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             <Bar dataKey="critical" stackId="a" fill="#f1b5b9" name="حرج" radius={[0, 0, 0, 0]} />
             <Bar dataKey="high" stackId="a" fill="#fbe2aa" name="عالي" />
             <Bar dataKey="medium" stackId="a" fill="#a4e2f6" name="متوسط" />

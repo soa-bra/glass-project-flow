@@ -4,16 +4,8 @@ import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, Tooltip } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { mockCRMAnalytics, mockNPS } from './data';
-
-const tooltipStyle = {
-  backgroundColor: '#0B0F12',
-  border: 'none',
-  borderRadius: '10px',
-  color: '#fff',
-  fontSize: 13,
-  padding: '8px 12px',
-};
 
 export const OverviewTab: React.FC = () => {
   const funnelData = mockCRMAnalytics.salesFunnel;
@@ -51,7 +43,7 @@ export const OverviewTab: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={funnelData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
                 <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
-                <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }} />
+                <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
                 <Bar dataKey="count" fill="#a4e2f6" radius={[999, 999, 999, 999]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
@@ -70,7 +62,7 @@ export const OverviewTab: React.FC = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
+                  <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -104,7 +96,7 @@ export const OverviewTab: React.FC = () => {
                 </linearGradient>
               </defs>
               <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
-              <Tooltip contentStyle={tooltipStyle} labelStyle={{ color: 'rgba(255,255,255,0.6)', fontSize: 11 }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Area type="monotone" dataKey="customers" stroke="#d9d2fd" strokeWidth={2.5} fill="url(#crmAreaFill)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>

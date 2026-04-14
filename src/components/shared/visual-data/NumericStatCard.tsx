@@ -21,8 +21,16 @@ const cardVariants = {
 export const NumericStatCard: React.FC<NumericStatCardProps> = ({
   title, value, unit, description, icon, accentColor, size = 'md', className,
 }) => {
-  const sizeClasses = { sm: 'p-4 min-h-[100px]', md: 'p-6 min-h-[140px]', lg: 'p-8 min-h-[180px]' };
-  const valueSizes = { sm: 'text-[28px]', md: 'text-[40px]', lg: 'text-[52px]' };
+  const sizeClasses = {
+    sm: 'p-4 min-h-[100px]',
+    md: 'p-6 min-h-[120px] sm:min-h-[130px] md:min-h-[140px]',
+    lg: 'p-8 min-h-[150px] sm:min-h-[160px] md:min-h-[180px]',
+  };
+  const valueSizes = {
+    sm: 'text-[28px]',
+    md: 'text-[32px] sm:text-[36px] md:text-[40px]',
+    lg: 'text-[36px] sm:text-[44px] md:text-[52px]',
+  };
 
   return (
     <motion.div
@@ -44,14 +52,14 @@ export const NumericStatCard: React.FC<NumericStatCardProps> = ({
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
-            className={cn(valueSizes[size], 'font-bold leading-none')}
+            className={cn(valueSizes[size], 'font-bold leading-none tracking-tight')}
             style={{ color: accentColor || '#0B0F12' }}
           >
             {value}
           </motion.span>
           {unit && <span className="text-sm text-[rgba(11,15,18,0.35)] font-arabic">{unit}</span>}
         </div>
-        {description && <p className="text-[11px] text-[rgba(11,15,18,0.30)] font-arabic mt-1">{description}</p>}
+        {description && <p className="text-[11px] text-[rgba(11,15,18,0.30)] font-arabic mt-1 line-clamp-2">{description}</p>}
       </div>
     </motion.div>
   );

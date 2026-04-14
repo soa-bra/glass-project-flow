@@ -7,7 +7,8 @@ import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Target, Plus, Search, Calendar, DollarSign, TrendingUp, FileText, Users } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { mockOpportunities, mockCRMAnalytics } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
@@ -199,15 +200,9 @@ export const OpportunitiesTab: React.FC = () => {
         <DataCardFrame title="مسار المبيعات" icon={<TrendingUp className="h-5 w-5" />}>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={funnelData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(11,15,18,0.08)" />
               <XAxis dataKey="stage" className="font-arabic" axisLine={false} tickLine={false} tick={{ fill: 'rgba(11,15,18,0.35)', fontSize: 10 }} />
               <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(11,15,18,0.35)', fontSize: 10 }} />
-              <Tooltip 
-                formatter={(value, name) => [
-                  name === 'count' ? `${value} فرصة` : `${(value as number / 1000000).toFixed(1)}م ر.س`,
-                  name === 'count' ? 'عدد الفرص' : 'القيمة الإجمالية'
-                ]} 
-              />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
               <Bar dataKey="count" fill="#3B82F6" name="count" barSize={20} radius={[999, 999, 999, 999]} />
             </BarChart>
           </ResponsiveContainer>

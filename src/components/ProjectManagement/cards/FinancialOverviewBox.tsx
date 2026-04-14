@@ -1,28 +1,19 @@
 
 import React from 'react';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 
 const financialData = [
-  { name: 'الأرباح', value: 78, color: '#000000' },
+  { name: 'الأرباح', value: 78, color: '#0B0F12' },
   { name: 'المصاريف', value: 14, color: '#aec2cf' },
-  { name: 'الاحتياطي', value: 8, color: '#f0f0f0' }
-];
-
-const monthlyData = [
-  { month: 'يناير', revenue: 45, expenses: 30 },
-  { month: 'فبراير', revenue: 52, expenses: 28 },
-  { month: 'مارس', revenue: 68, expenses: 35 },
-  { month: 'أبريل', revenue: 78, expenses: 32 }
+  { name: 'الاحتياطي', value: 8, color: 'rgba(11,15,18,0.08)' }
 ];
 
 export const FinancialOverviewBox: React.FC = () => {
   return (
     <div 
       className="h-full p-6 rounded-3xl border border-[#DADCE0] flex flex-col overflow-hidden bg-[#96D8D0]"
-      style={{ 
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}
+      style={{ fontFamily: 'IBM Plex Sans Arabic' }}
     >
       {/* الرأس */}
       <div className="flex items-center justify-between mb-4">
@@ -39,10 +30,10 @@ export const FinancialOverviewBox: React.FC = () => {
 
       {/* المحتوى مقسم لنصفين */}
       <div className="flex-1 flex gap-4 overflow-hidden">
-        {/* النصوص والأرقام - النصف الأول */}
+        {/* النصوص والأرقام */}
         <div className="flex-1 flex flex-col justify-center overflow-hidden">
           <div className="text-center mb-4">
-            <div className="text-xl font-bold text-black font-arabic">
+            <div className="text-[32px] sm:text-[36px] font-bold text-black font-arabic leading-none tracking-tight">
               78M
             </div>
             <div className="text-xs text-gray-700 font-arabic text-center">
@@ -67,40 +58,29 @@ export const FinancialOverviewBox: React.FC = () => {
           </div>
         </div>
 
-        {/* الرسم البياني - النصف الثاني بنسبة 16:9 */}
+        {/* الرسم البياني */}
         <div className="flex-1 flex justify-center items-center overflow-hidden">
-          <div 
-            className="w-full max-w-[120px]"
-            style={{ aspectRatio: '16/9' }}
-          >
-            <ChartContainer
-              config={{
-                profits: { label: "الأرباح", color: "#000000" },
-                expenses: { label: "المصاريف", color: "#aec2cf" },
-                reserves: { label: "الاحتياطي", color: "#f0f0f0" }
-              }}
-              className="w-full h-full"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={financialData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={15}
-                    outerRadius={30}
-                    startAngle={90}
-                    endAngle={450}
-                    dataKey="value"
-                  >
-                    {financialData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+          <div className="w-full max-w-[120px]" style={{ aspectRatio: '16/9' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={financialData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={20}
+                  outerRadius={40}
+                  startAngle={90}
+                  endAngle={450}
+                  dataKey="value"
+                  strokeWidth={0}
+                >
+                  {financialData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
+              </PieChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

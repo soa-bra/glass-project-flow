@@ -1,7 +1,7 @@
 import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Area, AreaChart, Line, Tooltip } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 
 interface CashFlowData {
   date: string;
@@ -15,54 +15,26 @@ interface CashFlowForecastProps {
   cashFlowData: CashFlowData[];
 }
 
-const chartConfig = {
-  cumulativeBalance: {
-    label: "الرصيد التراكمي",
-    color: "hsl(var(--chart-3))"
-  },
-  netFlow: {
-    label: "التدفق الصافي",
-    color: "hsl(var(--chart-4))"
-  }
-};
-
-export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({
-  cashFlowData
-}) => {
+export const CashFlowForecast: React.FC<CashFlowForecastProps> = ({ cashFlowData }) => {
   return (
-    <BaseBox
-      className="w-full"
-      title="التنبؤ بالتدفق النقدي"
-    >
-      <ChartContainer config={chartConfig} className="h-[350px] w-full">
+    <BaseBox className="w-full" title="التنبؤ بالتدفق النقدي">
+      <div className="h-[350px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={cashFlowData} margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 5
-        }}>
+          <AreaChart data={cashFlowData} margin={{ top: 20, right: 10, left: 10, bottom: 5 }}>
             <defs>
               <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="var(--color-cumulativeBalance)" stopOpacity={0} />
+                <stop offset="5%" stopColor="#d9d2fd" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#d9d2fd" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <XAxis dataKey="date" tick={{
-            fontSize: 12
-          }} tickLine={false} axisLine={false} />
-            <YAxis tick={{
-            fontSize: 12
-          }} tickLine={false} axisLine={false} tickFormatter={value => `${value / 1000}ك`} />
-            <ChartTooltip content={<ChartTooltipContent formatter={(value: number, name: string) => [`${value.toLocaleString()} ر.س`, name]} />} />
-            <Area type="monotone" dataKey="cumulativeBalance" stroke="#a4e2f6" fillOpacity={1} fill="#d9d2fd" strokeWidth={2} name="الرصيد التراكمي" />
-            <Line type="monotone" dataKey="netFlow" stroke="#a4e2f6" strokeWidth={2} dot={{
-            r: 4,
-            fill: '#a4e2f6'
-          }} name="التدفق الصافي" />
+            <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} tickFormatter={value => `${value / 1000}ك`} />
+            <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
+            <Area type="monotone" dataKey="cumulativeBalance" stroke="#a4e2f6" fillOpacity={1} fill="url(#colorBalance)" strokeWidth={2.5} name="الرصيد التراكمي" dot={false} activeDot={{ r: 5, fill: '#a4e2f6', stroke: '#fff', strokeWidth: 2 }} />
+            <Line type="monotone" dataKey="netFlow" stroke="#d9d2fd" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: '#d9d2fd', stroke: '#fff', strokeWidth: 2 }} name="التدفق الصافي" />
           </AreaChart>
         </ResponsiveContainer>
-      </ChartContainer>
+      </div>
     </BaseBox>
   );
 };

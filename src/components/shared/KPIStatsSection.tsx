@@ -26,7 +26,7 @@ const cardVariants = {
 
 /**
  * مكون موحد لعرض مؤشرات الأداء الأساسية
- * تصميم مطابق للمرجع: خلفية panel، أيقونة اتجاه دائرية، أرقام ضخمة
+ * تصميم مطابق للمرجع: خلفية بيضاء، حدود، ظل خفيف، أرقام ضخمة
  */
 export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
   stats,
@@ -52,14 +52,14 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
-          className="rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
+          className="rounded-[24px] bg-white border border-[#DADCE0] p-6 flex flex-col justify-between min-h-[130px] sm:min-h-[140px] md:min-h-[150px] shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]"
         >
-          {/* Title */}
-          <span className="text-[13px] font-bold text-[rgba(11,15,18,0.75)] font-arabic">
+          {/* Title — small, muted, secondary */}
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic">
             {stat.title}
           </span>
 
-          {/* Value + unit */}
+          {/* Value + unit — dominant */}
           <div className="mt-auto">
             <div className="flex items-baseline gap-1.5">
               <motion.span
@@ -67,18 +67,18 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 + index * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
-                className="text-[44px] font-bold leading-none text-[#0B0F12] tracking-tight"
+                className="text-[32px] sm:text-[36px] md:text-[44px] font-bold leading-none text-[#0B0F12] tracking-tight"
               >
                 {stat.value}
               </motion.span>
               {stat.unit && (
-                <span className="text-[13px] font-medium text-[rgba(11,15,18,0.45)] font-arabic">
+                <span className="text-[13px] font-medium text-[rgba(11,15,18,0.40)] font-arabic">
                   {stat.unit}
                 </span>
               )}
             </div>
             {stat.description && (
-              <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1 leading-snug">
+              <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1 leading-snug line-clamp-2">
                 {stat.description}
               </p>
             )}
