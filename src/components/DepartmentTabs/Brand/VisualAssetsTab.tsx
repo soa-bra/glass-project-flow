@@ -64,14 +64,14 @@ export const VisualAssetsTab: React.FC = () => {
     })),
   ];
 
-  // ── Upload fields ──
+  // ── Upload fields (asset-specific) ──
   const uploadFields: FormField[] = [
-    { name: 'name', label: 'اسم الأصل', type: 'text', required: true, placeholder: 'مثال: شعار سوبرا — النسخة الأفقية' },
-    { name: 'description', label: 'الوصف والإرشادات', type: 'textarea', placeholder: 'وصف الأصل وإرشادات الاستخدام المعتمدة...' },
-    { name: 'type', label: 'تصنيف الأصل', type: 'select', required: true, options: Object.entries(ASSET_TYPE_MAP).map(([v, { label }]) => ({ value: v, label })) },
-    { name: 'format', label: 'صيغة الملف', type: 'select', required: true, options: FORMAT_OPTIONS },
+    { name: 'name', label: 'اسم الأصل البصري', type: 'text', required: true, placeholder: 'مثال: شعار سوبرا — النسخة الأفقية' },
+    { name: 'description', label: 'وصف الأصل وإرشادات الاستخدام', type: 'textarea', placeholder: 'اشرح سياق استخدام الأصل، القيود، والمنصات المناسبة...' },
+    { name: 'type', label: 'نوع الأصل البصري', type: 'select', required: true, options: Object.entries(ASSET_TYPE_MAP).map(([v, { label }]) => ({ value: v, label })) },
+    { name: 'format', label: 'صيغة الملف الأصلية', type: 'select', required: true, options: FORMAT_OPTIONS },
     { name: 'size', label: 'حجم الملف', type: 'text', placeholder: '2.4 MB' },
-    { name: 'tags', label: 'الوسوم (مفصولة بفاصلة)', type: 'text', placeholder: 'هوية، رسمي، شعار' },
+    { name: 'tags', label: 'وسوم التصنيف (مفصولة بفاصلة عربية أو إنجليزية)', type: 'text', placeholder: 'هوية، رسمي، شعار' },
   ];
 
   // ── Handlers ──
@@ -86,7 +86,7 @@ export const VisualAssetsTab: React.FC = () => {
       downloads: 0,
       status: 'pending' as const,
       description: data.description || '',
-      tags: data.tags ? data.tags.split('،').map(t => t.trim()).filter(Boolean) : [],
+      tags: data.tags ? data.tags.split(/[،,]/).map(t => t.trim()).filter(Boolean) : [],
     };
     setAssets(prev => [newAsset, ...prev]);
   };
@@ -99,7 +99,7 @@ export const VisualAssetsTab: React.FC = () => {
       format: data.format,
       status: data.status,
       description: data.description || a.description,
-      tags: data.tags ? data.tags.split('،').map((t: string) => t.trim()).filter(Boolean) : a.tags,
+      tags: data.tags ? data.tags.split(/[،,]/).map((t: string) => t.trim()).filter(Boolean) : a.tags,
     } : a));
     setEditingAsset(null);
   };
@@ -111,13 +111,13 @@ export const VisualAssetsTab: React.FC = () => {
   };
 
   const editFields: FormField[] = editingAsset ? [
-    { name: 'name', label: 'اسم الأصل', type: 'text', required: true, defaultValue: editingAsset.name },
-    { name: 'description', label: 'الوصف والإرشادات', type: 'textarea', defaultValue: editingAsset.description || '' },
-    { name: 'format', label: 'صيغة الملف', type: 'select', required: true, defaultValue: editingAsset.format, options: FORMAT_OPTIONS },
-    { name: 'status', label: 'حالة الاعتماد', type: 'select', required: true, defaultValue: editingAsset.status, options: [
-      { value: 'approved', label: 'معتمد' }, { value: 'pending', label: 'قيد المراجعة' }, { value: 'archived', label: 'مؤرشف' },
+    { name: 'name', label: 'اسم الأصل البصري', type: 'text', required: true, defaultValue: editingAsset.name },
+    { name: 'description', label: 'وصف الأصل وإرشادات الاستخدام', type: 'textarea', defaultValue: editingAsset.description || '' },
+    { name: 'format', label: 'صيغة الملف الأصلية', type: 'select', required: true, defaultValue: editingAsset.format, options: FORMAT_OPTIONS },
+    { name: 'status', label: 'حالة اعتماد الأصل', type: 'select', required: true, defaultValue: editingAsset.status, options: [
+      { value: 'approved', label: 'معتمد من فريق العلامة' }, { value: 'pending', label: 'قيد مراجعة الاعتماد' }, { value: 'archived', label: 'مؤرشف — غير نشط' },
     ]},
-    { name: 'tags', label: 'الوسوم (مفصولة بفاصلة)', type: 'text', defaultValue: (editingAsset.tags || []).join('، ') },
+    { name: 'tags', label: 'وسوم التصنيف (مفصولة بفاصلة عربية أو إنجليزية)', type: 'text', defaultValue: (editingAsset.tags || []).join('، ') },
   ] : [];
 
   const filterOpts: FilterOption[] = [
@@ -307,11 +307,11 @@ export const VisualAssetsTab: React.FC = () => {
       <GenericFormModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        title="رفع أصل بصري جديد"
+        title="إضافة أصل بصري جديد إلى مكتبة العلامة"
         fields={uploadFields}
         onSubmit={handleUpload}
-        submitLabel="رفع الأصل"
-        successMessage="تم رفع الأصل بنجاح — سيظهر بحالة «قيد المراجعة» حتى الاعتماد"
+        submitLabel="إضافة إلى المكتبة"
+        successMessage="تم إضافة الأصل البصري بنجاح — سيظهر بحالة «قيد المراجعة» حتى اعتماد فريق العلامة"
       />
 
       {/* ════════════════════════════════════════════════
@@ -321,11 +321,11 @@ export const VisualAssetsTab: React.FC = () => {
         <GenericFormModal
           isOpen={!!editingAsset}
           onClose={() => setEditingAsset(null)}
-          title={`تعديل: ${editingAsset.name}`}
+          title={`تعديل أصل بصري: ${editingAsset.name}`}
           fields={editFields}
           onSubmit={handleEditAsset}
           submitLabel="حفظ التعديلات"
-          successMessage="تم تحديث الأصل بنجاح"
+          successMessage="تم تحديث بيانات الأصل البصري بنجاح"
         />
       )}
 
@@ -336,30 +336,35 @@ export const VisualAssetsTab: React.FC = () => {
         <Dialog open={!!viewingAsset} onOpenChange={() => setViewingAsset(null)}>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold font-arabic text-center">تفاصيل الأصل</DialogTitle>
+             <DialogTitle className="text-xl font-bold font-arabic text-center">معاينة الأصل البصري</DialogTitle>
             </DialogHeader>
 
             <div className="space-y-5 mt-4">
-              {/* Hero section */}
-              <div className="p-4 bg-white/30 rounded-2xl border border-black/5">
+              {/* Asset preview hero */}
+              <div className="p-5 bg-white/30 rounded-2xl border border-black/5">
+                {/* Preview placeholder */}
+                <div className="w-full h-32 rounded-xl bg-[rgba(11,15,18,0.03)] border border-dashed border-[rgba(11,15,18,0.12)] flex flex-col items-center justify-center mb-4">
+                  <div className="w-14 h-14 rounded-2xl bg-[rgba(11,15,18,0.06)] flex items-center justify-center mb-2">
+                    <AssetTypeIcon type={viewingAsset.type} />
+                  </div>
+                  <span className="text-xs text-[rgba(11,15,18,0.4)] font-arabic">{viewingAsset.format} • {viewingAsset.size}</span>
+                </div>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[rgba(11,15,18,0.05)] flex items-center justify-center">
-                      <AssetTypeIcon type={viewingAsset.type} />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold font-arabic">{viewingAsset.name}</h3>
-                      <span className="text-xs text-[rgba(11,15,18,0.5)]">
-                        {ASSET_TYPE_MAP[viewingAsset.type]?.label || viewingAsset.type} • {viewingAsset.format}
-                      </span>
-                    </div>
+                  <div>
+                    <h3 className="text-lg font-bold font-arabic">{viewingAsset.name}</h3>
+                    <span className="text-xs text-[rgba(11,15,18,0.5)]">
+                      {ASSET_TYPE_MAP[viewingAsset.type]?.label || viewingAsset.type} • {viewingAsset.format}
+                    </span>
                   </div>
                   <UnifiedBadge variant={viewingAsset.status === 'approved' ? 'success' : 'warning'}>
-                    {viewingAsset.status === 'approved' ? 'معتمد' : 'قيد المراجعة'}
+                    {viewingAsset.status === 'approved' ? 'معتمد من فريق العلامة' : 'قيد مراجعة الاعتماد'}
                   </UnifiedBadge>
                 </div>
                 {viewingAsset.description && (
-                  <p className="text-sm text-[rgba(11,15,18,0.7)] font-arabic mt-3">{viewingAsset.description}</p>
+                  <div className="mt-3 p-3 bg-[rgba(11,15,18,0.02)] rounded-xl">
+                    <span className="text-xs font-semibold text-[rgba(11,15,18,0.5)] font-arabic block mb-1">إرشادات الاستخدام</span>
+                    <p className="text-sm text-[rgba(11,15,18,0.7)] font-arabic">{viewingAsset.description}</p>
+                  </div>
                 )}
               </div>
 

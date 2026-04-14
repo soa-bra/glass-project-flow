@@ -69,20 +69,20 @@ export const KnowledgeRepositoryTab: React.FC = () => {
     }
   };
 
-  // ── Upload fields ──
+  // ── Upload fields (knowledge-document specific) ──
   const uploadFields: FormField[] = [
-    { name: 'title', label: 'عنوان الوثيقة', type: 'text', required: true, placeholder: 'مثال: دراسة تأثير الهوية الثقافية على ولاء العملاء' },
-    { name: 'content', label: 'ملخص المحتوى', type: 'textarea', required: true, placeholder: 'وصف مختصر لمحتوى الوثيقة وأهدافها...' },
-    { name: 'type', label: 'نوع الوثيقة', type: 'select', required: true, options: Object.entries(TYPE_LABELS).map(([v, l]) => ({ value: v, label: l })) },
-    { name: 'category', label: 'الفئة', type: 'select', required: true, options: [
+    { name: 'title', label: 'عنوان الوثيقة المعرفية', type: 'text', required: true, placeholder: 'مثال: دراسة تأثير الهوية الثقافية على ولاء العملاء' },
+    { name: 'content', label: 'الملخص البحثي', type: 'textarea', required: true, placeholder: 'اكتب ملخصاً يوضح أهداف الوثيقة، المنهجية المستخدمة، وأبرز النتائج...' },
+    { name: 'type', label: 'تصنيف الوثيقة المعرفية', type: 'select', required: true, options: Object.entries(TYPE_LABELS).map(([v, l]) => ({ value: v, label: l })) },
+    { name: 'category', label: 'المجال المعرفي', type: 'select', required: true, options: [
       { value: 'brand-sociology', label: 'علم اجتماع العلامة' },
       { value: 'cultural-identity', label: 'الهوية الثقافية' },
       { value: 'research-methods', label: 'مناهج البحث' },
-      { value: 'metrics', label: 'المقاييس' },
+      { value: 'metrics', label: 'المقاييس والمعايير' },
     ]},
-    { name: 'author', label: 'المؤلف', type: 'text', required: true, placeholder: 'اسم الباحث أو الكاتب' },
-    { name: 'tags', label: 'الوسوم (مفصولة بفاصلة)', type: 'text', placeholder: 'هوية ثقافية، علامة تجارية، بحث' },
-    { name: 'version', label: 'رقم الإصدار', type: 'text', placeholder: '1.0' },
+    { name: 'author', label: 'الباحث / المؤلف الرئيسي', type: 'text', required: true, placeholder: 'اسم الباحث أو الفريق البحثي' },
+    { name: 'tags', label: 'الكلمات الدلالية (مفصولة بفاصلة عربية أو إنجليزية)', type: 'text', placeholder: 'هوية ثقافية، علامة تجارية، بحث ميداني' },
+    { name: 'version', label: 'رقم إصدار الوثيقة', type: 'text', placeholder: '1.0' },
   ];
 
   const CATEGORY_LABELS: Record<string, string> = {
@@ -103,7 +103,7 @@ export const KnowledgeRepositoryTab: React.FC = () => {
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
       status: 'draft',
-      tags: data.tags ? data.tags.split('،').map(t => t.trim()).filter(Boolean) : [],
+      tags: data.tags ? data.tags.split(/[،,]/).map(t => t.trim()).filter(Boolean) : [],
       content: data.content,
       readCount: 0,
       citations: 0,
@@ -269,11 +269,11 @@ export const KnowledgeRepositoryTab: React.FC = () => {
       <GenericFormModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
-        title="رفع وثيقة جديدة إلى المستودع"
+        title="إضافة وثيقة معرفية إلى المستودع"
         fields={uploadFields}
         onSubmit={handleUpload}
-        submitLabel="رفع الوثيقة"
-        successMessage="تم رفع الوثيقة بنجاح — ستظهر بحالة «مسودة» حتى المراجعة"
+        submitLabel="إضافة إلى المستودع"
+        successMessage="تم إضافة الوثيقة المعرفية بنجاح — ستظهر بحالة «مسودة» حتى اعتماد المراجعة"
       />
 
       {/* ═══════ MODAL: View Document Details ═══════ */}
@@ -301,7 +301,7 @@ export const KnowledgeRepositoryTab: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { icon: User, label: 'المؤلف', value: viewingDoc.author },
-                  { icon: BookOpen, label: 'الفئة', value: viewingDoc.category },
+                  { icon: BookOpen, label: 'المجال المعرفي', value: CATEGORY_LABELS[viewingDoc.category] || viewingDoc.category },
                   { icon: Calendar, label: 'تاريخ الإنشاء', value: new Date(viewingDoc.createdAt).toLocaleDateString('ar-SA') },
                   { icon: Calendar, label: 'آخر تحديث', value: new Date(viewingDoc.updatedAt).toLocaleDateString('ar-SA') },
                   { icon: Hash, label: 'الإصدار', value: `v${viewingDoc.version}` },
