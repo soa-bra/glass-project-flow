@@ -110,7 +110,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الملخص الذكي</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -123,9 +123,9 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                   />
                   <span className="text-sm text-black">تجميع الإشعارات ذات الصلة</span>
                 </label>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">فلترة الأولوية</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -138,7 +138,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                   />
                   <span className="text-sm text-black">إظهار الإشعارات المهمة أولاً</span>
                 </label>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -147,7 +147,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             <h3 className="text-md font-bold text-black mb-4">تفضيلات الإشعارات</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center gap-3 mb-3">
                   <Mail className="w-5 h-5 text-black" />
                   <h4 className="text-sm font-bold text-black">البريد الإلكتروني</h4>
@@ -163,9 +163,9 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                   />
                   <span className="text-sm text-black">تفعيل إشعارات البريد</span>
                 </label>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center gap-3 mb-3">
                   <Smartphone className="w-5 h-5 text-black" />
                   <h4 className="text-sm font-bold text-black">الدفع</h4>
@@ -181,9 +181,9 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                   />
                   <span className="text-sm text-black">تفعيل الإشعارات المدفوعة</span>
                 </label>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center gap-3 mb-3">
                   {formData.preferences.sound ? <Volume2 className="w-5 h-5 text-black" /> : <VolumeX className="w-5 h-5 text-black" />}
                   <h4 className="text-sm font-bold text-black">الصوت</h4>
@@ -199,7 +199,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                   />
                   <span className="text-sm text-black">تفعيل الأصوات</span>
                 </label>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -208,7 +208,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             <h3 className="text-md font-bold text-black mb-4">إشعارات المشاريع</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Target className="w-5 h-5" />
                   المهام والمشاريع
@@ -230,9 +230,9 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                     </label>
                   ))}
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الإشعارات المالية</h4>
                 <div className="space-y-2">
                   {['email', 'push', 'sms'].map(channel => (
@@ -251,7 +251,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                     </label>
                   ))}
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -260,7 +260,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             <h3 className="text-md font-bold text-black mb-4">إعدادات التوقيت</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Clock className="w-5 h-5" />
                   ساعات العمل
@@ -291,9 +291,9 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                     />
                   </div>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الساعات الهادئة</h4>
                 <label className="flex items-center gap-2 mb-3">
                   <input 
@@ -328,7 +328,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                     />
                   </div>
                 )}
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -338,7 +338,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
             
             <div className="space-y-3">
               {notificationHistory.map(notification => (
-                <div key={notification.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 flex items-center justify-between">
+                <AppCardSurface density="compact" key={notification.id}>
                   <div className="flex items-center gap-3">
                     <BaseBadge variant={notification.read ? 'secondary' : 'info'} size="sm">
                       {notification.read ? 'مقروء' : 'جديد'}
@@ -349,7 +349,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                     </div>
                   </div>
                   <BaseBadge variant="outline" size="sm">{notification.type}</BaseBadge>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>

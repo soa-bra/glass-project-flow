@@ -162,7 +162,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الربط الذكي</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -175,9 +175,9 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                   />
                   <span className="text-sm text-black">تعيين الحقول تلقائيًا</span>
                 </label>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">كشف الشذوذ</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -190,7 +190,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                   />
                   <span className="text-sm text-black">مراقبة الأنشطة المشبوهة</span>
                 </label>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -200,7 +200,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
             
             <div className="space-y-4">
               {integrations.map(integration => (
-                <div key={integration.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={integration.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       {getStatusIcon(integration.status)}
@@ -233,7 +233,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                       </button>
                     </div>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>
@@ -243,7 +243,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
             <h3 className="text-md font-bold text-black mb-4">إعدادات API</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Key className="w-5 h-5" />
                   المصادقة والأمان
@@ -276,9 +276,9 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                     <span className="text-sm text-black">تفعيل حدود المعدل</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Settings className="w-5 h-5" />
                   إعدادات الاتصال
@@ -313,7 +313,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                     />
                   </div>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -322,7 +322,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
             <h3 className="text-md font-bold text-black mb-4">Webhooks</h3>
             
             <div className="space-y-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">حالة Webhooks</h4>
                   <label className="flex items-center gap-2">
@@ -362,7 +362,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                     </div>
                   </div>
                 )}
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 

@@ -159,7 +159,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الألوان التكيفية</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -172,9 +172,9 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                   />
                   <span className="text-sm text-black">تكيف الألوان حسب المحتوى</span>
                 </label>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">المظاهر السياقية</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -187,7 +187,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                   />
                   <span className="text-sm text-black">مظاهر حسب نوع العمل</span>
                 </label>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
@@ -196,7 +196,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
             <h3 className="text-md font-bold text-black mb-4">إعدادات إمكانية الوصول</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Eye className="w-5 h-5" />
                   البصر
@@ -225,9 +225,9 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                     <span className="text-sm text-black">خط مناسب لعسر القراءة</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Zap className="w-5 h-5" />
                   الحركة
@@ -256,7 +256,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                     <span className="text-sm text-black">حدود التركيز المرئية</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
