@@ -309,24 +309,32 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           </div>
 
           {/* إحصائيات الأمان */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">98%</div>
-              <p className="text-xs font-normal text-gray-400">مستوى الأمان</p>
-            </div>
-            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">2</div>
-              <p className="text-xs font-normal text-gray-400">تنبيهات نشطة</p>
-            </div>
-            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">3</div>
-              <p className="text-xs font-normal text-gray-400">أجهزة موثوقة</p>
-            </div>
-            <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">5</div>
-              <p className="text-xs font-normal text-gray-400">مفاتيح API</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
+                <div className="text-2xl font-bold text-black mb-1">98%</div>
+                <p className="text-xs font-normal text-gray-400">مستوى الأمان</p>
+              </div>
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
+                <div className="text-2xl font-bold text-black mb-1">2</div>
+                <p className="text-xs font-normal text-gray-400">تنبيهات نشطة</p>
+              </div>
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
+                <div className="text-2xl font-bold text-black mb-1">3</div>
+                <p className="text-xs font-normal text-gray-400">أجهزة موثوقة</p>
+              </div>
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <div className="bg-transparent rounded-[24px] p-4 ring-1 ring-[#DADCE0] text-center">
+                <div className="text-2xl font-bold text-black mb-1">5</div>
+                <p className="text-xs font-normal text-gray-400">مفاتيح API</p>
+              </div>
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

@@ -83,32 +83,37 @@ export const AnalyticsImpactTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Impact Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <BaseBox>
-          <div>
-            <Quote className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{impactMetrics.totalCitations}</div>
-            <div className="text-sm text-gray-600">إجمالي الاقتباسات</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Award className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{impactMetrics.hIndex}</div>
-            <div className="text-sm text-gray-600">مؤشر H</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{impactMetrics.reachScore}</div>
-            <div className="text-sm text-gray-600">نقاط الوصول</div>
-          </div>
-        </BaseBox>
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={4}>
+          <BaseBox>
+            <div>
+              <Quote className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{impactMetrics.totalCitations}</div>
+              <div className="text-sm text-gray-600">إجمالي الاقتباسات</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={4}>
+          <BaseBox>
+            <div>
+              <Award className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{impactMetrics.hIndex}</div>
+              <div className="text-sm text-gray-600">مؤشر H</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={4}>
+          <BaseBox>
+            <div>
+              <Target className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{impactMetrics.reachScore}</div>
+              <div className="text-sm text-gray-600">نقاط الوصول</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
         {/* Content Performance */}
         <BaseBox>
           <div className="mb-4">

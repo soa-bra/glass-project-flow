@@ -363,22 +363,28 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
           </div>
 
           {/* Statistics */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">
-                {integrations.filter(i => i.status === 'connected').length}
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={4}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">
+                  {integrations.filter(i => i.status === 'connected').length}
+                </div>
+                <p className="text-xs font-normal text-gray-400">تكاملات نشطة</p>
               </div>
-              <p className="text-xs font-normal text-gray-400">تكاملات نشطة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">12</div>
-              <p className="text-xs font-normal text-gray-400">تكاملات متاحة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">99.2%</div>
-              <p className="text-xs font-normal text-gray-400">وقت التشغيل</p>
-            </div>
-          </div>
+            </AppGridItem>
+            <AppGridItem colSpan={4}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">12</div>
+                <p className="text-xs font-normal text-gray-400">تكاملات متاحة</p>
+              </div>
+            </AppGridItem>
+            <AppGridItem colSpan={4}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">99.2%</div>
+                <p className="text-xs font-normal text-gray-400">وقت التشغيل</p>
+              </div>
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">
