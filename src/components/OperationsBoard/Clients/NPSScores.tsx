@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { BaseBadge as Badge } from '@/components/ui/BaseBadge';
 import { Star, TrendingUp, MessageCircle } from 'lucide-react';
 import { COLORS } from '@/components/shared/design-system/constants';
@@ -14,9 +14,7 @@ interface NPSScore {
 interface NPSScoresProps {
   nps: NPSScore[];
 }
-export const NPSScores: React.FC<NPSScoresProps> = ({
-  nps
-}) => {
+export const NPSScores: React.FC<NPSScoresProps> = ({ nps }) => {
   const getNPSColor = (score: number): string => {
     if (score >= 90) return COLORS.NPS_EXCELLENT;
     if (score >= 75) return COLORS.NPS_VERY_GOOD;
@@ -32,87 +30,67 @@ export const NPSScores: React.FC<NPSScoresProps> = ({
   };
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'promoter':
-        return 'bg-green-100 text-green-800';
-      case 'passive':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'detractor':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'promoter': return 'bg-green-100 text-green-800';
+      case 'passive': return 'bg-yellow-100 text-yellow-800';
+      case 'detractor': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
   const getCategoryText = (category: string) => {
     switch (category) {
-      case 'promoter':
-        return 'مروج';
-      case 'passive':
-        return 'محايد';
-      case 'detractor':
-        return 'منتقد';
-      default:
-        return 'غير محدد';
+      case 'promoter': return 'مروج';
+      case 'passive': return 'محايد';
+      case 'detractor': return 'منتقد';
+      default: return 'غير محدد';
     }
   };
   const averageNPS = nps.length > 0 ? Math.round(nps.reduce((sum, item) => sum + item.score, 0) / nps.length) : 0;
-  return <Card className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
-      <CardHeader>
-        <CardTitle className="text-right font-arabic flex items-center gap-2">
-          <Star className="w-5 h-5" />
-          مؤشر رضا العملاء (NPS)
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {/* المتوسط العام */}
-        <div className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 mb-4">
-          <div className="flex items-center justify-between">
-            <div className="text-right">
-              <p className="text-sm text-gray-600">المتوسط العام</p>
-              <p className="text-3xl font-bold">{averageNPS}</p>
-              <p className="text-sm text-gray-600">{getNPSRating(averageNPS)}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-8 h-8 text-green-500" />
-                   <div 
-                    className="w-4 h-4 rounded-full" 
-                    style={{ backgroundColor: getNPSColor(averageNPS) }}
-                  ></div>
-            </div>
+  return (
+    <AppCardSurface density="standard">
+      <div className="flex items-center gap-2 mb-4">
+        <Star className="w-5 h-5" />
+        <h3 className="text-lg font-semibold text-right font-arabic">مؤشر رضا العملاء (NPS)</h3>
+      </div>
+      {/* المتوسط العام */}
+      <div className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 mb-4">
+        <div className="flex items-center justify-between">
+          <div className="text-right">
+            <p className="text-sm text-gray-600">المتوسط العام</p>
+            <p className="text-3xl font-bold">{averageNPS}</p>
+            <p className="text-sm text-gray-600">{getNPSRating(averageNPS)}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="w-8 h-8 text-green-500" />
+            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: getNPSColor(averageNPS) }} />
           </div>
         </div>
-
-        {/* قائمة العملاء */}
-        <div className="space-y-3 max-h-[400px] overflow-y-auto">
-          {nps.map(item => <div key={item.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 transition-all duration-200 hover:bg-gray-100">
-              <div className="flex items-start justify-between mb-2">
-                <div className="text-right flex-1">
-                  <h4 className="font-medium text-sm">{item.client}</h4>
-                  <p className="text-xs text-gray-600">{item.date}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge className={getCategoryColor(item.category)}>
-                    {getCategoryText(item.category)}
-                  </Badge>
-                  <span className="text-lg font-bold">{item.score}</span>
-                </div>
+      </div>
+      {/* قائمة العملاء */}
+      <div className="space-y-3 max-h-[400px] overflow-y-auto">
+        {nps.map(item => (
+          <div key={item.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 transition-all duration-200 hover:bg-gray-100">
+            <div className="flex items-start justify-between mb-2">
+              <div className="text-right flex-1">
+                <h4 className="font-medium text-sm">{item.client}</h4>
+                <p className="text-xs text-gray-600">{item.date}</p>
               </div>
-              
-              {item.feedback && <div className="flex items-start gap-2 mt-3 p-2 bg-gray-50 rounded-lg">
-                  <MessageCircle className="w-4 h-4 text-gray-500 mt-0.5" />
-                  <p className="text-xs text-gray-700 leading-relaxed">{item.feedback}</p>
-                </div>}
-              
-              <div className="mt-3 bg-gray-200 h-2 rounded-full">
-                 <div 
-                  className="h-2 rounded-full transition-all duration-300" 
-                  style={{
-                    width: `${item.score}%`,
-                    backgroundColor: getNPSColor(item.score)
-                  }}
-                ></div>
+              <div className="flex items-center gap-2">
+                <Badge className={getCategoryColor(item.category)}>{getCategoryText(item.category)}</Badge>
+                <span className="text-lg font-bold">{item.score}</span>
               </div>
-            </div>)}
-        </div>
-      </CardContent>
-    </Card>;
+            </div>
+            {item.feedback && (
+              <div className="flex items-start gap-2 mt-3 p-2 bg-gray-50 rounded-lg">
+                <MessageCircle className="w-4 h-4 text-gray-500 mt-0.5" />
+                <p className="text-xs text-gray-700 leading-relaxed">{item.feedback}</p>
+              </div>
+            )}
+            <div className="mt-3 bg-gray-200 h-2 rounded-full">
+              <div className="h-2 rounded-full transition-all duration-300" style={{ width: `${item.score}%`, backgroundColor: getNPSColor(item.score) }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </AppCardSurface>
+  );
 };
