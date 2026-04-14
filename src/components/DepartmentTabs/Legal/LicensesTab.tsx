@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Award, AlertTriangle, Calendar, DollarSign, Plus, Eye, Download } from 'lucide-react';
 import { mockLicenses } from './data';
 import { getStatusText, formatCurrency, formatDate } from './utils';

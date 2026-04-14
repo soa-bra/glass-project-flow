@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Shield, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
 import { mockComplianceItems } from './data';
 import { getStatusText, formatDate } from './utils';

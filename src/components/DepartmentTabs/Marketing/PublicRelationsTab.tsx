@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Megaphone, Users, FileText, Award, TrendingUp } from 'lucide-react';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';

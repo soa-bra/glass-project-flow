@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Plus, Search, Download, Eye } from 'lucide-react';
 import { mockContracts } from './data';
 import type { Contract } from './types';

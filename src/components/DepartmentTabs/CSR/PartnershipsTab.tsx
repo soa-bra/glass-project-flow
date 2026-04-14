@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
