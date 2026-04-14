@@ -33,7 +33,7 @@ export const NotificationsBox: React.FC = () => {
             </div>
           );
         })}
+      </div>
     </AppCardSurface>
-    </div>
   );
 };

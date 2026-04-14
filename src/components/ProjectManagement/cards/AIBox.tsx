@@ -47,7 +47,7 @@ export const AIBox: React.FC<AICardProps> = ({ project }) => {
             </div>
           );
         })}
+      </div>
     </AppCardSurface>
-    </div>
   );
 };

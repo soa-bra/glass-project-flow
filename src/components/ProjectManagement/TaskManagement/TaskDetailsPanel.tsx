@@ -241,7 +241,7 @@ export const TaskDetailsPanel: React.FC<TaskDetailsPanelProps> = ({
       </AlertDialog>
 
       <AddTaskModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onTaskAdded={() => {}} onTaskUpdated={handleTaskUpdated} editingTask={convertToTaskData(task)} isEditMode={true} />
-    </div>;
+    </AppCardSurface>;
 };
 
 // Tab Components
@@ -481,5 +481,5 @@ const TaskCommentsTab: React.FC<{
           <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>لا توجد تعليقات</p>
         </div>}
-    </AppCardSurface>;
+    </div>;
 };
