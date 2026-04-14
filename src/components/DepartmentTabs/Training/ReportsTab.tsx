@@ -4,7 +4,8 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { FileText, Download, Eye, Calendar, TrendingUp, Users, Target, DollarSign } from 'lucide-react';
 
 export const ReportsTab: React.FC = () => {
