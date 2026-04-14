@@ -119,7 +119,7 @@ export const RisksTab: React.FC = () => {
             </AppGridItem>
           ))}
         </AppDashboardGrid>
-      </div>
+      </AppCardSurface>
 
       {/* مصفوفة المخاطر */}
       <AppCardSurface density="spacious" interactive="hoverable">
@@ -140,7 +140,7 @@ export const RisksTab: React.FC = () => {
               })}
             </React.Fragment>)}
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* تقييمات المخاطر */}
       <AppCardSurface density="spacious" interactive="hoverable">
@@ -184,7 +184,7 @@ export const RisksTab: React.FC = () => {
               </div>
             </div>)}
         </div>
-      </div>
+      </AppCardSurface>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة تقييم مخاطر جديد" fields={addFields} onSubmit={handleAdd} submitLabel="إضافة" successMessage="تمت إضافة تقييم المخاطر بنجاح" />
       {viewingRisk && <GenericDetailModal isOpen={!!viewingRisk} onClose={() => setViewingRisk(null)} title={`تفاصيل: ${viewingRisk.title}`} fields={getViewFields(viewingRisk)} />}

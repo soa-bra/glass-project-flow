@@ -131,7 +131,7 @@ export const LicensesTab: React.FC = () => {
             </div>
           </AppGridItem>
         </AppDashboardGrid>
-      </div>
+      </AppCardSurface>
 
       {/* جدول التراخيص */}
       <AppCardSurface density="spacious" interactive="hoverable">
@@ -171,7 +171,7 @@ export const LicensesTab: React.FC = () => {
             </tbody>
           </table>
         </div>
-      </div>
+      </AppCardSurface>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة ترخيص جديد" fields={addFields} onSubmit={handleAdd} submitLabel="إضافة" successMessage="تمت إضافة الترخيص بنجاح" />
       {viewingLicense && <GenericDetailModal isOpen={!!viewingLicense} onClose={() => setViewingLicense(null)} title={`تفاصيل: ${viewingLicense.name}`} fields={getViewFields(viewingLicense)} />}

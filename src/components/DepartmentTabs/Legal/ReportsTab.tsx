@@ -108,7 +108,7 @@ export const ReportsTab: React.FC = () => {
             </div>
           </AppGridItem>
         </AppDashboardGrid>
-      </div>
+      </AppCardSurface>
 
       {/* قائمة التقارير */}
       <AppCardSurface density="spacious" interactive="hoverable">
@@ -133,7 +133,7 @@ export const ReportsTab: React.FC = () => {
               </div>
             </div>)}
         </div>
-      </div>
+      </AppCardSurface>
 
       <GenericFormModal isOpen={isCreateOpen} onClose={() => setIsCreateOpen(false)} title="إنشاء تقرير مخصص" fields={createFields} onSubmit={handleCreate} submitLabel="إنشاء التقرير" successMessage="تم إنشاء التقرير بنجاح" />
       {viewingReport && <GenericDetailModal isOpen={!!viewingReport} onClose={() => setViewingReport(null)} title={`تفاصيل: ${viewingReport.title}`} fields={getViewFields(viewingReport)} />}

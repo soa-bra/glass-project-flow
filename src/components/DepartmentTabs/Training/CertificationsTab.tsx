@@ -58,28 +58,28 @@ export const CertificationsTab: React.FC = () => {
             <Award className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{certificates.length}</div>
             <div className="text-sm text-gray-600">شهادات صادرة</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
         <AppGridItem colSpan={3}>
           <AppCardSurface density="compact" className="text-center">
             <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{certificates.length}</div>
             <div className="text-sm text-gray-600">شهادات مفعلة</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
         <AppGridItem colSpan={3}>
           <AppCardSurface density="compact" className="text-center">
             <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{certificateTemplates.length}</div>
             <div className="text-sm text-gray-600">قوالب الشهادات</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
         <AppGridItem colSpan={3}>
           <AppCardSurface density="compact" className="text-center">
             <Download className="h-8 w-8 text-purple-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">234</div>
             <div className="text-sm text-gray-600">تحميلات الشهادات</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
       </AppDashboardGrid>
 
@@ -195,7 +195,7 @@ export const CertificationsTab: React.FC = () => {
             <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
             <div className="text-2xl font-bold">{skillMatrix.length}</div>
             <div className="text-sm text-gray-600">ملفات المهارات</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
         <AppGridItem colSpan={3}>
           <AppCardSurface density="compact" className="text-center">
@@ -206,7 +206,7 @@ export const CertificationsTab: React.FC = () => {
               ) / skillMatrix.length)}%
             </div>
             <div className="text-sm text-gray-600">متوسط المهارات</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
         <AppGridItem colSpan={3}>
           <AppCardSurface density="compact" className="text-center">
@@ -217,7 +217,7 @@ export const CertificationsTab: React.FC = () => {
               ).length}
             </div>
             <div className="text-sm text-gray-600">خبراء</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
         <AppGridItem colSpan={3}>
           <AppCardSurface density="compact" className="text-center">
@@ -228,7 +228,7 @@ export const CertificationsTab: React.FC = () => {
               ).length}
             </div>
             <div className="text-sm text-gray-600">يحتاجون تطوير</div>
-          </div>
+          </AppCardSurface>
         </AppGridItem>
       </AppDashboardGrid>
 
