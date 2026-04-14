@@ -147,7 +147,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
             
             <div className="space-y-3">
               {users.map(user => (
-                <div key={user.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={user.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -174,7 +174,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
                       </button>
                     </div>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>
@@ -185,7 +185,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
             
             <div className="space-y-3">
               {roles.map(role => (
-                <div key={role.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={role.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -210,7 +210,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
                       </button>
                     </div>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>

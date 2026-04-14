@@ -124,7 +124,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {complianceStatus.map(item => (
-                <div key={item.framework} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={item.framework}>
                   <div className="flex items-center gap-2 mb-2">
                     {getComplianceIcon(item.status)}
                     <h4 className="text-sm font-bold text-black">{item.framework}</h4>
@@ -133,7 +133,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     {item.status === 'compliant' ? 'متوافق' : 'يحتاج مراجعة'}
                   </p>
                   <p className="text-xs text-gray-500">آخر مراجعة: {item.lastReview}</p>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
           </AppCardSurface>
@@ -144,7 +144,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">البيانات المالية (سنوات)</label>
                   <input 
                     type="number"
@@ -157,8 +157,8 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="20"
                   />
-                </div>
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                </AppCardSurface>
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">البيانات القانونية (سنوات)</label>
                   <input 
                     type="number"
@@ -171,11 +171,11 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="15"
                   />
-                </div>
+                </AppCardSurface>
               </div>
 
               <div className="space-y-3">
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">بيانات الموارد البشرية (سنوات)</label>
                   <input 
                     type="number"
@@ -188,8 +188,8 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="10"
                   />
-                </div>
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                </AppCardSurface>
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">بيانات المشاريع (سنوات)</label>
                   <input 
                     type="number"
@@ -202,7 +202,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="7"
                   />
-                </div>
+                </AppCardSurface>
               </div>
             </div>
           </AppCardSurface>
@@ -212,7 +212,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
             <h3 className="text-md font-bold text-black mb-4">النسخ الاحتياطي والاستعادة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Clock className="w-5 h-5" />
                   الجدولة
@@ -245,9 +245,9 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     <span className="text-sm text-black">التشفير المتقدم</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Shield className="w-5 h-5" />
                   الموقع والأمان
@@ -280,7 +280,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     <span className="text-sm text-black">تفعيل النسخ التلقائي</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
           </AppCardSurface>
 
