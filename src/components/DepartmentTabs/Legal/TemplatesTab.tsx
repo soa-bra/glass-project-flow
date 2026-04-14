@@ -80,7 +80,7 @@ export const TemplatesTab: React.FC = () => {
             <input type="text" placeholder="البحث في النماذج..." className="w-full pl-4 pr-12 py-3 bg-transparent border border-black/10 rounded-full focus:ring-2 focus:ring-black/20 text-black font-arabic" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* شبكة النماذج */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

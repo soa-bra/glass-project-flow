@@ -134,7 +134,7 @@ export const ComplianceTab: React.FC = () => {
             </AppGridItem>
           </AppDashboardGrid>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* قائمة عناصر الامتثال */}
       <AppCardSurface density="spacious" interactive="hoverable">
@@ -177,7 +177,7 @@ export const ComplianceTab: React.FC = () => {
             </table>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* العناصر التي تحتاج إجراء عاجل */}
       <AppCardSurface density="spacious" interactive="hoverable">
@@ -202,7 +202,7 @@ export const ComplianceTab: React.FC = () => {
                 </div>)}
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       <GenericFormModal isOpen={isAddOpen} onClose={() => setIsAddOpen(false)} title="إضافة متطلب امتثال جديد" fields={addFields} onSubmit={handleAdd} submitLabel="إضافة" successMessage="تمت إضافة المتطلب بنجاح" />
 
