@@ -192,7 +192,9 @@ export const AnalyticsImpactTab: React.FC = () => {
             </Tabs>
           </div>
         </BaseBox>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6}>
         {/* Geographic Distribution */}
         <BaseBox>
           <div className="mb-4">
@@ -221,6 +223,7 @@ export const AnalyticsImpactTab: React.FC = () => {
             </div>
           </div>
         </BaseBox>
+        </AppGridItem>
       </AppDashboardGrid>
 
       {/* Content Saturation Analysis */}
