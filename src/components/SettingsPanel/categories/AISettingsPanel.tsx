@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { BrainCircuit, Cpu, Database, Zap, Activity, Target, TrendingUp, Settings } from 'lucide-react';
+import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
-import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -297,24 +296,14 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
             <h3 className="text-md font-bold text-black mb-4">حالة التدريب</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
-                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
-                  <Database className="w-5 h-5" />
-                  جودة البيانات
-                </h4>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-black mb-1">
-                    {(formData.training.dataQuality * 100).toFixed(1)}%
-                  </div>
-                  <p className="text-xs text-gray-500">نظافة وجودة البيانات</p>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                  <div 
-                    className="bg-green-600 h-2 rounded-full"
-                    style={{ width: `${formData.training.dataQuality * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+              <NumericStatCard
+                size="sm"
+                title="جودة البيانات"
+                value={`${(formData.training.dataQuality * 100).toFixed(1)}%`}
+                description="نظافة وجودة البيانات"
+                icon={<Database className="w-4 h-4" />}
+                accentColor={formData.training.dataQuality >= 0.9 ? '#3DBE8B' : formData.training.dataQuality >= 0.7 ? '#F6C445' : '#E5564D'}
+              />
 
               <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
                 <h4 className="text-sm font-bold text-black mb-3">الجدول الزمني</h4>
