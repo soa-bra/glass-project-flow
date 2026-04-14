@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { Plus, Search, Download, Eye, Calendar, Globe, Target } from 'lucide-react';
 
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
@@ -115,11 +116,11 @@ export const ReportsTab: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{formatCurrency(report.metrics.totalBudget)}</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">الميزانية</p></div>
-                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.totalBeneficiaries.toLocaleString('ar-SA')}</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">المستفيدين</p></div>
-                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.totalVolunteerHours}</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">ساعات التطوع</p></div>
-                <div className="text-center"><p className="text-[20px] font-bold text-[#0B0F12]">{report.metrics.averageSROI}:1</p><p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">SROI</p></div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                <NumericStatCard title="الميزانية" value={formatCurrency(report.metrics.totalBudget)} size="sm" />
+                <NumericStatCard title="المستفيدين" value={report.metrics.totalBeneficiaries.toLocaleString('ar-SA')} size="sm" />
+                <NumericStatCard title="ساعات التطوع" value={report.metrics.totalVolunteerHours} size="sm" />
+                <NumericStatCard title="SROI" value={`${report.metrics.averageSROI}:1`} size="sm" />
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-[10px] text-[rgba(11,15,18,0.35)] font-arabic flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(report.generatedDate).toLocaleDateString('ar-SA')}</span>
