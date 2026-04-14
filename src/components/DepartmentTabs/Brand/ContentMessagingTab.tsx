@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
-import { NumericStatCard } from '@/components/shared/visual-data';
+import { NumericStatCard, RingMetricCard } from '@/components/shared/visual-data';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
 import { 
   MessageSquare, 
   PenTool, 
   Calendar, 
-  TrendingUp,
   Eye,
   Share2,
   Edit,
@@ -23,10 +23,10 @@ export const ContentMessagingTab: React.FC = () => {
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
 
   const contentPillars = [
-    { name: 'التراث الثقافي', percentage: 35, color: 'bg-blue-500' },
-    { name: 'الابتكار الأكاديمي', percentage: 28, color: 'bg-green-500' },
-    { name: 'المسؤولية المجتمعية', percentage: 22, color: 'bg-purple-500' },
-    { name: 'التطوير المهني', percentage: 15, color: 'bg-orange-500' }
+    { name: 'التراث الثقافي', percentage: 35, color: '#3DA8F5' },
+    { name: 'الابتكار الأكاديمي', percentage: 28, color: '#3DBE8B' },
+    { name: 'المسؤولية المجتمعية', percentage: 22, color: '#F6C445' },
+    { name: 'التطوير المهني', percentage: 15, color: '#E5564D' }
   ];
 
   const recentContent = [
@@ -65,15 +65,6 @@ export const ContentMessagingTab: React.FC = () => {
     }
   ];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'منشور': return 'bg-green-100 text-green-800';
-      case 'قيد المراجعة': return 'bg-yellow-100 text-yellow-800';
-      case 'مجدول': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'منشور': return <CheckCircle className="h-4 w-4" />;
@@ -83,175 +74,123 @@ export const ContentMessagingTab: React.FC = () => {
     }
   };
 
+  const getStatusVariant = (status: string): 'success' | 'warning' | 'info' | 'default' => {
+    switch (status) {
+      case 'منشور': return 'success';
+      case 'قيد المراجعة': return 'warning';
+      case 'مجدول': return 'info';
+      default: return 'default';
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Content Strategy Overview */}
       <AppDashboardGrid columns={12}>
-        <BaseBox>
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              ركائز المحتوى الثقافي
-            </h3>
-          </div>
-          <div>
-            <div className="space-y-4">
-              {contentPillars.map((pillar, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium">{pillar.name}</span>
-                    <span className="text-sm font-bold">{pillar.percentage}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className={`${pillar.color} h-2 rounded-full transition-all duration-300`}
-                      style={{ width: `${pillar.percentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-medium text-blue-900 mb-2">التوزيع المتوازن</h4>
-              <p className="text-sm text-blue-700">
-                استراتيجية المحتوى تحقق توازناً ممتازاً بين الركائز الثقافية المختلفة، مع التركيز على التراث والابتكار.
-              </p>
-            </div>
-          </div>
-        </BaseBox>
+        <AppGridItem colSpan={6} tabletSpan={6}>
+          <RingMetricCard
+            title="ركائز المحتوى الثقافي"
+            centerValue="100%"
+            centerUnit="توزيع"
+            layers={contentPillars.map(p => ({
+              value: p.percentage,
+              color: p.color,
+              label: p.name,
+            }))}
+          />
+        </AppGridItem>
 
-        <BaseBox>
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              أداء المحتوى
-            </h3>
-          </div>
-          <div>
-            <AppDashboardGrid columns={12} density="compact">
-              <AppGridItem colSpan={3}>
-                <NumericStatCard title="إجمالي المشاهدات" value="15.2K" accentColor="#3DA8F5" size="sm" />
-              </AppGridItem>
-              <AppGridItem colSpan={3}>
-                <NumericStatCard title="معدل التفاعل" value="8.7%" accentColor="#3DBE8B" size="sm" />
-              </AppGridItem>
-              <AppGridItem colSpan={3}>
-                <NumericStatCard title="النقاط الثقافية" value="89%" size="sm" />
-              </AppGridItem>
-              <AppGridItem colSpan={3}>
-                <NumericStatCard title="محتوى هذا الشهر" value={24} accentColor="#F6C445" size="sm" />
-              </AppGridItem>
-            </AppDashboardGrid>
+        <AppGridItem colSpan={6} tabletSpan={6}>
+          <DataCardFrame title="أداء المحتوى">
+            <div className="grid grid-cols-2 gap-3">
+              <NumericStatCard title="إجمالي المشاهدات" value="15.2K" accentColor="#3DA8F5" size="sm" />
+              <NumericStatCard title="معدل التفاعل" value="8.7%" accentColor="#3DBE8B" size="sm" />
+              <NumericStatCard title="النقاط الثقافية" value="89%" size="sm" />
+              <NumericStatCard title="محتوى هذا الشهر" value={24} accentColor="#F6C445" size="sm" />
+            </div>
             <div className="mt-4">
               <UnifiedButton variant="outline">
                 <PenTool className="h-4 w-4 mr-2" />
                 إنشاء محتوى جديد
               </UnifiedButton>
             </div>
-          </div>
-        </BaseBox>
+          </DataCardFrame>
+        </AppGridItem>
       </AppDashboardGrid>
 
       {/* Content Library */}
-      <BaseBox>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Eye className="h-5 w-5" />
-            مكتبة المحتوى
-          </h3>
-          <div className="flex gap-2">
-            <UnifiedButton variant="outline" size="sm">تصفية</UnifiedButton>
-            <UnifiedButton size="sm">
-              <PenTool className="h-4 w-4 mr-2" />
-              محتوى جديد
-            </UnifiedButton>
-          </div>
+      <DataCardFrame title="مكتبة المحتوى" icon={<Eye className="h-5 w-5" />}>
+        <div className="flex gap-2 mb-4">
+          <UnifiedButton variant="outline" size="sm">تصفية</UnifiedButton>
+          <UnifiedButton size="sm">
+            <PenTool className="h-4 w-4 mr-2" />
+            محتوى جديد
+          </UnifiedButton>
         </div>
-        <div>
-          <div className="space-y-4">
-            {recentContent.map((content) => (
-              <div key={content.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-lg mb-1">{content.title}</h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
-                      <span>النوع: {content.type}</span>
-                      <span>الكاتب: {content.author}</span>
-                      <span>التاريخ: {content.publishDate}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <UnifiedBadge variant="info">
-                      {getStatusIcon(content.status)}
-                      <span className="mr-1">{content.status}</span>
-                    </UnifiedBadge>
+        <div className="space-y-3">
+          {recentContent.map((content) => (
+            <div key={content.id} className="p-4 rounded-[18px] border border-[#DADCE0] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <h3 className="font-medium text-sm text-[#0B0F12] font-arabic mb-1">{content.title}</h3>
+                  <div className="flex items-center gap-4 text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">
+                    <span>النوع: {content.type}</span>
+                    <span>الكاتب: {content.author}</span>
+                    <span>التاريخ: {content.publishDate}</span>
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">{content.views.toLocaleString()}</div>
-                    <div className="text-xs text-gray-600">مشاهدات</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-green-600">{content.engagement}%</div>
-                    <div className="text-xs text-gray-600">تفاعل</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-purple-600">{content.culturalScore}%</div>
-                    <div className="text-xs text-gray-600">نقاط ثقافية</div>
-                  </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <UnifiedButton size="sm" variant="outline">
-                      <Eye className="h-3 w-3" />
-                    </UnifiedButton>
-                    <UnifiedButton size="sm" variant="outline">
-                      <Edit className="h-3 w-3" />
-                    </UnifiedButton>
-                    <UnifiedButton size="sm" variant="outline">
-                      <Share2 className="h-3 w-3" />
-                    </UnifiedButton>
-                  </div>
+                <UnifiedBadge variant={getStatusVariant(content.status)}>
+                  {getStatusIcon(content.status)}
+                  <span className="mr-1">{content.status}</span>
+                </UnifiedBadge>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <NumericStatCard title="مشاهدات" value={content.views.toLocaleString()} accentColor="#3DA8F5" size="sm" />
+                <NumericStatCard title="تفاعل" value={`${content.engagement}%`} accentColor="#3DBE8B" size="sm" />
+                <NumericStatCard title="نقاط ثقافية" value={`${content.culturalScore}%`} accentColor="#9B59B6" size="sm" />
+                <div className="flex items-center justify-center gap-2">
+                  <UnifiedButton size="sm" variant="outline">
+                    <Eye className="h-3 w-3" />
+                  </UnifiedButton>
+                  <UnifiedButton size="sm" variant="outline">
+                    <Edit className="h-3 w-3" />
+                  </UnifiedButton>
+                  <UnifiedButton size="sm" variant="outline">
+                    <Share2 className="h-3 w-3" />
+                  </UnifiedButton>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </BaseBox>
+      </DataCardFrame>
 
       {/* Content Calendar Preview */}
-      <BaseBox>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            جدول المحتوى القادم
-          </h3>
-        </div>
-        <div>
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-medium">ندوة التراث الرقمي</h4>
-                <p className="text-sm text-gray-600">مجدولة لـ 25 يناير 2024</p>
-              </div>
-              <UnifiedBadge variant="info">فيديو</UnifiedBadge>
+      <DataCardFrame title="جدول المحتوى القادم" icon={<Calendar className="h-5 w-5" />}>
+        <div className="space-y-3">
+          <div className="flex items-center gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+            <div className="w-10 h-10 rounded-full border border-[#DADCE0] flex items-center justify-center">
+              <Calendar className="h-4 w-4 text-[#0B0F12]" />
             </div>
-            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <PenTool className="h-5 w-5 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <h4 className="font-medium">دليل الممارسات الثقافية</h4>
-                <p className="text-sm text-gray-600">مجدول لـ 28 يناير 2024</p>
-              </div>
-              <UnifiedBadge variant="info">دليل</UnifiedBadge>
+            <div className="flex-1">
+              <h4 className="font-medium text-sm text-[#0B0F12] font-arabic">ندوة التراث الرقمي</h4>
+              <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">مجدولة لـ 25 يناير 2024</p>
             </div>
+            <UnifiedBadge variant="info">فيديو</UnifiedBadge>
+          </div>
+          <div className="flex items-center gap-3 p-3 rounded-[14px] bg-[rgba(11,15,18,0.02)]">
+            <div className="w-10 h-10 rounded-full border border-[#DADCE0] flex items-center justify-center">
+              <PenTool className="h-4 w-4 text-[#0B0F12]" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-medium text-sm text-[#0B0F12] font-arabic">دليل الممارسات الثقافية</h4>
+              <p className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">مجدول لـ 28 يناير 2024</p>
+            </div>
+            <UnifiedBadge variant="info">دليل</UnifiedBadge>
           </div>
         </div>
-      </BaseBox>
+      </DataCardFrame>
     </div>
   );
 };
