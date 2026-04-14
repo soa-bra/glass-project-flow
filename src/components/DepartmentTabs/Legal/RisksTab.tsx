@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Shield, Activity } from 'lucide-react';
 import { mockRiskAssessments } from './data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { getStatusColor, getStatusText, calculateRiskScore, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
@@ -100,20 +102,22 @@ export const RisksTab: React.FC = () => {
             توزيع المخاطر حسب المستوى
           </h3>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           {[
             { label: 'مخاطر حرجة', count: riskStats.critical, icon: AlertTriangle },
             { label: 'مخاطر عالية', count: riskStats.high, icon: AlertTriangle },
             { label: 'مخاطر متوسطة', count: riskStats.medium, icon: Activity },
             { label: 'مخاطر منخفضة', count: riskStats.low, icon: Shield },
           ].map((stat, i) => (
-            <div key={i} className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><stat.icon className="h-4 w-4 text-black" /></div>
-              <div className="text-2xl font-bold text-black font-arabic">{stat.count}</div>
-              <div className="text-sm font-medium text-black font-arabic">{stat.label}</div>
-            </div>
+            <AppGridItem key={i} colSpan={3}>
+              <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+                <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><stat.icon className="h-4 w-4 text-black" /></div>
+                <div className="text-2xl font-bold text-black font-arabic">{stat.count}</div>
+                <div className="text-sm font-medium text-black font-arabic">{stat.label}</div>
+              </div>
+            </AppGridItem>
           ))}
-        </div>
+        </AppDashboardGrid>
       </div>
 
       {/* مصفوفة المخاطر */}

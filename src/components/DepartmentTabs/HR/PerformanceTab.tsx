@@ -167,16 +167,18 @@ export const PerformanceTab: React.FC = () => {
   return (
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات الأداء */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <BaseBox variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">التقييمات المكتملة</p>
-              <p className="text-2xl font-bold text-green-600">{performanceStats.completedReviews}</p>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <BaseBox variant="operations" className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-arabic">التقييمات المكتملة</p>
+                <p className="text-2xl font-bold text-green-600">{performanceStats.completedReviews}</p>
+              </div>
+              <Award className="h-8 w-8 text-green-600" />
             </div>
-            <Award className="h-8 w-8 text-green-600" />
-          </div>
-        </BaseBox>
+          </BaseBox>
+        </AppGridItem>
 
         <BaseBox variant="operations" className="p-4">
           <div className="flex items-center justify-between">
