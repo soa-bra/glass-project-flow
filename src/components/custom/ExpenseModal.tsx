@@ -94,7 +94,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
                 <SelectValue placeholder="اختر الفئة" />
               </SelectTrigger>
               <SelectContent 
-                className="z-[10000] text-[#0B0F12] font-arabic"
+                className=" text-[#0B0F12] font-arabic"
                 style={{
             background: 'rgba(255,255,255,0.4)',
             backdropFilter: 'blur(20px)',
@@ -172,7 +172,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({ isOpen, onClose, onS
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar 
                   mode="single" 
                   selected={formData.date ? new Date(formData.date) : undefined} 

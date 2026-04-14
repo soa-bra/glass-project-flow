@@ -77,15 +77,7 @@ export const TasksFilterDialog: React.FC<TasksFilterDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-2xl p-0 overflow-hidden z-[9998]"
-        style={{
-          background: 'rgba(255,255,255,0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        }}
+        className="sm:max-w-2xl p-0 overflow-hidden"
       >
         <DialogTitle className="sr-only">فلترة المهام</DialogTitle>
         
@@ -130,7 +122,7 @@ export const TasksFilterDialog: React.FC<TasksFilterDialogProps> = ({
                 <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                   <SelectValue placeholder="اختر الحالة" />
                 </SelectTrigger>
-                <SelectContent className="z-[9999] bg-white border border-black/20 shadow-lg">
+                <SelectContent className=" bg-white border border-black/20 shadow-lg">
                   {statusOptions.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
                       {status.label}
@@ -147,7 +139,7 @@ export const TasksFilterDialog: React.FC<TasksFilterDialogProps> = ({
                 <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                   <SelectValue placeholder="اختر الأولوية" />
                 </SelectTrigger>
-                <SelectContent className="z-[9999] bg-white border border-black/20 shadow-lg">
+                <SelectContent className=" bg-white border border-black/20 shadow-lg">
                   {priorityOptions.map((priority) => (
                     <SelectItem key={priority.value} value={priority.value}>
                       {priority.label}
@@ -164,7 +156,7 @@ export const TasksFilterDialog: React.FC<TasksFilterDialogProps> = ({
                 <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                   <SelectValue placeholder="اختر المسؤول" />
                 </SelectTrigger>
-                <SelectContent className="z-[9999] bg-white border border-black/20 shadow-lg">
+                <SelectContent className=" bg-white border border-black/20 shadow-lg">
                   {assigneeOptions.map((assignee) => (
                     <SelectItem key={assignee.value} value={assignee.value}>
                       {assignee.label}

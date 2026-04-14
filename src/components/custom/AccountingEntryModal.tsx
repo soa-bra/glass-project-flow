@@ -209,14 +209,6 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         className="max-w-3xl max-h-[90vh] p-0 overflow-hidden font-arabic"
-        style={{
-          background: 'rgba(255,255,255,0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-        }}
       >
         {/* Header */}
         <DialogHeader className="flex flex-row items-center justify-between p-6 pb-0">
@@ -291,15 +283,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                     <SelectValue placeholder="اختر الفئة" />
                   </SelectTrigger>
                   <SelectContent 
-                    className="z-[10000] text-[#0B0F12] font-arabic"
-                    style={{
-                      background: 'rgba(255,255,255,0.4)',
-                      backdropFilter: 'blur(20px)',
-                      WebkitBackdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      borderRadius: '24px',
-                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                    }}
+                    className=" text-[#0B0F12] font-arabic"
                   >
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
@@ -335,15 +319,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                     <SelectValue placeholder="اختر الميزانية المرتبطة" />
                   </SelectTrigger>
                   <SelectContent 
-                    className="z-[10000] text-[#0B0F12] font-arabic"
-                    style={{
-                      background: 'rgba(255,255,255,0.4)',
-                      backdropFilter: 'blur(20px)',
-                      WebkitBackdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      borderRadius: '24px',
-                      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                    }}
+                    className=" text-[#0B0F12] font-arabic"
                   >
                     {approvedBudgets.map((budget) => (
                       <SelectItem key={budget.id} value={budget.id}>
@@ -366,15 +342,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                       <SelectValue placeholder="اختر تكرار النفقة" />
                     </SelectTrigger>
                     <SelectContent 
-                      className="z-[10000] text-[#0B0F12] font-arabic"
-                      style={{
-                        background: 'rgba(255,255,255,0.4)',
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        borderRadius: '24px',
-                        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                      }}
+                      className=" text-[#0B0F12] font-arabic"
                     >
                       {frequencies.map((freq) => (
                         <SelectItem key={freq.value} value={freq.value}>
@@ -399,15 +367,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                         <SelectValue placeholder="اختر التكرار" />
                       </SelectTrigger>
                       <SelectContent 
-                        className="z-[10000] text-[#0B0F12] font-arabic"
-                        style={{
-                          background: 'rgba(255,255,255,0.4)',
-                          backdropFilter: 'blur(20px)',
-                          WebkitBackdropFilter: 'blur(20px)',
-                          border: '1px solid rgba(255,255,255,0.2)',
-                          borderRadius: '24px',
-                          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-                        }}
+                        className=" text-[#0B0F12] font-arabic"
                       >
                         {frequencies.map((freq) => (
                           <SelectItem key={freq.value} value={freq.value}>
@@ -438,7 +398,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <Calendar 
                           mode="single" 
                           selected={(formData.startDate || formData.date) ? new Date(formData.startDate || formData.date) : undefined} 
@@ -470,7 +430,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                      <PopoverContent className="w-auto p-0" align="start">
                         <Calendar 
                           mode="single" 
                           selected={formData.endDate ? new Date(formData.endDate) : undefined} 
@@ -547,7 +507,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                       )}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                  <PopoverContent className="w-auto p-0" align="start">
                     <Calendar 
                       mode="single" 
                       selected={formData.date ? new Date(formData.date) : undefined} 

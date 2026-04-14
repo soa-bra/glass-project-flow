@@ -86,7 +86,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                   animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                   exit={{ opacity: 0, y: 8, filter: "blur(8px)" }}
                   transition={{ duration: 0.35, ease: "easeOut" }}
-                  className="absolute top-[60px] left-0 mt-2 z-[9999]"
+                  className="absolute top-[60px] left-0 mt-2"
                 >
                   <div className="flex flex-col items-start gap-2 w-48">
                     {/* تعديل المشروع */}

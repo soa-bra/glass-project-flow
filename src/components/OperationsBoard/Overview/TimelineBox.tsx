@@ -135,7 +135,7 @@ export const TimelineBox: React.FC = () => {
                     {newEventDate ? format(newEventDate, "PPP") : "اختر تاريخ الحدث"}
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-[10000]" align="start">
+                <PopoverContent className="w-auto p-0" align="start">
                   <Calendar mode="single" selected={newEventDate} onSelect={setNewEventDate} initialFocus className="p-3 pointer-events-auto" />
                 </PopoverContent>
               </Popover>
