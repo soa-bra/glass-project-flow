@@ -72,7 +72,7 @@ export const GanttChartBox: React.FC<GanttChartProps> = ({ projectId, filters })
   }
 
   return (
-    <div className="bg-[#F2FFFF] rounded-3xl p-6 border border-black/10 h-full overflow-auto">
+    <div className="bg-white border border-[#DADCE0] rounded-[24px] p-6 h-full overflow-auto">
       <h3 className="text-lg font-semibold text-black mb-6">مخطط جانت - جدولة المهام</h3>
       
       <div className="overflow-x-auto">

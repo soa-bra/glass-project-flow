@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface AITaskAssistantProps {
   projectId: string;
@@ -93,7 +94,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({ projectId }) =
   };
 
   return (
-    <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
+    <AppCardSurface density="standard">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-black">مساعد الذكاء الاصطناعي</h3>
         <div className="flex items-center gap-2">
@@ -147,7 +148,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({ projectId }) =
             </button>
           </div>
         ))}
-      </div>
+    </AppCardSurface>
 
       {/* Quick Actions */}
       <div className="mt-6 pt-6 border-t border-black/10">

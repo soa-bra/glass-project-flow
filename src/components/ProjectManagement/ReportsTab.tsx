@@ -23,7 +23,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">مركز التقارير</h3>
           <div className="bg-[#bdeed3] px-4 py-1.5 rounded-full">
@@ -50,7 +50,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </AppDashboardGrid>
 
       {/* Report Types */}
-      <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">أنواع التقارير</h3>
         <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           {[
@@ -74,7 +74,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </AppCardSurface>
 
       {/* Reports List */}
-      <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">التقارير المتاحة</h3>
           <Button className="bg-[#0B0F12] text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-[rgba(11,15,18,0.85)]">
@@ -112,37 +112,41 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </AppCardSurface>
 
       {/* Auto Reports Settings */}
-      <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+      <AppCardSurface density="standard">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">الإعدادات والتقارير الآلية</h3>
         <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
-          <div className="space-y-3">
-            <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التقارير الدورية</h4>
-            {[
-              { name: 'تقرير التقدم الأسبوعي', color: '#bdeed3', status: 'مفعل' },
-              { name: 'التقرير المالي الشهري', color: '#a4e2f6', status: 'مفعل' },
-              { name: 'تقييم الفريق الشهري', color: '#f1b5b9', status: 'معطل' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-[14px] ring-1 ring-[rgba(11,15,18,0.08)]">
-                <span className="text-sm text-[#0B0F12]">{item.name}</span>
-                <div className="px-2.5 py-1 rounded-full" style={{ backgroundColor: item.color }}>
-                  <span className="text-[10px] font-medium text-[#0B0F12]">{item.status}</span>
+          <AppGridItem colSpan={6} tabletSpan={6}>
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التقارير الدورية</h4>
+              {[
+                { name: 'تقرير التقدم الأسبوعي', color: '#bdeed3', status: 'مفعل' },
+                { name: 'التقرير المالي الشهري', color: '#a4e2f6', status: 'مفعل' },
+                { name: 'تقييم الفريق الشهري', color: '#f1b5b9', status: 'معطل' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-[14px] ring-1 ring-[rgba(11,15,18,0.08)]">
+                  <span className="text-sm text-[#0B0F12]">{item.name}</span>
+                  <div className="px-2.5 py-1 rounded-full" style={{ backgroundColor: item.color }}>
+                    <span className="text-[10px] font-medium text-[#0B0F12]">{item.status}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-2">
-            <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التصدير السريع</h4>
-            {['تصدير تقرير التقدم الحالي', 'تصدير البيانات المالية', 'تصدير تقرير الفريق'].map((label, i) => (
-              <Button key={i} className="w-full rounded-full text-sm font-medium ring-1 ring-[rgba(11,15,18,0.1)] bg-transparent text-[#0B0F12] hover:bg-[rgba(11,15,18,0.05)]">
-                {label}
+              ))}
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={6} tabletSpan={6}>
+            <div className="space-y-2">
+              <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التصدير السريع</h4>
+              {['تصدير تقرير التقدم الحالي', 'تصدير البيانات المالية', 'تصدير تقرير الفريق'].map((label, i) => (
+                <Button key={i} className="w-full rounded-full text-sm font-medium ring-1 ring-[rgba(11,15,18,0.1)] bg-transparent text-[#0B0F12] hover:bg-[rgba(11,15,18,0.05)]">
+                  {label}
+                </Button>
+              ))}
+              <Button className="w-full bg-[#0B0F12] text-white rounded-full text-sm font-medium hover:bg-[rgba(11,15,18,0.85)]">
+                تصدير تقرير شامل
               </Button>
-            ))}
-            <Button className="w-full bg-[#0B0F12] text-white rounded-full text-sm font-medium hover:bg-[rgba(11,15,18,0.85)]">
-              تصدير تقرير شامل
-            </Button>
-          </div>
-        </div>
-      </div>
+            </div>
+          </AppGridItem>
+        </AppDashboardGrid>
+      </AppCardSurface>
     </div>
   );
 };
