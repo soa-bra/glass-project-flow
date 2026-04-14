@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Users, UserPlus, Shield, Key, Crown, Edit3, Trash2, Eye } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { useAutosave } from '../hooks/useAutosave';
 
 interface UsersRolesSettingsPanelProps {
@@ -212,26 +214,34 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
           </div>
 
           {/* Statistics */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">{users.length}</div>
-              <p className="text-xs font-normal text-gray-400">إجمالي المستخدمين</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">
-                {users.filter(u => u.status === 'active').length}
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">{users.length}</div>
+                <p className="text-xs font-normal text-gray-400">إجمالي المستخدمين</p>
               </div>
-              <p className="text-xs font-normal text-gray-400">مستخدمين نشطين</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">{roles.length}</div>
-              <p className="text-xs font-normal text-gray-400">أدوار مُعرّفة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">15</div>
-              <p className="text-xs font-normal text-gray-400">صلاحيات فريدة</p>
-            </div>
-          </div>
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">
+                  {users.filter(u => u.status === 'active').length}
+                </div>
+                <p className="text-xs font-normal text-gray-400">مستخدمين نشطين</p>
+              </div>
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">{roles.length}</div>
+                <p className="text-xs font-normal text-gray-400">أدوار مُعرّفة</p>
+              </div>
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
+                <div className="text-2xl font-bold text-black mb-1">15</div>
+                <p className="text-xs font-normal text-gray-400">صلاحيات فريدة</p>
+              </div>
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

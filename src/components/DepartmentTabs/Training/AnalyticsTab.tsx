@@ -4,6 +4,8 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { TrendingUp, Users, Clock, Award, DollarSign, Target, BookOpen } from 'lucide-react';
 import { mockTrainingMetrics, mockLearningROI, mockSkillGapAlerts } from './data';
 
@@ -21,12 +23,12 @@ export const AnalyticsTab: React.FC = () => {
     <div className="space-y-5">
       <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">نظرة عامة على الأداء</span>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <NumericStatCard title="إجمالي الدورات" value={metrics.totalCourses} description="دورة" accentColor="#a4e2f6" />
-        <NumericStatCard title="متدربون نشطون" value={metrics.activeLearners} description="متدرب" accentColor="#bdeed3" />
-        <NumericStatCard title="معدل الإنجاز" value={`${metrics.completionRate}%`} description="إنجاز" accentColor="#d9d2fd" />
-        <NumericStatCard title="شهادات صادرة" value={metrics.certificatesIssued} description="شهادة" accentColor="#fbe2aa" />
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي الدورات" value={metrics.totalCourses} description="دورة" accentColor="#a4e2f6" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="متدربون نشطون" value={metrics.activeLearners} description="متدرب" accentColor="#bdeed3" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="معدل الإنجاز" value={`${metrics.completionRate}%`} description="إنجاز" accentColor="#d9d2fd" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="شهادات صادرة" value={metrics.certificatesIssued} description="شهادة" accentColor="#fbe2aa" /></AppGridItem>
+      </AppDashboardGrid>
 
       <BaseBox title="مقياس كيركباتريك للتقييم">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -69,12 +71,12 @@ export const AnalyticsTab: React.FC = () => {
     <div className="space-y-5">
       <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">تحليل العائد على الاستثمار</span>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <NumericStatCard title="إجمالي الاستثمار" value={`${(totalInvestment / 1000).toFixed(0)}k`} description="ريال سعودي" accentColor="#a4e2f6" />
-        <NumericStatCard title="إجمالي الفوائد" value={`${(totalBenefits / 1000).toFixed(0)}k`} description="ريال سعودي" accentColor="#bdeed3" />
-        <NumericStatCard title="متوسط العائد" value={`${averageROI.toFixed(1)}%`} description="ROI" accentColor="#d9d2fd" />
-        <NumericStatCard title="فترة الاسترداد" value="8.5" description="أشهر" accentColor="#fbe2aa" />
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي الاستثمار" value={`${(totalInvestment / 1000).toFixed(0)}k`} description="ريال سعودي" accentColor="#a4e2f6" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي الفوائد" value={`${(totalBenefits / 1000).toFixed(0)}k`} description="ريال سعودي" accentColor="#bdeed3" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="متوسط العائد" value={`${averageROI.toFixed(1)}%`} description="ROI" accentColor="#d9d2fd" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="فترة الاسترداد" value="8.5" description="أشهر" accentColor="#fbe2aa" /></AppGridItem>
+      </AppDashboardGrid>
 
       <BaseBox title="تفاصيل العائد على الاستثمار بالدورة">
         <div className="space-y-3">
@@ -101,11 +103,11 @@ export const AnalyticsTab: React.FC = () => {
     <div className="space-y-5">
       <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">تحليل فجوات المهارات</span>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <NumericStatCard title="فجوات حرجة" value={skillGaps.filter(g => g.severity === 'high').length} description="تحتاج معالجة" accentColor="#f1b5b9" />
-        <NumericStatCard title="موظفون متأثرون" value={skillGaps.reduce((a, g) => a + g.affectedEmployees.length, 0)} description="موظف" accentColor="#fbe2aa" />
-        <NumericStatCard title="قيد المعالجة" value={skillGaps.filter(g => g.status === 'addressing').length} description="فجوة" accentColor="#bdeed3" />
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={4}><NumericStatCard title="فجوات حرجة" value={skillGaps.filter(g => g.severity === 'high').length} description="تحتاج معالجة" accentColor="#f1b5b9" /></AppGridItem>
+        <AppGridItem colSpan={4}><NumericStatCard title="موظفون متأثرون" value={skillGaps.reduce((a, g) => a + g.affectedEmployees.length, 0)} description="موظف" accentColor="#fbe2aa" /></AppGridItem>
+        <AppGridItem colSpan={4}><NumericStatCard title="قيد المعالجة" value={skillGaps.filter(g => g.status === 'addressing').length} description="فجوة" accentColor="#bdeed3" /></AppGridItem>
+      </AppDashboardGrid>
 
       <BaseBox title="تفاصيل فجوات المهارات">
         <div className="space-y-3">

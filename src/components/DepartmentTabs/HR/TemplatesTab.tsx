@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, Download, Eye, Edit, Search, X } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Input } from '@/components/ui/input';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
@@ -67,11 +69,11 @@ export const TemplatesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <MetricHeroCard title="إجمالي النماذج" value={mockHRTemplates.length} className="min-h-[120px]" />
-        <MetricHeroCard title="الأكثر استخداماً" value={mostUsed.usageCount} description={mostUsed.name} unit="مرة" className="min-h-[120px]" />
-        <MetricHeroCard title="محدثة حديثاً" value={recentlyUpdated} description="خلال 30 يوم" className="min-h-[120px]" />
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={4}><MetricHeroCard title="إجمالي النماذج" value={mockHRTemplates.length} className="min-h-[120px]" /></AppGridItem>
+        <AppGridItem colSpan={4}><MetricHeroCard title="الأكثر استخداماً" value={mostUsed.usageCount} description={mostUsed.name} unit="مرة" className="min-h-[120px]" /></AppGridItem>
+        <AppGridItem colSpan={4}><MetricHeroCard title="محدثة حديثاً" value={recentlyUpdated} description="خلال 30 يوم" className="min-h-[120px]" /></AppGridItem>
+      </AppDashboardGrid>
 
       {/* Search */}
       <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
