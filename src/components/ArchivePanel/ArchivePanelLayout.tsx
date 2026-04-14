@@ -1,4 +1,5 @@
 import React from 'react';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface ArchivePanelLayoutProps {
   children: React.ReactNode;
@@ -6,12 +7,12 @@ interface ArchivePanelLayoutProps {
 
 export const ArchivePanelLayout: React.FC<ArchivePanelLayoutProps> = ({ children }) => {
   return (
-    <div className="h-full rounded-[24px] overflow-hidden bg-white">
+    <AppCardSurface density="standard" overflow="hidden" className="h-full">
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto">
           {children}
         </div>
       </div>
-    </div>
+    </AppCardSurface>
   );
 };

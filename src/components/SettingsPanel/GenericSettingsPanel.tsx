@@ -185,7 +185,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
 
               {/* AI Training Wizard (only for AI section) */}
               {categoryInfo.hasWizard && (
-                <div className="rounded-2xl p-6 bg-white border border-[#DADCE0]">
+                <AppCardSurface density="compact">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-black mb-2">معالج التدريب</h4>
@@ -199,7 +199,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                       تدريب نموذج جديد من الأرشيف
                     </button>
                   </div>
-                </div>
+                </AppCardSurface>
               )}
 
               {/* Settings Preview */}
