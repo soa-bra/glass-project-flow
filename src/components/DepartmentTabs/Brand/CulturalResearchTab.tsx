@@ -88,36 +88,44 @@ export const CulturalResearchTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Research Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseBox>
-          <div>
-            <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">12</div>
-            <div className="text-sm text-gray-600">مشاريع بحثية</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">28</div>
-            <div className="text-sm text-gray-600">باحث مشارك</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">45</div>
-            <div className="text-sm text-gray-600">منشور علمي</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Award className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">91%</div>
-            <div className="text-sm text-gray-600">متوسط الأثر الثقافي</div>
-          </div>
-        </BaseBox>
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">12</div>
+              <div className="text-sm text-gray-600">مشاريع بحثية</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">28</div>
+              <div className="text-sm text-gray-600">باحث مشارك</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <FileText className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">45</div>
+              <div className="text-sm text-gray-600">منشور علمي</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Award className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">91%</div>
+              <div className="text-sm text-gray-600">متوسط الأثر الثقافي</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* View Controls */}
       <div className="flex items-center justify-between">
@@ -271,7 +279,7 @@ export const CulturalResearchTab: React.FC = () => {
 
       {/* Insights View */}
       {activeView === 'insights' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <AppDashboardGrid columns={12}>
           <BaseBox>
             <div className="mb-4">
               <h3 className="text-lg font-semibold flex items-center gap-2">

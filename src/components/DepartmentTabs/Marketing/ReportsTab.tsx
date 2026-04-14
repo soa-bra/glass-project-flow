@@ -120,12 +120,12 @@ export const ReportsTab: React.FC = () => {
         </BaseBox>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">28</h3><p className="text-sm text-black font-arabic">تقرير هذا الشهر</p></BaseBox>
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">184</h3><p className="text-sm text-black font-arabic">إجمالي التقارير</p></BaseBox>
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3><p className="text-sm text-black font-arabic">تقرير مجدول</p></BaseBox>
-        <BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">156</h3><p className="text-sm text-black font-arabic">إجمالي التحميلات</p></BaseBox>
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">28</h3><p className="text-sm text-black font-arabic">تقرير هذا الشهر</p></BaseBox></AppGridItem>
+        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">184</h3><p className="text-sm text-black font-arabic">إجمالي التقارير</p></BaseBox></AppGridItem>
+        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3><p className="text-sm text-black font-arabic">تقرير مجدول</p></BaseBox></AppGridItem>
+        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">156</h3><p className="text-sm text-black font-arabic">إجمالي التحميلات</p></BaseBox></AppGridItem>
+      </AppDashboardGrid>
     </div>
   );
 };

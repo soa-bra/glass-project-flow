@@ -88,7 +88,7 @@ export const ContentMessagingTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Content Strategy Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <AppDashboardGrid columns={12}>
         <BaseBox>
           <div className="mb-4">
             <h3 className="text-lg font-semibold flex items-center gap-2">

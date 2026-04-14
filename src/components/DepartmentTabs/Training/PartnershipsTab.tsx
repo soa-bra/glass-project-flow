@@ -104,36 +104,44 @@ export const PartnershipsTab: React.FC = () => {
       </div>
 
       {/* Partnership Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <BaseBox>
-          <div>
-            <GraduationCap className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{universityPartners.length}</div>
-            <div className="text-sm text-gray-600">شراكات جامعية</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.students, 0)}</div>
-            <div className="text-sm text-gray-600">طلاب مسجلون</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <BookOpen className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.programs, 0)}</div>
-            <div className="text-sm text-gray-600">برامج مشتركة</div>
-          </div>
-        </BaseBox>
-        <BaseBox>
-          <div>
-            <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.research_projects, 0)}</div>
-            <div className="text-sm text-gray-600">مشاريع بحثية</div>
-          </div>
-        </BaseBox>
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <GraduationCap className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{universityPartners.length}</div>
+              <div className="text-sm text-gray-600">شراكات جامعية</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.students, 0)}</div>
+              <div className="text-sm text-gray-600">طلاب مسجلون</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <BookOpen className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.programs, 0)}</div>
+              <div className="text-sm text-gray-600">برامج مشتركة</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <FileText className="h-8 w-8 text-orange-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">{universityPartners.reduce((acc, p) => acc + p.research_projects, 0)}</div>
+              <div className="text-sm text-gray-600">مشاريع بحثية</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Partners List */}
       <div className="space-y-4">

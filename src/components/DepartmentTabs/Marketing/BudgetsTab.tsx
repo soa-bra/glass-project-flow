@@ -65,12 +65,12 @@ export const BudgetsTab: React.FC = () => {
       <div className="mb-6">
         <BaseBox variant="operations">
           <div className="flex items-center gap-2 mb-6"><DollarSign className="h-6 w-6 text-black" /><h3 className="text-xl font-bold text-black font-arabic">نظرة عامة على الميزانية</h3></div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 bg-[#a4e2f6] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.totalBudget.toLocaleString()} ر.س</h4><p className="text-sm text-black font-arabic">إجمالي الميزانية</p></div>
-            <div className="text-center p-4 bg-[#f1b5b9] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.spent.toLocaleString()} ر.س</h4><p className="text-sm text-black font-arabic">المنفق</p></div>
-            <div className="text-center p-4 bg-[#bdeed3] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.remaining.toLocaleString()} ر.س</h4><p className="text-sm text-black font-arabic">المتبقي</p></div>
-            <div className="text-center p-4 bg-[#d9d2fd] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.utilizationRate}%</h4><p className="text-sm text-black font-arabic">معدل الاستخدام</p></div>
-          </div>
+          <AppDashboardGrid columns={12}>
+            <AppGridItem colSpan={3}><div className="text-center p-4 bg-[#a4e2f6] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.totalBudget.toLocaleString()} ر.س</h4><p className="text-sm text-black font-arabic">إجمالي الميزانية</p></div></AppGridItem>
+            <AppGridItem colSpan={3}><div className="text-center p-4 bg-[#f1b5b9] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.spent.toLocaleString()} ر.س</h4><p className="text-sm text-black font-arabic">المنفق</p></div></AppGridItem>
+            <AppGridItem colSpan={3}><div className="text-center p-4 bg-[#bdeed3] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.remaining.toLocaleString()} ر.س</h4><p className="text-sm text-black font-arabic">المتبقي</p></div></AppGridItem>
+            <AppGridItem colSpan={3}><div className="text-center p-4 bg-[#d9d2fd] rounded-lg"><h4 className="text-2xl font-bold text-black mb-1">{budgetOverview.utilizationRate}%</h4><p className="text-sm text-black font-arabic">معدل الاستخدام</p></div></AppGridItem>
+          </AppDashboardGrid>
         </BaseBox>
       </div>
 
