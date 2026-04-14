@@ -54,22 +54,20 @@ export const Z_INDEX = {
   PANEL: 200,
   /** Floating action buttons */
   FAB: 500,
-  /** Dropdown menus, selects */
-  DROPDOWN: 1000,
-  /** Popovers */
-  POPOVER: 2000,
-  /** Drawers */
-  DRAWER: 3000,
+  /** Canvas toolbar */
+  TOOLBAR: 10000,
   /** Modal scrim/backdrop */
-  MODAL_SCRIM: 9000,
+  MODAL_SCRIM: 10100,
   /** Modal content */
-  MODAL_CONTENT: 9100,
-  /** Tooltips (always on top of modals) */
-  TOOLTIP: 10000,
-  /** Command palette */
-  COMMAND: 10100,
+  MODAL_CONTENT: 10200,
+  /** Dropdown menus, selects (above modals for nested use) */
+  DROPDOWN: 10300,
+  /** Popovers (above dropdowns for nested use) */
+  POPOVER: 10400,
+  /** Tooltips (always on top) */
+  TOOLTIP: 10500,
   /** Toast notifications (topmost) */
-  TOAST: 10200,
+  TOAST: 10600,
 } as const;
 
 // CSS variable string for injection
@@ -78,13 +76,12 @@ export const Z_INDEX_CSS_VARS = `
   --z-chrome: ${Z_INDEX.CHROME};
   --z-panel: ${Z_INDEX.PANEL};
   --z-fab: ${Z_INDEX.FAB};
-  --z-dropdown: ${Z_INDEX.DROPDOWN};
-  --z-popover: ${Z_INDEX.POPOVER};
-  --z-drawer: ${Z_INDEX.DRAWER};
+  --z-toolbar: ${Z_INDEX.TOOLBAR};
   --z-modal-scrim: ${Z_INDEX.MODAL_SCRIM};
   --z-modal-content: ${Z_INDEX.MODAL_CONTENT};
+  --z-dropdown: ${Z_INDEX.DROPDOWN};
+  --z-popover: ${Z_INDEX.POPOVER};
   --z-tooltip: ${Z_INDEX.TOOLTIP};
-  --z-command: ${Z_INDEX.COMMAND};
   --z-toast: ${Z_INDEX.TOAST};
 `;
 
