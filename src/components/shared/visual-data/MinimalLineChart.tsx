@@ -4,6 +4,26 @@ import { motion } from 'framer-motion';
 import { ResponsiveContainer, Line, Area, AreaChart, Tooltip, XAxis, LineChart } from 'recharts';
 import { ChartTooltipShell, CHART_CURSOR_STYLE } from './ChartTooltipShell';
 
+interface DataPoint {
+  label: string;
+  value: number;
+  [key: string]: any;
+}
+
+interface MinimalLineChartProps {
+  title: string;
+  heroValue?: string | number;
+  heroUnit?: string;
+  data: DataPoint[];
+  dataKey?: string;
+  color?: string;
+  fillOpacity?: number;
+  showArea?: boolean;
+  height?: number;
+  className?: string;
+  tooltipFormatter?: (value: number) => string;
+}
+
 export const MinimalLineChart: React.FC<MinimalLineChartProps> = ({
   title, heroValue, heroUnit, data, dataKey = 'value',
   color = 'var(--visual-data-secondary-3)', fillOpacity = 0.15,
