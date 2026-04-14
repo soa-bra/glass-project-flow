@@ -3,48 +3,53 @@ import { Project } from '@/types/project';
 import { NotificationsBox } from './cards/NotificationsBox';
 import { TaskListCard } from './cards/TaskListCard';
 import { BudgetBox } from './cards/BudgetBox';
-import { DataVisualizationBox } from './cards/DataVisualizationBox';
 import { AISuggestedPerformanceBox } from './cards/AISuggestedPerformanceBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+
 interface ProjectCardGridProps {
   project: Project;
 }
+
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
-  return <div className="grid grid-cols-3 grid-rows-4 gap-2 h-[90%] py-0 my-0">
-      {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
-      <div className="col-span-1 row-span-4">
+  return (
+    <AppDashboardGrid columns={12} density="compact" minRowHeight="160px" viewportHeight="90%">
+      {/* العمود الأول - قائمة المهام */}
+      <AppGridItem colSpan={4} rowSpan={4} tabletSpan={6}>
         <TaskListCard project={project} />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الأول - العمود الثاني والثالث - التنبيهات */}
-      <div className="col-span-2 row-span-1">
+      {/* الصف الأول - التنبيهات */}
+      <AppGridItem colSpan={8} rowSpan={1} tabletSpan={6}>
         <NotificationsBox />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الثاني - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
+      {/* بطاقة أداء ذكية - تحليل الأداء */}
+      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الثاني والثالث - العمود الثالث - النظرة المالية */}
-      <div className="col-span-1 row-span-2">
+      {/* النظرة المالية */}
+      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3}>
         <BudgetBox project={project} />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الثالث - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
+      {/* بطاقة أداء ذكية - أداء الفريق */}
+      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الرابع - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
+      {/* بطاقة أداء ذكية - الأهداف */}
+      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الرابع - العمود الثالث - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
+      {/* بطاقة أداء ذكية - التقارير */}
+      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
-      </div>
-    </div>;
+      </AppGridItem>
+    </AppDashboardGrid>
+  );
 };

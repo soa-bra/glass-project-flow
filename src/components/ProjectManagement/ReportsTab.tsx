@@ -2,6 +2,8 @@ import React from 'react';
 import { Download, Eye, FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MetricHeroCard } from '@/components/shared/visual-data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface ReportsTabProps {
   project: any;
@@ -31,33 +33,43 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <MetricHeroCard title="إجمالي التقارير" value={String(reportStats.totalReports)} unit="تقرير" badgeText="متاح" badgeColor="#bdeed3" />
-        <MetricHeroCard title="هذا الشهر" value={String(reportStats.thisMonth)} unit="تقرير" badgeText="جديدة" badgeColor="#a4e2f6" />
-        <MetricHeroCard title="متوسط التوليد" value={reportStats.avgGenTime} unit="دقيقة" badgeText="سريع" badgeColor="#d9d2fd" />
-        <MetricHeroCard title="مرات التصدير" value={String(reportStats.exportCount)} badgeText="هذا الشهر" badgeColor="#fbe2aa" />
-      </div>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard title="إجمالي التقارير" value={String(reportStats.totalReports)} unit="تقرير" badgeText="متاح" badgeColor="#bdeed3" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard title="هذا الشهر" value={String(reportStats.thisMonth)} unit="تقرير" badgeText="جديدة" badgeColor="#a4e2f6" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard title="متوسط التوليد" value={reportStats.avgGenTime} unit="دقيقة" badgeText="سريع" badgeColor="#d9d2fd" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <MetricHeroCard title="مرات التصدير" value={String(reportStats.exportCount)} badgeText="هذا الشهر" badgeColor="#fbe2aa" />
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Report Types */}
       <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">أنواع التقارير</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           {[
             { icon: BarChart3, label: 'تقارير التقدم', count: 5, color: '#f1b5b9' },
             { icon: PieChart, label: 'التقارير المالية', count: 4, color: '#a4e2f6' },
             { icon: TrendingUp, label: 'تقارير الفريق', count: 3, color: '#d9d2fd' },
             { icon: FileText, label: 'تقارير العملاء', count: 3, color: '#fbe2aa' },
           ].map((item, i) => (
-            <div key={i} className="text-center p-5 rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)]">
-              <item.icon className="w-5 h-5 mx-auto mb-3 text-[#0B0F12]" />
-              <div className="text-[28px] font-bold text-[#0B0F12] mb-1">{item.count}</div>
-              <div className="text-[11px] text-[rgba(11,15,18,0.6)] mb-2">{item.label}</div>
-              <div className="inline-block px-3 py-1 rounded-full" style={{ backgroundColor: item.color }}>
-                <span className="text-[10px] font-medium text-[#0B0F12]">{item.count} تقارير</span>
+            <AppGridItem key={i} colSpan={3} tabletSpan={3}>
+              <div className="text-center p-5 rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] h-full">
+                <item.icon className="w-5 h-5 mx-auto mb-3 text-[#0B0F12]" />
+                <div className="text-[28px] font-bold text-[#0B0F12] mb-1">{item.count}</div>
+                <div className="text-[11px] text-[rgba(11,15,18,0.6)] mb-2">{item.label}</div>
+                <div className="inline-block px-3 py-1 rounded-full" style={{ backgroundColor: item.color }}>
+                  <span className="text-[10px] font-medium text-[#0B0F12]">{item.count} تقارير</span>
+                </div>
               </div>
-            </div>
+            </AppGridItem>
           ))}
-        </div>
+        </AppDashboardGrid>
       </div>
 
       {/* Reports List */}
