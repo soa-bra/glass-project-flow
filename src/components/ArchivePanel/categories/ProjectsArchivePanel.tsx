@@ -97,9 +97,9 @@ export const ProjectsArchivePanel: React.FC = () => {
                   <div className="bg-[#3DBE8B] h-2.5 rounded-full transition-all duration-500" style={{ width: `${project.completion}%` }} />
                 </div>
               </div>
-            </div>
+            </AppCardSurface>
           ))}
-        </AppCardSurface>
+        </div>
       </div>
     </div>
   );
