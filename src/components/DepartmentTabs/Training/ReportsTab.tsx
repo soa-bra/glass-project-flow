@@ -140,7 +140,7 @@ export const ReportsTab: React.FC = () => {
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
                 {departmentData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
               </Pie>
-              <Tooltip contentStyle={{ borderRadius: 10, border: '1px solid #DADCE0', fontSize: 12 }} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             </PieChart>
           </ResponsiveContainer>
         </BaseBox>
