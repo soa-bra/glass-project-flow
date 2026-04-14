@@ -77,28 +77,36 @@ export const ReportsTab: React.FC = () => {
       {/* إحصائيات سريعة */}
       <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-9 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="mb-6"><h3 className="text-xl font-semibold text-black font-arabic">إحصائيات التقارير</h3></div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><BarChart className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{reports.length}</div>
-            <div className="text-sm font-medium text-black font-arabic">التقارير المتاحة</div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Calendar className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{reports.filter(r => r.type === 'monthly').length}</div>
-            <div className="text-sm font-medium text-black font-arabic">تقارير شهرية</div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Download className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">156</div>
-            <div className="text-sm font-medium text-black font-arabic">مرات التحميل</div>
-          </div>
-          <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
-            <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Filter className="h-4 w-4 text-black" /></div>
-            <div className="text-2xl font-bold text-black font-arabic">{reports.filter(r => r.type === 'quarterly').length}</div>
-            <div className="text-sm font-medium text-black font-arabic">تقارير ربع سنوية</div>
-          </div>
-        </div>
+        <AppDashboardGrid columns={12}>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><BarChart className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{reports.length}</div>
+              <div className="text-sm font-medium text-black font-arabic">التقارير المتاحة</div>
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Calendar className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{reports.filter(r => r.type === 'monthly').length}</div>
+              <div className="text-sm font-medium text-black font-arabic">تقارير شهرية</div>
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Download className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">156</div>
+              <div className="text-sm font-medium text-black font-arabic">مرات التحميل</div>
+            </div>
+          </AppGridItem>
+          <AppGridItem colSpan={3}>
+            <div className="text-center p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
+              <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center mx-auto mb-2"><Filter className="h-4 w-4 text-black" /></div>
+              <div className="text-2xl font-bold text-black font-arabic">{reports.filter(r => r.type === 'quarterly').length}</div>
+              <div className="text-sm font-medium text-black font-arabic">تقارير ربع سنوية</div>
+            </div>
+          </AppGridItem>
+        </AppDashboardGrid>
       </div>
 
       {/* قائمة التقارير */}
