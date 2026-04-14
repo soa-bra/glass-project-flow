@@ -152,7 +152,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 <p className="text-xs font-normal text-gray-400">نشط</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Setup Assistant Card */}
           <AppCardSurface density="standard">
@@ -192,7 +192,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 </label>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Available Integrations Card */}
           <AppCardSurface density="standard">
@@ -236,7 +236,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* API Settings Card */}
           <AppCardSurface density="standard">
@@ -315,7 +315,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Webhooks Card */}
           <AppCardSurface density="standard">
@@ -364,7 +364,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
                 )}
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

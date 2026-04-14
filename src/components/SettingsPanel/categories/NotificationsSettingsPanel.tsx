@@ -140,7 +140,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                 </label>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* General Notifications Card */}
           <AppCardSurface density="standard">
@@ -201,7 +201,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                 </label>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Project Notifications Card */}
           <AppCardSurface density="standard">
@@ -253,7 +253,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Smart Timing Card */}
           <AppCardSurface density="standard">
@@ -330,7 +330,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                 )}
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Notification History Card */}
           <AppCardSurface density="standard">
@@ -352,7 +352,7 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

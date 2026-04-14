@@ -113,7 +113,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 <p className="text-xs font-normal text-gray-400">متوافق</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Compliance Monitor Card */}
           <AppCardSurface density="standard">
@@ -136,7 +136,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Data Retention Card */}
           <AppCardSurface density="standard">
@@ -205,7 +205,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Backup Settings Card */}
           <AppCardSurface density="standard">
@@ -282,7 +282,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

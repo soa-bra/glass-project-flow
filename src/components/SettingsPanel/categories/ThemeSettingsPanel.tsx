@@ -109,7 +109,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Color Schemes Card */}
           <AppCardSurface density="standard">
@@ -149,7 +149,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Personalization Card */}
           <AppCardSurface density="standard">
@@ -189,7 +189,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </label>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Accessibility Card */}
           <AppCardSurface density="standard">
@@ -258,7 +258,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

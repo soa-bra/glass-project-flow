@@ -132,7 +132,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 <p className="text-xs font-normal text-gray-400">محمي</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* تنبيهات الأمان بالذكاء الاصطناعي */}
           <AppCardSurface density="standard">
@@ -152,7 +152,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Two-Factor Authentication Card */}
           <AppCardSurface density="standard">
@@ -220,7 +220,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* إدارة مفاتيح API */}
           <AppCardSurface density="standard">
@@ -265,7 +265,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* الأجهزة الموثوقة */}
           <AppCardSurface density="standard">
@@ -285,7 +285,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Session Management Card */}
           <AppCardSurface density="standard">
@@ -310,7 +310,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* إحصائيات الأمان */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

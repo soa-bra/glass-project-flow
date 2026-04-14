@@ -150,7 +150,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Training Wizard Card */}
           <AppCardSurface density="standard">
@@ -190,7 +190,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 تدريب نموذج جديد من الأرشيف
               </button>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Model Management Card */}
           <AppCardSurface density="standard">
@@ -251,7 +251,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Performance Settings Card */}
           <AppCardSurface density="standard">
@@ -290,7 +290,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 <p className="text-xs text-gray-500 mt-2">المدة بالثواني قبل انتهاء الوقت</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Training Status Card */}
           <AppCardSurface density="standard">
@@ -331,7 +331,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

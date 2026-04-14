@@ -177,7 +177,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Roles Management Card */}
           <AppCardSurface density="standard">
@@ -213,7 +213,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">

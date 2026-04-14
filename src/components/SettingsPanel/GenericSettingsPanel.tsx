@@ -166,7 +166,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                 <p className="text-xs font-normal text-gray-400">متصل</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Main Content Card */}
           <AppCardSurface density="standard">
@@ -215,7 +215,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                 </AppGridItem>
               </AppDashboardGrid>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

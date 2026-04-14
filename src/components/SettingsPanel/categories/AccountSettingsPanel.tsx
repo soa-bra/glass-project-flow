@@ -154,7 +154,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                 <p className="text-xs font-normal text-gray-400">متصل</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Basic Information Card */}
           <AppCardSurface density="standard">
@@ -235,7 +235,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Password Management Card */}
           <AppCardSurface density="standard">
@@ -309,7 +309,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                 )}
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Language Preferences Card */}
           <AppCardSurface density="standard">
@@ -334,7 +334,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* إحصائيات الحساب */}
           <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
