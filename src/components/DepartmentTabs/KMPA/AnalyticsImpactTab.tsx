@@ -116,6 +116,7 @@ export const AnalyticsImpactTab: React.FC = () => {
       </AppDashboardGrid>
 
       <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={6}>
         {/* Content Performance */}
         <BaseBox>
           <div className="mb-4">
