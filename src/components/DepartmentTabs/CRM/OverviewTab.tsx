@@ -3,8 +3,8 @@ import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
-import { ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area, XAxis, Tooltip } from 'recharts';
-import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
+import { ResponsiveContainer, BarChart, Bar, AreaChart, Area, XAxis, Tooltip } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE, RingMetricCard } from '@/components/shared/visual-data';
 import { mockCRMAnalytics, mockNPS } from './data';
 
 export const OverviewTab: React.FC = () => {
@@ -52,36 +52,16 @@ export const OverviewTab: React.FC = () => {
         </AppGridItem>
 
         <AppGridItem colSpan={6} tabletSpan={6}>
-        <DataCardFrame title="رضا العملاء">
-          <div className="flex flex-col items-center">
-            <div className="relative" style={{ width: 180, height: 180 }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={satisfactionData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} dataKey="value" strokeWidth={0}>
-                    {satisfactionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-[28px] font-bold text-[#0B0F12]">
-                  {mockCRMAnalytics.customerSatisfaction.excellent + mockCRMAnalytics.customerSatisfaction.good}%
-                </span>
-                <span className="text-[10px] text-[rgba(11,15,18,0.35)]">إيجابي</span>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-3 mt-3">
-              {satisfactionData.map((d, i) => (
-                <div key={i} className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: d.color }} />
-                  <span className="text-[10px] text-[rgba(11,15,18,0.50)] font-arabic">{d.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </DataCardFrame>
+        <RingMetricCard
+            title="رضا العملاء"
+            centerValue={`${mockCRMAnalytics.customerSatisfaction.excellent + mockCRMAnalytics.customerSatisfaction.good}%`}
+            centerUnit="إيجابي"
+            layers={satisfactionData.map(d => ({
+              value: d.value,
+              color: d.color,
+              label: d.name,
+            }))}
+          />
         </AppGridItem>
       </AppDashboardGrid>
 

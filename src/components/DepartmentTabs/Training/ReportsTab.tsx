@@ -4,8 +4,8 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { NumericStatCard } from '@/components/shared/visual-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE, RingMetricCard } from '@/components/shared/visual-data';
 import { FileText, Download, Eye, Calendar, TrendingUp, Users, Target, DollarSign } from 'lucide-react';
 
 export const ReportsTab: React.FC = () => {
@@ -133,17 +133,16 @@ export const ReportsTab: React.FC = () => {
           </ResponsiveContainer>
         </BaseBox>
 
-        <BaseBox title="توزيع العائد حسب القسم">
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={departmentData} cx="50%" cy="50%" labelLine={false} outerRadius={80} dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                {departmentData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-              </Pie>
-              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
-            </PieChart>
-          </ResponsiveContainer>
-        </BaseBox>
+        <RingMetricCard
+            title="توزيع العائد حسب القسم"
+            centerValue="100%"
+            centerUnit="توزيع"
+            layers={departmentData.map(d => ({
+              value: d.value,
+              color: d.color,
+              label: d.name,
+            }))}
+          />
       </div>
 
       <BaseBox title="تقارير العائد على الاستثمار">
