@@ -78,8 +78,8 @@ export const PartnersTab: React.FC = () => {
         <AppGridItem colSpan={3}><NumericStatCard title="قيد المراجعة" value={partners.filter(p => p.status === 'pending').length} icon={<Calendar className="h-5 w-5" />} accentColor="#8B5CF6" /></AppGridItem>
       </AppDashboardGrid>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={4}>
           <DataCardFrame title={`قائمة الشركاء (${filteredPartners.length})`} icon={<Users className="h-5 w-5" />}>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {filteredPartners.map((partner) => (
@@ -105,9 +105,9 @@ export const PartnersTab: React.FC = () => {
               {filteredPartners.length === 0 && <div className="text-center py-8 text-gray-500 font-arabic">لا توجد شركاء مطابقة للبحث</div>}
             </div>
           </DataCardFrame>
-        </div>
+        </AppGridItem>
 
-        <div className="lg:col-span-2">
+        <AppGridItem colSpan={8}>
           {selectedPartnerData ? (
             <div className="space-y-6">
               <DataCardFrame title={selectedPartnerData.entityName}>
@@ -173,8 +173,8 @@ export const PartnersTab: React.FC = () => {
               </div>
             </DataCardFrame>
           )}
-        </div>
-      </div>
+        </AppGridItem>
+      </AppDashboardGrid>
     </div>
   );
 };
