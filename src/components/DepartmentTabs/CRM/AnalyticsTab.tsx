@@ -4,18 +4,10 @@ import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, LineChart, Line, P
 import { Download, RefreshCw } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { mockCRMAnalytics, mockNPS } from './data';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
-
-const chartTooltipStyle = {
-  backgroundColor: '#0B0F12',
-  border: 'none',
-  borderRadius: '10px',
-  fontSize: '12px',
-  color: '#FFFFFF',
-  padding: '8px 12px',
-};
 
 export const AnalyticsTab: React.FC = () => {
   const [timeRange, setTimeRange] = useState('6months');

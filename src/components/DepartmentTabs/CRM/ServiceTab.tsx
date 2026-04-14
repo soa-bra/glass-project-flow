@@ -5,11 +5,10 @@ import { ResponsiveContainer, LineChart, Line, BarChart, Bar, Tooltip, XAxis, YA
 import { Plus, Search } from 'lucide-react';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { mockCustomerService } from './data';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { toast } from 'sonner';
-
-const tooltipStyle = { backgroundColor: '#0B0F12', border: 'none', borderRadius: '10px', fontSize: '12px', color: '#FFF', padding: '8px 12px' };
 
 export const ServiceTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
