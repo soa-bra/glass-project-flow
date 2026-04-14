@@ -1,5 +1,6 @@
 import React from 'react';
 import { Bot, Lightbulb, AlertTriangle, TrendingUp } from 'lucide-react';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface AIAdvice {
   id: string;
@@ -43,7 +44,7 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
   };
 
   return (
-    <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6">
+    <AppCardSurface density="standard">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">مستشار التأخير بالذكاء الاصطناعي</h3>
         <div className="w-8 h-8 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center">
@@ -60,9 +61,7 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
               key={advice.id}
               className="rounded-[18px] p-4 ring-1 ring-[rgba(11,15,18,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow relative overflow-hidden"
             >
-              {/* Accent line */}
               <div className="absolute right-0 top-3 bottom-3 w-[3px] rounded-full" style={{ backgroundColor: getAccentColor(advice.type) }} />
-
               <div className="flex items-start justify-between mb-2 pr-3">
                 <div className="flex items-center gap-2">
                   {getTypeIcon(advice.type)}
@@ -72,10 +71,8 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
                 </div>
                 <div className="text-[28px] font-bold text-[#0B0F12]">{advice.confidence}%</div>
               </div>
-
               <h4 className="font-bold text-[#0B0F12] text-sm mb-1 pr-3">{advice.title}</h4>
               <p className="text-[12px] text-[rgba(11,15,18,0.6)] leading-relaxed pr-3">{advice.description}</p>
-
               {advice.projectId && (
                 <div className="mt-3 pt-2 border-t border-[rgba(11,15,18,0.06)] pr-3">
                   <span className="text-[10px] text-[rgba(11,15,18,0.4)]">المشروع المتأثر: {advice.projectId}</span>
@@ -85,6 +82,6 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
           ))
         )}
       </div>
-    </div>
+    </AppCardSurface>
   );
 };

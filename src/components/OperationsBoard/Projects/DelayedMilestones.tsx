@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle, Clock } from 'lucide-react';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface DelayedMilestone {
   id: string;
@@ -26,7 +27,7 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
   };
 
   return (
-    <div className="rounded-[24px] bg-[#FFFFFF] ring-1 ring-[#DADCE0] p-6 h-full">
+    <AppCardSurface density="standard" className="h-full">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">المعالم المتأخرة</h3>
         <div className="w-8 h-8 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center">
@@ -36,9 +37,7 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
 
       <div className="space-y-3 max-h-[380px] overflow-y-auto">
         {delayedMilestones.length === 0 ? (
-          <div className="text-center py-10 text-[rgba(11,15,18,0.4)] text-sm">
-            لا توجد معالم متأخرة حالياً
-          </div>
+          <div className="text-center py-10 text-[rgba(11,15,18,0.4)] text-sm">لا توجد معالم متأخرة حالياً</div>
         ) : (
           delayedMilestones.map(milestone => {
             const impact = getImpactStyle(milestone.impact);
@@ -69,6 +68,6 @@ export const DelayedMilestones: React.FC<DelayedMilestonesProps> = ({ delayedMil
           })
         )}
       </div>
-    </div>
+    </AppCardSurface>
   );
 };

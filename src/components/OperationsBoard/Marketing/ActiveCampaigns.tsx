@@ -2,6 +2,8 @@ import React from 'react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Progress } from '@/components/ui/progress';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+
 interface Campaign {
   id: string;
   name: string;
@@ -18,56 +20,32 @@ interface Campaign {
 interface ActiveCampaignsProps {
   campaigns: Campaign[];
 }
-export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({
-  campaigns
-}) => {
+
+export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({ campaigns }) => {
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      'active': {
-        label: 'نشطة',
-        variant: 'success'
-      },
-      'paused': {
-        label: 'متوقفة',
-        variant: 'warning'
-      },
-      'completed': {
-        label: 'مكتملة',
-        variant: 'info'
-      }
+      'active': { label: 'نشطة', variant: 'success' },
+      'paused': { label: 'متوقفة', variant: 'warning' },
+      'completed': { label: 'مكتملة', variant: 'info' },
     };
-    const statusInfo = statusMap[status as keyof typeof statusMap] || {
-      label: status,
-      variant: 'default'
-    };
+    const statusInfo = statusMap[status as keyof typeof statusMap] || { label: status, variant: 'default' };
     return <BaseBadge variant={statusInfo.variant as any}>{statusInfo.label}</BaseBadge>;
   };
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'نشطة';
-      case 'paused':
-        return 'متوقفة';
-      case 'completed':
-        return 'مكتملة';
-      default:
-        return status;
-    }
-  };
-  return <div className="rounded-[24px] bg-[#ffffff] border-[#DADCE0]">
+
+  return (
+    <AppCardSurface density="standard">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-black font-arabic">الحملات النشطة</h3>
-        <BaseActionButton variant="primary">
-          عرض الكل
-        </BaseActionButton>
+        <BaseActionButton variant="primary">عرض الكل</BaseActionButton>
       </div>
-      
+
       <div className="space-y-4">
         {campaigns.map(campaign => {
-        const spentPercentage = campaign.spent / campaign.budget * 100;
-        const ctr = campaign.impressions > 0 ? campaign.clicks / campaign.impressions * 100 : 0;
-        const conversionRate = campaign.clicks > 0 ? campaign.conversions / campaign.clicks * 100 : 0;
-        return <div key={campaign.id} className="bg-white/80 border border-black/5 p-4 space-y-3 rounded-3xl">
+          const spentPercentage = campaign.spent / campaign.budget * 100;
+          const ctr = campaign.impressions > 0 ? campaign.clicks / campaign.impressions * 100 : 0;
+          const conversionRate = campaign.clicks > 0 ? campaign.conversions / campaign.clicks * 100 : 0;
+          return (
+            <div key={campaign.id} className="bg-gray-50 border border-[#DADCE0] p-4 space-y-3 rounded-2xl">
               <div className="flex items-center justify-between">
                 <div className="text-right">
                   <h4 className="font-medium text-sm text-black font-arabic">{campaign.name}</h4>
@@ -113,8 +91,10 @@ export const ActiveCampaigns: React.FC<ActiveCampaignsProps> = ({
                   <p className="font-medium text-black font-arabic">{conversionRate.toFixed(2)}%</p>
                 </div>
               </div>
-            </div>;
-      })}
+            </div>
+          );
+        })}
       </div>
-    </div>;
+    </AppCardSurface>
+  );
 };
