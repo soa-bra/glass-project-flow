@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp, PieChart, Target } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
@@ -121,10 +122,10 @@ export const ReportsTab: React.FC = () => {
       </div>
 
       <AppDashboardGrid columns={12}>
-        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">28</h3><p className="text-sm text-black font-arabic">تقرير هذا الشهر</p></BaseBox></AppGridItem>
-        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">184</h3><p className="text-sm text-black font-arabic">إجمالي التقارير</p></BaseBox></AppGridItem>
-        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">12</h3><p className="text-sm text-black font-arabic">تقرير مجدول</p></BaseBox></AppGridItem>
-        <AppGridItem colSpan={3}><BaseBox variant="operations" size="sm" className="text-center"><h3 className="text-2xl font-bold text-black mb-1 font-arabic">156</h3><p className="text-sm text-black font-arabic">إجمالي التحميلات</p></BaseBox></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="تقرير هذا الشهر" value={28} size="sm" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي التقارير" value={184} size="sm" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="تقرير مجدول" value={12} size="sm" accentColor="#3DA8F5" /></AppGridItem>
+        <AppGridItem colSpan={3}><NumericStatCard title="إجمالي التحميلات" value={156} size="sm" accentColor="#3DBE8B" /></AppGridItem>
       </AppDashboardGrid>
     </div>
   );

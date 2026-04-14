@@ -3,17 +3,15 @@ import React, { useState } from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data';
 import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
-import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   MessageSquare, 
   PenTool, 
   Calendar, 
   TrendingUp,
   Eye,
-  Heart,
   Share2,
   Edit,
   CheckCircle,
@@ -130,28 +128,26 @@ export const ContentMessagingTab: React.FC = () => {
             </h3>
           </div>
           <div>
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">15.2K</div>
-                <div className="text-sm text-gray-600">إجمالي المشاهدات</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">8.7%</div>
-                <div className="text-sm text-gray-600">معدل التفاعل</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">89%</div>
-                <div className="text-sm text-gray-600">النقاط الثقافية</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">24</div>
-                <div className="text-sm text-gray-600">محتوى هذا الشهر</div>
-              </div>
+            <AppDashboardGrid columns={12} density="compact">
+              <AppGridItem colSpan={3}>
+                <NumericStatCard title="إجمالي المشاهدات" value="15.2K" accentColor="#3DA8F5" size="sm" />
+              </AppGridItem>
+              <AppGridItem colSpan={3}>
+                <NumericStatCard title="معدل التفاعل" value="8.7%" accentColor="#3DBE8B" size="sm" />
+              </AppGridItem>
+              <AppGridItem colSpan={3}>
+                <NumericStatCard title="النقاط الثقافية" value="89%" size="sm" />
+              </AppGridItem>
+              <AppGridItem colSpan={3}>
+                <NumericStatCard title="محتوى هذا الشهر" value={24} accentColor="#F6C445" size="sm" />
+              </AppGridItem>
+            </AppDashboardGrid>
+            <div className="mt-4">
+              <UnifiedButton variant="outline">
+                <PenTool className="h-4 w-4 mr-2" />
+                إنشاء محتوى جديد
+              </UnifiedButton>
             </div>
-            <UnifiedButton variant="outline">
-              <PenTool className="h-4 w-4 mr-2" />
-              إنشاء محتوى جديد
-            </UnifiedButton>
           </div>
         </BaseBox>
       </AppDashboardGrid>

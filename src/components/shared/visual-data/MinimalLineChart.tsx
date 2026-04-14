@@ -2,6 +2,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { ResponsiveContainer, Line, Area, AreaChart, Tooltip, XAxis, LineChart } from 'recharts';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from './ChartTooltipShell';
 
 interface DataPoint {
   label: string;
@@ -22,16 +23,6 @@ interface MinimalLineChartProps {
   className?: string;
   tooltipFormatter?: (value: number) => string;
 }
-
-const CustomTooltip = ({ active, payload, formatter }: any) => {
-  if (!active || !payload?.[0]) return null;
-  const val = payload[0].value;
-  return (
-    <div className="bg-[#0B0F12] text-white px-3 py-2 rounded-[10px] shadow-[0_8px_24px_rgba(0,0,0,0.24)]">
-      <span className="text-[14px] font-bold">{formatter ? formatter(val) : val}</span>
-    </div>
-  );
-};
 
 export const MinimalLineChart: React.FC<MinimalLineChartProps> = ({
   title, heroValue, heroUnit, data, dataKey = 'value',
@@ -78,13 +69,13 @@ export const MinimalLineChart: React.FC<MinimalLineChartProps> = ({
                 </linearGradient>
               </defs>
               <XAxis dataKey="label" hide />
-              <Tooltip content={<CustomTooltip formatter={tooltipFormatter} />} />
+              <Tooltip content={<ChartTooltipShell formatValue={tooltipFormatter ? (v) => tooltipFormatter(Number(v)) : undefined} />} cursor={CHART_CURSOR_STYLE} />
               <Area type="monotone" dataKey={dataKey} stroke={resolvedColor} strokeWidth={2.5} fill={`url(#fill-${resolvedColor.replace('#', '')})`} dot={false} activeDot={{ r: 5, fill: resolvedColor, stroke: '#fff', strokeWidth: 2 }} />
             </AreaChart>
           ) : (
             <LineChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
               <XAxis dataKey="label" hide />
-              <Tooltip content={<CustomTooltip formatter={tooltipFormatter} />} />
+              <Tooltip content={<ChartTooltipShell formatValue={tooltipFormatter ? (v) => tooltipFormatter(Number(v)) : undefined} />} cursor={CHART_CURSOR_STYLE} />
               <Line type="monotone" dataKey={dataKey} stroke={resolvedColor} strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: resolvedColor, stroke: '#fff', strokeWidth: 2 }} />
             </LineChart>
           )}
