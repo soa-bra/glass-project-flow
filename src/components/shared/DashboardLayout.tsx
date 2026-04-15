@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
-import { SPACING, TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
+import { TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
 import { Reveal } from './motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
