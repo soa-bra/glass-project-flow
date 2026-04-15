@@ -21,7 +21,7 @@ interface DocumentsListProps {
 
 export const DocumentsList: React.FC<DocumentsListProps> = ({ documents }) => {
   return (
-    <div className="flex-1 overflow-auto px-6 pb-6">
+    <div className="flex-1 px-6 pb-6">
       <div className="space-y-4">
         {documents.map((document) => (
           <DocumentsListItem key={document.id} document={document} />

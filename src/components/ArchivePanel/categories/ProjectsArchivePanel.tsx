@@ -45,7 +45,7 @@ export const ProjectsArchivePanel: React.FC = () => {
       </div>
 
       {/* Projects List */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 px-6 pb-6">
         <div className="space-y-4">
           {mockProjects.map((project) => (
             <AppCardSurface key={project.id} interactive="hoverable" density="standard">

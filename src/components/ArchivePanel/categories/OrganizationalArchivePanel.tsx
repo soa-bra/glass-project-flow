@@ -93,7 +93,7 @@ export const OrganizationalArchivePanel: React.FC = () => {
       </div>
 
       {/* Content List */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 px-6 pb-6">
         <div className="space-y-4">
           {mockOrganizationalData.map((item) => (
             <AppCardSurface key={item.id} interactive="hoverable" density="standard">
