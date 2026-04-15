@@ -43,7 +43,7 @@ export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
   };
   return <div className="flex gap-6 h-full">
       {/* Task List Column */}
-      <div className="w-1/3 min-w-0">
+      <div className="w-1/3 min-w-0 max-h-[60vh]">
         <div className="font-arabic h-full" style={{
         width: '100%',
         maxWidth: '100%',
