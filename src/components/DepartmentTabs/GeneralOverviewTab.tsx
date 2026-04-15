@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart, Globe, Shield, Database, Zap } from 'lucide-react';
+import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Globe, Shield, Database, Zap } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -31,7 +31,7 @@ const StatCard: React.FC<{ stat: StatItem }> = ({ stat }) => (
   </div>
 );
 
-export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departmentTitle }) => {
+export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departmentTitle: _departmentTitle }) => {
   const kpiStats = [
     { title: 'المهام النشطة', value: 24, unit: 'مهمة', description: 'المهام الجارية حالياً' },
     { title: 'أعضاء الفريق', value: 12, unit: 'عضو', description: 'أعضاء الفريق النشطون' },

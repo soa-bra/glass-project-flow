@@ -1,7 +1,7 @@
 import React from 'react';
 import { MiniGanttChart } from './Projects/MiniGanttChart';
 import { DelayedMilestones } from './Projects/DelayedMilestones';
-import { ProjectProgressSummary } from './Projects/ProjectProgressSummary';
+
 import { AIDelayAdvisor } from './Projects/AIDelayAdvisor';
 import { BaseOperationsTabLayout } from './BaseOperationsTabLayout';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';

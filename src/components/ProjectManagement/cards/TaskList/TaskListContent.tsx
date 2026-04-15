@@ -143,7 +143,7 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
 
   useImperativeHandle(ref, () => ({ addTask, addTasks }));
 
-  const handleTaskEdit = (taskId: string) => {
+  const handleTaskEdit = (_taskId: string) => {
     // Edit task functionality
   };
 
