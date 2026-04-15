@@ -16,14 +16,6 @@ export const BudgetBox: React.FC<BudgetCardProps> = ({ project }) => {
   const totalBars = 60;
   const filledBars = Math.round((spentPercentage / 100) * totalBars);
 
-  const getBarColor = (index: number) => {
-    if (index >= filledBars) return 'bg-gray-200';
-    const fillRatio = (index + 1) / totalBars;
-    if (fillRatio <= 0.3) return 'bg-[#96d8d0]';
-    if (fillRatio <= 0.6) return 'bg-[#7bc5bd]';
-    if (fillRatio <= 0.8) return 'bg-[#f4c2a1]';
-    return 'bg-[#f1b5b9]';
-  };
 
   const cardBgColor = isOverBudget ? 'bg-[#f1b5b9]' : 'bg-[#96d8d0]';
 
