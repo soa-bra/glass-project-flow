@@ -132,7 +132,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" >
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Users Management Card */}
