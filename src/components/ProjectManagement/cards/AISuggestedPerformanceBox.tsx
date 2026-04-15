@@ -34,7 +34,6 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
 
   const Icon = getIcon();
 
-  // بيانات وهمية للرسوم البيانية
   const lineData = [
     { name: 'يناير', value: 65 },
     { name: 'فبراير', value: 78 },
@@ -59,7 +58,7 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
     switch (chartType) {
       case 'line':
         return (
-          <ChartWrapper minHeight={60} minWidth={100} aspectRatio="16/9">
+          <ChartWrapper minHeight={50} minWidth={80} aspectRatio="16/9">
             <LineChart data={lineData}>
               <Line type="monotone" dataKey="value" stroke="#000000" strokeWidth={2} dot={false} />
             </LineChart>
@@ -67,16 +66,16 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
         );
       case 'bar':
         return (
-          <ChartWrapper minHeight={60} minWidth={100} aspectRatio="16/9">
+          <ChartWrapper minHeight={50} minWidth={80} aspectRatio="16/9">
             <BarChart data={barData}>
-              <Bar dataKey="value" fill="#aec2cf" radius={[999, 999, 999, 999]} barSize={20} />
+              <Bar dataKey="value" fill="#aec2cf" radius={[999, 999, 999, 999]} barSize={16} />
             </BarChart>
           </ChartWrapper>
         );
       case 'pie':
       case 'donut':
         return (
-          <ChartWrapper minHeight={60} minWidth={100} aspectRatio="1/1">
+          <ChartWrapper minHeight={50} minWidth={50} aspectRatio="1/1">
             <RechartsPieChart>
               <RechartsPieChart
                 data={pieData}
@@ -103,35 +102,32 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
       style={{ fontFamily: 'IBM Plex Sans Arabic' }}
     >
       {/* الرأس */}
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-arabic font-semibold text-gray-800">
+      <div className="flex items-center justify-between mb-2 flex-shrink-0">
+        <h4 className="text-sm font-arabic font-semibold text-gray-800 truncate">
           {title}
         </h4>
-        <Icon size={16} className="text-gray-600" />
+        <Icon size={16} className="text-gray-600 flex-shrink-0" />
       </div>
 
       {/* المقياس الرئيسي */}
-      <div className="mb-2">
-        <div className="text-2xl font-bold text-gray-900 font-arabic">
+      <div className="mb-2 flex-shrink-0">
+        <div className="text-2xl font-bold text-gray-900 font-arabic leading-tight">
           {metric}
         </div>
-        <div className="text-xs text-gray-600 font-arabic">
+        <div className="text-xs text-gray-600 font-arabic truncate">
           {description}
         </div>
       </div>
 
-      {/* الرسم البياني */}
-      <div className="flex-1 mb-2 overflow-hidden">
-        <div 
-          className="w-full h-full max-w-[120px] mx-auto"
-          style={{ aspectRatio: '16/9' }}
-        >
+      {/* الرسم البياني — flexible, contained */}
+      <div className="flex-1 min-h-0 mb-2 overflow-hidden">
+        <div className="w-full h-full max-w-[100px] mx-auto">
           {renderChart()}
         </div>
       </div>
 
       {/* المؤشر */}
-      <div className="text-xs text-gray-500 font-arabic">
+      <div className="text-xs text-gray-500 font-arabic flex-shrink-0 truncate">
         {trend}
       </div>
     </AppCardSurface>
