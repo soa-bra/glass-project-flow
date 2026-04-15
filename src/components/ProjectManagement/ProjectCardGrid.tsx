@@ -17,7 +17,7 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   return (
     <AppDashboardGrid columns={12} density="compact" minRowHeight="140px">
       {/* العمود الأيمن - قائمة المهام: 5 أعمدة، 4 صفوف */}
-      <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6} className="max-h-[620px]">
+      <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6} className="max-h-[60vh]">
         <TaskListCard project={project} />
       </AppGridItem>
 
