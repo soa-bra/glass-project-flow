@@ -7,38 +7,17 @@
 import React, { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react';
 import type { TextEditorAPI } from './types';
 
-// ============================================
-// Context Definition
-// ============================================
-
 interface TextEditorContextValue {
-  /** API المحرر النشط - Active editor API */
   activeEditor: TextEditorAPI | null;
-  
-  /** تسجيل محرر - Register an editor */
   registerEditor: (api: TextEditorAPI) => void;
-  
-  /** إلغاء تسجيل محرر - Unregister an editor */
   unregisterEditor: (elementId: string) => void;
-  
-  /** هل المحرر نشط - Is editor active */
   isEditorActive: boolean;
-  
-  /** منع الإغلاق مؤقتاً - Temporarily prevent closing */
   preventClose: () => void;
-  
-  /** السماح بالإغلاق - Allow closing */
   allowClose: () => void;
-  
-  /** هل يمكن الإغلاق - Can close */
   canClose: boolean;
 }
 
 const TextEditorContext = createContext<TextEditorContextValue | null>(null);
-
-// ============================================
-// Provider Component
-// ============================================
 
 interface TextEditorProviderProps {
   children: ReactNode;
@@ -51,15 +30,12 @@ export const TextEditorProvider: React.FC<TextEditorProviderProps> = ({ children
 
   const registerEditor = useCallback((api: TextEditorAPI) => {
     setActiveEditor(api);
-    
-    // للتوافق مع الكود القديم (سيتم إزالته لاحقاً)
     (window as any).__currentTextEditor = api;
   }, []);
 
   const unregisterEditor = useCallback((elementId: string) => {
     setActiveEditor((current) => {
       if (current?.elementId === elementId) {
-        // إزالة من window أيضاً
         (window as any).__currentTextEditor = null;
         return null;
       }
@@ -68,7 +44,6 @@ export const TextEditorProvider: React.FC<TextEditorProviderProps> = ({ children
   }, []);
 
   const preventClose = useCallback(() => {
-    // إلغاء أي timeout سابق
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
@@ -77,7 +52,6 @@ export const TextEditorProvider: React.FC<TextEditorProviderProps> = ({ children
   }, []);
 
   const allowClose = useCallback(() => {
-    // تأخير صغير للسماح بالنقرات على الأزرار
     closeTimeoutRef.current = setTimeout(() => {
       setCanClose(true);
     }, 100);
@@ -100,25 +74,22 @@ export const TextEditorProvider: React.FC<TextEditorProviderProps> = ({ children
   );
 };
 
-// ============================================
-// Hook
-// ============================================
-
-/**
- * استخدام سياق محرر النص
- * Use text editor context
- */
 export const useTextEditorContext = (): TextEditorContextValue => {
   const context = useContext(TextEditorContext);
   
   if (!context) {
-    // إرجاع قيمة افتراضية بدلاً من رمي خطأ
-    // هذا يسمح باستخدام الـ hook خارج الـ Provider
     return {
-      activeEditor: null,
-      registerEditor: () => {},
-      unregisterEditor: () => {},
-      isEditorActive: false,
+      activeEditor: (window as any).__currentTextEditor || null,
+      registerEditor: (api: TextEditorAPI) => {
+        (window as any).__currentTextEditor = api;
+      },
+      unregisterEditor: (elementId: string) => {
+        const current = (window as any).__currentTextEditor;
+        if (current?.elementId === elementId) {
+          (window as any).__currentTextEditor = null;
+        }
+      },
+      isEditorActive: !!(window as any).__currentTextEditor,
       preventClose: () => {},
       allowClose: () => {},
       canClose: true,
@@ -128,18 +99,10 @@ export const useTextEditorContext = (): TextEditorContextValue => {
   return context;
 };
 
-/**
- * الحصول على API المحرر النشط
- * Get active editor API (shorthand)
- */
 export const useActiveTextEditor = (): TextEditorAPI | null => {
   const { activeEditor } = useTextEditorContext();
-  return activeEditor;
+  return activeEditor || ((window as any).__currentTextEditor ?? null);
 };
-
-// ============================================
-// Utility Hook for Editor Registration
-// ============================================
 
 interface UseTextEditorRegistrationOptions {
   elementId: string;
@@ -149,10 +112,6 @@ interface UseTextEditorRegistrationOptions {
   removeFormatting: () => void;
 }
 
-/**
- * Hook لتسجيل المحرر تلقائياً
- * Hook for automatic editor registration
- */
 export const useTextEditorRegistration = (options: UseTextEditorRegistrationOptions) => {
   const { elementId, editorRef, applyFormat, toggleList, removeFormatting } = options;
   const { registerEditor, unregisterEditor, preventClose, allowClose, canClose } = useTextEditorContext();
@@ -161,8 +120,6 @@ export const useTextEditorRegistration = (options: UseTextEditorRegistrationOpti
   const restoreFocus = useCallback(() => {
     if (editorRef.current) {
       editorRef.current.focus();
-      
-      // استعادة موضع المؤشر في النهاية
       const selection = window.getSelection();
       const range = document.createRange();
       range.selectNodeContents(editorRef.current);
@@ -172,7 +129,6 @@ export const useTextEditorRegistration = (options: UseTextEditorRegistrationOpti
     }
   }, [editorRef]);
 
-  // تسجيل المحرر عند الإنشاء
   React.useEffect(() => {
     if (editorRef.current && !isRegistered.current) {
       const api: TextEditorAPI = {
@@ -185,18 +141,22 @@ export const useTextEditorRegistration = (options: UseTextEditorRegistrationOpti
       };
       
       registerEditor(api);
+      (window as any).__currentTextEditor = api;
       isRegistered.current = true;
     }
 
     return () => {
       if (isRegistered.current) {
         unregisterEditor(elementId);
+        const current = (window as any).__currentTextEditor;
+        if (current?.elementId === elementId) {
+          (window as any).__currentTextEditor = null;
+        }
         isRegistered.current = false;
       }
     };
   }, [elementId, registerEditor, unregisterEditor, applyFormat, toggleList, removeFormatting, restoreFocus, editorRef]);
 
-  // تحديث API عند تغير الـ callbacks
   React.useEffect(() => {
     if (editorRef.current && isRegistered.current) {
       const api: TextEditorAPI = {
@@ -209,6 +169,7 @@ export const useTextEditorRegistration = (options: UseTextEditorRegistrationOpti
       };
       
       registerEditor(api);
+      (window as any).__currentTextEditor = api;
     }
   }, [applyFormat, toggleList, removeFormatting, elementId, restoreFocus, registerEditor, editorRef]);
 

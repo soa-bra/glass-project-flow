@@ -83,7 +83,7 @@ export const FloatingBar: React.FC = () => {
     isMindmapSelection,
   } = selectionMeta;
 
-  // استخدام hook عمليات التخطيط
+  // استخدام �ook عمليات التخطيط
   const layoutOps = useLayoutOperations();
 
   // التحقق من نوع visual_diagram
@@ -93,7 +93,7 @@ export const FloatingBar: React.FC = () => {
     );
   }, [selectedElements]);
 
-  // استخدام hook موضع الشريط
+  // استخدام �ook موضع الشريط
   const position = useFloatingPosition({
     activeElements: selectedElements,
     editingTextId,
@@ -318,7 +318,7 @@ export const FloatingBar: React.FC = () => {
         toast.success("تم تحليل التحديد بنجاح");
       }
     } catch (error) {
-      toast.error("حدث خطأ أثناء التحليل");
+      toast.error("حدث خطӣ أثناء التحليل");
     } finally {
       setIsTransforming(false);
     }
@@ -331,7 +331,7 @@ export const FloatingBar: React.FC = () => {
       await transformElements(selectedElements.map(el => el.id), type);
       toast.success(`تم التحويل إلى ${type}`);
     } catch (error) {
-      toast.error("حدث خطأ أثناء التحويل");
+      toast.error("حدث خطӣ أثناء أدناء التحويل");
     } finally {
       setIsTransforming(false);
     }
@@ -342,9 +342,9 @@ export const FloatingBar: React.FC = () => {
     setIsTransforming(true);
     try {
       await transformElements(selectedElements.map(el => el.id), "brainstorming", prompt);
-      toast.success("تم التحويل المخصص بنجاح");
+      toast.success("تم التحويل المخصصب بنجاح");
     } catch (error) {
-      toast.error("حدث خطأ أثناء التحويل");
+      toast.error("حدث خطأɃ ��ثناء التحويل");
     } finally {
       setIsTransforming(false);
     }
@@ -363,18 +363,17 @@ export const FloatingBar: React.FC = () => {
     addElement(element as CanvasElement);
   }, [addElement]);
 
-  // إذا لم يكن هناك تحديد، لا تعرض شيء
-  if (!hasSelection || selectionType === null) {
+  // إذا lيك يكن هن الكتير لا تظر شيء فيإ (!hasSelection || selectionType === null) {
     return null;
   }
 
-  // تجهيز الطبقات للقائمة
+  // تهيئ الطبقات للقائمة
   const layersList = layers.map(layer => ({
     id: layer.id,
     name: layer.name,
   }));
 
-  // استخراج خصائص العنصر الحالي
+  // استخراج خصائط العنصر الحالي
   const elementStyle = firstElement?.style || {};
   const currentBg = elementStyle.backgroundColor || '#ffffff';
   const currentStroke = elementStyle.borderColor || '#000000';
@@ -384,354 +383,4 @@ export const FloatingBar: React.FC = () => {
   const currentFontSize = elementStyle.fontSize ?? 14;
   const currentFontWeight = elementStyle.fontWeight || '400';
   const currentColor = elementStyle.color || '#000000';
-  const currentAlign = (elementStyle.textAlign as "left" | "center" | "right" | "justify") || 'right';
-  const currentVerticalAlign = (elementStyle.alignItems as "flex-start" | "center" | "flex-end") || 'flex-start';
-  const currentDirection = (elementStyle.direction as "rtl" | "ltr") || 'rtl';
-  const imageName = (firstElement?.data as any)?.name || '';
-
-  // حالات التنسيق النشطة (للنص)
-  const activeFormats: Record<string, boolean> = {
-    bold: document.queryCommandState?.('bold') ?? false,
-    italic: document.queryCommandState?.('italic') ?? false,
-    underline: document.queryCommandState?.('underline') ?? false,
-    strikeThrough: document.queryCommandState?.('strikeThrough') ?? false,
-    insertUnorderedList: document.queryCommandState?.('insertUnorderedList') ?? false,
-    insertOrderedList: document.queryCommandState?.('insertOrderedList') ?? false,
-  };
-
-  // تحديد المحتوى بناءً على نوع التحديد
-  const renderContent = () => {
-    // الخريطة الذهنية
-    if (isMindmapSelection) {
-      return (
-        <>
-          <MindmapActions
-            selectedNodeIds={selectedElementIds}
-            elements={elements}
-            treeElements={mindmapTreeElements}
-            onUpdateElement={handleUpdateElement}
-            onDeleteElements={handleDeleteElements}
-            onAddElement={handleAddElement}
-          />
-          <Separator orientation="vertical" className="h-6 mx-1" />
-          <CommonActions
-            areElementsVisible={areElementsVisible}
-            areElementsLocked={areElementsLocked}
-            clipboardLength={clipboard.length}
-            selectedCount={selectionCount}
-            layers={layersList}
-            isAILoading={isAILoading}
-            isTransforming={isTransforming}
-            onDuplicate={handleDuplicate}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onComment={handleComment}
-            onDelete={handleDelete}
-            onCopy={handleCopy}
-            onCut={handleCut}
-            onPaste={handlePaste}
-            onAddText={handleAddText}
-            onChangeLayer={handleChangeLayer}
-            onBringToFront={handleBringToFront}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSendToBack={handleSendToBack}
-            onQuickGenerate={handleQuickGenerate}
-            onTransform={handleTransform}
-            onCustomTransform={handleCustomTransform}
-          />
-        </>
-      );
-    }
-
-    // المخطط البصري
-    if (isVisualDiagramSelection) {
-      return (
-        <>
-          <VisualDiagramActions
-            selectedNodeIds={selectedElementIds}
-            elements={elements}
-            onUpdateElement={handleUpdateElement}
-            onDeleteElement={deleteElement}
-            onAddElement={handleAddElement}
-          />
-          <Separator orientation="vertical" className="h-6 mx-1" />
-          <CommonActions
-            areElementsVisible={areElementsVisible}
-            areElementsLocked={areElementsLocked}
-            clipboardLength={clipboard.length}
-            selectedCount={selectionCount}
-            layers={layersList}
-            isAILoading={isAILoading}
-            isTransforming={isTransforming}
-            onDuplicate={handleDuplicate}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onComment={handleComment}
-            onDelete={handleDelete}
-            onCopy={handleCopy}
-            onCut={handleCut}
-            onPaste={handlePaste}
-            onAddText={handleAddText}
-            onChangeLayer={handleChangeLayer}
-            onBringToFront={handleBringToFront}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSendToBack={handleSendToBack}
-            onQuickGenerate={handleQuickGenerate}
-            onTransform={handleTransform}
-            onCustomTransform={handleCustomTransform}
-          />
-        </>
-      );
-    }
-
-    // النص
-    if (selectionType === 'text') {
-      return (
-        <>
-          <TextActions
-            currentFontFamily={currentFontFamily}
-            currentFontSize={currentFontSize}
-            currentFontWeight={currentFontWeight}
-            currentColor={currentColor}
-            currentAlign={currentAlign}
-            currentVerticalAlign={currentVerticalAlign}
-            currentDirection={currentDirection}
-            activeFormats={activeFormats}
-            onFontFamilyChange={handleFontFamilyChange}
-            onFontSizeChange={handleFontSizeChange}
-            onFontWeightChange={handleFontWeightChange}
-            onColorChange={handleTextColorChange}
-            onTextFormat={handleTextFormat}
-            onToggleList={handleToggleList}
-            onTextDirection={handleTextDirection}
-            onTextAlign={handleTextAlign}
-            onVerticalAlign={handleVerticalAlign}
-            onClearFormatting={handleClearFormatting}
-            onAddLink={handleAddLink}
-          />
-          <CommonActions
-            areElementsVisible={areElementsVisible}
-            areElementsLocked={areElementsLocked}
-            clipboardLength={clipboard.length}
-            selectedCount={selectionCount}
-            layers={layersList}
-            isAILoading={isAILoading}
-            isTransforming={isTransforming}
-            onDuplicate={handleDuplicate}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onComment={handleComment}
-            onDelete={handleDelete}
-            onCopy={handleCopy}
-            onCut={handleCut}
-            onPaste={handlePaste}
-            onAddText={handleAddText}
-            onChangeLayer={handleChangeLayer}
-            onBringToFront={handleBringToFront}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSendToBack={handleSendToBack}
-            onQuickGenerate={handleQuickGenerate}
-            onTransform={handleTransform}
-            onCustomTransform={handleCustomTransform}
-          />
-        </>
-      );
-    }
-
-    // الصورة
-    if (selectionType === 'image') {
-      return (
-        <>
-          <ImageActions
-            imageName={imageName}
-            onImageRename={handleImageRename}
-            onCrop={handleCrop}
-            onReplaceImage={handleReplaceImage}
-            onAddLink={handleAddLink}
-          />
-          <ElementActions
-            currentBg={currentBg}
-            currentStroke={currentStroke}
-            currentOpacity={currentOpacity}
-            currentStrokeWidth={currentStrokeWidth}
-            onBgColorChange={handleBgColorChange}
-            onStrokeColorChange={handleStrokeColorChange}
-            onOpacityChange={handleOpacityChange}
-            onStrokeWidthChange={handleStrokeWidthChange}
-          />
-          <CommonActions
-            areElementsVisible={areElementsVisible}
-            areElementsLocked={areElementsLocked}
-            clipboardLength={clipboard.length}
-            selectedCount={selectionCount}
-            layers={layersList}
-            isAILoading={isAILoading}
-            isTransforming={isTransforming}
-            onDuplicate={handleDuplicate}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onComment={handleComment}
-            onDelete={handleDelete}
-            onCopy={handleCopy}
-            onCut={handleCut}
-            onPaste={handlePaste}
-            onAddText={handleAddText}
-            onChangeLayer={handleChangeLayer}
-            onBringToFront={handleBringToFront}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSendToBack={handleSendToBack}
-            onQuickGenerate={handleQuickGenerate}
-            onTransform={handleTransform}
-            onCustomTransform={handleCustomTransform}
-          />
-        </>
-      );
-    }
-
-    // تحديد متعدد
-    if (selectionType === 'multiple') {
-      return (
-        <>
-          <MultipleActions
-            selectionCount={selectionCount}
-            areElementsGrouped={areElementsGrouped}
-            onHorizontalAlign={handleHorizontalAlign}
-            onVerticalAlignMultiple={handleVerticalAlignMultiple}
-            onToggleGroup={handleToggleGroup}
-            onCreateFrame={handleCreateFrame}
-          />
-          <CommonActions
-            areElementsVisible={areElementsVisible}
-            areElementsLocked={areElementsLocked}
-            clipboardLength={clipboard.length}
-            selectedCount={selectionCount}
-            layers={layersList}
-            isAILoading={isAILoading}
-            isTransforming={isTransforming}
-            onDuplicate={handleDuplicate}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onComment={handleComment}
-            onDelete={handleDelete}
-            onCopy={handleCopy}
-            onCut={handleCut}
-            onPaste={handlePaste}
-            onAddText={handleAddText}
-            onChangeLayer={handleChangeLayer}
-            onBringToFront={handleBringToFront}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSendToBack={handleSendToBack}
-            onQuickGenerate={handleQuickGenerate}
-            onTransform={handleTransform}
-            onCustomTransform={handleCustomTransform}
-          />
-        </>
-      );
-    }
-
-    // عنصر فردي (element)
-    if (selectionType === 'element') {
-      return (
-        <>
-          <ElementActions
-            currentBg={currentBg}
-            currentStroke={currentStroke}
-            currentOpacity={currentOpacity}
-            currentStrokeWidth={currentStrokeWidth}
-            onBgColorChange={handleBgColorChange}
-            onStrokeColorChange={handleStrokeColorChange}
-            onOpacityChange={handleOpacityChange}
-            onStrokeWidthChange={handleStrokeWidthChange}
-          />
-          <CommonActions
-            areElementsVisible={areElementsVisible}
-            areElementsLocked={areElementsLocked}
-            clipboardLength={clipboard.length}
-            selectedCount={selectionCount}
-            layers={layersList}
-            isAILoading={isAILoading}
-            isTransforming={isTransforming}
-            onDuplicate={handleDuplicate}
-            onToggleVisibility={handleToggleVisibility}
-            onToggleLock={handleToggleLock}
-            onComment={handleComment}
-            onDelete={handleDelete}
-            onCopy={handleCopy}
-            onCut={handleCut}
-            onPaste={handlePaste}
-            onAddText={handleAddText}
-            onChangeLayer={handleChangeLayer}
-            onBringToFront={handleBringToFront}
-            onBringForward={handleBringForward}
-            onSendBackward={handleSendBackward}
-            onSendToBack={handleSendToBack}
-            onQuickGenerate={handleQuickGenerate}
-            onTransform={handleTransform}
-            onCustomTransform={handleCustomTransform}
-          />
-        </>
-      );
-    }
-
-    // الافتراضي
-    return (
-      <CommonActions
-        areElementsVisible={areElementsVisible}
-        areElementsLocked={areElementsLocked}
-        clipboardLength={clipboard.length}
-        selectedCount={selectionCount}
-        layers={layersList}
-        isAILoading={isAILoading}
-        isTransforming={isTransforming}
-        onDuplicate={handleDuplicate}
-        onToggleVisibility={handleToggleVisibility}
-        onToggleLock={handleToggleLock}
-        onComment={handleComment}
-        onDelete={handleDelete}
-        onCopy={handleCopy}
-        onCut={handleCut}
-        onPaste={handlePaste}
-        onAddText={handleAddText}
-        onChangeLayer={handleChangeLayer}
-        onBringToFront={handleBringToFront}
-        onBringForward={handleBringForward}
-        onSendBackward={handleSendBackward}
-        onSendToBack={handleSendToBack}
-        onQuickGenerate={handleQuickGenerate}
-        onTransform={handleTransform}
-        onCustomTransform={handleCustomTransform}
-      />
-    );
-  };
-
-  return createPortal(
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[hsl(var(--border))] bg-white shadow-[var(--shadow-glass)] pointer-events-auto"
-        style={{
-          left: position.x,
-          top: position.y,
-          zIndex: "var(--z-toolbar)",
-          transform: "translateX(-50%)",
-        }}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-        dir="rtl"
-      >
-        {renderContent()}
-      </motion.div>
-    </AnimatePresence>,
-    document.body
-  );
-};
-
-export default FloatingBar;
+  const currentAlign = (elementStyle.textAlign as "
