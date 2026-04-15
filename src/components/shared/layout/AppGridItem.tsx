@@ -63,16 +63,6 @@ const rowSpanClasses: Record<number, string> = {
  *
  * يدعم تحديد المساحة بشكل متجاوب مع الشاشات المختلفة.
  * الجوال دائماً عمود واحد (col-span-1 في شبكة من عمود واحد).
- *
- * ```tsx
- * <AppGridItem colSpan={3} rowSpan={2} role="chart">
- *   <CapsuleBarChart ... />
- * </AppGridItem>
- * 
- * <AppGridItem fullWidth>
- *   <FullWidthSection />
- * </AppGridItem>
- * ```
  */
 export const AppGridItem: React.FC<AppGridItemProps> = ({
   children,
@@ -96,7 +86,7 @@ export const AppGridItem: React.FC<AppGridItemProps> = ({
         tabletSpanClasses[effectiveTabletSpan],
         desktopSpanClasses[effectiveColSpan],
         rowSpanClasses[rowSpan],
-        'min-h-0 h-full',
+        'min-h-0 h-full overflow-hidden',
         className
       )}
       style={{

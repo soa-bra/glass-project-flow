@@ -145,7 +145,7 @@ export const BaseBox: React.FC<BaseBoxProps> = ({
         </div>
       )}
       
-      <div className="overflow-y-hidden">
+      <div className="min-h-0 flex-1">
         {children}
       </div>
     </div>

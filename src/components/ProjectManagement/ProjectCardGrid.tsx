@@ -17,35 +17,35 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   return (
     <AppDashboardGrid columns={12} density="compact" minRowHeight="auto">
       {/* العمود الأيمن - قائمة المهام: 5 أعمدة، 4 صفوف */}
-      <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6} className="max-h-[60vh]">
+      <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6} className="min-h-[300px] max-h-[65vh]">
         <TaskListCard project={project} />
       </AppGridItem>
 
       {/* التنبيهات: 7 أعمدة عرض */}
-      <AppGridItem colSpan={7} rowSpan={1} tabletSpan={6}>
+      <AppGridItem colSpan={7} rowSpan={1} tabletSpan={6} className="min-h-[120px]">
         <NotificationsBox />
       </AppGridItem>
 
       {/* تحليل الأداء + النظرة المالية: صف واحد */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
         <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
       </AppGridItem>
 
-      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3}>
+      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3} className="min-h-[280px]">
         <BudgetBox project={project} />
       </AppGridItem>
 
       {/* أداء الفريق + الأهداف */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
         <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
       </AppGridItem>
 
       {/* الأهداف + التقارير */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
         <AISuggestedPerformanceBox type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
       </AppGridItem>
 
-      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
+      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
         <AISuggestedPerformanceBox type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
       </AppGridItem>
     </AppDashboardGrid>
