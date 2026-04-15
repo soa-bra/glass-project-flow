@@ -15,7 +15,7 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
   return (
-    <AppDashboardGrid columns={12} density="compact" minRowHeight="140px">
+    <AppDashboardGrid columns={12} density="compact" minRowHeight="auto">
       {/* العمود الأيمن - قائمة المهام: 5 أعمدة، 4 صفوف */}
       <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6} className="max-h-[60vh]">
         <TaskListCard project={project} />
@@ -27,16 +27,16 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
       </AppGridItem>
 
       {/* تحليل الأداء + النظرة المالية: صف واحد */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[18vh]">
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
       </AppGridItem>
 
-      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3} className="min-h-[38vh]">
+      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3}>
         <BudgetBox project={project} />
       </AppGridItem>
 
       {/* أداء الفريق + الأهداف */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[18vh]">
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
       </AppGridItem>
 
