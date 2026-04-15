@@ -89,10 +89,10 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
       {data && (
         <div className="space-y-6">
           <AppDashboardGrid columns={12} density="spacious">
-            <AppGridItem colSpan={6} tabletSpan={6}>
+            <AppGridItem colSpan={7} tabletSpan={6}>
               <MiniGanttChart criticalProjects={data.criticalProjects} />
             </AppGridItem>
-            <AppGridItem colSpan={6} tabletSpan={6}>
+            <AppGridItem colSpan={5} tabletSpan={6}>
               <DelayedMilestones delayedMilestones={data.delayedMilestones} />
             </AppGridItem>
           </AppDashboardGrid>

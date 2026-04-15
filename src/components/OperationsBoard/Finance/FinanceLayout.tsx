@@ -20,12 +20,12 @@ export const FinanceLayout: React.FC<FinanceLayoutProps> = ({ data }) => {
       {/* قسم المؤشرات المالية الرئيسية */}
       <FinancialKPICards kpis={data.kpis} />
 
-      {/* الرسوم البيانية الأساسية */}
+      {/* الرسوم البيانية + أدوات التصدير في صف واحد */}
       <AppDashboardGrid columns={12} density="spacious">
-        <AppGridItem colSpan={6} tabletSpan={6}>
+        <AppGridItem colSpan={7} tabletSpan={6}>
           <BudgetVsActualChart monthlyData={data.monthlyBudget} />
         </AppGridItem>
-        <AppGridItem colSpan={6} tabletSpan={6}>
+        <AppGridItem colSpan={5} tabletSpan={6}>
           <CashFlowForecast cashFlowData={data.cashFlow} />
         </AppGridItem>
       </AppDashboardGrid>
