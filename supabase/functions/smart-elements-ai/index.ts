@@ -14,6 +14,8 @@ const SMART_ELEMENT_TYPES = [
   'mind_map', 'project_card', 'finance_card', 'csr_card', 'crm_card', 'root_connector'
 ] as const;
 
+const VALID_ACTIONS = ['generate', 'analyze', 'transform'] as const;
+
 // Tool definitions for structured output extraction
 const tools = [
   {
@@ -343,37 +345,62 @@ serve(async (req) => {
   }
 
   try {
-    // ✅ 1. Optional JWT authentication (works without login)
+    // ✅ 1. MANDATORY JWT authentication
     const authHeader = req.headers.get('Authorization');
-    let userId = 'anonymous';
-    
-    if (authHeader && authHeader !== `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`) {
-      // Try to get authenticated user if a real token is provided
-      const supabaseUrl = Deno.env.get('SUPABASE_URL');
-      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-      
-      if (supabaseUrl && supabaseAnonKey) {
-        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-          global: {
-            headers: { Authorization: authHeader },
-          },
-        });
-
-        const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-        
-        if (!authError && user) {
-          userId = user.id;
-          console.log(`[smart-elements-ai] Authenticated user: ${userId}`);
-        } else {
-          console.log('[smart-elements-ai] Using anonymous mode (no valid session)');
-        }
-      }
-    } else {
-      console.log('[smart-elements-ai] Using anonymous mode');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized', code: 'UNAUTHORIZED' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    const { prompt, action, selectedElements, context } = await req.json();
-    
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: 'Unauthorized', code: 'UNAUTHORIZED' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log(`[smart-elements-ai] Authenticated user: ${userId}`);
+
+    // ✅ 2. Parse and validate input
+    const body = await req.json();
+    const { prompt, action, selectedElements, context } = body;
+
+    // Validate action
+    if (action && !VALID_ACTIONS.includes(action)) {
+      return new Response(JSON.stringify({ error: 'Invalid action', code: 'INVALID_INPUT' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate prompt length
+    if (prompt && (typeof prompt !== 'string' || prompt.length > 5000)) {
+      return new Response(JSON.stringify({ error: 'Prompt too long (max 5000 chars)', code: 'INVALID_INPUT' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Validate selectedElements size
+    if (selectedElements && (!Array.isArray(selectedElements) || selectedElements.length > 50)) {
+      return new Response(JSON.stringify({ error: 'Too many selected elements (max 50)', code: 'INVALID_INPUT' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
@@ -400,12 +427,10 @@ serve(async (req) => {
         userMessage += `\n\nتفاصيل إضافية: ${prompt}`;
       }
     } else {
-      // Default: treat as generation prompt
       userMessage = prompt;
     }
 
     console.log(`[smart-elements-ai] Action: ${action}, Tool: ${selectedTool}`);
-    console.log(`[smart-elements-ai] User message: ${userMessage.substring(0, 200)}...`);
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -426,8 +451,7 @@ serve(async (req) => {
 
     if (!response.ok) {
       const status = response.status;
-      const errorText = await response.text();
-      console.error(`[smart-elements-ai] AI Gateway error: ${status}`, errorText);
+      console.error(`[smart-elements-ai] AI Gateway error: ${status}`);
       
       if (status === 429) {
         return new Response(JSON.stringify({ 
@@ -453,12 +477,10 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('[smart-elements-ai] Response received');
 
     // Extract tool call result
     const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall) {
-      // Fallback to message content if no tool call
       return new Response(JSON.stringify({
         success: true,
         result: {
@@ -495,7 +517,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('[smart-elements-ai] Error:', error);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'خطأ غير متوقع',
+      error: 'حدث خطأ أثناء المعالجة',
       code: 'INTERNAL_ERROR'
     }), {
       status: 500,
