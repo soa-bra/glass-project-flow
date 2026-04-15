@@ -94,31 +94,33 @@ export const createToolsSlice: StateCreator<
   addText: (textData) => {
     const id = textData.id || nanoid();
     const textSettings = get().toolSettings.text;
+
+    const normalizedStyle = {
+      ...(textData.style || {}),
+      fontFamily: textData.style?.fontFamily || textData.fontFamily || textSettings.fontFamily,
+      fontSize: textData.style?.fontSize || textData.fontSize || textSettings.fontSize,
+      fontWeight: textData.style?.fontWeight || textData.fontWeight || textSettings.fontWeight,
+      color: textData.style?.color || textData.color || textSettings.color,
+      textAlign: textData.style?.textAlign || (textData as any).alignment || textSettings.alignment,
+      direction: textData.style?.direction || textData.direction || textSettings.direction,
+      alignItems: textData.style?.alignItems || (textData as any).verticalAlign || textSettings.verticalAlign,
+    };
     
     const element: TextElement = {
+      ...textData,
       id,
       type: 'text',
       position: textData.position || { x: 100, y: 100 },
       size: textData.size || { width: 200, height: 40 },
       content: textData.content || '',
-      fontFamily: textData.fontFamily || textSettings.fontFamily,
-      fontSize: textData.fontSize || textSettings.fontSize,
-      fontWeight: textData.fontWeight || textSettings.fontWeight,
-      color: textData.color || textSettings.color,
-      alignment: textData.alignment || textSettings.alignment,
-      direction: textData.direction || textSettings.direction,
-      verticalAlign: textData.verticalAlign || textSettings.verticalAlign,
-      textType: textData.textType || 'line',
-      visible: true,
-      locked: false,
-      style: {},
-      layerId: get().activeLayerId || 'default',
-      // ✅ إضافة textType في data أيضاً للتوافق مع TextEditor و CanvasElement
+      visible: textData.visible ?? true,
+      locked: textData.locked ?? false,
+      style: normalizedStyle,
+      layerId: textData.layerId || get().activeLayerId || 'default',
       data: {
-        textType: textData.textType || 'line',
-        ...textData.data
+        ...(textData.data || {}),
+        textType: textData.data?.textType || textData.textType || 'line',
       },
-      ...textData
     };
     
     get().addElement(element);
@@ -141,15 +143,11 @@ export const createToolsSlice: StateCreator<
     const state = get();
     const targetId = elementId || state.editingTextId;
     
-    // ✅ التحقق من محتوى العنصر قبل الإغلاق
     if (targetId) {
       const element = state.elements?.find((el: any) => el.id === targetId);
-      
-      // إذا كان العنصر نصاً والمحتوى فارغاً، احذفه
       if (element && element.type === 'text') {
         const content = element.content || '';
         if (isTextEmpty(content)) {
-          // حذف العنصر الفارغ
           state.deleteElement?.(targetId);
         }
       }
