@@ -53,30 +53,39 @@ export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
         position: 'relative',
         direction: 'rtl',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}>
-          <div className="flex items-center justify-between mb-6 px-0 mx-[15px] my-[15px]">
-            <h3 className="font-arabic" style={{
-            fontSize: '18px',
-            fontWeight: 700,
-            color: '#000000',
-            fontFamily: 'IBM Plex Sans Arabic'
-          }}>
-              قائمة المهام
-            </h3>
-            <div className="text-sm text-black/70">
-              {filteredTasks.length} مهمة
+          {/* شريط الأدوات ثابت في الأعلى */}
+          <div className="flex-shrink-0">
+            <div className="flex items-center justify-between mb-6 px-0 mx-[15px] my-[15px]">
+              <h3 className="font-arabic" style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: '#000000',
+              fontFamily: 'IBM Plex Sans Arabic'
+            }}>
+                قائمة المهام
+              </h3>
+              <div className="text-sm text-black/70">
+                {filteredTasks.length} مهمة
+              </div>
             </div>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
-            <div className="space-y-4 pr-1 py-0 my-0">
-              {filteredTasks.map(task => <TaskListItem key={task.id} task={task} isSelected={selectedTaskId === task.id} onSelect={handleTaskSelect} />)}
-              
-              {filteredTasks.length === 0 && <div className="text-center text-black/50 py-8">
-                  لا توجد مهام مطابقة للمرشحات المحددة
-                </div>}
-            </div>
+          {/* منطقة التمرير للمهام مع تأثير النافذة الدائرية */}
+          <div className="flex-1 overflow-hidden rounded-t-3xl">
+            <ScrollArea className="h-full w-full">
+              <div className="pb-4 px-0 mx-[2px]">
+                <div className="space-y-4 pr-1 py-0 my-0">
+                  {filteredTasks.map(task => <TaskListItem key={task.id} task={task} isSelected={selectedTaskId === task.id} onSelect={handleTaskSelect} />)}
+                  
+                  {filteredTasks.length === 0 && <div className="text-center text-black/50 py-8">
+                      لا توجد مهام مطابقة للمرشحات المحددة
+                    </div>}
+                </div>
+              </div>
+            </ScrollArea>
           </div>
         </div>
       </div>
