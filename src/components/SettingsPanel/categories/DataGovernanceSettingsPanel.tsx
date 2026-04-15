@@ -95,7 +95,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" >
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Header Card */}

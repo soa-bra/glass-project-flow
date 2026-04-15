@@ -101,7 +101,7 @@ export const HRArchivePanel: React.FC = () => {
       </div>
 
       {/* HR Records List */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 px-6 pb-6">
         <div className="space-y-4">
           {mockHRRecords.map((record) => {
             const IconComponent = getTypeIcon(record.type);

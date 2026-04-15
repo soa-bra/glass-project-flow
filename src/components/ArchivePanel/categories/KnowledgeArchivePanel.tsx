@@ -95,7 +95,7 @@ export const KnowledgeArchivePanel: React.FC = () => {
       </div>
 
       {/* Content List */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 px-6 pb-6">
         <div className="space-y-4">
           {mockKnowledgeData.map(item => <div key={item.id} >
               <div className="flex items-start justify-between">
