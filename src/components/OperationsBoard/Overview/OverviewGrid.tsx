@@ -20,62 +20,55 @@ export const OverviewGrid: React.FC = () => {
   const mockCustomersData = { totalClients: 45, newClients: 6, satisfaction: 92 };
 
   return (
-    <Stagger delay={0.3} gap={0.12} className="h-[calc(53vh)] min-h-0 overflow-hidden py-px my-0">
-      <AppDashboardGrid columns={12} density="default" viewportHeight="100%">
+    <Stagger delay={0.3} gap={0.12} className="min-h-0 overflow-hidden py-px my-0">
+      <AppDashboardGrid columns={12} density="default" minRowHeight="130px">
 
-        {/* العمود الأيمن: النظرة المالية — 3 أعمدة × 3 صفوف */}
-        <AppGridItem colSpan={3} tabletSpan={3} rowSpan={3}>
+        {/* الصف الأول: النظرة المالية (4 أعمدة) + إحصائيات (4) + التنبيهات (4) */}
+        <AppGridItem colSpan={4} tabletSpan={3} rowSpan={3}>
           <Stagger.Item className="h-full min-h-0">
             <FinancialOverviewBox />
           </Stagger.Item>
         </AppGridItem>
 
-        {/* الصف الأول — بطاقتا إحصاء + التنبيهات */}
-        <AppGridItem colSpan={3} tabletSpan={3}>
+        <AppGridItem colSpan={4} tabletSpan={3}>
           <Stagger.Item>
             <StatisticsBox title="بيانات" value="46" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="bar" />
           </Stagger.Item>
         </AppGridItem>
 
-        <AppGridItem colSpan={3} tabletSpan={3}>
-          <Stagger.Item>
-            <StatisticsBox title="بيانات" value="17" unit="مليار" description="هذا النص مثال للشكل البياني" chartType="line" />
-          </Stagger.Item>
-        </AppGridItem>
-
-        <AppGridItem colSpan={3} tabletSpan={3} rowSpan={2}>
+        <AppGridItem colSpan={4} tabletSpan={3} rowSpan={2}>
           <Stagger.Item className="h-full min-h-0">
             <AlertsBox />
           </Stagger.Item>
         </AppGridItem>
 
-        {/* الصف الثاني — نسبة + عملاء */}
-        <AppGridItem colSpan={3} tabletSpan={3}>
+        {/* الصف الثاني: إحصاء + عملاء */}
+        <AppGridItem colSpan={2} tabletSpan={3}>
           <Stagger.Item>
             <StatisticsBox title="نسبة" value="75" unit="مئوية" description="هذا النص مثال للشكل البياني" chartType="simple" />
           </Stagger.Item>
         </AppGridItem>
 
-        <AppGridItem colSpan={3} tabletSpan={3}>
+        <AppGridItem colSpan={2} tabletSpan={3}>
           <Stagger.Item>
             <CustomersBox customers={mockCustomersData} />
           </Stagger.Item>
         </AppGridItem>
 
-        {/* الصف الثالث — ملخص المشاريع + أداء */}
+        {/* الصف الثالث: ملخص المشاريع (6 أعمدة) + أداء (2) */}
         <AppGridItem colSpan={6} tabletSpan={6}>
           <Stagger.Item className="h-full min-h-0">
             <ProjectSummaryBox />
           </Stagger.Item>
         </AppGridItem>
 
-        <AppGridItem colSpan={3} tabletSpan={3}>
+        <AppGridItem colSpan={2} tabletSpan={3}>
           <Stagger.Item>
             <StatisticsBox title="أداء" value="78" unit="نسبة" description="هذا النص مثال للشكل البياني" chartType="simple" />
           </Stagger.Item>
         </AppGridItem>
 
-        {/* الصف الرابع — HR + تسويق + تقارير + جودة */}
+        {/* الصف الرابع: 4 بطاقات × 3 أعمدة */}
         <AppGridItem colSpan={3} tabletSpan={3}>
           <Stagger.Item>
             <HRBox hr={mockHRData} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Settings, BarChart, Globe, Shield, Database, Zap } from 'lucide-react';
+import { Eye, Users, FileText, Clock, TrendingUp, AlertTriangle, Calendar, Award, Globe, Shield, Database, Zap } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -31,7 +31,7 @@ const StatCard: React.FC<{ stat: StatItem }> = ({ stat }) => (
   </div>
 );
 
-export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departmentTitle }) => {
+export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departmentTitle: _departmentTitle }) => {
   const kpiStats = [
     { title: 'المهام النشطة', value: 24, unit: 'مهمة', description: 'المهام الجارية حالياً' },
     { title: 'أعضاء الفريق', value: 12, unit: 'عضو', description: 'أعضاء الفريق النشطون' },
@@ -48,11 +48,6 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
   const additionalStats: StatItem[] = [
     { title: 'الاجتماعات المجدولة', value: '8', change: 15.2, trend: 'up', icon: Calendar },
     { title: 'المشاريع المميزة', value: '5', change: 10.0, trend: 'up', icon: Award },
-    { title: 'الإعدادات المحدثة', value: '2', change: -5.0, trend: 'down', icon: Settings },
-    { title: 'التقارير الشهرية', value: '15', change: 8.7, trend: 'up', icon: BarChart },
-  ];
-
-  const fifthRowStats: StatItem[] = [
     { title: 'الشبكات المتصلة', value: '12', change: 18.3, trend: 'up', icon: Globe },
     { title: 'مستوى الأمان', value: '96%', change: 4.2, trend: 'up', icon: Shield },
     { title: 'قواعد البيانات', value: '7', change: 12.8, trend: 'up', icon: Database },
@@ -95,9 +90,9 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
         ))}
       </AppDashboardGrid>
 
-      {/* الأنشطة + المهام */}
+      {/* الأنشطة + المهام + التنبيهات — تكوين موحد */}
       <AppDashboardGrid columns={12} density="spacious">
-        <AppGridItem colSpan={6} tabletSpan={6}>
+        <AppGridItem colSpan={5} tabletSpan={6}>
           <div className="bg-white p-6 rounded-[24px] border border-[#DADCE0] h-full">
             <h3 className="text-lg font-semibold text-[#0B0F12] font-arabic flex items-center gap-2 mb-4">
               <Eye className="h-5 w-5" /> الأنشطة الحديثة
@@ -116,7 +111,7 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
           </div>
         </AppGridItem>
 
-        <AppGridItem colSpan={6} tabletSpan={6}>
+        <AppGridItem colSpan={4} tabletSpan={6}>
           <div className="bg-white p-6 rounded-[24px] border border-[#DADCE0] h-full">
             <h3 className="text-lg font-semibold text-[#0B0F12] font-arabic flex items-center gap-2 mb-4">
               <Clock className="h-5 w-5" /> المهام القادمة
@@ -141,47 +136,34 @@ export const GeneralOverviewTab: React.FC<DepartmentOverviewProps> = ({ departme
             </div>
           </div>
         </AppGridItem>
+
+        <AppGridItem colSpan={3} tabletSpan={6}>
+          <div className="bg-white p-6 rounded-[24px] border border-[#DADCE0] h-full">
+            <h3 className="text-lg font-semibold text-[#0B0F12] font-arabic flex items-center gap-2 mb-4">
+              <AlertTriangle className="h-5 w-5" /> التنبيهات
+            </h3>
+            <div className="space-y-3">
+              <div className="p-4 bg-[#fbe2aa] border border-[#DADCE0] rounded-[18px]">
+                <h4 className="font-medium text-[#0B0F12] font-arabic mb-1 text-sm">تذكير مهم</h4>
+                <p className="text-xs text-[#0B0F12]">اجتماع المراجعة الأسبوعية غداً الساعة 10:00 صباحاً</p>
+              </div>
+              <div className="p-4 bg-[#a4e2f6] border border-[#DADCE0] rounded-[18px]">
+                <h4 className="font-medium text-[#0B0F12] font-arabic mb-1 text-sm">معلومة</h4>
+                <p className="text-xs text-[#0B0F12]">تم تحديث نظام إدارة المهام إلى الإصدار الجديد</p>
+              </div>
+              <div className="p-4 bg-[#bdeed3] border border-[#DADCE0] rounded-[18px]">
+                <h4 className="font-medium text-[#0B0F12] font-arabic mb-1 text-sm">إنجاز</h4>
+                <p className="text-xs text-[#0B0F12]">تم تحقيق 90% من أهداف هذا الشهر</p>
+              </div>
+            </div>
+          </div>
+        </AppGridItem>
       </AppDashboardGrid>
 
-      {/* التنبيهات */}
-      <div className="bg-white p-6 rounded-[24px] border border-[#DADCE0]">
-        <h3 className="text-lg font-semibold text-[#0B0F12] font-arabic flex items-center gap-2 mb-4">
-          <AlertTriangle className="h-5 w-5" /> التنبيهات والملاحظات
-        </h3>
-        <AppDashboardGrid columns={12} density="default">
-          <AppGridItem colSpan={4} tabletSpan={2}>
-            <div className="p-4 bg-[#fbe2aa] border border-[#DADCE0] rounded-[18px]">
-              <h4 className="font-medium text-[#0B0F12] font-arabic mb-1">تذكير مهم</h4>
-              <p className="text-sm text-[#0B0F12]">اجتماع المراجعة الأسبوعية غداً الساعة 10:00 صباحاً</p>
-            </div>
-          </AppGridItem>
-          <AppGridItem colSpan={4} tabletSpan={2}>
-            <div className="p-4 bg-[#a4e2f6] border border-[#DADCE0] rounded-[18px]">
-              <h4 className="font-medium text-[#0B0F12] font-arabic mb-1">معلومة</h4>
-              <p className="text-sm text-[#0B0F12]">تم تحديث نظام إدارة المهام إلى الإصدار الجديد</p>
-            </div>
-          </AppGridItem>
-          <AppGridItem colSpan={4} tabletSpan={2}>
-            <div className="p-4 bg-[#bdeed3] border border-[#DADCE0] rounded-[18px]">
-              <h4 className="font-medium text-[#0B0F12] font-arabic mb-1">إنجاز</h4>
-              <p className="text-sm text-[#0B0F12]">تم تحقيق 90% من أهداف هذا الشهر</p>
-            </div>
-          </AppGridItem>
-        </AppDashboardGrid>
-      </div>
-
-      {/* إحصائيات إضافية */}
+      {/* إحصائيات إضافية — صفين مدمجين في شبكة واحدة 6 بطاقات */}
       <AppDashboardGrid columns={12} density="default">
         {additionalStats.map((stat, i) => (
-          <AppGridItem key={i} colSpan={3} tabletSpan={3}>
-            <StatCard stat={stat} />
-          </AppGridItem>
-        ))}
-      </AppDashboardGrid>
-
-      <AppDashboardGrid columns={12} density="default">
-        {fifthRowStats.map((stat, i) => (
-          <AppGridItem key={i} colSpan={3} tabletSpan={3}>
+          <AppGridItem key={i} colSpan={2} tabletSpan={2}>
             <StatCard stat={stat} />
           </AppGridItem>
         ))}

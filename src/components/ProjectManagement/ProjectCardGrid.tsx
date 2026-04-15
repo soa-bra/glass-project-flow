@@ -15,38 +15,36 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
   return (
-    <AppDashboardGrid columns={12} density="compact" minRowHeight="160px" viewportHeight="90%">
-      {/* العمود الأول - قائمة المهام */}
-      <AppGridItem colSpan={4} rowSpan={4} tabletSpan={6}>
+    <AppDashboardGrid columns={12} density="compact" minRowHeight="140px">
+      {/* العمود الأيمن - قائمة المهام: 5 أعمدة، 4 صفوف */}
+      <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6}>
         <TaskListCard project={project} />
       </AppGridItem>
 
-      {/* الصف الأول - التنبيهات */}
-      <AppGridItem colSpan={8} rowSpan={1} tabletSpan={6}>
+      {/* التنبيهات: 7 أعمدة عرض */}
+      <AppGridItem colSpan={7} rowSpan={1} tabletSpan={6}>
         <NotificationsBox />
       </AppGridItem>
 
-      {/* بطاقة أداء ذكية - تحليل الأداء */}
-      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
+      {/* تحليل الأداء + النظرة المالية: صف واحد */}
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
       </AppGridItem>
 
-      {/* النظرة المالية */}
       <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3}>
         <BudgetBox project={project} />
       </AppGridItem>
 
-      {/* بطاقة أداء ذكية - أداء الفريق */}
-      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
+      {/* أداء الفريق + الأهداف */}
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
       </AppGridItem>
 
-      {/* بطاقة أداء ذكية - الأهداف */}
-      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
+      {/* الأهداف + التقارير */}
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
       </AppGridItem>
 
-      {/* بطاقة أداء ذكية - التقارير */}
       <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3}>
         <AISuggestedPerformanceBox type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
       </AppGridItem>

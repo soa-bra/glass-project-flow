@@ -39,64 +39,67 @@ export const OverviewTab: React.FC = () => {
     <div className={`space-y-5 ${SPACING.SECTION_MARGIN}`}>
       <KPIStatsSection stats={kpiStats} />
 
+      {/* Charts + Alerts in unified grid — eliminates dead zone */}
       <AppDashboardGrid columns={12} density="default">
-        <AppGridItem colSpan={6} tabletSpan={6}>
-        <DataCardFrame title="الميزانية مقابل الفعلي">
-          <div style={{ height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsBarChart data={mockBudgetData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
-                <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
-                <Bar dataKey="budget" fill="rgba(189,238,211,0.4)" radius={[999, 999, 999, 999]} barSize={20} />
-                <Bar dataKey="actual" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={20} />
-              </RechartsBarChart>
-            </ResponsiveContainer>
-          </div>
-        </DataCardFrame>
+        <AppGridItem colSpan={5} tabletSpan={6}>
+          <DataCardFrame title="الميزانية مقابل الفعلي">
+            <div style={{ height: 220 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsBarChart data={mockBudgetData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+                  <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
+                  <Bar dataKey="budget" fill="rgba(189,238,211,0.4)" radius={[999, 999, 999, 999]} barSize={20} />
+                  <Bar dataKey="actual" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={20} />
+                </RechartsBarChart>
+              </ResponsiveContainer>
+            </div>
+          </DataCardFrame>
         </AppGridItem>
 
-        <AppGridItem colSpan={6} tabletSpan={6}>
-        <DataCardFrame title="توقعات التدفق النقدي">
-          <div style={{ height: 220 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockCashFlowData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
-                <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
-                <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} dot={false} />
-                <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="flex items-center gap-4 mt-3">
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-1 rounded-full bg-[#d9d2fd]" />
-              <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الداخل</span>
+        <AppGridItem colSpan={4} tabletSpan={6}>
+          <DataCardFrame title="توقعات التدفق النقدي">
+            <div style={{ height: 220 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={mockCashFlowData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+                  <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
+                  <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-1 rounded-full bg-[#f1b5b9]" />
-              <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الخارج</span>
+            <div className="flex items-center gap-4 mt-3">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-1 rounded-full bg-[#d9d2fd]" />
+                <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الداخل</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-1 rounded-full bg-[#f1b5b9]" />
+                <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الخارج</span>
+              </div>
             </div>
-          </div>
-        </DataCardFrame>
+          </DataCardFrame>
+        </AppGridItem>
+
+        {/* Alerts occupy remaining 3 columns — no dead zone */}
+        <AppGridItem colSpan={3} tabletSpan={6}>
+          <DataCardFrame title="تنبيهات" icon={<Bell className="h-4 w-4" />}>
+            <div className="space-y-2">
+              {alerts.map(alert => (
+                <BaseListItem
+                  key={alert.id}
+                  badge={{
+                    text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
+                    variant: getBadgeVariant(alert.priority),
+                  }}
+                >
+                  {alert.message}
+                </BaseListItem>
+              ))}
+            </div>
+          </DataCardFrame>
         </AppGridItem>
       </AppDashboardGrid>
-
-      {/* Alerts */}
-      <DataCardFrame title="تنبيهات الذكاء الاصطناعي" icon={<Bell className="h-4 w-4" />}>
-        <div className="space-y-2">
-          {alerts.map(alert => (
-            <BaseListItem
-              key={alert.id}
-              badge={{
-                text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
-                variant: getBadgeVariant(alert.priority),
-              }}
-            >
-              {alert.message}
-            </BaseListItem>
-          ))}
-        </div>
-      </DataCardFrame>
     </div>
   );
 };
