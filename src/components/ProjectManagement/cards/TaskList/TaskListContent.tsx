@@ -4,7 +4,7 @@ import TaskCard from '@/components/TaskCard';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { useProjectTasksContext } from '@/contexts/ProjectTasksContext';
 import { mapToTaskCardProps, mapFromTaskData } from '@/types/task';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { TaskFilterOptions } from './TasksFilterDialog';
 import {
   DndContext,
@@ -186,31 +186,29 @@ export const TaskListContent = React.forwardRef<TaskListContentRef, TaskListCont
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <ScrollArea className="flex-1 h-full">
-        <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
-          {orderedTasks.length > 0 ? (
-            <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
-              {orderedTasks.map((task) => (
-                <SortableTaskItem
-                  key={`task-${task.id}`}
-                  taskProps={task}
-                  onEdit={handleTaskEdit}
-                  onArchive={handleTaskArchive}
-                  onDelete={handleTaskDelete}
-                  onTaskUpdated={handleTaskUpdated}
-                />
-              ))}
-            </SortableContext>
-          ) : (
-            <div className="flex items-center justify-center py-12 text-center">
-              <div className="text-gray-500">
-                <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
-                <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
-              </div>
+      <div className="space-y-4 pr-1 py-0 my-0 min-h-[200px]">
+        {orderedTasks.length > 0 ? (
+          <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>
+            {orderedTasks.map((task) => (
+              <SortableTaskItem
+                key={`task-${task.id}`}
+                taskProps={task}
+                onEdit={handleTaskEdit}
+                onArchive={handleTaskArchive}
+                onDelete={handleTaskDelete}
+                onTaskUpdated={handleTaskUpdated}
+              />
+            ))}
+          </SortableContext>
+        ) : (
+          <div className="flex items-center justify-center py-12 text-center">
+            <div className="text-gray-500">
+              <p className="text-lg mb-2">لا توجد مهام تطابق المعايير المحددة</p>
+              <p className="text-sm">جرب تعديل الفلاتر أو إضافة مهام جديدة</p>
             </div>
-          )}
-        </div>
-      </ScrollArea>
+          </div>
+        )}
+      </div>
 
       <DragOverlay>
         {activeTask ? (
