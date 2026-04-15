@@ -58,7 +58,7 @@ export const ProjectSummaryBox: React.FC = () => {
               <BarChart data={projectData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: 'rgba(11,15,18,0.35)' }} />
                 <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
-                <Bar dataKey="value" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={14} activeBar={{ fill: '#3DBE8B', stroke: '#0B0F12', strokeWidth: 1.5 }} />
+                <Bar dataKey="value" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={14} activeBar={false} />
               </BarChart>
             </ChartWrapper>
           </div>
