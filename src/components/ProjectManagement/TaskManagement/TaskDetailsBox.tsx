@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UnifiedTask, TaskFilters } from '@/types/task';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { COLORS } from '@/components/shared/design-system/constants';
 import { TaskListCard } from '../cards/TaskListCard';
 import { TaskDetailsPanel } from './TaskDetailsPanel';
