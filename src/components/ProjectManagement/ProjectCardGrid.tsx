@@ -27,16 +27,16 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
       </AppGridItem>
 
       {/* تحليل الأداء + النظرة المالية: صف واحد */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[18vh]">
         <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
       </AppGridItem>
 
-      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3}>
+      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3} className="min-h-[38vh]">
         <BudgetBox project={project} />
       </AppGridItem>
 
       {/* أداء الفريق + الأهداف */}
-      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3}>
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[18vh]">
         <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
       </AppGridItem>
 
