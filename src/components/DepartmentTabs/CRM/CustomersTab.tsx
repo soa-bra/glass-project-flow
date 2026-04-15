@@ -126,8 +126,7 @@ export const CustomersTab: React.FC = () => {
         {/* Customer List */}
         <div className="lg:col-span-1">
           <DataCardFrame title={`قائمة العملاء (${filteredCustomers.length})`}>
-            <div className="space-y-2 max-h-[500px] overflow-hidden">
-              <ScrollArea className="h-full max-h-[500px] w-full"><div className="pe-1">
+            <div className="space-y-2 max-h-[500px] overflow-y-auto">
               {filteredCustomers.map((customer) => (
                 <div
                   key={customer.id}
