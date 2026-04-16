@@ -3,12 +3,14 @@
  */
 
 import { StateCreator } from 'zustand';
-import type { CanvasElement } from '@/types/canvas';
+import { BoardSnapshot, captureBoardSnapshot, restoreBoardSnapshot } from '../history/boardSnapshot';
+
+const MAX_HISTORY_ENTRIES = 20;
 
 export interface HistorySlice {
   history: {
-    past: CanvasElement[][];
-    future: CanvasElement[][];
+    past: BoardSnapshot[];
+    future: BoardSnapshot[];
   };
   
   // History Actions
@@ -32,16 +34,17 @@ export const createHistorySlice: StateCreator<
   undo: () => {
     set((state: any) => {
       if (state.history.past.length === 0) return state;
-      
+
       const previous = state.history.past[state.history.past.length - 1];
       const newPast = state.history.past.slice(0, -1);
-      
+      const currentSnapshot = captureBoardSnapshot(state);
+
       return {
-        elements: previous,
+        ...restoreBoardSnapshot(previous),
         history: {
           past: newPast,
-          future: [state.elements, ...state.history.future]
-        }
+          future: [currentSnapshot, ...state.history.future],
+        },
       };
     });
   },
@@ -49,16 +52,17 @@ export const createHistorySlice: StateCreator<
   redo: () => {
     set((state: any) => {
       if (state.history.future.length === 0) return state;
-      
+
       const next = state.history.future[0];
       const newFuture = state.history.future.slice(1);
-      
+      const currentSnapshot = captureBoardSnapshot(state);
+
       return {
-        elements: next,
+        ...restoreBoardSnapshot(next),
         history: {
-          past: [...state.history.past, state.elements],
-          future: newFuture
-        }
+          past: [...state.history.past, currentSnapshot].slice(-MAX_HISTORY_ENTRIES),
+          future: newFuture,
+        },
       };
     });
   },
@@ -66,7 +70,7 @@ export const createHistorySlice: StateCreator<
   pushHistory: () => {
     set((state: any) => ({
       history: {
-        past: [...state.history.past.slice(-20), state.elements],
+        past: [...state.history.past.slice(-(MAX_HISTORY_ENTRIES - 1)), captureBoardSnapshot(state)],
         future: []
       }
     }));
