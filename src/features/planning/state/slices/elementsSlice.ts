@@ -8,6 +8,7 @@ import type { CanvasElement, LayerInfo } from '@/types/canvas';
 import { resolveSnapConnection, type SnapEdge } from '@/utils/arrow-routing';
 import { calculateConnectorBounds } from '@/types/mindmap-canvas';
 import { getAnchorPositionForElement, deepCloneArrowData } from '../helpers';
+import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
 
 export interface ElementsSlice {
   elements: CanvasElement[];
@@ -36,6 +37,10 @@ type CanvasStoreState = ElementsSlice & {
   layers: import('@/types/canvas').LayerInfo[];
   pushHistory: () => void;
   moveFrame: (frameId: string, deltaX: number, deltaY: number) => void;
+  history: {
+    past: unknown[];
+    future: unknown[];
+  };
 };
 
 // دالة مساعدة للحصول على جميع عناصر المجموعة
@@ -63,6 +68,44 @@ const getGroupElementIds = (elementIds: string[], elements: CanvasElement[]): st
   return Array.from(result);
 };
 
+const getConnectedConnectorIds = (elementId: string, elements: CanvasElement[]): string[] => {
+  const element = elements.find((el) => el.id === elementId);
+  if (!element) return [];
+
+  if (element.type === 'mindmap_node') {
+    return elements
+      .filter((el) => {
+        if (el.type !== 'mindmap_connector') return false;
+        const data = el.data as any;
+        return data?.startNodeId === elementId || data?.endNodeId === elementId;
+      })
+      .map((el) => el.id);
+  }
+
+  if (element.type === 'visual_node') {
+    return elements
+      .filter((el) => {
+        if (el.type !== 'visual_connector') return false;
+        const data = el.data as any;
+        return data?.startNodeId === elementId || data?.endNodeId === elementId;
+      })
+      .map((el) => el.id);
+  }
+
+  return [];
+};
+
+const collectDeletionIds = (elementIds: string[], elements: CanvasElement[]): string[] => {
+  const ids = new Set<string>();
+
+  elementIds.forEach((elementId) => {
+    ids.add(elementId);
+    getConnectedConnectorIds(elementId, elements).forEach((connectorId) => ids.add(connectorId));
+  });
+
+  return Array.from(ids);
+};
+
 export const createElementsSlice: StateCreator<
   CanvasStoreState,
   [],
@@ -79,9 +122,9 @@ export const createElementsSlice: StateCreator<
       style: elementData.style || {},
       ...elementData,
       id: elementData.id || nanoid(),
-      layerId: get().activeLayerId || 'default',
-      visible: true,
-      locked: false
+      layerId: elementData.layerId ?? get().activeLayerId ?? 'default',
+      visible: elementData.visible ?? true,
+      locked: elementData.locked ?? false,
     };
     
     set((state: any) => {
@@ -249,52 +292,25 @@ export const createElementsSlice: StateCreator<
   },
   
   deleteElement: (elementId) => {
-    const state = get();
-    const element = state.elements.find((el: CanvasElement) => el.id === elementId);
-    
-    // ✅ جمع الموصلات المرتبطة بهذه العقدة (للخريطة الذهنية والمخطط البصري)
-    const connectedConnectorIds: string[] = [];
-    if (element?.type === 'mindmap_node') {
-      state.elements.forEach((el: CanvasElement) => {
-        if (el.type === 'mindmap_connector') {
-          const data = el.data as any;
-          if (data?.startNodeId === elementId || data?.endNodeId === elementId) {
-            connectedConnectorIds.push(el.id);
-          }
-        }
-      });
-    } else if (element?.type === 'visual_node') {
-      state.elements.forEach((el: CanvasElement) => {
-        if (el.type === 'visual_connector') {
-          const data = el.data as any;
-          if (data?.startNodeId === elementId || data?.endNodeId === elementId) {
-            connectedConnectorIds.push(el.id);
-          }
-        }
-      });
-    }
-    
-    // ✅ حذف العنصر والموصلات المرتبطة
-    const idsToDelete = [elementId, ...connectedConnectorIds];
-    
-    set((state: any) => {
+    get().deleteElements([elementId]);
+  },
+  
+  deleteElements: (elementIds) => {
+    if (elementIds.length === 0) return;
+
+    runCanvasTransaction(set, (state: any) => {
+      const idsToDelete = collectDeletionIds(Array.from(new Set(elementIds)), state.elements);
       const updatedLayers = state.layers.map((layer: LayerInfo) => ({
         ...layer,
         elements: layer.elements.filter((id: string) => !idsToDelete.includes(id))
       }));
-      
+
       return {
         elements: state.elements.filter((el: CanvasElement) => !idsToDelete.includes(el.id)),
         selectedElementIds: state.selectedElementIds.filter((id: string) => !idsToDelete.includes(id)),
-        layers: updatedLayers
+        layers: updatedLayers,
       };
     });
-    
-    get().pushHistory();
-  },
-  
-  deleteElements: (elementIds) => {
-    elementIds.forEach((id: string) => get().deleteElement(id));
   },
   
   duplicateElement: (elementId) => {
@@ -527,7 +543,9 @@ export const createElementsSlice: StateCreator<
   },
   
   lockElements: (elementIds) => {
-    set((state: any) => ({
+    if (elementIds.length === 0) return;
+
+    runCanvasTransaction(set, (state: any) => ({
       elements: state.elements.map((el: CanvasElement) =>
         elementIds.includes(el.id) ? { ...el, locked: true } : el
       )
@@ -535,7 +553,9 @@ export const createElementsSlice: StateCreator<
   },
   
   unlockElements: (elementIds) => {
-    set((state: any) => ({
+    if (elementIds.length === 0) return;
+
+    runCanvasTransaction(set, (state: any) => ({
       elements: state.elements.map((el: CanvasElement) =>
         elementIds.includes(el.id) ? { ...el, locked: false } : el
       )
@@ -543,58 +563,66 @@ export const createElementsSlice: StateCreator<
   },
   
   alignElements: (elementIds, alignment) => {
-    const elements = get().elements.filter((el: CanvasElement) => elementIds.includes(el.id));
-    if (elements.length === 0) return;
-    
-    const bounds = {
-      minX: Math.min(...elements.map((el: CanvasElement) => el.position.x)),
-      minY: Math.min(...elements.map((el: CanvasElement) => el.position.y)),
-      maxX: Math.max(...elements.map((el: CanvasElement) => el.position.x + el.size.width)),
-      maxY: Math.max(...elements.map((el: CanvasElement) => el.position.y + el.size.height)),
-      centerX: 0,
-      centerY: 0
-    };
-    
-    bounds.centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
-    bounds.centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
-    
-    elements.forEach((el: CanvasElement) => {
-      let newPosition = { ...el.position };
-      
-      switch(alignment) {
-        case 'left': newPosition.x = bounds.minX; break;
-        case 'center': newPosition.x = bounds.centerX - el.size.width / 2; break;
-        case 'right': newPosition.x = bounds.maxX - el.size.width; break;
-        case 'top': newPosition.y = bounds.minY; break;
-        case 'middle': newPosition.y = bounds.centerY - el.size.height / 2; break;
-        case 'bottom': newPosition.y = bounds.maxY - el.size.height; break;
+    if (elementIds.length === 0) return;
+
+    runCanvasTransaction(set, (state: any) => {
+      const selectedElements = state.elements.filter((el: CanvasElement) => elementIds.includes(el.id));
+      if (selectedElements.length === 0) {
+        return {};
       }
-      
-      get().updateElement(el.id, { position: newPosition });
+
+      const bounds = {
+        minX: Math.min(...selectedElements.map((el: CanvasElement) => el.position.x)),
+        minY: Math.min(...selectedElements.map((el: CanvasElement) => el.position.y)),
+        maxX: Math.max(...selectedElements.map((el: CanvasElement) => el.position.x + el.size.width)),
+        maxY: Math.max(...selectedElements.map((el: CanvasElement) => el.position.y + el.size.height)),
+        centerX: 0,
+        centerY: 0,
+      };
+
+      bounds.centerX = bounds.minX + (bounds.maxX - bounds.minX) / 2;
+      bounds.centerY = bounds.minY + (bounds.maxY - bounds.minY) / 2;
+
+      return {
+        elements: state.elements.map((el: CanvasElement) => {
+          if (!elementIds.includes(el.id) || el.locked) return el;
+
+          let newPosition = { ...el.position };
+
+          switch (alignment) {
+            case 'left': newPosition.x = bounds.minX; break;
+            case 'center': newPosition.x = bounds.centerX - el.size.width / 2; break;
+            case 'right': newPosition.x = bounds.maxX - el.size.width; break;
+            case 'top': newPosition.y = bounds.minY; break;
+            case 'middle': newPosition.y = bounds.centerY - el.size.height / 2; break;
+            case 'bottom': newPosition.y = bounds.maxY - el.size.height; break;
+          }
+
+          return { ...el, position: newPosition };
+        })
+      };
     });
   },
   
   groupElements: (elementIds) => {
     if (elementIds.length < 2) return;
-    
+
     const groupId = nanoid();
-    
-    set((state: any) => ({
+
+    runCanvasTransaction(set, (state: any) => ({
       elements: state.elements.map((el: CanvasElement) =>
         elementIds.includes(el.id)
           ? { ...el, metadata: { ...el.metadata, groupId } }
           : el
       )
     }));
-    
-    get().pushHistory();
   },
   
   ungroupElements: (groupId) => {
-    set((state: any) => ({
+    runCanvasTransaction(set, (state: any) => ({
       elements: state.elements.map((el: CanvasElement) => {
         if (el.metadata?.groupId === groupId) {
-          const { groupId: _, ...restMetadata } = el.metadata;
+          const { groupId: _removedGroupId, ...restMetadata } = el.metadata;
           return { ...el, metadata: restMetadata };
         }
         return el;
