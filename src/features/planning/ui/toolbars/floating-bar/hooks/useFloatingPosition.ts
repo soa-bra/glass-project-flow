@@ -25,7 +25,10 @@ interface UseFloatingPositionProps {
 
 /**
  * حساب موقع الشريط الطافي بناءً على التحديد أو العنصر المحرر
- * يستخدم rAF و ResizeObserver بدلاً من setInterval
+ * أثناء تحرير النص:
+ * - نعتمد فقط على DOM rect للمحرر
+ * أثناء التحديد:
+ * - نعتمد فقط على bounds العناصر
  */
 export function useFloatingPosition({
   activeElements,
@@ -37,29 +40,30 @@ export function useFloatingPosition({
   const rafRef = useRef<number | null>(null);
   const lastPositionRef = useRef<Position>({ x: 0, y: 0 });
 
-  const calculatePosition = useCallback(() => {
-    if (!hasSelection) return;
-
-    // إذا كان هناك نص قيد التحرير، نحاول إيجاد موقع الـ DOM element
-    if (editingTextId) {
-      const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`);
-      if (editorElement) {
-        const rect = editorElement.getBoundingClientRect();
-        const newX = rect.left + rect.width / 2;
-        const newY = Math.max(70, rect.top - 60);
-
-        // تحديث فقط إذا تغير الموقع بشكل ملحوظ
-        if (Math.abs(newX - lastPositionRef.current.x) > 2 || 
-            Math.abs(newY - lastPositionRef.current.y) > 2) {
-          lastPositionRef.current = { x: newX, y: newY };
-          setPosition({ x: newX, y: newY });
-        }
-        return;
-      }
+  const updatePositionIfNeeded = useCallback((next: Position) => {
+    if (Math.abs(next.x - lastPositionRef.current.x) > 2 || Math.abs(next.y - lastPositionRef.current.y) > 2) {
+      lastPositionRef.current = next;
+      setPosition(next);
     }
+  }, []);
 
-    // Fallback: حساب من بيانات العناصر
-    if (activeElements.length === 0) return;
+  const calculateFromEditorDom = useCallback((): Position | null => {
+    if (!editingTextId) return null;
+
+    const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`) as HTMLElement | null;
+
+    if (!editorElement) return null;
+
+    const rect = editorElement.getBoundingClientRect();
+
+    return {
+      x: rect.left + rect.width / 2,
+      y: Math.max(70, rect.top - 60),
+    };
+  }, [editingTextId]);
+
+  const calculateFromSelectionBounds = useCallback((): Position | null => {
+    if (activeElements.length === 0) return null;
 
     let minX = Infinity;
     let minY = Infinity;
@@ -82,67 +86,80 @@ export function useFloatingPosition({
     const screenCenterX = selectionCenterX * viewport.zoom + viewport.pan.x;
     const screenTopY = minY * viewport.zoom + viewport.pan.y - 60;
 
-    const newX = screenCenterX;
-    const newY = Math.max(70, screenTopY);
+    return {
+      x: screenCenterX,
+      y: Math.max(70, screenTopY),
+    };
+  }, [activeElements, viewport.zoom, viewport.pan.x, viewport.pan.y]);
 
-    if (Math.abs(newX - lastPositionRef.current.x) > 2 || 
-        Math.abs(newY - lastPositionRef.current.y) > 2) {
-      lastPositionRef.current = { x: newX, y: newY };
-      setPosition({ x: newX, y: newY });
+  const calculatePosition = useCallback(() => {
+    if (!hasSelection) return;
+
+    // أولا- وضع تحرير النص له أولوية كاملة
+    if (editingTextId) {
+      const editorPosition = calculateFromEditorDom();
+      if (editorPosition) {
+        updatePositionIfNeeded(editorPosition);
+      }
+      return;
     }
-  }, [hasSelection, activeElements, editingTextId, viewport.zoom, viewport.pan.x, viewport.pan.y]);
 
-  // تحديث الموقع عند تغير التبعيات
+    // ثانيا- وضع التحديد العام
+    const selectionPosition = calculateFromSelectionBounds();
+    if (selectionPosition) {
+      updatePositionIfNeeded(selectionPosition);
+    }
+  }, [hasSelection, editingTextId, calculateFromEditorDom, calculateFromSelectionBounds, updatePositionIfNeeded]);
+
   useEffect(() => {
-    // حساب فوري
     calculatePosition();
 
-    // استخدام rAF للتحديثات المتتابعة
     const scheduleUpdate = () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
+
       rafRef.current = requestAnimationFrame(() => {
         calculatePosition();
         rafRef.current = null;
       });
     };
 
-    // الاستماع لتغييرات DOM عبر MutationObserver
-    const observer = new MutationObserver(() => {
+    const mutationObserver = new MutationObserver(() => {
       scheduleUpdate();
     });
 
-    // مراقبة عنصر التحرير إذا وجد
-    if (editingTextId) {
-      const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`);
-      if (editorElement) {
-        observer.observe(editorElement, {
-          attributes: true,
-          childList: true,
-          subtree: true,
-        });
-      }
-    }
-
-    // ResizeObserver للتعامل مع تغييرات الحجم
     const resizeObserver = new ResizeObserver(() => {
       scheduleUpdate();
     });
 
     if (editingTextId) {
-      const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`);
+      const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`) as HTMLElement | null;
+
       if (editorElement) {
+        mutationObserver.observe(editorElement, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+
         resizeObserver.observe(editorElement);
       }
     }
+
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("scroll", scheduleUpdate, true);
 
     return () => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
-      observer.disconnect();
+
+      mutationObserver.disconnect();
       resizeObserver.disconnect();
+      window.removeEventListener("resize", scheduleUpdate);
+      window.removeEventListener("scroll", scheduleUpdate, true);
     };
   }, [calculatePosition, editingTextId]);
 
