@@ -126,7 +126,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     onUpdate(sanitizeHTML(editorRef.current.innerHTML));
   }, [onUpdate]);
 
-  const { canClose } = useTextEditorRegistration({
+  const { preventClose, allowClose, canClose } = useTextEditorRegistration({
     elementId: element.id,
     editorRef: editorRef as React.RefObject<HTMLDivElement>,
     applyFormat,
@@ -266,6 +266,24 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
     }
   };
 
+  const finalizeCloseIfNeeded = useCallback(() => {
+    const activeElement = document.activeElement as HTMLElement | null;
+    const isStillInsideEditor = !!activeElement && !!wrapperRef.current?.contains(activeElement);
+    const isClickingToolbar = !!activeElement?.closest("[data-floating-toolbar]");
+    const isClickingFormatButton = !!activeElement?.closest("[data-format-button]");
+
+    if (!canClose || isStillInsideEditor || isClickingToolbar || isClickingFormatButton) {
+      return;
+    }
+
+    if (editorRef.current) {
+      onUpdate(sanitizeHTML(editorRef.current.innerHTML));
+    }
+
+    stopTyping();
+    onClose();
+  }, [canClose, onClose, onUpdate, stopTyping]);
+
   useEffect(() => {
     if (editorRef.current && element.style) {
       const editor = editorRef.current;
@@ -302,6 +320,11 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
       data-text-editor="true"
       className="flex flex-col relative"
       onDoubleClick={onDoubleClick}
+      onMouseEnter={preventClose}
+      onMouseLeave={allowClose}
+      onFocusCapture={preventClose}
+      onBlurCapture={allowClose}
+      onMouseDownCapture={(e) => e.stopPropagation()}
       style={{
         width: "100%",
         height: "100%",
@@ -342,21 +365,8 @@ export const TextEditor: React.FC<TextEditorProps> = ({ element, onUpdate, onClo
           }
         }}
         onKeyDown={handleKeyDown}
-        onBlur={(e) => {
-          const relatedTarget = e.relatedTarget as HTMLElement | null;
-          const isClickingToolbar = relatedTarget?.closest("[data-floating-toolbar]");
-          const isClickingFormatButton = relatedTarget?.closest("[data-format-button]");
-
-          if (!canClose || isClickingToolbar || isClickingFormatButton) {
-            return;
-          }
-
-          if (editorRef.current) {
-            onUpdate(sanitizeHTML(editorRef.current.innerHTML));
-          }
-
-          stopTyping();
-          onClose();
+        onBlur={() => {
+          requestAnimationFrame(finalizeCloseIfNeeded);
         }}
         className={isEmpty ? "empty-editor" : ""}
         style={{

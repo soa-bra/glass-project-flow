@@ -7,6 +7,8 @@
 import React, { createContext, useContext, useState, useCallback, useRef, type ReactNode } from 'react';
 import type { TextEditorAPI } from './types';
 
+const CLOSE_DELAY_MS = 220;
+
 interface TextEditorContextValue {
   activeEditor: TextEditorAPI | null;
   registerEditor: (api: TextEditorAPI) => void;
@@ -52,9 +54,14 @@ export const TextEditorProvider: React.FC<TextEditorProviderProps> = ({ children
   }, []);
 
   const allowClose = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+
     closeTimeoutRef.current = setTimeout(() => {
       setCanClose(true);
-    }, 100);
+      closeTimeoutRef.current = null;
+    }, CLOSE_DELAY_MS);
   }, []);
 
   const value: TextEditorContextValue = {
