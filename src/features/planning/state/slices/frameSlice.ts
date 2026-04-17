@@ -4,6 +4,8 @@
 
 import { StateCreator } from 'zustand';
 import type { CanvasElement } from '@/types/canvas';
+import { moveFrameWithChildren, recomputeDependentGeometry, syncAttachedTextsForElements } from '../elementsIntegrity';
+import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
 
 export interface FrameSlice {
   // Frame Management
@@ -15,7 +17,7 @@ export interface FrameSlice {
   resizeFrame: (frameId: string, newBounds: { x: number; y: number; width: number; height: number }) => void;
   ungroupFrame: (frameId: string) => void;
   updateFrameTitle: (frameId: string, newTitle: string) => void;
-  
+
   // Drag & Drop Tracking
   hoveredFrameId: string | null;
   draggedElementIds: string[];
@@ -33,21 +35,21 @@ export const createFrameSlice: StateCreator<
   // Drag & Drop Tracking State
   hoveredFrameId: null,
   draggedElementIds: [],
-  
+
   setHoveredFrame: (id) => {
     set({ hoveredFrameId: id });
   },
-  
+
   setDraggedElements: (ids) => {
     set({ draggedElementIds: ids });
   },
-  
+
   findFrameAtPoint: (x, y, excludeIds = []) => {
     const state = get();
     const frames = state.elements.filter(
-      (el: CanvasElement) => el.type === 'frame' && !excludeIds.includes(el.id)
+      (el: CanvasElement) => el.type === 'frame' && !excludeIds.includes(el.id),
     );
-    
+
     // البحث من الأعلى للأسفل (العنصر الأعلى z-index أولاً)
     for (let i = frames.length - 1; i >= 0; i--) {
       const frame = frames[i];
@@ -57,12 +59,12 @@ export const createFrameSlice: StateCreator<
         y >= frame.position.y &&
         y <= frame.position.y + frame.size.height
       );
-      
+
       if (isInside) {
         return frame;
       }
     }
-    
+
     return null;
   },
 
@@ -76,7 +78,7 @@ export const createFrameSlice: StateCreator<
           }
         }
         return el;
-      })
+      }),
     }));
   },
 
@@ -88,7 +90,7 @@ export const createFrameSlice: StateCreator<
           return { ...el, children: children.filter((id: string) => id !== childId) };
         }
         return el;
-      })
+      }),
     }));
   },
 
@@ -104,96 +106,50 @@ export const createFrameSlice: StateCreator<
     const state = get();
     const frame = state.elements.find((el: CanvasElement) => el.id === frameId && el.type === 'frame');
     if (!frame) return;
-    
+
     const frameRect = {
       x: frame.position.x,
       y: frame.position.y,
       width: frame.size.width,
-      height: frame.size.height
+      height: frame.size.height,
     };
-    
+
     const childrenIds: string[] = [];
-    
+
     state.elements.forEach((el: CanvasElement) => {
       if (el.id === frameId) return;
-      
+
       const isFullyInside = (
         el.position.x >= frameRect.x &&
         el.position.y >= frameRect.y &&
         el.position.x + el.size.width <= frameRect.x + frameRect.width &&
         el.position.y + el.size.height <= frameRect.y + frameRect.height
       );
-      
+
       if (isFullyInside) {
         childrenIds.push(el.id);
       }
     });
-    
+
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) =>
-        el.id === frameId ? { ...el, children: childrenIds } : el
-      )
+        el.id === frameId ? { ...el, children: childrenIds } : el,
+      ),
     }));
   },
 
   moveFrame: (frameId, dx, dy) => {
-    const state = get();
-    const frame = state.elements.find((el: CanvasElement) => el.id === frameId);
-    if (!frame || frame.type !== 'frame') return;
-    
-    // ✅ أولاً: مزامنة الأطفال قبل التحريك (تحديث children بناءً على الموقع الحالي)
-    const frameRect = {
-      x: frame.position.x,
-      y: frame.position.y,
-      width: frame.size.width,
-      height: frame.size.height
-    };
-    
-    const updatedChildIds: string[] = [];
-    state.elements.forEach((el: CanvasElement) => {
-      if (el.id === frameId || el.type === 'frame') return;
-      
-      const isFullyInside = (
-        el.position.x >= frameRect.x &&
-        el.position.y >= frameRect.y &&
-        el.position.x + el.size.width <= frameRect.x + frameRect.width &&
-        el.position.y + el.size.height <= frameRect.y + frameRect.height
-      );
-      
-      if (isFullyInside) {
-        updatedChildIds.push(el.id);
+    runCanvasTransaction(set, (state: any) => {
+      const movedFrame = moveFrameWithChildren(state.elements, frameId, dx, dy);
+      if (movedFrame.movedIds.length === 0) {
+        return {};
       }
+
+      const synced = syncAttachedTextsForElements(movedFrame.elements, movedFrame.movedIds);
+      const updatedElements = recomputeDependentGeometry(synced.elements, synced.changedIds);
+
+      return { elements: updatedElements };
     });
-    
-    // ✅ ثانياً: تحريك الإطار والأطفال المحدثين معاً
-    set((state: any) => ({
-      elements: state.elements.map((el: CanvasElement) => {
-        // تحديث children للإطار
-        if (el.id === frameId) {
-          return {
-            ...el,
-            children: updatedChildIds,
-            position: {
-              x: el.position.x + dx,
-              y: el.position.y + dy
-            }
-          };
-        }
-        // تحريك الأطفال
-        if (updatedChildIds.includes(el.id)) {
-          return {
-            ...el,
-            position: {
-              x: el.position.x + dx,
-              y: el.position.y + dy
-            }
-          };
-        }
-        return el;
-      })
-    }));
-    
-    get().pushHistory();
   },
 
   // ✅ تغيير حجم الإطار فقط بدون تغيير حجم أو موقع الأطفال
@@ -201,7 +157,7 @@ export const createFrameSlice: StateCreator<
     const state = get();
     const frame = state.elements.find((el: CanvasElement) => el.id === frameId);
     if (!frame || frame.type !== 'frame') return;
-    
+
     // ✅ تغيير حجم الإطار فقط - الأطفال يبقون كما هم
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) => {
@@ -209,21 +165,21 @@ export const createFrameSlice: StateCreator<
           return {
             ...el,
             position: { x: newBounds.x, y: newBounds.y },
-            size: { width: newBounds.width, height: newBounds.height }
+            size: { width: newBounds.width, height: newBounds.height },
           };
         }
         return el;
-      })
+      }),
     }));
-    
+
     get().pushHistory();
   },
 
   ungroupFrame: (frameId) => {
     set((state: any) => ({
       elements: state.elements.map((el: CanvasElement) =>
-        el.id === frameId ? { ...el, children: [] } : el
-      )
+        el.id === frameId ? { ...el, children: [] } : el,
+      ),
     }));
     get().pushHistory();
   },
@@ -233,9 +189,9 @@ export const createFrameSlice: StateCreator<
       elements: state.elements.map((el: CanvasElement) =>
         el.id === frameId && el.type === 'frame'
           ? { ...el, title: newTitle }
-          : el
-      )
+          : el,
+      ),
     }));
     get().pushHistory();
-  }
+  },
 });
