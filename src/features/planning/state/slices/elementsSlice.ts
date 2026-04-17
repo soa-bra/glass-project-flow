@@ -7,11 +7,15 @@ import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
 import { calculateElementsBounds } from '../helpers';
 import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
-import { recomputeDependentGeometry, syncAttachedTextPositions } from '../elementsIntegrity';
+import {
+  moveFrameWithChildren,
+  recomputeDependentGeometry,
+  syncAttachedTextsForElements,
+} from '../elementsIntegrity';
 
 export interface ElementsSlice {
   elements: CanvasElement[];
-  
+
   // Element Actions
   addElement: (element: Omit<CanvasElement, 'id'> & { id?: string }) => void;
   updateElement: (elementId: string, updates: Partial<CanvasElement>) => void;
@@ -99,28 +103,6 @@ const collectDeletionIds = (elementIds: string[], elements: CanvasElement[]): st
   });
 
   return Array.from(ids);
-};
-
-const syncAttachedTextsForElements = (
-  elements: CanvasElement[],
-  movedElementIds: string[],
-): { elements: CanvasElement[]; changedIds: string[] } => {
-  let updatedElements = [...elements];
-  const changedIds = new Set<string>(movedElementIds);
-
-  movedElementIds.forEach((elementId) => {
-    const movedElement = updatedElements.find((entry) => entry.id === elementId);
-    if (!movedElement) return;
-
-    const synced = syncAttachedTextPositions(updatedElements, elementId, movedElement.position);
-    updatedElements = synced.elements;
-    synced.changedIds.forEach((id) => changedIds.add(id));
-  });
-
-  return {
-    elements: updatedElements,
-    changedIds: Array.from(changedIds),
-  };
 };
 
 export const createElementsSlice: StateCreator<
@@ -233,28 +215,39 @@ export const createElementsSlice: StateCreator<
       }
     });
 
-    frameIds.forEach((frameId) => {
-      get().moveFrame(frameId, deltaX, deltaY);
-    });
+    if (frameIds.length === 0 && nonFrameIds.length === 0) {
+      return;
+    }
 
-    if (nonFrameIds.length > 0) {
-      set((currentState: any) => {
-        let updatedElements = currentState.elements.map((el: CanvasElement) =>
-          nonFrameIds.includes(el.id)
+    runCanvasTransaction(set, (currentState: any) => {
+      let updatedElements = currentState.elements;
+      const movedIds = new Set<string>();
+
+      frameIds.forEach((frameId) => {
+        const movedFrame = moveFrameWithChildren(updatedElements, frameId, deltaX, deltaY);
+        updatedElements = movedFrame.elements;
+        movedFrame.movedIds.forEach((id) => movedIds.add(id));
+      });
+
+      const freeNonFrameIds = nonFrameIds.filter((id) => !movedIds.has(id));
+      if (freeNonFrameIds.length > 0) {
+        updatedElements = updatedElements.map((el: CanvasElement) =>
+          freeNonFrameIds.includes(el.id)
             ? { ...el, position: { x: el.position.x + deltaX, y: el.position.y + deltaY } }
             : el,
         );
+        freeNonFrameIds.forEach((id) => movedIds.add(id));
+      }
 
-        const synced = syncAttachedTextsForElements(updatedElements, nonFrameIds);
-        updatedElements = recomputeDependentGeometry(synced.elements, synced.changedIds);
+      if (movedIds.size === 0) {
+        return {};
+      }
 
-        return { elements: updatedElements };
-      });
-    }
+      const synced = syncAttachedTextsForElements(updatedElements, Array.from(movedIds));
+      updatedElements = recomputeDependentGeometry(synced.elements, synced.changedIds);
 
-    if (frameIds.length === 0 && nonFrameIds.length > 0) {
-      get().pushHistory();
-    }
+      return { elements: updatedElements };
+    });
   },
 
   resizeElements: (elementIds, scaleX, scaleY, origin) => {
