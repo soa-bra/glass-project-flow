@@ -6,10 +6,6 @@
 import { StateCreator } from 'zustand';
 import type { CanvasElement, CanvasSettings } from '@/types/canvas';
 
-// ============================================
-// 📐 Viewport Math Utilities (مركزية الحسابات)
-// ============================================
-
 const ZOOM_CONFIG = {
   min: 0.1,
   max: 5,
@@ -17,54 +13,82 @@ const ZOOM_CONFIG = {
   wheelSensitivity: 0.001,
 } as const;
 
-/**
- * ✅ حساب zoom حول نقطة محددة (pointer-centered zoom)
- * هذا يضمن أن النقطة تحت المؤشر تبقى ثابتة أثناء التكبير
- */
+const DEFAULT_VIEWPORT = {
+  zoom: 1,
+  pan: { x: 0, y: 0 },
+} as const;
+
+const DEFAULT_VIEWPORT_SIZE = {
+  width: 1280,
+  height: 720,
+} as const;
+
+function clampZoomValue(zoom: number): number {
+  return Math.max(ZOOM_CONFIG.min, Math.min(ZOOM_CONFIG.max, zoom));
+}
+
+function getViewportHostSize(): { width: number; height: number } {
+  if (typeof window === 'undefined') {
+    return { ...DEFAULT_VIEWPORT_SIZE };
+  }
+
+  return {
+    width: window.innerWidth || DEFAULT_VIEWPORT_SIZE.width,
+    height: window.innerHeight || DEFAULT_VIEWPORT_SIZE.height,
+  };
+}
+
+function buildViewportState(
+  currentSettings: CanvasSettings,
+  viewport: { zoom: number; pan: { x: number; y: number } },
+): {
+  viewport: { zoom: number; pan: { x: number; y: number } };
+  settings: CanvasSettings;
+} {
+  return {
+    viewport,
+    settings: {
+      ...currentSettings,
+      zoom: viewport.zoom,
+      pan: viewport.pan,
+    },
+  };
+}
+
 export function calculateZoomAtPoint(
   currentZoom: number,
   currentPan: { x: number; y: number },
   screenPoint: { x: number; y: number },
-  zoomDelta: number
+  zoomDelta: number,
 ): { zoom: number; pan: { x: number; y: number } } {
-  // حساب الـ zoom الجديد
-  const newZoom = Math.max(
-    ZOOM_CONFIG.min,
-    Math.min(ZOOM_CONFIG.max, currentZoom * (1 + zoomDelta))
-  );
-  
-  // إذا لم يتغير الـ zoom، لا داعي لحساب الـ pan
+  const newZoom = clampZoomValue(currentZoom * (1 + zoomDelta));
+
   if (newZoom === currentZoom) {
     return { zoom: currentZoom, pan: currentPan };
   }
-  
-  // تحويل نقطة الشاشة إلى world coordinates
+
   const worldX = (screenPoint.x - currentPan.x) / currentZoom;
   const worldY = (screenPoint.y - currentPan.y) / currentZoom;
-  
-  // حساب الـ pan الجديد بحيث تبقى نقطة العالم في نفس موقع الشاشة
+
   const newPanX = screenPoint.x - worldX * newZoom;
   const newPanY = screenPoint.y - worldY * newZoom;
-  
+
   return {
     zoom: newZoom,
-    pan: { x: newPanX, y: newPanY }
+    pan: { x: newPanX, y: newPanY },
   };
 }
 
-/**
- * ✅ حساب zoom حول مركز الشاشة
- */
 export function calculateCenterZoom(
   currentZoom: number,
   currentPan: { x: number; y: number },
   containerWidth: number,
   containerHeight: number,
-  zoomDelta: number
+  zoomDelta: number,
 ): { zoom: number; pan: { x: number; y: number } } {
   const centerX = containerWidth / 2;
   const centerY = containerHeight / 2;
-  
+
   return calculateZoomAtPoint(currentZoom, currentPan, { x: centerX, y: centerY }, zoomDelta);
 }
 
@@ -74,7 +98,7 @@ export interface ViewportSlice {
   isPanMode: boolean;
   isFullscreen: boolean;
   showMinimap: boolean;
-  
+
   // Viewport Actions - مركزية
   setZoom: (zoom: number) => void;
   setPan: (x: number, y: number) => void;
@@ -86,12 +110,12 @@ export interface ViewportSlice {
   zoomOut: () => void;
   zoomToFit: () => void;
   setZoomPercentage: (percentage: number) => void;
-  
+
   // Settings Actions
   updateSettings: (settings: Partial<CanvasSettings>) => void;
   toggleGrid: () => void;
   toggleSnapToGrid: () => void;
-  
+
   // View Mode Actions
   togglePanMode: () => void;
   toggleFullscreen: () => void;
@@ -104,7 +128,7 @@ export const createViewportSlice: StateCreator<
   [],
   ViewportSlice
 > = (set, get) => ({
-  viewport: { zoom: 1, pan: { x: 0, y: 0 } },
+  viewport: { ...DEFAULT_VIEWPORT, pan: { ...DEFAULT_VIEWPORT.pan } },
   settings: {
     zoom: 1,
     pan: { x: 0, y: 0 },
@@ -116,171 +140,173 @@ export const createViewportSlice: StateCreator<
     snapToCenter: true,
     snapToDistribution: false,
     background: '#FFFFFF',
-    theme: 'light'
+    theme: 'light',
   },
   isPanMode: false,
   isFullscreen: false,
   showMinimap: false,
-  
+
   setZoom: (zoom) => {
-    const clampedZoom = Math.max(ZOOM_CONFIG.min, Math.min(ZOOM_CONFIG.max, zoom));
-    set((state: any) => ({
-      viewport: { ...state.viewport, zoom: clampedZoom },
-      settings: { ...state.settings, zoom: clampedZoom }
-    }));
-  },
-  
-  setPan: (x, y) => {
-    set((state: any) => ({
-      viewport: { ...state.viewport, pan: { x, y } },
-      settings: { ...state.settings, pan: { x, y } }
-    }));
-  },
-  
-  /**
-   * ✅ تحريك نسبي (أفضل للـ panning)
-   */
-  panBy: (deltaX, deltaY) => {
     set((state: any) => {
-      const newX = state.viewport.pan.x + deltaX;
-      const newY = state.viewport.pan.y + deltaY;
-      return {
-        viewport: { ...state.viewport, pan: { x: newX, y: newY } },
-        settings: { ...state.settings, pan: { x: newX, y: newY } }
+      const nextViewport = {
+        ...state.viewport,
+        zoom: clampZoomValue(zoom),
       };
+
+      return buildViewportState(state.settings, nextViewport);
     });
   },
-  
-  /**
-   * ✅ تكبير حول نقطة محددة (للماوس)
-   */
+
+  setPan: (x, y) => {
+    set((state: any) => {
+      const nextViewport = {
+        ...state.viewport,
+        pan: { x, y },
+      };
+
+      return buildViewportState(state.settings, nextViewport);
+    });
+  },
+
+  panBy: (deltaX, deltaY) => {
+    set((state: any) => {
+      const nextViewport = {
+        ...state.viewport,
+        pan: {
+          x: state.viewport.pan.x + deltaX,
+          y: state.viewport.pan.y + deltaY,
+        },
+      };
+
+      return buildViewportState(state.settings, nextViewport);
+    });
+  },
+
   zoomAtPoint: (screenX, screenY, zoomDelta) => {
     const state = get();
     const result = calculateZoomAtPoint(
       state.viewport.zoom,
       state.viewport.pan,
       { x: screenX, y: screenY },
-      zoomDelta
+      zoomDelta,
     );
-    
-    set({
-      viewport: result,
-      settings: { ...state.settings, zoom: result.zoom, pan: result.pan }
-    });
+
+    set(buildViewportState(state.settings, result));
   },
-  
-  /**
-   * ✅ تكبير بالـ wheel (مع حساسية مناسبة)
-   */
+
   zoomByWheel: (deltaY, screenX, screenY) => {
     const zoomDelta = -deltaY * ZOOM_CONFIG.wheelSensitivity;
     get().zoomAtPoint(screenX, screenY, zoomDelta);
   },
-  
+
   resetViewport: () => {
-    set((state: any) => ({
-      viewport: { zoom: 1, pan: { x: 0, y: 0 } },
-      settings: { ...state.settings, zoom: 1, pan: { x: 0, y: 0 } }
+    set((state: any) => buildViewportState(state.settings, {
+      zoom: DEFAULT_VIEWPORT.zoom,
+      pan: { ...DEFAULT_VIEWPORT.pan },
     }));
   },
-  
+
   zoomIn: () => {
     const state = get();
-    // تكبير حول مركز الشاشة
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
+    const { width, height } = getViewportHostSize();
     const result = calculateCenterZoom(
       state.viewport.zoom,
       state.viewport.pan,
-      containerWidth,
-      containerHeight,
-      ZOOM_CONFIG.step
+      width,
+      height,
+      ZOOM_CONFIG.step,
     );
-    
-    set({
-      viewport: result,
-      settings: { ...state.settings, zoom: result.zoom, pan: result.pan }
-    });
+
+    set(buildViewportState(state.settings, result));
   },
-  
+
   zoomOut: () => {
     const state = get();
-    // تصغير حول مركز الشاشة
-    const containerWidth = window.innerWidth;
-    const containerHeight = window.innerHeight;
+    const { width, height } = getViewportHostSize();
     const result = calculateCenterZoom(
       state.viewport.zoom,
       state.viewport.pan,
-      containerWidth,
-      containerHeight,
-      -ZOOM_CONFIG.step
+      width,
+      height,
+      -ZOOM_CONFIG.step,
     );
-    
-    set({
-      viewport: result,
-      settings: { ...state.settings, zoom: result.zoom, pan: result.pan }
-    });
+
+    set(buildViewportState(state.settings, result));
   },
-  
+
   zoomToFit: () => {
     const elements = get().elements as CanvasElement[];
     if (elements.length === 0) {
       get().resetViewport();
       return;
     }
-    
+
     const bounds = elements.reduce((acc: any, el: CanvasElement) => ({
       minX: Math.min(acc.minX, el.position.x),
       minY: Math.min(acc.minY, el.position.y),
       maxX: Math.max(acc.maxX, el.position.x + el.size.width),
-      maxY: Math.max(acc.maxY, el.position.y + el.size.height)
+      maxY: Math.max(acc.maxY, el.position.y + el.size.height),
     }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
-    
+
     const width = bounds.maxX - bounds.minX;
     const height = bounds.maxY - bounds.minY;
     const centerX = bounds.minX + width / 2;
     const centerY = bounds.minY + height / 2;
-    
+    const viewportSize = getViewportHostSize();
+
     const zoom = Math.min(
-      window.innerWidth / (width + 100),
-      window.innerHeight / (height + 100),
-      1
+      viewportSize.width / (width + 100),
+      viewportSize.height / (height + 100),
+      1,
     );
-    
-    const clampedZoom = Math.max(ZOOM_CONFIG.min, Math.min(ZOOM_CONFIG.max, zoom));
-    const panX = -centerX * clampedZoom + window.innerWidth / 2;
-    const panY = -centerY * clampedZoom + window.innerHeight / 2;
-    
-    set((state: any) => ({
-      viewport: { zoom: clampedZoom, pan: { x: panX, y: panY } },
-      settings: { ...state.settings, zoom: clampedZoom, pan: { x: panX, y: panY } }
+
+    const clampedZoom = clampZoomValue(zoom);
+    const panX = -centerX * clampedZoom + viewportSize.width / 2;
+    const panY = -centerY * clampedZoom + viewportSize.height / 2;
+
+    set((state: any) => buildViewportState(state.settings, {
+      zoom: clampedZoom,
+      pan: { x: panX, y: panY },
     }));
   },
-  
+
   setZoomPercentage: (percentage) => {
     get().setZoom(percentage / 100);
   },
-  
+
   updateSettings: (settings) => {
-    set((state: any) => ({
-      settings: { ...state.settings, ...settings }
-    }));
+    set((state: any) => {
+      const nextViewport = {
+        zoom: typeof settings.zoom === 'number' ? clampZoomValue(settings.zoom) : state.viewport.zoom,
+        pan: settings.pan ? { x: settings.pan.x, y: settings.pan.y } : state.viewport.pan,
+      };
+
+      return {
+        viewport: nextViewport,
+        settings: {
+          ...state.settings,
+          ...settings,
+          zoom: nextViewport.zoom,
+          pan: nextViewport.pan,
+        },
+      };
+    });
   },
-  
+
   toggleGrid: () => {
     set((state: any) => ({
-      settings: { ...state.settings, gridEnabled: !state.settings.gridEnabled }
+      settings: { ...state.settings, gridEnabled: !state.settings.gridEnabled },
     }));
   },
-  
+
   toggleSnapToGrid: () => {
     set((state: any) => ({
-      settings: { ...state.settings, snapToGrid: !state.settings.snapToGrid }
+      settings: { ...state.settings, snapToGrid: !state.settings.snapToGrid },
     }));
   },
-  
+
   togglePanMode: () => set((state: any) => ({ isPanMode: !state.isPanMode })),
-  
+
   toggleFullscreen: () => {
     const state = get();
     if (!state.isFullscreen) {
@@ -290,37 +316,14 @@ export const createViewportSlice: StateCreator<
     }
     set({ isFullscreen: !state.isFullscreen });
   },
-  
-  toggleMinimap: () => set((state: any) => ({ showMinimap: !state.showMinimap }))
+
+  toggleMinimap: () => set((state: any) => ({ showMinimap: !state.showMinimap })),
 });
 
-// ============================================
-// 🎯 Viewport Selectors (للأداء)
-// ============================================
-
-/**
- * ✅ Selector للـ viewport فقط (يتجنب re-render غير ضروري)
- */
 export const selectViewport = (state: any) => state.viewport;
-
-/**
- * ✅ Selector للـ zoom فقط
- */
 export const selectZoom = (state: any) => state.viewport.zoom;
-
-/**
- * ✅ Selector للـ pan فقط
- */
 export const selectPan = (state: any) => state.viewport.pan;
-
-/**
- * ✅ Selector للـ settings فقط
- */
 export const selectSettings = (state: any) => state.settings;
-
-/**
- * ✅ Selector للدوال فقط (لا تسبب re-render)
- */
 export const selectViewportActions = (state: any) => ({
   setZoom: state.setZoom,
   setPan: state.setPan,
