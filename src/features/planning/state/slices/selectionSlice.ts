@@ -3,6 +3,7 @@
  * ✅ المرحلة 1: Deep Clone + Paste at Position + Fixed Types
  * ✅ المرحلة 2: Smart Offset محسّن + Overlap Detection
  * ✅ المرحلة 3: Transactional Paste/Cut + Stable Selection IDs
+ * ✅ المرحلة 4: Reference Remapping + Canvas Host Aware Paste Center
  */
 
 import { StateCreator } from 'zustand';
@@ -10,7 +11,6 @@ import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
 import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
 
-// نوع الـ Store الكامل لتجنب any
 type CanvasStoreState = SelectionSlice & {
   elements: CanvasElement[];
   layers: LayerInfo[];
@@ -27,12 +27,10 @@ export interface SelectionSlice {
   selectedElementIds: string[];
   clipboard: CanvasElement[];
 
-  // Selection Actions
   selectElement: (elementId: string, multiSelect?: boolean) => void;
   selectElements: (elementIds: string[]) => void;
   clearSelection: () => void;
 
-  // Clipboard Actions
   copyElements: (elementIds: string[]) => void;
   pasteElements: (position?: { x: number; y: number }) => void;
   cutElements: (elementIds: string[]) => void;
@@ -44,6 +42,7 @@ let consecutivePasteCount = 0;
 const PASTE_OFFSET_BASE = 20;
 const PASTE_OFFSET_INCREMENT = 15;
 const OVERLAP_DETECTION_THRESHOLD = 5;
+const DEFAULT_CANVAS_SIZE = { width: 1280, height: 720 };
 
 function deepCloneElement(element: CanvasElement): CanvasElement {
   try {
@@ -53,9 +52,31 @@ function deepCloneElement(element: CanvasElement): CanvasElement {
   }
 }
 
+function getCanvasHostSize(): { width: number; height: number } {
+  if (typeof document !== 'undefined') {
+    const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement | null;
+    if (container) {
+      return {
+        width: container.clientWidth || DEFAULT_CANVAS_SIZE.width,
+        height: container.clientHeight || DEFAULT_CANVAS_SIZE.height,
+      };
+    }
+  }
+
+  if (typeof window !== 'undefined') {
+    return {
+      width: window.innerWidth || DEFAULT_CANVAS_SIZE.width,
+      height: window.innerHeight || DEFAULT_CANVAS_SIZE.height,
+    };
+  }
+
+  return { ...DEFAULT_CANVAS_SIZE };
+}
+
 function getViewportCenter(viewport: { zoom: number; pan: { x: number; y: number } }): { x: number; y: number } {
-  const screenCenterX = window.innerWidth / 2;
-  const screenCenterY = window.innerHeight / 2;
+  const hostSize = getCanvasHostSize();
+  const screenCenterX = hostSize.width / 2;
+  const screenCenterY = hostSize.height / 2;
 
   const worldX = (screenCenterX - viewport.pan.x) / viewport.zoom;
   const worldY = (screenCenterY - viewport.pan.y) / viewport.zoom;
@@ -171,15 +192,123 @@ function findSmartPastePosition(
   };
 }
 
+function buildIdMap(clipboard: CanvasElement[]): Map<string, string> {
+  return new Map(clipboard.map((el) => [el.id, nanoid()]));
+}
+
+function buildGroupMap(clipboard: CanvasElement[]): Map<string, string> {
+  const groupIds = new Set<string>();
+  clipboard.forEach((el) => {
+    const groupId = typeof el.metadata?.groupId === 'string' ? el.metadata.groupId : null;
+    if (groupId) {
+      groupIds.add(groupId);
+    }
+  });
+
+  return new Map(Array.from(groupIds).map((groupId) => [groupId, nanoid()]));
+}
+
+function remapElementReferences(
+  element: CanvasElement,
+  idMap: Map<string, string>,
+  groupMap: Map<string, string>,
+): CanvasElement {
+  const copy = deepCloneElement(element);
+
+  if (copy.parentId && idMap.has(copy.parentId)) {
+    copy.parentId = idMap.get(copy.parentId);
+  }
+
+  if (Array.isArray(copy.children)) {
+    copy.children = copy.children.map((childId: string) => idMap.get(childId) ?? childId);
+  }
+
+  if (copy.metadata?.groupId && groupMap.has(copy.metadata.groupId)) {
+    copy.metadata = {
+      ...copy.metadata,
+      groupId: groupMap.get(copy.metadata.groupId),
+    };
+  }
+
+  if (copy.data?.attachedTo && idMap.has(copy.data.attachedTo)) {
+    copy.data = {
+      ...copy.data,
+      attachedTo: idMap.get(copy.data.attachedTo),
+    };
+  }
+
+  if (copy.data?.startNodeId && idMap.has(copy.data.startNodeId)) {
+    copy.data = {
+      ...copy.data,
+      startNodeId: idMap.get(copy.data.startNodeId),
+    };
+  }
+
+  if (copy.data?.endNodeId && idMap.has(copy.data.endNodeId)) {
+    copy.data = {
+      ...copy.data,
+      endNodeId: idMap.get(copy.data.endNodeId),
+    };
+  }
+
+  if (copy.data?.startAnchor?.nodeId && idMap.has(copy.data.startAnchor.nodeId)) {
+    copy.data = {
+      ...copy.data,
+      startAnchor: {
+        ...copy.data.startAnchor,
+        nodeId: idMap.get(copy.data.startAnchor.nodeId),
+      },
+    };
+  }
+
+  if (copy.data?.endAnchor?.nodeId && idMap.has(copy.data.endAnchor.nodeId)) {
+    copy.data = {
+      ...copy.data,
+      endAnchor: {
+        ...copy.data.endAnchor,
+        nodeId: idMap.get(copy.data.endAnchor.nodeId),
+      },
+    };
+  }
+
+  if (copy.data?.arrowData) {
+    const arrowData = deepCloneElement(copy.data.arrowData);
+
+    if (arrowData.startConnection?.elementId && idMap.has(arrowData.startConnection.elementId)) {
+      arrowData.startConnection = {
+        ...arrowData.startConnection,
+        elementId: idMap.get(arrowData.startConnection.elementId),
+      };
+    }
+
+    if (arrowData.endConnection?.elementId && idMap.has(arrowData.endConnection.elementId)) {
+      arrowData.endConnection = {
+        ...arrowData.endConnection,
+        elementId: idMap.get(arrowData.endConnection.elementId),
+      };
+    }
+
+    copy.data = {
+      ...copy.data,
+      arrowData,
+    };
+  }
+
+  return copy;
+}
+
 function buildPastedElements(
   clipboard: CanvasElement[],
   offsetX: number,
   offsetY: number,
   fallbackLayerId: string | null,
 ): CanvasElement[] {
+  const idMap = buildIdMap(clipboard);
+  const groupMap = buildGroupMap(clipboard);
+
   return clipboard.map((el) => {
-    const copy = deepCloneElement(el);
-    const newId = nanoid();
+    const copy = remapElementReferences(el, idMap, groupMap);
+    const newId = idMap.get(el.id) ?? nanoid();
     delete (copy as any).id;
 
     return {
