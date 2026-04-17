@@ -39,6 +39,91 @@ export function syncAttachedTextPositions(
   return { elements: updatedElements, changedIds };
 }
 
+export function syncAttachedTextsForElements(
+  elements: CanvasElement[],
+  movedElementIds: string[],
+): { elements: CanvasElement[]; changedIds: string[] } {
+  let updatedElements = [...elements];
+  const changedIds = new Set<string>(movedElementIds);
+
+  movedElementIds.forEach((elementId) => {
+    const movedElement = updatedElements.find((entry) => entry.id === elementId);
+    if (!movedElement) return;
+
+    const synced = syncAttachedTextPositions(updatedElements, elementId, movedElement.position);
+    updatedElements = synced.elements;
+    synced.changedIds.forEach((id) => changedIds.add(id));
+  });
+
+  return {
+    elements: updatedElements,
+    changedIds: Array.from(changedIds),
+  };
+}
+
+export function moveFrameWithChildren(
+  elements: CanvasElement[],
+  frameId: string,
+  dx: number,
+  dy: number,
+): { elements: CanvasElement[]; movedIds: string[] } {
+  const frame = elements.find((el) => el.id === frameId && el.type === 'frame');
+  if (!frame) {
+    return { elements, movedIds: [] };
+  }
+
+  const frameRect = {
+    x: frame.position.x,
+    y: frame.position.y,
+    width: frame.size.width,
+    height: frame.size.height,
+  };
+
+  const updatedChildIds: string[] = [];
+  elements.forEach((el) => {
+    if (el.id === frameId || el.type === 'frame') return;
+
+    const isFullyInside = (
+      el.position.x >= frameRect.x &&
+      el.position.y >= frameRect.y &&
+      el.position.x + el.size.width <= frameRect.x + frameRect.width &&
+      el.position.y + el.size.height <= frameRect.y + frameRect.height
+    );
+
+    if (isFullyInside) {
+      updatedChildIds.push(el.id);
+    }
+  });
+
+  const movedIds = [frameId, ...updatedChildIds];
+  const updatedElements = elements.map((el) => {
+    if (el.id === frameId) {
+      return {
+        ...el,
+        children: updatedChildIds,
+        position: {
+          x: el.position.x + dx,
+          y: el.position.y + dy,
+        },
+      };
+    }
+
+    if (updatedChildIds.includes(el.id)) {
+      return {
+        ...el,
+        position: {
+          x: el.position.x + dx,
+          y: el.position.y + dy,
+        },
+      };
+    }
+
+    return el;
+  });
+
+  return { elements: updatedElements, movedIds };
+}
+
 export function recomputeDependentGeometry(
   elements: CanvasElement[],
   changedElementIds: string[],
