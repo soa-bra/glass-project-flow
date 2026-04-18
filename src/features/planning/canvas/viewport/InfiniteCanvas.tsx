@@ -1,5 +1,5 @@
 // InfiniteCanvas - v2 optimized connection handling
-import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore, selectBoxSelectData } from '@/stores/interactionStore';
 import CanvasElement from '@/features/planning/canvas/layers/CanvasElement';
@@ -15,7 +15,6 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
 import { useCanvasPaste } from '@/hooks/useCanvasPaste';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
-import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { PenFloatingToolbar } from '@/components/ui/penToolbar';
 import { CanvasGridLayer } from '@/features/planning/canvas/viewport/CanvasGridLayer';
@@ -26,27 +25,11 @@ import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
 import { useCanvasPointerTracking } from '@/features/planning/canvas/controllers/useCanvasPointerTracking';
 import { useCanvasDropController } from '@/features/planning/canvas/controllers/useCanvasDropController';
 import { useMindMapConnectionController } from '@/features/planning/canvas/controllers/useMindMapConnectionController';
+import { useCanvasViewportController } from '@/features/planning/canvas/controllers/useCanvasViewportController';
+import { useCanvasSelectionController } from '@/features/planning/canvas/controllers/useCanvasSelectionController';
 
 interface InfiniteCanvasProps {
   boardId: string;
-}
-
-function getCanvasHostSize(container: HTMLDivElement | null): { width: number; height: number } {
-  if (container) {
-    return {
-      width: container.clientWidth,
-      height: container.clientHeight,
-    };
-  }
-
-  if (typeof window !== 'undefined') {
-    return {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    };
-  }
-
-  return { width: 1280, height: 720 };
 }
 
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
@@ -90,9 +73,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   });
 
   const collaborationUser = useCollaborationUser();
-  const lastPanPositionRef = useRef({ x: 0, y: 0 });
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
-  const [containerSize, setContainerSize] = useState(() => getCanvasHostSize(null));
 
   const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
     containerRef,
@@ -117,31 +98,43 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     viewport,
   });
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+  const {
+    viewportBounds,
+    visibleElements,
+    snapToGrid,
+    handleWheel,
+    getCursorStyle,
+  } = useCanvasViewportController({
+    containerRef,
+    elements,
+    layers,
+    viewport,
+    settings,
+    activeTool,
+    interactionMode,
+    panBy,
+    zoomByWheel,
+  });
 
-    const syncContainerSize = () => {
-      setContainerSize(getCanvasHostSize(container));
-    };
-
-    syncContainerSize();
-
-    if (typeof ResizeObserver === 'undefined') {
-      return;
-    }
-
-    const observer = new ResizeObserver(() => {
-      syncContainerSize();
-    });
-
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
-
-  const viewportBounds = useMemo(() => {
-    return canvasKernel.getVisibleBounds(viewport, containerSize.width, containerSize.height);
-  }, [viewport, containerSize.width, containerSize.height]);
+  const {
+    lastPanPositionRef,
+    beginPanning,
+    updatePan,
+    beginBoxSelection,
+    updateBoxSelectionFromClient,
+    completeBoxSelection,
+    selectionBoxData,
+  } = useCanvasSelectionController({
+    containerRef,
+    viewport,
+    boxSelectData,
+    startPanning,
+    startBoxSelect,
+    updateBoxSelect,
+    resetToIdle,
+    finishSelection,
+    updatePointerFromClient,
+  });
 
   useCanvasPaste({
     lastPointerPosition: lastPointerPositionRef,
@@ -149,47 +142,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     enabled: true,
   });
 
-  const selectedIdsSet = useMemo(() => new Set(selectedElementIds), [selectedElementIds]);
-  const layerVisibilityMap = useMemo(() => new Map(layers.map((layer) => [layer.id, layer.visible])), [layers]);
-
-  const visibleElements = useMemo(() => {
-    const padding = 200;
-    return elements.filter((el) => {
-      const isLayerVisible = el.layerId ? layerVisibilityMap.get(el.layerId) : undefined;
-      if (!isLayerVisible || !el.visible) return false;
-      if (el.type === 'mindmap_connector') return true;
-
-      return (
-        el.position.x + el.size.width >= viewportBounds.x - padding &&
-        el.position.x <= viewportBounds.x + viewportBounds.width + padding &&
-        el.position.y + el.size.height >= viewportBounds.y - padding &&
-        el.position.y <= viewportBounds.y + viewportBounds.height + padding
-      );
-    });
-  }, [elements, viewportBounds, layerVisibilityMap]);
-
-  const snapToGrid = useCallback(
-    (x: number, y: number) => canvasKernel.snapToGrid({ x, y }, settings.gridSize, settings.snapToGrid),
-    [settings.snapToGrid, settings.gridSize],
-  );
-
-  const handleWheel = useCallback(
-    (e: WheelEvent) => {
-      e.preventDefault();
-      if (e.ctrlKey || e.metaKey) {
-        zoomByWheel(e.deltaY, e.clientX, e.clientY);
-      } else {
-        panBy(-e.deltaX, -e.deltaY);
-      }
-    },
-    [zoomByWheel, panBy],
-  );
-
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
-        startPanning({ x: e.clientX, y: e.clientY }, { x: viewport.pan.x, y: viewport.pan.y });
-        lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+        beginPanning(e.clientX, e.clientY);
         if (containerRef.current) {
           containerRef.current.style.cursor = 'grabbing';
         }
@@ -203,10 +159,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         if (!e.shiftKey) {
           clearSelection();
         }
-
-        const worldPoint = updatePointerFromClient(e.clientX, e.clientY);
-        if (!worldPoint) return;
-        startBoxSelect(worldPoint, e.shiftKey);
+        beginBoxSelection(e.clientX, e.clientY, e.shiftKey);
         return;
       }
 
@@ -244,7 +197,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
         clearSelection();
       }
     },
-    [activeTool, clearSelection, handleCanvasMouseDown, startBoxSelect, startPanning, updatePointerFromClient, viewport],
+    [activeTool, beginBoxSelection, beginPanning, clearSelection, handleCanvasMouseDown],
   );
 
   const handleMouseMove = useCallback(
@@ -256,24 +209,18 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       }
 
       if (isMode('panning')) {
-        const deltaX = e.clientX - lastPanPositionRef.current.x;
-        const deltaY = e.clientY - lastPanPositionRef.current.y;
-        panBy(deltaX, deltaY);
-        lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+        updatePan(e.clientX, e.clientY, panBy);
         return;
       }
 
       if (isMode('boxSelect') && boxSelectData) {
-        const worldPoint = updatePointerFromClient(e.clientX, e.clientY);
-        if (worldPoint) {
-          updateBoxSelect(worldPoint);
-        }
+        updateBoxSelectionFromClient(e.clientX, e.clientY);
         return;
       }
 
       handleCanvasMouseMove(e);
     },
-    [boxSelectData, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelect, updateConnectionPosition, updatePointerFromClient],
+    [boxSelectData, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -294,28 +241,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     }
 
     if (isMode('boxSelect') && boxSelectData) {
-      const containerRect = containerRef.current?.getBoundingClientRect();
-      if (containerRect) {
-        const startScreen = canvasKernel.worldToScreen(boxSelectData.startWorld.x, boxSelectData.startWorld.y, viewport, containerRect);
-        const endScreen = canvasKernel.worldToScreen(boxSelectData.currentWorld.x, boxSelectData.currentWorld.y, viewport, containerRect);
-
-        const startX = startScreen.x - containerRect.left;
-        const startY = startScreen.y - containerRect.top;
-        const endX = endScreen.x - containerRect.left;
-        const endY = endScreen.y - containerRect.top;
-        const boxWidth = Math.abs(endX - startX);
-        const boxHeight = Math.abs(endY - startY);
-
-        if (boxWidth >= 5 || boxHeight >= 5) {
-          finishSelection(startX, startY, endX, endY, boxSelectData.additive);
-        }
-      }
-
-      resetToIdle();
+      completeBoxSelection();
     }
 
     handleCanvasMouseUp();
-  }, [boxSelectData, cancelConnection, finishSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle, viewport]);
+  }, [boxSelectData, cancelConnection, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -323,43 +253,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
-
-  const getCursorStyle = useCallback(() => {
-    if (interactionMode.kind !== 'idle') {
-      return getCursorForMode(interactionMode);
-    }
-
-    switch (activeTool) {
-      case 'text_tool':
-        return 'text';
-      case 'smart_pen':
-      case 'shapes_tool':
-      case 'frame_tool':
-      case 'smart_element_tool':
-      case 'smart_doc_tool':
-        return 'crosshair';
-      case 'file_uploader':
-        return 'copy';
-      default:
-        return 'default';
-    }
-  }, [activeTool, interactionMode]);
-
-  const selectionBoxData = useMemo(() => {
-    if (!boxSelectData) return null;
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (!containerRect) return null;
-
-    const startScreen = canvasKernel.worldToScreen(boxSelectData.startWorld.x, boxSelectData.startWorld.y, viewport, containerRect);
-    const currentScreen = canvasKernel.worldToScreen(boxSelectData.currentWorld.x, boxSelectData.currentWorld.y, viewport, containerRect);
-
-    return {
-      startX: startScreen.x - containerRect.left,
-      startY: startScreen.y - containerRect.top,
-      currentX: currentScreen.x - containerRect.left,
-      currentY: currentScreen.y - containerRect.top,
-    };
-  }, [boxSelectData, viewport]);
 
   return (
     <div
@@ -391,7 +284,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
           <CanvasElement
             key={element.id}
             element={element}
-            isSelected={selectedIdsSet.has(element.id)}
+            isSelected={selectedElementIds.includes(element.id)}
             onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
             snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
             activeTool={activeTool}
