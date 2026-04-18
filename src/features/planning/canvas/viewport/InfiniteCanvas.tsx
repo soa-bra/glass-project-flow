@@ -2,7 +2,6 @@
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore, selectBoxSelectData } from '@/stores/interactionStore';
-import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import CanvasElement from '@/features/planning/canvas/layers/CanvasElement';
 import DrawingPreview from '@/features/planning/canvas/viewport/DrawingPreview';
 import SelectionBox, { useSelectionBox } from '@/features/planning/canvas/selection/SelectionBox';
@@ -15,18 +14,18 @@ import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
 import { useCanvasPaste } from '@/hooks/useCanvasPaste';
-import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
+import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
-import { toast } from 'sonner';
 import { PenFloatingToolbar } from '@/components/ui/penToolbar';
 import { CanvasGridLayer } from '@/features/planning/canvas/viewport/CanvasGridLayer';
 import { RealtimeSyncManager } from '@/features/planning/integration/collaboration';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
-
-import { findNearestAnchor, calculateConnectorBounds, type NodeAnchorPoint, type MindMapConnectorData } from '@/types/mindmap-canvas';
 import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
+import { useCanvasPointerTracking } from '@/features/planning/canvas/controllers/useCanvasPointerTracking';
+import { useCanvasDropController } from '@/features/planning/canvas/controllers/useCanvasDropController';
+import { useMindMapConnectionController } from '@/features/planning/canvas/controllers/useMindMapConnectionController';
 
 interface InfiniteCanvasProps {
   boardId: string;
@@ -50,9 +49,7 @@ function getCanvasHostSize(container: HTMLDivElement | null): { width: number; h
   return { width: 1280, height: 720 };
 }
 
-const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
-  boardId,
-}) => {
+const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -80,12 +77,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   const boxSelectData = useInteractionStore(selectBoxSelectData);
 
-  const {
-    handleCanvasMouseDown,
-    handleCanvasMouseMove,
-    handleCanvasMouseUp,
-  } = useToolInteraction(containerRef);
-
+  const { handleCanvasMouseDown, handleCanvasMouseMove, handleCanvasMouseUp } = useToolInteraction(containerRef);
   const { finishSelection } = useSelectionBox();
 
   useKeyboardShortcuts();
@@ -99,52 +91,31 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   const collaborationUser = useCollaborationUser();
   const lastPanPositionRef = useRef({ x: 0, y: 0 });
-  const lastPointerPositionRef = useRef<{ x: number; y: number } | null>(null);
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
   const [containerSize, setContainerSize] = useState(() => getCanvasHostSize(null));
 
-  const mindMapConnectionRef = useRef<{
-    isConnecting: boolean;
-    sourceNodeId: string | null;
-    sourceAnchor: 'top' | 'bottom' | 'left' | 'right' | null;
-    startPosition: { x: number; y: number } | null;
-    currentPosition: { x: number; y: number } | null;
-    nearestAnchor: NodeAnchorPoint | null;
-  }>({
-    isConnecting: false,
-    sourceNodeId: null,
-    sourceAnchor: null,
-    startPosition: null,
-    currentPosition: null,
-    nearestAnchor: null,
+  const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
+    containerRef,
+    viewport,
   });
 
-  const [mindMapConnectionUI, setMindMapConnectionUI] = useState<{
-    isConnecting: boolean;
-    startPosition: { x: number; y: number } | null;
-    currentPosition: { x: number; y: number } | null;
-    nearestAnchor: NodeAnchorPoint | null;
-  }>({
-    isConnecting: false,
-    startPosition: null,
-    currentPosition: null,
-    nearestAnchor: null,
+  const {
+    connectionRef: mindMapConnectionRef,
+    connectionUI: mindMapConnectionUI,
+    handleStartConnection,
+    handleEndConnection,
+    updateConnectionPosition,
+    cancelConnection,
+  } = useMindMapConnectionController({
+    elements,
+    containerRef,
+    viewport,
   });
 
-  const updateUIRef = useRef<number | null>(null);
-  const updateConnectionUI = useCallback(() => {
-    if (updateUIRef.current) return;
-    updateUIRef.current = requestAnimationFrame(() => {
-      const conn = mindMapConnectionRef.current;
-      setMindMapConnectionUI({
-        isConnecting: conn.isConnecting,
-        startPosition: conn.startPosition,
-        currentPosition: conn.currentPosition,
-        nearestAnchor: conn.nearestAnchor,
-      });
-      updateUIRef.current = null;
-    });
-  }, []);
+  const { handleFileDrop, handleFileDragOver } = useCanvasDropController({
+    containerRef,
+    viewport,
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -168,114 +139,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     return () => observer.disconnect();
   }, []);
 
-  const handleStartConnection = useCallback((
-    nodeId: string,
-    anchor: 'top' | 'bottom' | 'left' | 'right',
-    position: { x: number; y: number },
-  ) => {
-    mindMapConnectionRef.current = {
-      isConnecting: true,
-      sourceNodeId: nodeId,
-      sourceAnchor: anchor,
-      startPosition: position,
-      currentPosition: position,
-      nearestAnchor: null,
-    };
-    updateConnectionUI();
-  }, [updateConnectionUI]);
-
-  const handleEndConnection = useCallback((
-    nodeId: string,
-    anchor: 'top' | 'bottom' | 'left' | 'right',
-  ) => {
-    const conn = mindMapConnectionRef.current;
-    if (!conn.isConnecting || !conn.sourceNodeId) return;
-    if (conn.sourceNodeId === nodeId) return;
-
-    const sourceNode = elements.find((el) => el.id === conn.sourceNodeId);
-    if (!sourceNode) return;
-
-    const targetNode = elements.find((el) => el.id === nodeId);
-    if (!targetNode) return;
-
-    const connectorBounds = calculateConnectorBounds(sourceNode, targetNode);
-
-    useCanvasStore.getState().addElement({
-      type: 'mindmap_connector',
-      position: connectorBounds.position,
-      size: connectorBounds.size,
-      data: {
-        startNodeId: conn.sourceNodeId,
-        endNodeId: nodeId,
-        startAnchor: { nodeId: conn.sourceNodeId, anchor: conn.sourceAnchor },
-        endAnchor: { nodeId, anchor },
-        curveStyle: 'bezier',
-        color: sourceNode.data?.color || '#3DA8F5',
-        strokeWidth: 2,
-      } as MindMapConnectorData,
-    });
-
-    mindMapConnectionRef.current = {
-      isConnecting: false,
-      sourceNodeId: null,
-      sourceAnchor: null,
-      startPosition: null,
-      currentPosition: null,
-      nearestAnchor: null,
-    };
-    updateConnectionUI();
-  }, [elements, updateConnectionUI]);
-
-  const updateConnectionPosition = useCallback((clientX: number, clientY: number) => {
-    const conn = mindMapConnectionRef.current;
-    if (!conn.isConnecting) return;
-
-    const containerRect = getContainerRect(containerRef);
-    if (!containerRect) return;
-
-    const canvasPoint = canvasKernel.screenToWorld(clientX, clientY, viewport, containerRect);
-
-    const connectableElements = elements.filter((el) => {
-      if (el.id === conn.sourceNodeId) return false;
-      if (el.type === 'mindmap_connector' || el.type === 'visual_connector') return false;
-      return ['mindmap_node', 'visual_node', 'shape', 'text', 'image', 'sticky', 'frame', 'smart', 'file'].includes(el.type);
-    });
-
-    let nearest: NodeAnchorPoint | null = null;
-    let nearestDistance = 60;
-
-    for (const node of connectableElements) {
-      const result = findNearestAnchor(canvasPoint, node.position, node.size);
-      if (result.distance < nearestDistance) {
-        nearestDistance = result.distance;
-        nearest = {
-          id: `${node.id}-${result.anchor}`,
-          nodeId: node.id,
-          anchor: result.anchor,
-          position: result.position,
-        };
-      }
-    }
-
-    mindMapConnectionRef.current.currentPosition = canvasPoint;
-    mindMapConnectionRef.current.nearestAnchor = nearest;
-    updateConnectionUI();
-  }, [elements, viewport, updateConnectionUI]);
-
-  const cancelConnection = useCallback(() => {
-    if (mindMapConnectionRef.current.isConnecting) {
-      mindMapConnectionRef.current = {
-        isConnecting: false,
-        sourceNodeId: null,
-        sourceAnchor: null,
-        startPosition: null,
-        currentPosition: null,
-        nearestAnchor: null,
-      };
-      updateConnectionUI();
-    }
-  }, [updateConnectionUI]);
-
   const viewportBounds = useMemo(() => {
     return canvasKernel.getVisibleBounds(viewport, containerSize.width, containerSize.height);
   }, [viewport, containerSize.width, containerSize.height]);
@@ -287,146 +150,131 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   });
 
   const selectedIdsSet = useMemo(() => new Set(selectedElementIds), [selectedElementIds]);
-  const layerVisibilityMap = useMemo(() => {
-    return new Map(layers.map((layer) => [layer.id, layer.visible]));
-  }, [layers]);
+  const layerVisibilityMap = useMemo(() => new Map(layers.map((layer) => [layer.id, layer.visible])), [layers]);
 
   const visibleElements = useMemo(() => {
     const padding = 200;
     return elements.filter((el) => {
       const isLayerVisible = el.layerId ? layerVisibilityMap.get(el.layerId) : undefined;
       if (!isLayerVisible || !el.visible) return false;
-
       if (el.type === 'mindmap_connector') return true;
 
-      return el.position.x + el.size.width >= viewportBounds.x - padding &&
-             el.position.x <= viewportBounds.x + viewportBounds.width + padding &&
-             el.position.y + el.size.height >= viewportBounds.y - padding &&
-             el.position.y <= viewportBounds.y + viewportBounds.height + padding;
+      return (
+        el.position.x + el.size.width >= viewportBounds.x - padding &&
+        el.position.x <= viewportBounds.x + viewportBounds.width + padding &&
+        el.position.y + el.size.height >= viewportBounds.y - padding &&
+        el.position.y <= viewportBounds.y + viewportBounds.height + padding
+      );
     });
   }, [elements, viewportBounds, layerVisibilityMap]);
 
-  const snapToGrid = useCallback((x: number, y: number) => {
-    return canvasKernel.snapToGrid({ x, y }, settings.gridSize, settings.snapToGrid);
-  }, [settings.snapToGrid, settings.gridSize]);
+  const snapToGrid = useCallback(
+    (x: number, y: number) => canvasKernel.snapToGrid({ x, y }, settings.gridSize, settings.snapToGrid),
+    [settings.snapToGrid, settings.gridSize],
+  );
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    e.preventDefault();
-    if (e.ctrlKey || e.metaKey) {
-      zoomByWheel(e.deltaY, e.clientX, e.clientY);
-    } else {
-      panBy(-e.deltaX, -e.deltaY);
-    }
-  }, [zoomByWheel, panBy]);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (e.button === 1 || (e.button === 0 && e.altKey)) {
-      startPanning(
-        { x: e.clientX, y: e.clientY },
-        { x: viewport.pan.x, y: viewport.pan.y },
-      );
-      lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
-
-      if (containerRef.current) {
-        containerRef.current.style.cursor = 'grabbing';
-      }
+  const handleWheel = useCallback(
+    (e: WheelEvent) => {
       e.preventDefault();
-      return;
-    }
-
-    const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
-
-    if (e.button === 0 && activeTool === 'selection_tool' && target.type === 'canvas') {
-      if (!e.shiftKey) {
-        clearSelection();
+      if (e.ctrlKey || e.metaKey) {
+        zoomByWheel(e.deltaY, e.clientX, e.clientY);
+      } else {
+        panBy(-e.deltaX, -e.deltaY);
       }
+    },
+    [zoomByWheel, panBy],
+  );
 
-      const containerRect = containerRef.current?.getBoundingClientRect();
-      if (!containerRect) return;
-
-      const worldPoint = canvasKernel.screenToWorld(
-        e.clientX,
-        e.clientY,
-        viewport,
-        containerRect,
-      );
-      lastPointerPositionRef.current = worldPoint;
-      startBoxSelect(worldPoint, e.shiftKey);
-      return;
-    }
-
-    if (target.type === 'bounding-box' || target.type === 'resize-handle') {
-      return;
-    }
-
-    if (e.button === 0 && activeTool === 'text_tool' && target.type === 'canvas') {
-      const { editingTextId, stopEditingText } = useCanvasStore.getState();
-      if (editingTextId) {
-        stopEditingText();
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (e.button === 1 || (e.button === 0 && e.altKey)) {
+        startPanning({ x: e.clientX, y: e.clientY }, { x: viewport.pan.x, y: viewport.pan.y });
+        lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+        if (containerRef.current) {
+          containerRef.current.style.cursor = 'grabbing';
+        }
+        e.preventDefault();
         return;
       }
-    }
 
-    if (e.button === 0 && (
-      activeTool === 'file_uploader' ||
-      activeTool === 'frame_tool' ||
-      activeTool === 'smart_pen' ||
-      activeTool === 'shapes_tool' ||
-      activeTool === 'text_tool' ||
-      activeTool === 'smart_element_tool' ||
-      activeTool === 'sticky_tool' ||
-      activeTool === 'mindmap_tool' ||
-      activeTool === 'smart_doc_tool'
-    )) {
-      handleCanvasMouseDown(e);
-      return;
-    }
+      const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
 
-    if (e.button === 0 && target.type === 'canvas') {
-      clearSelection();
-    }
-  }, [activeTool, handleCanvasMouseDown, clearSelection, viewport, startPanning, startBoxSelect]);
+      if (e.button === 0 && activeTool === 'selection_tool' && target.type === 'canvas') {
+        if (!e.shiftKey) {
+          clearSelection();
+        }
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (containerRect) {
-      const worldPoint = canvasKernel.screenToWorld(
-        e.clientX,
-        e.clientY,
-        viewport,
-        containerRect,
-      );
-      lastPointerPositionRef.current = worldPoint;
-    }
-
-    if (mindMapConnectionRef.current.isConnecting) {
-      updateConnectionPosition(e.clientX, e.clientY);
-    }
-
-    if (isMode('panning')) {
-      const deltaX = e.clientX - lastPanPositionRef.current.x;
-      const deltaY = e.clientY - lastPanPositionRef.current.y;
-      panBy(deltaX, deltaY);
-      lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
-      return;
-    }
-
-    if (isMode('boxSelect') && boxSelectData) {
-      const moveContainerRect = containerRef.current?.getBoundingClientRect();
-      if (moveContainerRect) {
-        const worldPoint = canvasKernel.screenToWorld(
-          e.clientX,
-          e.clientY,
-          viewport,
-          moveContainerRect,
-        );
-        updateBoxSelect(worldPoint);
+        const worldPoint = updatePointerFromClient(e.clientX, e.clientY);
+        if (!worldPoint) return;
+        startBoxSelect(worldPoint, e.shiftKey);
+        return;
       }
-      return;
-    }
 
-    handleCanvasMouseMove(e);
-  }, [panBy, handleCanvasMouseMove, updateConnectionPosition, isMode, boxSelectData, updateBoxSelect, viewport]);
+      if (target.type === 'bounding-box' || target.type === 'resize-handle') {
+        return;
+      }
+
+      if (e.button === 0 && activeTool === 'text_tool' && target.type === 'canvas') {
+        const { editingTextId, stopEditingText } = useCanvasStore.getState();
+        if (editingTextId) {
+          stopEditingText();
+          return;
+        }
+      }
+
+      if (
+        e.button === 0 &&
+        (
+          activeTool === 'file_uploader' ||
+          activeTool === 'frame_tool' ||
+          activeTool === 'smart_pen' ||
+          activeTool === 'shapes_tool' ||
+          activeTool === 'text_tool' ||
+          activeTool === 'smart_element_tool' ||
+          activeTool === 'sticky_tool' ||
+          activeTool === 'mindmap_tool' ||
+          activeTool === 'smart_doc_tool'
+        )
+      ) {
+        handleCanvasMouseDown(e);
+        return;
+      }
+
+      if (e.button === 0 && target.type === 'canvas') {
+        clearSelection();
+      }
+    },
+    [activeTool, clearSelection, handleCanvasMouseDown, startBoxSelect, startPanning, updatePointerFromClient, viewport],
+  );
+
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      updatePointerFromClient(e.clientX, e.clientY);
+
+      if (mindMapConnectionRef.current.isConnecting) {
+        updateConnectionPosition(e.clientX, e.clientY);
+      }
+
+      if (isMode('panning')) {
+        const deltaX = e.clientX - lastPanPositionRef.current.x;
+        const deltaY = e.clientY - lastPanPositionRef.current.y;
+        panBy(deltaX, deltaY);
+        lastPanPositionRef.current = { x: e.clientX, y: e.clientY };
+        return;
+      }
+
+      if (isMode('boxSelect') && boxSelectData) {
+        const worldPoint = updatePointerFromClient(e.clientX, e.clientY);
+        if (worldPoint) {
+          updateBoxSelect(worldPoint);
+        }
+        return;
+      }
+
+      handleCanvasMouseMove(e);
+    },
+    [boxSelectData, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelect, updateConnectionPosition, updatePointerFromClient],
+  );
 
   const handleMouseUp = useCallback(() => {
     const conn = mindMapConnectionRef.current;
@@ -448,24 +296,13 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     if (isMode('boxSelect') && boxSelectData) {
       const containerRect = containerRef.current?.getBoundingClientRect();
       if (containerRect) {
-        const startScreen = canvasKernel.worldToScreen(
-          boxSelectData.startWorld.x,
-          boxSelectData.startWorld.y,
-          viewport,
-          containerRect,
-        );
-        const endScreen = canvasKernel.worldToScreen(
-          boxSelectData.currentWorld.x,
-          boxSelectData.currentWorld.y,
-          viewport,
-          containerRect,
-        );
+        const startScreen = canvasKernel.worldToScreen(boxSelectData.startWorld.x, boxSelectData.startWorld.y, viewport, containerRect);
+        const endScreen = canvasKernel.worldToScreen(boxSelectData.currentWorld.x, boxSelectData.currentWorld.y, viewport, containerRect);
 
         const startX = startScreen.x - containerRect.left;
         const startY = startScreen.y - containerRect.top;
         const endX = endScreen.x - containerRect.left;
         const endY = endScreen.y - containerRect.top;
-
         const boxWidth = Math.abs(endX - startX);
         const boxHeight = Math.abs(endY - startY);
 
@@ -478,7 +315,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     }
 
     handleCanvasMouseUp();
-  }, [handleCanvasMouseUp, handleEndConnection, cancelConnection, isMode, boxSelectData, resetToIdle, viewport, finishSelection]);
+  }, [boxSelectData, cancelConnection, finishSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle, viewport]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -486,57 +323,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
   }, [handleWheel]);
-
-  const handleFileDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-
-    const containerRect = getContainerRect(containerRef);
-    if (!containerRect) return;
-    const canvasPoint = canvasKernel.screenToWorld(e.clientX, e.clientY, viewport, containerRect);
-
-    const smartElementData = e.dataTransfer.getData('application/smart-element');
-    if (smartElementData) {
-      try {
-        const { type, name } = JSON.parse(smartElementData);
-        const { addSmartElement } = useSmartElementsStore.getState();
-        addSmartElement(type, canvasPoint, { title: name });
-        toast.success(`تم إدراج ${name}`);
-        return;
-      } catch (err) {
-        console.error('Failed to parse smart element data:', err);
-      }
-    }
-
-    if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
-    const file = e.dataTransfer.files[0];
-
-    if (file.type.startsWith('image/')) {
-      const imageUrl = URL.createObjectURL(file);
-      useCanvasStore.getState().addElement({
-        type: 'image',
-        position: canvasPoint,
-        size: { width: 300, height: 200 },
-        src: imageUrl,
-        alt: file.name,
-      });
-      toast.success(`تم إدراج الصورة: ${file.name}`);
-    } else {
-      useCanvasStore.getState().addElement({
-        type: 'file',
-        position: canvasPoint,
-        size: { width: 250, height: 120 },
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size,
-        fileUrl: URL.createObjectURL(file),
-      });
-      toast.success(`تم إدراج الملف: ${file.name}`);
-    }
-  }, [viewport]);
-
-  const handleFileDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-  }, []);
 
   const getCursorStyle = useCallback(() => {
     if (interactionMode.kind !== 'idle') {
@@ -561,22 +347,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   const selectionBoxData = useMemo(() => {
     if (!boxSelectData) return null;
-
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return null;
 
-    const startScreen = canvasKernel.worldToScreen(
-      boxSelectData.startWorld.x,
-      boxSelectData.startWorld.y,
-      viewport,
-      containerRect,
-    );
-    const currentScreen = canvasKernel.worldToScreen(
-      boxSelectData.currentWorld.x,
-      boxSelectData.currentWorld.y,
-      viewport,
-      containerRect,
-    );
+    const startScreen = canvasKernel.worldToScreen(boxSelectData.startWorld.x, boxSelectData.startWorld.y, viewport, containerRect);
+    const currentScreen = canvasKernel.worldToScreen(boxSelectData.currentWorld.x, boxSelectData.currentWorld.y, viewport, containerRect);
 
     return {
       startX: startScreen.x - containerRect.left,
@@ -590,19 +365,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     <div
       ref={containerRef}
       data-canvas-container="true"
-      className={`relative w-full h-full overflow-hidden infinite-canvas-container ${
-        activeTool === 'text_tool' ? 'text-tool-active' : ''
-      }`}
+      className={`relative w-full h-full overflow-hidden infinite-canvas-container ${activeTool === 'text_tool' ? 'text-tool-active' : ''}`}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onDrop={handleFileDrop}
       onDragOver={handleFileDragOver}
-      style={{
-        backgroundColor: settings.background,
-        cursor: getCursorStyle(),
-      }}
+      style={{ backgroundColor: settings.background, cursor: getCursorStyle() }}
     >
       <CanvasGridLayer />
 
@@ -657,16 +427,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
       <SnapGuides guides={snapGuides} containerRef={containerRef} />
 
-      <PenInputLayer
-        containerRef={containerRef}
-        active={activeTool === 'smart_pen'}
-      />
-
-      <FrameInputLayer
-        containerRef={containerRef}
-        active={activeTool === 'frame_tool'}
-      />
-
+      <PenInputLayer containerRef={containerRef} active={activeTool === 'smart_pen'} />
+      <FrameInputLayer containerRef={containerRef} active={activeTool === 'frame_tool'} />
       <PenFloatingToolbar isVisible={activeTool === 'smart_pen'} />
 
       <RealtimeSyncManager
