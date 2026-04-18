@@ -1,8 +1,3 @@
-/**
- * FloatingBar - الشريط الطافي المُعاد هيكلته (Orchestrator)
- * يستخدم المكونات والـ hooks المنفصلة الجديدة
- */
-
 import React, { useMemo, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
@@ -18,11 +13,7 @@ import {
   toggleListFormat,
   toggleTextStyleFromElement,
 } from "@/features/planning/elements/text/TextFormattingController";
-
-// Hooks
 import { useFloatingPosition, useSelectionMeta, useLayoutOperations } from "./hooks";
-
-// Groups
 import {
   CommonActions,
   MindmapActions,
@@ -32,8 +23,6 @@ import {
   ElementActions,
   MultipleActions,
 } from "./groups";
-
-// Actions
 import {
   copyElements,
   cutElements,
@@ -51,14 +40,10 @@ import {
   addNewText,
   createFrameFromSelection,
 } from "./actions";
-
 import type { SmartElementType } from "@/types/smart-elements";
 import type { CanvasElement } from "@/types/canvas";
 import type { TextFormatCommand } from "@/features/planning/elements/text/TextFormattingController";
 
-/**
- * FloatingBar - المُنسق الرئيسي للشريط الطافي
- */
 export const FloatingBar: React.FC = () => {
   const {
     elements,
@@ -71,13 +56,13 @@ export const FloatingBar: React.FC = () => {
     addElement,
     selectElement,
     editingTextId,
+    groupElements,
+    ungroupElements,
   } = useCanvasStore();
 
   const activeTextEditor = useActiveTextEditor();
   const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
   const [isTransforming, setIsTransforming] = useState(false);
-
-  // استخدام hook بيانات التحديد
   const selectionMeta = useSelectionMeta();
 
   const {
@@ -93,18 +78,14 @@ export const FloatingBar: React.FC = () => {
     isMindmapSelection,
   } = selectionMeta;
 
-  // استخدام hook عمليات التخطيط
   const layoutOps = useLayoutOperations();
-
   const elementStyle = firstElement?.style || {};
   const isEditingActiveText = !!editingTextId && !!activeTextEditor && activeTextEditor.elementId === firstElement?.id;
 
-  // التحقق من نوع visual_diagram
   const isVisualDiagramSelection = useMemo(() => {
     return selectedElements.some((el) => el.type === "visual_node" || el.type === "visual_connector");
   }, [selectedElements]);
 
-  // استخدام hook موضع الشريط
   const position = useFloatingPosition({
     activeElements: selectedElements,
     editingTextId,
@@ -112,7 +93,6 @@ export const FloatingBar: React.FC = () => {
     hasSelection,
   });
 
-  // === الإجراءات الأساسية ===
   const handleCopy = useCallback(() => {
     copyElements(selectedElementIds);
   }, [selectedElementIds]);
@@ -138,23 +118,17 @@ export const FloatingBar: React.FC = () => {
   }, [selectedElementIds, elements, areElementsVisible]);
 
   const handleToggleLock = useCallback(() => {
-    if (areElementsLocked) {
-      unlockElements(selectedElementIds);
-    } else {
-      lockElements(selectedElementIds);
-    }
+    if (areElementsLocked) unlockElements(selectedElementIds);
+    else lockElements(selectedElementIds);
   }, [selectedElementIds, areElementsLocked]);
 
   const handleComment = useCallback(() => {
     toast.info("سيتم إضافة ميزة التعليقات قريباً");
   }, []);
 
-  const handleChangeLayer = useCallback(
-    (layerId: string) => {
-      changeLayer(selectedElementIds, layerId);
-    },
-    [selectedElementIds],
-  );
+  const handleChangeLayer = useCallback((layerId: string) => {
+    changeLayer(selectedElementIds, layerId);
+  }, [selectedElementIds]);
 
   const handleBringToFront = useCallback(() => {
     bringToFront(selectedElementIds);
@@ -176,25 +150,44 @@ export const FloatingBar: React.FC = () => {
     addNewText({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   }, []);
 
-  // === إجراءات التحديد المتعدد ===
-  const handleHorizontalAlign = useCallback(
-    (align: "right" | "center" | "left") => {
-      layoutOps.alignHorizontally(align);
-    },
-    [layoutOps],
-  );
+  const handleHorizontalAlign = useCallback((align: "right" | "center" | "left") => {
+    layoutOps.alignHorizontally(align);
+  }, [layoutOps]);
 
-  const handleVerticalAlignMultiple = useCallback(
-    (align: "top" | "middle" | "bottom") => {
-      layoutOps.alignVertically(align);
-    },
-    [layoutOps],
-  );
+  const handleVerticalAlignMultiple = useCallback((align: "top" | "middle" | "bottom") => {
+    layoutOps.alignVertically(align);
+  }, [layoutOps]);
 
   const handleToggleGroup = useCallback(() => {
-    // TODO: تنفيذ التجميع/فك التجميع
-    toast.info("سيتم إضافة ميزة التجميع قريباً");
-  }, []);
+    if (selectedElementIds.length < 2 && !areElementsGrouped) {
+      toast.info("حدد عنصرين أو أكثر للتجميع");
+      return;
+    }
+
+    if (areElementsGrouped) {
+      const groupIds = Array.from(
+        new Set(
+          selectedElements
+            .map((element) => element.metadata?.groupId)
+            .filter((groupId): groupId is string => typeof groupId === "string" && groupId.length > 0),
+        ),
+      );
+
+      if (groupIds.length === 0) {
+        toast.info("لا يوجد تجميع صالح لفكه");
+        return;
+      }
+
+      groupIds.forEach((groupId) => {
+        ungroupElements(groupId);
+      });
+      toast.success("تم فك التجميع");
+      return;
+    }
+
+    groupElements(selectedElementIds);
+    toast.success("تم التجميع");
+  }, [areElementsGrouped, groupElements, selectedElementIds, selectedElements, ungroupElements]);
 
   const handleCreateFrame = useCallback(() => {
     const frameId = createFrameFromSelection(selectedElementIds, elements, addElement);
@@ -204,201 +197,100 @@ export const FloatingBar: React.FC = () => {
     }
   }, [selectedElementIds, elements, addElement, selectElement]);
 
-  // === إجراءات العنصر الفردي ===
-  const handleBgColorChange = useCallback(
-    (color: string) => {
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, backgroundColor: color },
-        });
-      }
-    },
-    [firstElement, updateElement],
-  );
-
-  const handleStrokeColorChange = useCallback(
-    (color: string) => {
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, borderColor: color },
-        });
-      }
-    },
-    [firstElement, updateElement],
-  );
-
-  const handleOpacityChange = useCallback(
-    (value: number[]) => {
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, opacity: value[0] / 100 },
-        });
-      }
-    },
-    [firstElement, updateElement],
-  );
-
-  const handleStrokeWidthChange = useCallback(
-    (value: number[]) => {
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, borderWidth: value[0] },
-        });
-      }
-    },
-    [firstElement, updateElement],
-  );
-
-  // === إجراءات الصورة ===
-  const handleImageRename = useCallback(
-    (name: string) => {
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          data: { ...firstElement.data, name },
-        });
-      }
-    },
-    [firstElement, updateElement],
-  );
-
-  const handleCrop = useCallback(() => {
-    toast.info("سيتم إضافة ميزة الكروب قريباً");
-  }, []);
-
-  const handleReplaceImage = useCallback(() => {
-    toast.info("سيتم إضافة ميزة تبديل الصورة قريباً");
-  }, []);
-
-  const handleAddLink = useCallback(() => {
-    toast.info("سيتم إضافة ميزة الرابط قريباً");
-  }, []);
-
-  // === إجراءات النص ===
-  const restoreEditorFocusIfNeeded = useCallback(() => {
-    if (isEditingActiveText) {
-      activeTextEditor?.restoreFocus();
+  const handleBgColorChange = useCallback((color: string) => {
+    if (firstElement) {
+      updateElement(firstElement.id, { style: { ...firstElement.style, backgroundColor: color } });
     }
+  }, [firstElement, updateElement]);
+
+  const handleStrokeColorChange = useCallback((color: string) => {
+    if (firstElement) {
+      updateElement(firstElement.id, { style: { ...firstElement.style, borderColor: color } });
+    }
+  }, [firstElement, updateElement]);
+
+  const handleOpacityChange = useCallback((value: number[]) => {
+    if (firstElement) {
+      updateElement(firstElement.id, { style: { ...firstElement.style, opacity: value[0] / 100 } });
+    }
+  }, [firstElement, updateElement]);
+
+  const handleStrokeWidthChange = useCallback((value: number[]) => {
+    if (firstElement) {
+      updateElement(firstElement.id, { style: { ...firstElement.style, borderWidth: value[0] } });
+    }
+  }, [firstElement, updateElement]);
+
+  const handleImageRename = useCallback((name: string) => {
+    if (firstElement) {
+      updateElement(firstElement.id, { data: { ...firstElement.data, name } });
+    }
+  }, [firstElement, updateElement]);
+
+  const handleCrop = useCallback(() => toast.info("سيتم إضافة ميزة الكروب قريباً"), []);
+  const handleReplaceImage = useCallback(() => toast.info("سيتم إضافة ميزة تبديل الصورة قريباً"), []);
+  const handleAddLink = useCallback(() => toast.info("سيتم إضافة ميزة الرابط قريباً"), []);
+
+  const restoreEditorFocusIfNeeded = useCallback(() => {
+    if (isEditingActiveText) activeTextEditor?.restoreFocus();
   }, [activeTextEditor, isEditingActiveText]);
 
-  const handleFontFamilyChange = useCallback(
-    (value: string) => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, fontFamily: value },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
+  const handleFontFamilyChange = useCallback((value: string) => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) updateElement(firstElement.id, { style: { ...firstElement.style, fontFamily: value } });
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
-  const handleFontSizeChange = useCallback(
-    (value: number) => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, fontSize: value },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
+  const handleFontSizeChange = useCallback((value: number) => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) updateElement(firstElement.id, { style: { ...firstElement.style, fontSize: value } });
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
-  const handleFontWeightChange = useCallback(
-    (value: string) => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, fontWeight: value },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
+  const handleFontWeightChange = useCallback((value: string) => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) updateElement(firstElement.id, { style: { ...firstElement.style, fontWeight: value } });
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
-  const handleTextColorChange = useCallback(
-    (color: string) => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, color },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
+  const handleTextColorChange = useCallback((color: string) => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) updateElement(firstElement.id, { style: { ...firstElement.style, color } });
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
-  const handleTextFormat = useCallback(
-    (format: string) => {
-      const command = format as TextFormatCommand;
+  const handleTextFormat = useCallback((format: string) => {
+    const command = format as TextFormatCommand;
 
-      if (isEditingActiveText && applyInlineFormat(activeTextEditor, command)) {
-        return;
-      }
+    if (isEditingActiveText && applyInlineFormat(activeTextEditor, command)) return;
 
-      const stylePatch = toggleTextStyleFromElement(firstElement, command);
-      if (firstElement && stylePatch) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, ...stylePatch },
-        });
-      }
-    },
-    [activeTextEditor, firstElement, isEditingActiveText, updateElement],
-  );
+    const stylePatch = toggleTextStyleFromElement(firstElement, command);
+    if (firstElement && stylePatch) {
+      updateElement(firstElement.id, { style: { ...firstElement.style, ...stylePatch } });
+    }
+  }, [activeTextEditor, firstElement, isEditingActiveText, updateElement]);
 
-  const handleToggleList = useCallback(
-    (type: "ul" | "ol") => {
-      if (isEditingActiveText && toggleListFormat(activeTextEditor, type)) {
-        return;
-      }
+  const handleToggleList = useCallback((type: "ul" | "ol") => {
+    if (isEditingActiveText && toggleListFormat(activeTextEditor, type)) return;
+    toast.info("تنسيق القوائم يعمل أثناء تحرير النص فقط");
+  }, [activeTextEditor, isEditingActiveText]);
 
-      toast.info("تنسيق القوائم يعمل أثناء تحرير النص فقط");
-    },
-    [activeTextEditor, isEditingActiveText],
-  );
+  const handleTextDirection = useCallback((direction: "rtl" | "ltr") => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) {
+      const nextAlign = direction === "rtl" ? "right" : "left";
+      updateElement(firstElement.id, { style: { ...firstElement.style, direction, textAlign: nextAlign } });
+    }
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
-  const handleTextDirection = useCallback(
-    (direction: "rtl" | "ltr") => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        const nextAlign = direction === "rtl" ? "right" : "left";
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, direction, textAlign: nextAlign },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
+  const handleTextAlign = useCallback((align: string) => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) updateElement(firstElement.id, { style: { ...firstElement.style, textAlign: align } });
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
-  const handleTextAlign = useCallback(
-    (align: string) => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, textAlign: align },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
-
-  const handleVerticalAlign = useCallback(
-    (align: string) => {
-      restoreEditorFocusIfNeeded();
-      if (firstElement) {
-        updateElement(firstElement.id, {
-          style: { ...firstElement.style, alignItems: align },
-        });
-      }
-    },
-    [firstElement, restoreEditorFocusIfNeeded, updateElement],
-  );
+  const handleVerticalAlign = useCallback((align: string) => {
+    restoreEditorFocusIfNeeded();
+    if (firstElement) updateElement(firstElement.id, { style: { ...firstElement.style, alignItems: align } });
+  }, [firstElement, restoreEditorFocusIfNeeded, updateElement]);
 
   const handleClearFormatting = useCallback(() => {
-    if (isEditingActiveText && clearEditorFormatting(activeTextEditor)) {
-      return;
-    }
-
+    if (isEditingActiveText && clearEditorFormatting(activeTextEditor)) return;
     if (firstElement) {
       updateElement(firstElement.id, {
         style: {
@@ -411,15 +303,12 @@ export const FloatingBar: React.FC = () => {
     }
   }, [activeTextEditor, firstElement, isEditingActiveText, updateElement]);
 
-  // === AI Actions ===
   const handleQuickGenerate = useCallback(async () => {
     if (selectedElements.length === 0) return;
     setIsTransforming(true);
     try {
       const analysis = await analyzeSelection(selectedElements.map((el) => el.id));
-      if (analysis) {
-        toast.success("تم تحليل التحديد بنجاح");
-      }
+      if (analysis) toast.success("تم تحليل التحديد بنجاح");
     } catch {
       toast.error("حدث خطأ أثناء التحليل");
     } finally {
@@ -427,79 +316,47 @@ export const FloatingBar: React.FC = () => {
     }
   }, [selectedElements, analyzeSelection]);
 
-  const handleTransform = useCallback(
-    async (type: SmartElementType) => {
-      if (selectedElements.length === 0) return;
-      setIsTransforming(true);
-      try {
-        await transformElements(
-          selectedElements.map((el) => el.id),
-          type,
-        );
-        toast.success(`تم التحويل إلى ${type}`);
-      } catch {
-        toast.error("حدث خطأ أثناء التحويل");
-      } finally {
-        setIsTransforming(false);
-      }
-    },
-    [selectedElements, transformElements],
-  );
+  const handleTransform = useCallback(async (type: SmartElementType) => {
+    if (selectedElements.length === 0) return;
+    setIsTransforming(true);
+    try {
+      await transformElements(selectedElements.map((el) => el.id), type);
+      toast.success(`تم التحويل إلى ${type}`);
+    } catch {
+      toast.error("حدث خطأ أثناء التحويل");
+    } finally {
+      setIsTransforming(false);
+    }
+  }, [selectedElements, transformElements]);
 
-  const handleCustomTransform = useCallback(
-    async (prompt: string) => {
-      if (selectedElements.length === 0 || !prompt.trim()) return;
-      setIsTransforming(true);
-      try {
-        await transformElements(
-          selectedElements.map((el) => el.id),
-          "brainstorming",
-          prompt,
-        );
-        toast.success("تم التحويل المخصص بنجاح");
-      } catch {
-        toast.error("حدث خطأ أثناء التحويل");
-      } finally {
-        setIsTransforming(false);
-      }
-    },
-    [selectedElements, transformElements],
-  );
+  const handleCustomTransform = useCallback(async (prompt: string) => {
+    if (selectedElements.length === 0 || !prompt.trim()) return;
+    setIsTransforming(true);
+    try {
+      await transformElements(selectedElements.map((el) => el.id), "brainstorming", prompt);
+      toast.success("تم التحويل المخصص بنجاح");
+    } catch {
+      toast.error("حدث خطأ أثناء التحويل");
+    } finally {
+      setIsTransforming(false);
+    }
+  }, [selectedElements, transformElements]);
 
-  // === Mindmap Actions ===
-  const handleDeleteElements = useCallback(
-    (ids: string[]) => {
-      ids.forEach((id) => deleteElement(id));
-    },
-    [deleteElement],
-  );
+  const handleDeleteElements = useCallback((ids: string[]) => {
+    ids.forEach((id) => deleteElement(id));
+  }, [deleteElement]);
 
-  const handleUpdateElement = useCallback(
-    (id: string, updates: Partial<CanvasElement>) => {
-      updateElement(id, updates);
-    },
-    [updateElement],
-  );
+  const handleUpdateElement = useCallback((id: string, updates: Partial<CanvasElement>) => {
+    updateElement(id, updates);
+  }, [updateElement]);
 
-  const handleAddElement = useCallback(
-    (element: Partial<CanvasElement>) => {
-      addElement(element as CanvasElement);
-    },
-    [addElement],
-  );
+  const handleAddElement = useCallback((element: Partial<CanvasElement>) => {
+    addElement(element as CanvasElement);
+  }, [addElement]);
 
-  // إذا لم يكن هناك تحديد، لا تعرض شيء
-  if (!hasSelection || selectionType === null) {
-    return null;
-  }
+  if (!hasSelection || selectionType === null) return null;
 
-  // تجهيز الطبقات للقائمة
-  const layersList = layers.map((layer) => ({
-    id: layer.id,
-    name: layer.name,
-  }));
-
-  // استخراج خصائص العنصر الحالي
+  const layersList = layers.map((layer) => ({ id: layer.id, name: layer.name }));
   const currentBg = elementStyle.backgroundColor || "#ffffff";
   const currentStroke = elementStyle.borderColor || "#000000";
   const currentOpacity = (elementStyle.opacity ?? 1) * 100;
@@ -513,14 +370,9 @@ export const FloatingBar: React.FC = () => {
   const currentDirection = (elementStyle.direction as "rtl" | "ltr") || "rtl";
   const imageName = (firstElement?.data as any)?.name || "";
 
-  const activeFormats = useMemo(
-    () => getActiveTextFormats(isEditingActiveText, elementStyle),
-    [isEditingActiveText, elementStyle],
-  );
+  const activeFormats = useMemo(() => getActiveTextFormats(isEditingActiveText, elementStyle), [isEditingActiveText, elementStyle]);
 
-  // تحديد المحتوى بناءً على نوع التحديد
   const renderContent = () => {
-    // الخريطة الذهنية
     if (isMindmapSelection) {
       return (
         <>
@@ -563,7 +415,6 @@ export const FloatingBar: React.FC = () => {
       );
     }
 
-    // المخطط البصري
     if (isVisualDiagramSelection) {
       return (
         <>
@@ -605,7 +456,6 @@ export const FloatingBar: React.FC = () => {
       );
     }
 
-    // النص
     if (selectionType === "text") {
       return (
         <>
@@ -660,7 +510,6 @@ export const FloatingBar: React.FC = () => {
       );
     }
 
-    // الصورة
     if (selectionType === "image") {
       return (
         <>
@@ -711,7 +560,6 @@ export const FloatingBar: React.FC = () => {
       );
     }
 
-    // تحديد متعدد
     if (selectionType === "multiple") {
       return (
         <>
@@ -753,7 +601,6 @@ export const FloatingBar: React.FC = () => {
       );
     }
 
-    // عنصر فردي
     if (selectionType === "element") {
       return (
         <>
@@ -797,7 +644,6 @@ export const FloatingBar: React.FC = () => {
       );
     }
 
-    // الافتراضي
     return (
       <CommonActions
         areElementsVisible={areElementsVisible}
@@ -837,12 +683,7 @@ export const FloatingBar: React.FC = () => {
         exit={{ opacity: 0, y: 10, scale: 0.95 }}
         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
         className="fixed flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[hsl(var(--border))] bg-white shadow-[var(--shadow-glass)] pointer-events-auto"
-        style={{
-          left: position.x,
-          top: position.y,
-          zIndex: "var(--z-toolbar)",
-          transform: "translateX(-50%)",
-        }}
+        style={{ left: position.x, top: position.y, zIndex: "var(--z-toolbar)", transform: "translateX(-50%)" }}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
         dir="rtl"
