@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
@@ -16,11 +16,33 @@ interface PlanningCanvasProps {
 const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const setCurrentBoard = usePlanningStore((state) => state.setCurrentBoard);
   const activeTool = useCanvasStore((state) => state.activeTool);
+  const setViewportHostSize = useCanvasStore((state) => state.setViewportHostSize);
+  const canvasHostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const host = canvasHostRef.current;
+    if (!host) return;
+
+    const syncSize = () => {
+      setViewportHostSize(host.clientWidth, host.clientHeight);
+    };
+
+    syncSize();
+
+    if (typeof ResizeObserver === 'undefined') return;
+
+    const observer = new ResizeObserver(() => {
+      syncSize();
+    });
+
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, [setViewportHostSize]);
 
   return (
     <div className="h-full flex flex-col bg-white">
       <CanvasToolbar board={board} onBack={() => setCurrentBoard(null)} onOpenAI={() => undefined} />
-      <div className="flex-1 flex overflow-hidden relative">
+      <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
         <div className="flex-1">
           <InfiniteCanvas boardId={board.id} />
         </div>

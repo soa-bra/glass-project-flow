@@ -132,7 +132,15 @@ export const createToolsSlice: StateCreator<
   },
   
   updateTextStyle: (elementId, style) => {
-    get().updateElement(elementId, style);
+    const element = get().elements?.find((el: CanvasElement) => el.id === elementId);
+    if (!element) return;
+
+    get().updateElement(elementId, {
+      style: {
+        ...(element.style || {}),
+        ...style,
+      },
+    });
   },
   
   startEditingText: (elementId) => {
