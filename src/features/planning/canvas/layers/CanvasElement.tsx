@@ -20,6 +20,7 @@ import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import type { MindMapNodeData } from '@/types/mindmap-canvas';
+import { isTypedSmartCanvasElementType } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
 
 // التحقق إذا كان العنصر سهماً
 const isArrowShape = (shapeType: string | undefined): boolean => {
@@ -150,6 +151,13 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const elementLayer = layers.find(l => l.id === element.layerId);
   const isVisible = element.visible !== false && (elementLayer?.visible !== false);
   const isLocked = element.locked || elementLayer?.locked;
+  const smartRenderableType = useMemo(() => {
+    if (element.type === 'smart') {
+      return (element as any).smartType || element.data?.smartType || element.metadata?.smartType || null;
+    }
+
+    return isTypedSmartCanvasElementType(element.type) ? element.type : null;
+  }, [element]);
   
   // ✅ الحصول على جميع عناصر المجموعة
   const getGroupElementIds = useCallback((): string[] => {
@@ -552,10 +560,13 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         </svg>
       )}
       
-      {element.type === 'smart' && (
+      {smartRenderableType && (
         <SmartElementRenderer 
-          element={element as CanvasSmartElement}
-          onUpdate={(data) => updateElement(element.id, { data })}
+          element={{ ...(element as CanvasSmartElement), smartType: smartRenderableType } as CanvasSmartElement}
+          onUpdate={(data) => updateElement(element.id, {
+            smartType: smartRenderableType,
+            data: { ...element.data, ...data, smartType: smartRenderableType },
+          })}
         />
       )}
       
