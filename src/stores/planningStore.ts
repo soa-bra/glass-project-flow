@@ -7,15 +7,17 @@ interface PlanningState {
   boards: CanvasBoard[];
   currentBoard: CanvasBoard | null;
   templates: CanvasTemplate[];
-  
-  // Actions
   createBoard: (type: 'blank' | 'template' | 'from_file', data?: any) => void;
   deleteBoard: (id: string) => void;
   renameBoard: (id: string, name: string) => void;
+  saveBoard: (id: string, savedAt?: Date) => void;
   duplicateBoard: (id: string) => void;
   setCurrentBoard: (board: CanvasBoard | null) => void;
   loadBoards: () => void;
 }
+
+const updateBoards = (boards: CanvasBoard[], id: string, updater: (board: CanvasBoard) => CanvasBoard) =>
+  boards.map((board) => (board.id === id ? updater(board) : board));
 
 export const usePlanningStore = create<PlanningState>()(
   persist(
@@ -23,57 +25,72 @@ export const usePlanningStore = create<PlanningState>()(
       boards: [],
       currentBoard: null,
       templates: [],
-      
       createBoard: (type, data) => {
+        const now = new Date();
         const newBoard: CanvasBoard = {
           id: nanoid(),
           name: data?.name || `لوحة جديدة ${get().boards.length + 1}`,
           type,
           status: 'draft',
-          lastModified: new Date(),
-          createdAt: new Date(),
+          lastModified: now,
+          createdAt: now,
           owner: 'current-user',
         };
         set({ boards: [newBoard, ...get().boards], currentBoard: newBoard });
       },
-      
       deleteBoard: (id) => {
-        set({ 
-          boards: get().boards.filter(b => b.id !== id),
-          currentBoard: get().currentBoard?.id === id ? null : get().currentBoard
-        });
-      },
-      
-      renameBoard: (id, name) => {
         set({
-          boards: get().boards.map(b => 
-            b.id === id ? { ...b, name, lastModified: new Date() } : b
-          )
+          boards: get().boards.filter((board) => board.id !== id),
+          currentBoard: get().currentBoard?.id === id ? null : get().currentBoard,
         });
       },
-      
-      duplicateBoard: (id) => {
-        const original = get().boards.find(b => b.id === id);
-        if (original) {
-          const duplicate: CanvasBoard = {
-            ...original,
-            id: nanoid(),
-            name: `${original.name} (نسخة)`,
-            createdAt: new Date(),
-            lastModified: new Date(),
-          };
-          set({ boards: [duplicate, ...get().boards] });
-        }
+      renameBoard: (id, name) => {
+        const trimmedName = name.trim();
+        if (!trimmedName) return;
+        const now = new Date();
+        set((state) => ({
+          boards: updateBoards(state.boards, id, (board) => ({ ...board, name: trimmedName, lastModified: now })),
+          currentBoard:
+            state.currentBoard?.id === id
+              ? { ...state.currentBoard, name: trimmedName, lastModified: now }
+              : state.currentBoard,
+        }));
       },
-      
+      saveBoard: (id, savedAt = new Date()) => {
+        set((state) => ({
+          boards: updateBoards(state.boards, id, (board) => ({
+            ...board,
+            status: board.status === 'archived' ? 'archived' : 'active',
+            lastModified: savedAt,
+          })),
+          currentBoard:
+            state.currentBoard?.id === id
+              ? {
+                  ...state.currentBoard,
+                  status: state.currentBoard.status === 'archived' ? 'archived' : 'active',
+                  lastModified: savedAt,
+                }
+              : state.currentBoard,
+        }));
+      },
+      duplicateBoard: (id) => {
+        const original = get().boards.find((board) => board.id === id);
+        if (!original) return;
+        const now = new Date();
+        const duplicate: CanvasBoard = {
+          ...original,
+          id: nanoid(),
+          name: `${original.name} (نسخة)`,
+          createdAt: now,
+          lastModified: now,
+        };
+        set({ boards: [duplicate, ...get().boards] });
+      },
       setCurrentBoard: (board) => set({ currentBoard: board }),
-      
       loadBoards: () => {
         // سيتم ربطها لاحقًا بـ Supabase أو API
       },
     }),
-    {
-      name: 'planning-storage',
-    }
-  )
+    { name: 'planning-storage' },
+  ),
 );
