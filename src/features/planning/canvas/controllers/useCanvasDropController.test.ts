@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { useCanvasDropController } from './useCanvasDropController';
-import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { toast } from 'sonner';
 import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
@@ -56,6 +55,10 @@ describe('useCanvasDropController', () => {
     vi.stubGlobal('URL', {
       createObjectURL: vi.fn(() => 'blob:test-url'),
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('adds a smart element when smart element payload exists', () => {
