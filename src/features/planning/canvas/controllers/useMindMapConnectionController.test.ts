@@ -1,7 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
 import { useMindMapConnectionController } from './useMindMapConnectionController';
-import { useCanvasStore } from '@/stores/canvasStore';
 import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
 import { findNearestAnchor, calculateConnectorBounds } from '@/types/mindmap-canvas';
 
