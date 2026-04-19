@@ -24,7 +24,7 @@ interface AnchorRect {
 }
 
 const HIDDEN_POSITION: Position = { x: -9999, y: -9999 };
-const TOOLBAR_MARGIN = 10;
+const TOOLBAR_MARGIN = 8;
 const MAX_ELASTIC_SHIFT_RATIO = 0.15;
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -41,8 +41,11 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
   }, []);
 
   const getBoardRect = useCallback((): DOMRect | null => {
-    const boardElement = document.querySelector('[data-canvas-container="true"]') as HTMLElement | null;
-    return boardElement?.getBoundingClientRect() || null;
+    const boardFrame = document.querySelector('[data-board-frame="true"]') as HTMLElement | null;
+    if (boardFrame) return boardFrame.getBoundingClientRect();
+
+    const fallbackCanvas = document.querySelector('[data-canvas-container="true"]') as HTMLElement | null;
+    return fallbackCanvas?.getBoundingClientRect() || null;
   }, []);
 
   const getToolbarMetrics = useCallback(() => {
@@ -68,6 +71,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     let minY = Infinity;
     let maxX = -Infinity;
     let maxY = -Infinity;
+
     activeElements.forEach((el) => {
       const width = el.size?.width || 200;
       const height = el.size?.height || 100;
@@ -76,6 +80,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       maxX = Math.max(maxX, el.position.x + width);
       maxY = Math.max(maxY, el.position.y + height);
     });
+
     return {
       centerX: ((minX + maxX) / 2) * viewport.zoom + viewport.pan.x,
       top: minY * viewport.zoom + viewport.pan.y,
@@ -87,40 +92,61 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       updatePositionIfNeeded(HIDDEN_POSITION);
       return;
     }
+
     const boardRect = getBoardRect();
     const toolbar = getToolbarMetrics();
     if (!boardRect || !toolbar) {
       updatePositionIfNeeded(HIDDEN_POSITION);
       return;
     }
+
     const anchor = editingTextId ? calculateFromEditorDom() : calculateFromSelectionBounds();
     if (!anchor) {
       updatePositionIfNeeded(HIDDEN_POSITION);
       return;
     }
+
+    const innerWidth = boardRect.width - TOOLBAR_MARGIN * 2;
+    if (toolbar.width > innerWidth) {
+      updatePositionIfNeeded(HIDDEN_POSITION);
+      return;
+    }
+
     const minLeft = boardRect.left + TOOLBAR_MARGIN;
     const maxLeft = boardRect.right - TOOLBAR_MARGIN - toolbar.width;
-    if (maxLeft < minLeft) {
-      updatePositionIfNeeded(HIDDEN_POSITION);
-      return;
-    }
     const idealLeft = anchor.centerX - toolbar.width / 2;
     const clampedLeft = clamp(idealLeft, minLeft, maxLeft);
-    const requiredShift = clampedLeft - idealLeft;
-    if (Math.abs(requiredShift) > toolbar.width * MAX_ELASTIC_SHIFT_RATIO) {
+
+    const overflowLeft = Math.max(0, minLeft - idealLeft);
+    const overflowRight = Math.max(0, idealLeft - maxLeft);
+    const elasticShift = Math.max(overflowLeft, overflowRight);
+    const maxElasticShift = toolbar.width * MAX_ELASTIC_SHIFT_RATIO;
+
+    if (elasticShift > maxElasticShift) {
       updatePositionIfNeeded(HIDDEN_POSITION);
       return;
     }
-    const idealTop = anchor.top - toolbar.height - TOOLBAR_MARGIN;
+
     const topLimit = boardRect.top + TOOLBAR_MARGIN;
+    const idealTop = anchor.top - toolbar.height - TOOLBAR_MARGIN;
+
     updatePositionIfNeeded({
       x: clampedLeft + toolbar.width / 2,
       y: Math.max(topLimit, idealTop),
     });
-  }, [hasSelection, getBoardRect, getToolbarMetrics, editingTextId, calculateFromEditorDom, calculateFromSelectionBounds, updatePositionIfNeeded]);
+  }, [
+    hasSelection,
+    getBoardRect,
+    getToolbarMetrics,
+    editingTextId,
+    calculateFromEditorDom,
+    calculateFromSelectionBounds,
+    updatePositionIfNeeded,
+  ]);
 
   useEffect(() => {
     calculatePosition();
+
     const scheduleUpdate = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {
@@ -128,21 +154,31 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
         rafRef.current = null;
       });
     };
+
     const mutationObserver = new MutationObserver(scheduleUpdate);
     const resizeObserver = new ResizeObserver(scheduleUpdate);
-    const boardElement = document.querySelector('[data-canvas-container="true"]') as HTMLElement | null;
+    const boardElement = document.querySelector('[data-board-frame="true"]') as HTMLElement | null;
     const toolbarElement = document.querySelector('[data-floating-toolbar="true"]') as HTMLElement | null;
+
     if (editingTextId) {
       const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`) as HTMLElement | null;
       if (editorElement) {
-        mutationObserver.observe(editorElement, { attributes: true, childList: true, subtree: true, characterData: true });
+        mutationObserver.observe(editorElement, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
         resizeObserver.observe(editorElement);
       }
     }
+
     if (boardElement) resizeObserver.observe(boardElement);
     if (toolbarElement) resizeObserver.observe(toolbarElement);
+
     window.addEventListener("resize", scheduleUpdate);
     window.addEventListener("scroll", scheduleUpdate, true);
+
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       mutationObserver.disconnect();
