@@ -14,12 +14,10 @@ import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
 import { useCanvasPaste } from '@/hooks/useCanvasPaste';
-import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { PenFloatingToolbar } from '@/components/ui/penToolbar';
 import { CanvasGridLayer } from '@/features/planning/canvas/viewport/CanvasGridLayer';
 import { RealtimeSyncManager } from '@/features/planning/integration/collaboration';
-import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
 import { useCanvasPointerTracking } from '@/features/planning/canvas/controllers/useCanvasPointerTracking';
@@ -27,6 +25,7 @@ import { useCanvasDropController } from '@/features/planning/canvas/controllers/
 import { useMindMapConnectionController } from '@/features/planning/canvas/controllers/useMindMapConnectionController';
 import { useCanvasViewportController } from '@/features/planning/canvas/controllers/useCanvasViewportController';
 import { useCanvasSelectionController } from '@/features/planning/canvas/controllers/useCanvasSelectionController';
+import { useCanvasRealtimeController } from '@/features/planning/canvas/controllers/useCanvasRealtimeController';
 
 interface InfiniteCanvasProps {
   boardId: string;
@@ -72,7 +71,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     },
   });
 
-  const collaborationUser = useCollaborationUser();
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
 
   const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
@@ -117,7 +115,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   });
 
   const {
-    lastPanPositionRef,
     beginPanning,
     updatePan,
     beginBoxSelection,
@@ -134,6 +131,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     resetToIdle,
     finishSelection,
     updatePointerFromClient,
+  });
+
+  const { realtimeProps } = useCanvasRealtimeController({
+    boardId,
+    viewport,
   });
 
   useCanvasPaste({
@@ -324,16 +326,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       <FrameInputLayer containerRef={containerRef} active={activeTool === 'frame_tool'} />
       <PenFloatingToolbar isVisible={activeTool === 'smart_pen'} />
 
-      <RealtimeSyncManager
-        boardId={boardId}
-        userId={collaborationUser.id}
-        userName={collaborationUser.name}
-        enabled={true}
-        viewport={viewport}
-        onSyncStatusChange={(status) => {
-          console.log('Sync status:', status);
-        }}
-      />
+      <RealtimeSyncManager {...realtimeProps} />
     </div>
   );
 };
