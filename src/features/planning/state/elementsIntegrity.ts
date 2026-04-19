@@ -222,9 +222,14 @@ export function recomputeDependentGeometry(
 
         if (!startNode || !endNode) return;
 
+        const startAnchor = connectorData?.startAnchor?.anchor || 'right';
+        const endAnchor = connectorData?.endAnchor?.anchor || 'left';
         const newBounds = calculateConnectorBounds(
           { position: startNode.position, size: startNode.size },
           { position: endNode.position, size: endNode.size },
+          50,
+          startAnchor,
+          endAnchor,
         );
 
         const connectorIndex = updatedElements.findIndex((entry) => entry.id === connector.id);
