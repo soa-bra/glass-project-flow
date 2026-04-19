@@ -33,7 +33,6 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
 
   const { startTyping, stopTyping, updateElement } = useCanvasStore();
   const { registerEditor, unregisterEditor, preventClose, allowClose, canClose } = useTextEditorContext();
-
   const { pushState, undo, redo } = useTextHistory({
     initialContent: element.content || '',
     maxHistorySize: 50,
@@ -64,7 +63,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
       wordBreak: 'break-word',
       overflowWrap: 'break-word',
     }),
-    [style.alignItems, style.color, style.direction, style.fontFamily, style.fontSize, style.fontStyle, style.fontWeight, style.lineHeight, style.textAlign, style.textDecoration, textType],
+    [style.color, style.direction, style.fontFamily, style.fontSize, style.fontStyle, style.fontWeight, style.lineHeight, style.textAlign, style.textDecoration, textType],
   );
 
   const syncSize = useCallback(
@@ -130,9 +129,9 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
 
   const removeFormatting = useCallback(() => {
     if (!editorRef.current || !isEditing) return;
-      restoreFocus();
-      document.execCommand('removeFormat', false);
-      commitEditorContent();
+    restoreFocus();
+    document.execCommand('removeFormat', false);
+    commitEditorContent();
   }, [commitEditorContent, isEditing, restoreFocus]);
 
   useEffect(() => {
@@ -159,11 +158,9 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
 
   useEffect(() => {
     if (!isEditing || !editorRef.current) return;
-
     const editor = editorRef.current;
     editor.innerHTML = sanitizeHTML(element.content || '');
     setIsEmpty(isTextEmpty(element.content || ''));
-
     requestAnimationFrame(() => {
       restoreFocus();
       syncSize(element.content || '');
@@ -174,18 +171,16 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
     if (isEditing) return;
     setIsEmpty(isTextEmpty(element.content || ''));
     syncSize(element.content || '');
-  }, [element.content, isEditing, syncSize, style.fontFamily, style.fontSize, style.fontWeight, style.fontStyle, style.textDecoration, style.direction, style.textAlign]);
+  }, [element.content, isEditing, syncSize, style.direction, style.fontFamily, style.fontSize, style.fontStyle, style.fontWeight, style.textAlign, style.textDecoration]);
 
   const finalizeCloseIfNeeded = useCallback(() => {
     const activeElement = document.activeElement as HTMLElement | null;
     const isStillInsideEditor = !!activeElement && !!wrapperRef.current?.contains(activeElement);
     const isClickingToolbar = !!activeElement?.closest('[data-floating-toolbar]');
     const isClickingFormatButton = !!activeElement?.closest('[data-format-button]');
-
     if (!canClose || isStillInsideEditor || isClickingToolbar || isClickingFormatButton) {
       return;
     }
-
     commitEditorContent();
     onClose();
   }, [canClose, commitEditorContent, onClose]);
@@ -303,7 +298,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
     <div
       ref={wrapperRef}
       data-text-host="true"
-      className="relative flex w-full h-full"
+      className="relative flex flex-col w-full h-full"
       onDoubleClick={onDoubleClick}
       onMouseEnter={isEditing ? preventClose : undefined}
       onMouseLeave={isEditing ? allowClose : undefined}
@@ -314,11 +309,8 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
     >
       {placeholderVisible && (
         <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            display: 'flex',
-            alignItems: justifyContent === 'center' ? 'center' : justifyContent === 'flex-end' ? 'flex-end' : 'flex-start',
-          }}
+          className="absolute inset-0 pointer-events-none flex flex-col w-full"
+          style={{ justifyContent }}
         >
           <span
             style={{
@@ -356,6 +348,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
           ...sharedTextStyle,
           width: '100%',
           minHeight: '1em',
+          display: 'block',
           outline: 'none',
           background: 'transparent',
           border: 'none',
