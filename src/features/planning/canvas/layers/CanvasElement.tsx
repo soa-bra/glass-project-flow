@@ -15,7 +15,6 @@ import MindMapNode from '@/features/planning/elements/mindmap/MindMapNode';
 import MindMapConnector from '@/features/planning/elements/mindmap/MindMapConnector';
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
-import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isTypedSmartCanvasElementType } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
@@ -63,7 +62,6 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
 
   if (element.type === 'mindmap_node') {
     if (isHiddenByCollapse) return null;
-
     return (
       <MindMapNode
         element={element}
@@ -127,7 +125,6 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const isEditingThisText = element.type === 'text' && editingTextId === element.id;
-
   const layers = useCanvasStore((state) => state.layers);
   const elementLayer = layers.find((layer) => layer.id === element.layerId);
   const isVisible = element.visible !== false && elementLayer?.visible !== false;
@@ -322,9 +319,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       data-canvas-element="true"
       data-element-id={element.id}
       onMouseDown={handleMouseDown}
-      className={`absolute select-none ${
-        isLocked ? 'cursor-not-allowed' : activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'
-      } ${isElementArrow(element) ? 'arrow-element' : ''}`}
+      className={`absolute select-none ${isLocked ? 'cursor-not-allowed' : activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'} ${isElementArrow(element) ? 'arrow-element' : ''}`}
       style={{
         left: element.position.x,
         top: element.position.y,
@@ -333,6 +328,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         border: shouldShowSelectionOutline ? '2px solid hsl(var(--accent-green))' : 'none',
         borderRadius: '0',
         padding: '0',
+        boxSizing: 'border-box',
         backgroundColor: 'transparent',
         boxShadow: shouldShowSelectionOutline ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : 'none',
         outline: 'none',
@@ -341,44 +337,31 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       }}
     >
       {element.type === 'text' && (
-        <>
-          {isEditingThisText ? (
-            <TextEditor
-              element={element}
-              onUpdate={(content) => updateTextContent(element.id, content)}
-              onClose={() => stopEditingText(element.id)}
-              onDoubleClick={handleTextDoubleClick}
-            />
-          ) : (
-            <TextRenderer element={element} width={element.size.width} height={element.size.height} onDoubleClick={handleTextDoubleClick} />
-          )}
-        </>
+        isEditingThisText ? (
+          <TextEditor
+            element={element}
+            onUpdate={(content) => updateTextContent(element.id, content)}
+            onClose={() => stopEditingText(element.id)}
+            onDoubleClick={handleTextDoubleClick}
+          />
+        ) : (
+          <TextRenderer element={element} width={element.size.width} height={element.size.height} onDoubleClick={handleTextDoubleClick} />
+        )
       )}
 
-      {element.type === 'sticky' && (
-        <div className="text-[13px] text-[hsl(var(--ink))] leading-relaxed">{element.content || 'ملاحظة لاصقة'}</div>
-      )}
+      {element.type === 'sticky' && <div className="text-[13px] text-[hsl(var(--ink))] leading-relaxed">{element.content || 'ملاحظة لاصقة'}</div>}
 
-      {element.type === 'image' && element.src && (
-        <img src={element.src} alt={element.alt || 'صورة'} className="w-full h-full object-cover rounded-lg" />
-      )}
+      {element.type === 'image' && element.src && <img src={element.src} alt={element.alt || 'صورة'} className="w-full h-full object-cover rounded-lg" />}
 
       {element.type === 'shape' && (
         <div onDoubleClick={handleStickyDoubleClick} className="w-full h-full">
           {isEditingStickyNote ? (
             <StickyNoteEditor
               element={element}
-              onUpdate={(text) =>
-                updateElement(element.id, {
-                  stickyText: text,
-                  data: { ...element.data, stickyText: text },
-                })
-              }
+              onUpdate={(text) => updateElement(element.id, { stickyText: text, data: { ...element.data, stickyText: text } })}
               onUpdateSize={(newHeight) => {
                 if (newHeight > element.size.height) {
-                  updateElement(element.id, {
-                    size: { ...element.size, height: newHeight },
-                  });
+                  updateElement(element.id, { size: { ...element.size, height: newHeight } });
                 }
               }}
               onClose={() => stopEditingText(element.id)}
@@ -419,13 +402,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       {element.type === 'file' && (
         <div className="flex flex-col items-center justify-center gap-2 p-4">
           <div className="w-12 h-12 rounded-lg bg-[hsl(var(--panel))] flex items-center justify-center">
-            {element.fileType?.startsWith('image/') ? (
-              <span className="text-2xl">🖼️</span>
-            ) : element.fileType?.includes('pdf') ? (
-              <span className="text-2xl">📄</span>
-            ) : (
-              <span className="text-2xl">📁</span>
-            )}
+            {element.fileType?.startsWith('image/') ? <span className="text-2xl">🖼️</span> : element.fileType?.includes('pdf') ? <span className="text-2xl">📄</span> : <span className="text-2xl">📁</span>}
           </div>
           <div className="text-center">
             <p className="text-[11px] font-medium text-[hsl(var(--ink))] truncate max-w-[180px]">{element.fileName}</p>
@@ -440,9 +417,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
             d={element.data.path}
             stroke={element.data.strokeColor || '#000000'}
             strokeWidth={element.data.strokeWidth || 2}
-            strokeDasharray={
-              element.data.strokeStyle === 'dashed' ? '5,5' : element.data.strokeStyle === 'dotted' ? '2,2' : undefined
-            }
+            strokeDasharray={element.data.strokeStyle === 'dashed' ? '5,5' : element.data.strokeStyle === 'dotted' ? '2,2' : undefined}
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -453,32 +428,25 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       {smartRenderableType && (
         <SmartElementRenderer
           element={{ ...(element as CanvasSmartElement), smartType: smartRenderableType } as CanvasSmartElement}
-          onUpdate={(data) =>
-            updateElement(element.id, {
-              smartType: smartRenderableType,
-              data: { ...element.data, ...data, smartType: smartRenderableType },
-            })
-          }
+          onUpdate={(data) => updateElement(element.id, { smartType: smartRenderableType, data: { ...element.data, ...data, smartType: smartRenderableType } })}
         />
       )}
 
       {isSelected && !isLocked && element.type !== 'text' && (
-        <>
-          {element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
-            <ArrowControlPoints element={element} viewport={viewport} />
-          ) : (
-            <>
-              <ResizeHandle position="nw" elementId={element.id} />
-              <ResizeHandle position="ne" elementId={element.id} />
-              <ResizeHandle position="sw" elementId={element.id} />
-              <ResizeHandle position="se" elementId={element.id} />
-              <ResizeHandle position="n" elementId={element.id} />
-              <ResizeHandle position="s" elementId={element.id} />
-              <ResizeHandle position="w" elementId={element.id} />
-              <ResizeHandle position="e" elementId={element.id} />
-            </>
-          )}
-        </>
+        element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
+          <ArrowControlPoints element={element} viewport={viewport} />
+        ) : (
+          <>
+            <ResizeHandle position="nw" elementId={element.id} />
+            <ResizeHandle position="ne" elementId={element.id} />
+            <ResizeHandle position="sw" elementId={element.id} />
+            <ResizeHandle position="se" elementId={element.id} />
+            <ResizeHandle position="n" elementId={element.id} />
+            <ResizeHandle position="s" elementId={element.id} />
+            <ResizeHandle position="w" elementId={element.id} />
+            <ResizeHandle position="e" elementId={element.id} />
+          </>
+        )
       )}
     </div>
   );
@@ -505,10 +473,8 @@ const CanvasElement = React.memo(CanvasElementInner, (prevProps, nextProps) => {
   if (prevEl.style !== nextEl.style) return false;
   if (prevEl.data !== nextEl.data) return false;
   if (prevEl.metadata !== nextEl.metadata) return false;
-
   if (prevProps.nearestAnchor?.nodeId !== nextProps.nearestAnchor?.nodeId) return false;
   if (prevProps.nearestAnchor?.anchor !== nextProps.nearestAnchor?.anchor) return false;
-
   return true;
 });
 
