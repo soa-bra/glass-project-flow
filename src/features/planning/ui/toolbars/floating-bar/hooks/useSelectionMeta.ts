@@ -1,36 +1,24 @@
-/**
- * useSelectionMeta - معلومات التحديد الشاملة
- */
-
 import { useMemo } from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
 import type { SelectionType, SelectionMeta, MindMapNodeData } from "../types";
 
-/**
- * Hook لحساب جميع معلومات التحديد
- */
 export function useSelectionMeta(): SelectionMeta {
   const elements = useCanvasStore((state) => state.elements);
   const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
   const editingTextId = useCanvasStore((state) => state.editingTextId);
 
-  // العناصر المحددة فعليًا من اللوحة
   const selectedElementsRaw = useMemo(
-    () => elements.filter((el) => selectedElementIds.includes(el.id)),
+    () => elements.filter((el) => selectedElementIds.includes(el.id) && el.type !== "mindmap_connector"),
     [elements, selectedElementIds],
   );
 
-  // العنصر النصي الذي يتم تحريره
   const editingElement = useMemo(
     () => (editingTextId ? elements.find((el) => el.id === editingTextId) : null),
     [elements, editingTextId],
   );
 
-  // هل يوجد تحديد أو تحرير نص؟
   const hasSelection = selectedElementsRaw.length > 0 || !!editingTextId;
 
-  // العناصر الفعلية للعمل معها
-  // أولوية قصوى للنص الجاري تحريره
   const activeElements = useMemo(() => {
     if (editingTextId && editingElement) {
       return [editingElement];
@@ -40,25 +28,12 @@ export function useSelectionMeta(): SelectionMeta {
 
   const firstElement = activeElements[0] || null;
   const selectionCount = activeElements.length;
+  const isMindmapSelection = useMemo(() => selectedElementsRaw.some((el) => el.type === "mindmap_node"), [selectedElementsRaw]);
 
-  // التحقق من عناصر الخريطة الذهنية
-  const isMindmapSelection = useMemo(() => {
-    return selectedElementsRaw.some((el) => el.type === "mindmap_node" || el.type === "mindmap_connector");
-  }, [selectedElementsRaw]);
-
-  // جمع عناصر شجرة الخريطة الذهنية
   const mindmapTreeElements = useMemo(() => {
     if (!isMindmapSelection) return [];
 
     const selectedNodes = selectedElementsRaw.filter((el) => el.type === "mindmap_node");
-    const selectedConnectors = selectedElementsRaw.filter((el) => el.type === "mindmap_connector");
-
-    const nodeIdsFromConnectors = new Set<string>();
-    selectedConnectors.forEach((conn) => {
-      const data = conn.data as any;
-      if (data?.startNodeId) nodeIdsFromConnectors.add(data.startNodeId);
-      if (data?.endNodeId) nodeIdsFromConnectors.add(data.endNodeId);
-    });
 
     const findRoot = (nodeId: string): string => {
       const parentConnector = elements.find(
@@ -75,28 +50,18 @@ export function useSelectionMeta(): SelectionMeta {
       const childConnectors = elements.filter(
         (el) => el.type === "mindmap_connector" && (el.data as any)?.startNodeId === rootId,
       );
-
       childConnectors.forEach((conn) => {
         const childId = (conn.data as any)?.endNodeId;
-        if (childId) {
-          result.push(...collectTree(childId));
-        }
+        if (childId) result.push(...collectTree(childId));
       });
-
       return result;
     };
 
-    const allNodeIds = [...selectedNodes.map((n) => n.id), ...Array.from(nodeIdsFromConnectors)];
-
     const rootIds = new Set<string>();
-    allNodeIds.forEach((nodeId) => {
-      rootIds.add(findRoot(nodeId));
-    });
+    selectedNodes.forEach((node) => rootIds.add(findRoot(node.id)));
 
     const allTreeNodeIds = new Set<string>();
-    rootIds.forEach((rootId) => {
-      collectTree(rootId).forEach((id) => allTreeNodeIds.add(id));
-    });
+    rootIds.forEach((rootId) => collectTree(rootId).forEach((id) => allTreeNodeIds.add(id)));
 
     const allConnectorIds = elements
       .filter(
@@ -108,17 +73,15 @@ export function useSelectionMeta(): SelectionMeta {
       .map((el) => el.id);
 
     return elements.filter((el) => allTreeNodeIds.has(el.id) || allConnectorIds.includes(el.id));
-  }, [isMindmapSelection, selectedElementsRaw, elements]);
+  }, [elements, isMindmapSelection, selectedElementsRaw]);
 
-  // اسم الخريطة الذهنية
   const mindmapName = useMemo(() => {
     if (!isMindmapSelection) return "";
 
     const mindmapNodes = mindmapTreeElements.filter((el) => el.type === "mindmap_node");
-    const rootNode = mindmapNodes.find((node) => {
-      const isRoot = !elements.some((el) => el.type === "mindmap_connector" && (el.data as any)?.endNodeId === node.id);
-      return isRoot;
-    });
+    const rootNode = mindmapNodes.find(
+      (node) => !elements.some((el) => el.type === "mindmap_connector" && (el.data as any)?.endNodeId === node.id),
+    );
 
     if (rootNode) {
       const data = rootNode.data as MindMapNodeData;
@@ -126,11 +89,9 @@ export function useSelectionMeta(): SelectionMeta {
     }
 
     return "خريطة ذهنية";
-  }, [isMindmapSelection, mindmapTreeElements, elements]);
+  }, [elements, isMindmapSelection, mindmapTreeElements]);
 
-  // تحديد نوع التحديد
   const selectionType = useMemo((): SelectionType => {
-    // تحرير النص له أولوية أعلى من أي selection عام
     if (editingTextId && editingElement) {
       const type = editingElement.type;
       if (type === "text") return "text";
@@ -146,7 +107,7 @@ export function useSelectionMeta(): SelectionMeta {
     if (type === "image") return "image";
     if (type === "visual_node" || type === "visual_connector") return "visual_diagram";
     return "element";
-  }, [hasSelection, selectionCount, firstElement?.type, editingTextId, editingElement, isMindmapSelection]);
+  }, [editingElement, editingTextId, firstElement?.type, hasSelection, isMindmapSelection, selectionCount]);
 
   const groupId = useMemo(() => {
     for (const el of activeElements) {
@@ -154,10 +115,6 @@ export function useSelectionMeta(): SelectionMeta {
     }
     return null;
   }, [activeElements]);
-
-  const areElementsGrouped = !!groupId;
-  const areElementsLocked = activeElements.some((el) => el.locked === true);
-  const areElementsVisible = activeElements.every((el) => el.visible !== false);
 
   return {
     selectionType,
@@ -169,9 +126,9 @@ export function useSelectionMeta(): SelectionMeta {
     mindmapTreeElements,
     mindmapName,
     groupId,
-    areElementsGrouped,
-    areElementsLocked,
-    areElementsVisible,
+    areElementsGrouped: !!groupId,
+    areElementsLocked: activeElements.some((el) => el.locked === true),
+    areElementsVisible: activeElements.every((el) => el.visible !== false),
   };
 }
 
