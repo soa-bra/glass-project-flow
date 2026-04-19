@@ -13,7 +13,6 @@ interface MindMapNodeProps {
     x: number;
     y: number;
   }) => void;
-  // تم إزالة onEndConnection - التوصيل يتم فقط عبر السحب والإفلات في InfiniteCanvas
   isConnecting: boolean;
   nearestAnchor: NodeAnchorPoint | null;
   activeTool: string;
@@ -49,25 +48,13 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const nodeRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
-  const dragStartRef = useRef({
-    x: 0,
-    y: 0,
-    elementX: 0,
-    elementY: 0
-  });
+  const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const nodeData = element.data as MindMapNodeData;
-
-  // ✅ حالة النقرة المطولة للـ anchor
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
-  const LONG_PRESS_DELAY = 200; // مللي ثانية
-
-  // ✅ التحقق من وجود فروع
+  const LONG_PRESS_DELAY = 200;
   const hasChildren = useCanvasStore(state => state.elements.some(el => el.type === "mindmap_connector" && (el.data as any)?.startNodeId === element.id));
-
-  // ✅ النقر المزدوج: إذا كانت الشجرة محددة بأداة التحديد → التبديل إلى أداة العناصر الذكية وتحديد هذه العقدة
-  // أو بدء التحرير إذا كنا بالفعل على أداة العناصر الذكية
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -75,24 +62,17 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       clearTimeout(clickTimeoutRef.current);
       clickTimeoutRef.current = null;
     }
-
-    // ✅ إذا كانت أداة التحديد نشطة (سواء كانت شجرة كاملة أو حتى عقدة واحدة)
-    // حوّل إلى أداة العناصر الذكية وحدد هذه العقدة
     if (activeTool === 'selection_tool') {
       setActiveTool('smart_element_tool');
       selectElement(element.id, false);
       setLastSmartSelectedMindMapNode(element.id);
       return;
     }
-
-    // السلوك العادي: بدء التحرير (عند استخدام أداة العناصر الذكية)
     setIsSingleNodeMode(true);
     onSelect(false);
     setIsEditing(true);
     setEditText(nodeData.label || "");
   }, [nodeData.label, onSelect, activeTool, setActiveTool, selectElement, element.id, setLastSmartSelectedMindMapNode]);
-
-  // حفظ التعديل
   const handleSaveEdit = useCallback(() => {
     if (editText.trim()) {
       updateElement(element.id, {
@@ -104,8 +84,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     }
     setIsEditing(false);
   }, [element.id, nodeData, editText, updateElement]);
-
-  // ✅ طي/توسيع الفروع
   const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     updateElement(element.id, {
@@ -115,14 +93,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }
     });
   }, [element.id, nodeData, updateElement]);
-
-  // إضافة فرع جديد مع توزيع تلقائي متناظر
   const handleAddBranch = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-    const state = useCanvasStore.getState();
     const parentCenterY = element.position.y + element.size.height / 2;
-
-    // إنشاء الفرع الجديد على نفس مستوى الأب مبدئياً
     const offset = 200;
     const newNodeHeight = 60;
     const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -144,24 +117,10 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         isRoot: false
       } as MindMapNodeData
     });
-
-    // حساب الـ bounds الحقيقي للـ connector
     const newNodeX = element.position.x + element.size.width + offset;
-    const newNodePos = {
-      x: newNodeX,
-      y: parentCenterY - newNodeHeight / 2
-    };
-    const newNodeSize = {
-      width: 160,
-      height: newNodeHeight
-    };
-    const connectorBounds = calculateConnectorBounds({
-      position: element.position,
-      size: element.size
-    }, {
-      position: newNodePos,
-      size: newNodeSize
-    });
+    const newNodePos = { x: newNodeX, y: parentCenterY - newNodeHeight / 2 };
+    const newNodeSize = { width: 160, height: newNodeHeight };
+    const connectorBounds = calculateConnectorBounds({ position: element.position, size: element.size }, { position: newNodePos, size: newNodeSize });
     addElement({
       type: "mindmap_connector",
       position: connectorBounds.position,
@@ -169,35 +128,21 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       data: {
         startNodeId: element.id,
         endNodeId: newNodeId,
-        startAnchor: {
-          nodeId: element.id,
-          anchor: "right"
-        },
-        endAnchor: {
-          nodeId: newNodeId,
-          anchor: "left"
-        },
+        startAnchor: { nodeId: element.id, anchor: "right" },
+        endAnchor: { nodeId: newNodeId, anchor: "left" },
         curveStyle: "bezier",
         color: nodeData.color || "#3DA8F5",
         strokeWidth: 2
       }
     });
-
-    // ✅ إعادة توزيع جميع الفروع بشكل متناظر تصاعدياً
     setTimeout(() => {
       const currentState = useCanvasStore.getState();
       const adjustments = redistributeUpwards(element.id, currentState.elements, 80);
-
-      // تطبيق التعديلات
       adjustments.forEach((newPos, nodeId) => {
-        currentState.updateElement(nodeId, {
-          position: newPos
-        });
+        currentState.updateElement(nodeId, { position: newPos });
       });
     }, 50);
   }, [element, nodeData, addElement]);
-
-  // تغيير اللون
   const handleColorChange = useCallback((color: string) => {
     updateElement(element.id, {
       data: {
@@ -208,8 +153,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     });
     setShowColorPicker(false);
   }, [element.id, nodeData, updateElement]);
-
-  // سحب العقدة
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isEditing) return;
     e.stopPropagation();
@@ -218,8 +161,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       onSelect(multiSelect);
       return;
     }
-
-    // ✅ عند استخدام أداة العناصر الذكية، سجّل آخر عقدة محددة
     if (activeTool === "smart_element_tool") {
       setLastSmartSelectedMindMapNode(element.id);
       onSelect(multiSelect);
@@ -231,21 +172,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       onSelect(multiSelect);
     }
     setIsDragging(true);
-    dragStartRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      elementX: element.position.x,
-      elementY: element.position.y
-    };
+    dragStartRef.current = { x: e.clientX, y: e.clientY, elementX: element.position.x, elementY: element.position.y };
   }, [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree, setLastSmartSelectedMindMapNode]);
-
-  // تحريك العقدة - مع الفروع فقط عند استخدام أداة التحديد
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
     const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
-
-    // ✅ أداة العناصر الذكية: تحريك العقدة فقط
-    // ✅ أداة التحديد: تحريك كامل الشجرة (الأصول والفروع)
     const shouldMoveOnlyNode = activeTool === 'smart_element_tool' || isSingleNodeMode;
     if (shouldMoveOnlyNode) {
       updateElement(element.id, {
@@ -263,23 +194,16 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
-
-  // ✅ نقاط الربط - نقرة مطولة + سحب
   const handleAnchorMouseDown = useCallback((e: React.MouseEvent, anchor: "top" | "bottom" | "left" | "right") => {
     e.stopPropagation();
     e.preventDefault();
     isLongPressRef.current = false;
-
-    // بدء مؤقت النقرة المطولة
     longPressTimerRef.current = setTimeout(() => {
       isLongPressRef.current = true;
       const pos = getAnchorPosition(element.position, element.size, anchor);
       onStartConnection(element.id, anchor, pos);
     }, LONG_PRESS_DELAY);
-
-    // إضافة مستمع لـ mousemove لبدء السحب
     const handleMouseMoveForDrag = (moveEvent: MouseEvent) => {
-      // إذا تحرك الماوس أكثر من 5px قبل انتهاء المؤقت، ابدأ التوصيل فوراً
       const dx = Math.abs(moveEvent.clientX - e.clientX);
       const dy = Math.abs(moveEvent.clientY - e.clientY);
       if ((dx > 5 || dy > 5) && !isLongPressRef.current) {
@@ -304,10 +228,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     window.addEventListener('mousemove', handleMouseMoveForDrag);
     window.addEventListener('mouseup', handleMouseUpForDrag);
   }, [element, onStartConnection]);
-
-  // تم إزالة handleAnchorMouseUp - التوصيل يتم فقط عبر handleMouseUp في InfiniteCanvas
-
-  // تنظيف المؤقت عند unmount
   useEffect(() => {
     return () => {
       if (longPressTimerRef.current) {
@@ -315,8 +235,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }
     };
   }, []);
-
-  // إضافة مستمعي الأحداث العامة
   useEffect(() => {
     if (!isDragging) return;
     window.addEventListener("mousemove", handleMouseMove);
@@ -326,8 +244,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
-
-  // تنظيف
   useEffect(() => {
     if (!isSelected) {
       setIsSingleNodeMode(false);
@@ -338,31 +254,21 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }
     };
   }, [isSelected]);
-
-  // ✅ عند التحويل من أداة العناصر الذكية إلى أداة التحديد: حدد كامل الشجرة
-  // ✅ عند التحويل من أداة التحديد إلى أداة العناصر الذكية: حدد آخر عقدة محددة أو العقدة الحالية
   useEffect(() => {
     if (!isSelected) return;
     if (activeTool === 'selection_tool') {
-      // تحويل إلى أداة التحديد → حدد كامل الشجرة
       selectMindMapTree(element.id);
     } else if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
-      // تحويل إلى أداة العناصر الذكية من شجرة محددة
-      // حدد آخر عقدة تم تحديدها أو أول عقدة في التحديد
       const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode) ? lastSmartSelectedMindMapNode : element.id;
       selectElement(nodeToSelect, false);
     }
   }, [activeTool]);
-
-  // التركيز على الإدخال عند التحرير
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
     }
   }, [isEditing]);
-
-  // حساب نمط العقدة
   const getNodeStyle = () => {
     const baseStyle: React.CSSProperties = {
       backgroundColor: nodeData.color || "#3DA8F5",
@@ -371,45 +277,21 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     };
     switch (nodeData.nodeStyle) {
       case "pill":
-        return {
-          ...baseStyle,
-          borderRadius: "9999px"
-        };
+        return { ...baseStyle, borderRadius: "9999px" };
       case "rectangle":
-        return {
-          ...baseStyle,
-          borderRadius: "4px"
-        };
+        return { ...baseStyle, borderRadius: "4px" };
       case "circle":
-        return {
-          ...baseStyle,
-          borderRadius: "50%"
-        };
+        return { ...baseStyle, borderRadius: "50%" };
       case "diamond":
-        return {
-          ...baseStyle,
-          borderRadius: "4px",
-          transform: "rotate(45deg)",
-          clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)"
-        };
+        return { ...baseStyle, borderRadius: "4px", transform: "rotate(45deg)", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" };
       case "hexagon":
-        return {
-          ...baseStyle,
-          clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)"
-        };
+        return { ...baseStyle, clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" };
       case "rounded":
       default:
-        return {
-          ...baseStyle,
-          borderRadius: "12px"
-        };
+        return { ...baseStyle, borderRadius: "12px" };
     }
   };
-
-  // هل هذه العقدة هي الأقرب للتوصيل
   const isNearestForConnection = nearestAnchor?.nodeId === element.id;
-
-  // ✅ التحقق من تحديد الشجرة بالكامل - إخفاء نقاط التوصيل وشريط الأدوات
   const isFullTreeSelected = activeTool === 'selection_tool' && selectedElementIds.length > 1;
   return <div ref={nodeRef} className={`absolute select-none transition-shadow ${activeTool === "selection_tool" ? "cursor-move" : "cursor-default"} ${isSelected ? "ring-2 ring-[hsl(var(--accent-green))] ring-offset-2" : ""}`} style={{
     left: element.position.x,
@@ -418,7 +300,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     height: element.size.height,
     zIndex: isSelected ? 100 : 10
   }} onMouseDown={handleMouseDown} onDoubleClick={handleDoubleClick}>
-      {/* محتوى العقدة */}
       <div className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative" style={getNodeStyle()}>
         {isEditing ? <input ref={inputRef} type="text" value={editText} onChange={e => setEditText(e.target.value)} onBlur={handleSaveEdit} onKeyDown={e => {
         if (e.key === "Enter") handleSaveEdit();
@@ -427,8 +308,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       }} className="w-full bg-transparent text-center outline-none text-inherit font-medium" dir="auto" /> : <span className="font-medium text-center truncate" dir="auto">
             {nodeData.label || "عقدة جديدة"}
           </span>}
-
-        {/* ✅ زر الطي/أيقونة الجذر - أعلى يمين العقدة - مع أقصى أولوية للنقر */}
         {(nodeData.isRoot || hasChildren) && (
           <button
             type="button"
@@ -450,99 +329,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
           </button>
         )}
       </div>
-
-      {/* نقاط الربط - تظهر عند التحديد أو التوصيل (مخفية عند تحديد الشجرة بالكامل) */}
       {(isSelected || isConnecting) && !isFullTreeSelected && <>
           {(["top", "bottom", "left", "right"] as const).map(anchor => {
-        const pos = getAnchorPosition({
-          x: 0,
-          y: 0
-        }, element.size, anchor);
+        const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
         const isHighlighted = isNearestForConnection && nearestAnchor?.anchor === anchor;
-        return <div key={anchor} className={`absolute w-4 h-4 rounded-full border-2 transition-all cursor-crosshair ${isHighlighted ? "bg-[hsl(var(--accent-green))] border-white scale-125 shadow-lg" : "bg-white border-[hsl(var(--ink-30))] hover:border-[hsl(var(--ink-60))] hover:scale-110"}`} style={{
-          left: pos.x - 8,
-          top: pos.y - 8
-        }} onMouseDown={e => handleAnchorMouseDown(e, anchor)} />;
+        return <div key={anchor} className={`absolute w-4 h-4 rounded-full border-2 transition-all cursor-crosshair ${isHighlighted ? "bg-[hsl(var(--accent-green))] border-white scale-125 shadow-lg" : "bg-white border-[hsl(var(--ink-30))] hover:border-[hsl(var(--ink-60))] hover:scale-110"}`} style={{ left: pos.x - 8, top: pos.y - 8 }} onMouseDown={e => handleAnchorMouseDown(e, anchor)} />;
       })}
         </>}
-
-      {/* شريط أدوات العقدة - يظهر عند التحديد (مخفي عند تحديد الشجرة بالكامل) */}
-      {isSelected && !isEditing && !isFullTreeSelected && <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-0.5 bg-white rounded-lg shadow-lg p-1 border border-[hsl(var(--border))]">
-          {/* إضافة فرع */}
-          <button onClick={handleAddBranch} className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-green))] transition-colors" title="إضافة فرع">
-            <Plus size={16} />
-          </button>
-
-          {/* شكل العقدة */}
-          <div className="relative">
-            <button onClick={() => {
-          setShowStylePicker(!showStylePicker);
-          setShowColorPicker(false);
-        }} className="p-1.5 rounded hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))] hover:text-[hsl(var(--accent-blue))] transition-colors" title="شكل العقدة">
-              {nodeData.nodeStyle === 'rounded' && <RectangleHorizontal size={16} />}
-              {nodeData.nodeStyle === 'pill' && <Pill size={16} />}
-              {nodeData.nodeStyle === 'rectangle' && <Square size={16} />}
-              {nodeData.nodeStyle === 'circle' && <Circle size={16} />}
-              {nodeData.nodeStyle === 'diamond' && <Diamond size={16} />}
-              {nodeData.nodeStyle === 'hexagon' && <Hexagon size={16} />}
-              {!nodeData.nodeStyle && <RectangleHorizontal size={16} />}
-            </button>
-
-            {showStylePicker && (
-              <div className="absolute top-full left-0 mt-2 bg-white shadow-lg p-1.5 border border-[hsl(var(--border))] rounded-md flex gap-1 z-50">
-                {[
-                  { type: 'rounded', icon: <RectangleHorizontal size={16} /> },
-                  { type: 'pill', icon: <Pill size={16} /> },
-                  { type: 'rectangle', icon: <Square size={16} /> },
-                  { type: 'circle', icon: <Circle size={16} /> },
-                  { type: 'diamond', icon: <Diamond size={16} /> },
-                  { type: 'hexagon', icon: <Hexagon size={16} /> }
-                ].map(style => (
-                  <button
-                    key={style.type}
-                    onClick={() => {
-                      updateElement(element.id, {
-                        data: { ...nodeData, nodeStyle: style.type, updatedAt: Date.now() }
-                      });
-                      setShowStylePicker(false);
-                    }}
-                    className={`p-1.5 rounded transition-colors ${
-                      nodeData.nodeStyle === style.type
-                        ? 'bg-[hsl(var(--accent-blue)/0.1)] text-[hsl(var(--accent-blue))]'
-                        : 'hover:bg-[hsl(var(--muted))] text-[hsl(var(--ink-60))]'
-                    }`}
-                    title={style.type}
-                  >
-                    {style.icon}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* تغيير اللون */}
-          <div className="relative">
-            <button onClick={() => {
-          setShowColorPicker(!showColorPicker);
-          setShowStylePicker(false);
-        }} className="p-1.5 rounded hover:bg-[hsl(var(--muted))] transition-colors" title="تغيير اللون">
-              <div style={{
-            backgroundColor: nodeData.color || '#3DA8F5'
-          }} className="w-4 h-4 rounded-sm border-2 border-white shadow-sm" />
-            </button>
-
-            {showColorPicker && <div className="absolute bottom-full left-0 mb-2 bg-white rounded-lg shadow-lg p-2 border border-[hsl(var(--border))] grid grid-cols-4 gap-1">
-                {NODE_COLORS.map(color => <button key={color} onClick={() => handleColorChange(color)} className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${nodeData.color === color ? 'border-[hsl(var(--ink))] scale-110' : 'border-white'}`} style={{
-            backgroundColor: color
-          }} />)}
-              </div>}
-          </div>
-
-          {/* حذف */}
-          <button onClick={() => deleteElement(element.id)} className="p-1.5 rounded text-[hsl(var(--ink-60))] hover:bg-red-50 hover:text-[#E5564D] transition-colors" title="حذف">
-            <Trash2 size={16} />
-          </button>
-        </div>}
+      {/* ✅ تم حذف الشريط السفلي المحلي للعقدة الذهنية عمداً مع إبقاء زر الطي العلوي كما هو. */}
     </div>;
 };
 export default MindMapNode;
