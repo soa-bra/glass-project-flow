@@ -62,8 +62,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   return (
     <div className="h-full flex flex-col bg-white">
       <CanvasToolbar board={board} onBack={() => setCurrentBoard(null)} onOpenAI={commandBar.open} />
-      <div ref={canvasHostRef} data-board-frame="true" className="flex-1 flex overflow-hidden relative">
-        <div className="flex-1">
+      <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
+        <div data-board-frame="true" className="flex-1 relative overflow-hidden">
           <InfiniteCanvas boardId={board.id} />
         </div>
         <ToolZone activeTool={activeTool} />
