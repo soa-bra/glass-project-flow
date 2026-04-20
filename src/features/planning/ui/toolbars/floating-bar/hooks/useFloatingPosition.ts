@@ -57,16 +57,29 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     return { width, height };
   }, []);
 
+  const getElementDomAnchor = useCallback((elementId: string): AnchorRect | null => {
+    const elementNode = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
+    if (!elementNode) return null;
+    const rect = elementNode.getBoundingClientRect();
+    return { centerX: rect.left + rect.width / 2, top: rect.top };
+  }, []);
+
   const calculateFromEditorDom = useCallback((): AnchorRect | null => {
     if (!editingTextId) return null;
-    const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`) as HTMLElement | null;
-    if (!editorElement) return null;
-    const rect = editorElement.getBoundingClientRect();
-    return { centerX: rect.left + rect.width / 2, top: rect.top };
-  }, [editingTextId]);
+    return getElementDomAnchor(editingTextId);
+  }, [editingTextId, getElementDomAnchor]);
 
   const calculateFromSelectionBounds = useCallback((): AnchorRect | null => {
     if (activeElements.length === 0) return null;
+
+    if (activeElements.length === 1) {
+      const singleElement = activeElements[0];
+      if (singleElement.type === 'text') {
+        const domAnchor = getElementDomAnchor(singleElement.id);
+        if (domAnchor) return domAnchor;
+      }
+    }
+
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
@@ -85,7 +98,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       centerX: ((minX + maxX) / 2) * viewport.zoom + viewport.pan.x,
       top: minY * viewport.zoom + viewport.pan.y,
     };
-  }, [activeElements, viewport.zoom, viewport.pan.x, viewport.pan.y]);
+  }, [activeElements, getElementDomAnchor, viewport.zoom, viewport.pan.x, viewport.pan.y]);
 
   const calculatePosition = useCallback(() => {
     if (!hasSelection) {
@@ -160,16 +173,17 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     const boardElement = document.querySelector('[data-board-frame="true"]') as HTMLElement | null;
     const toolbarElement = document.querySelector('[data-floating-toolbar="true"]') as HTMLElement | null;
 
-    if (editingTextId) {
-      const editorElement = document.querySelector(`[data-element-id="${editingTextId}"]`) as HTMLElement | null;
-      if (editorElement) {
-        mutationObserver.observe(editorElement, {
+    const observedTextElementId = editingTextId || (activeElements.length === 1 && activeElements[0].type === 'text' ? activeElements[0].id : null);
+    if (observedTextElementId) {
+      const textElement = document.querySelector(`[data-element-id="${observedTextElementId}"]`) as HTMLElement | null;
+      if (textElement) {
+        mutationObserver.observe(textElement, {
           attributes: true,
           childList: true,
           subtree: true,
           characterData: true,
         });
-        resizeObserver.observe(editorElement);
+        resizeObserver.observe(textElement);
       }
     }
 
@@ -186,7 +200,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       window.removeEventListener("resize", scheduleUpdate);
       window.removeEventListener("scroll", scheduleUpdate, true);
     };
-  }, [calculatePosition, editingTextId]);
+  }, [activeElements, calculatePosition, editingTextId]);
 
   return position;
 }
