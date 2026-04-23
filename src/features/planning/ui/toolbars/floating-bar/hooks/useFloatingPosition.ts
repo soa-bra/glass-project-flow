@@ -56,14 +56,19 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
     return { width, height };
   }, []);
 
+  const getAnchorElement = useCallback((elementId: string): HTMLElement | null => {
+    const selectionAnchor = document.querySelector(`[data-selection-anchor-id="${elementId}"]`) as HTMLElement | null;
+    if (selectionAnchor) return selectionAnchor;
+
+    const legacyElement = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
+    return legacyElement;
+  }, []);
+
   const getElementRects = useCallback((elementIds: string[]) => {
     return elementIds
-      .map((elementId) => {
-        const elementNode = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
-        return elementNode?.getBoundingClientRect() || null;
-      })
+      .map((elementId) => getAnchorElement(elementId)?.getBoundingClientRect() || null)
       .filter((rect): rect is DOMRect => rect !== null);
-  }, []);
+  }, [getAnchorElement]);
 
   const createBoardLocalAnchor = useCallback((rects: DOMRect[], boardRect: DOMRect): AnchorRect | null => {
     if (rects.length === 0) return null;
@@ -161,15 +166,15 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
     ]));
 
     observedElementIds.forEach((elementId) => {
-      const elementNode = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
-      if (!elementNode) return;
-      mutationObserver.observe(elementNode, {
+      const anchorElement = getAnchorElement(elementId);
+      if (!anchorElement) return;
+      mutationObserver.observe(anchorElement, {
         attributes: true,
         childList: true,
         subtree: true,
         characterData: true,
       });
-      resizeObserver.observe(elementNode);
+      resizeObserver.observe(anchorElement);
     });
 
     if (boardElement) resizeObserver.observe(boardElement);
@@ -186,7 +191,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
       window.removeEventListener("resize", scheduleUpdate);
       window.removeEventListener("scroll", scheduleUpdate, true);
     };
-  }, [activeElements, calculatePosition, editingTextId]);
+  }, [activeElements, calculatePosition, editingTextId, getAnchorElement]);
 
   return position;
 }
