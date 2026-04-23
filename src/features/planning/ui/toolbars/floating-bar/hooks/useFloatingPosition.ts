@@ -25,7 +25,6 @@ interface AnchorRect {
 
 const HIDDEN_POSITION: Position = { x: -9999, y: -9999 };
 const TOOLBAR_MARGIN = 8;
-const MAX_ELASTIC_SHIFT_RATIO = 0.15;
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export function useFloatingPosition({ activeElements, editingTextId, viewport, hasSelection }: UseFloatingPositionProps): Position {
@@ -128,23 +127,13 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     const minLeft = boardRect.left + TOOLBAR_MARGIN;
     const maxLeft = boardRect.right - TOOLBAR_MARGIN - toolbar.width;
     const idealLeft = anchor.centerX - toolbar.width / 2;
-    const clampedLeft = clamp(idealLeft, minLeft, maxLeft);
-
-    const overflowLeft = Math.max(0, minLeft - idealLeft);
-    const overflowRight = Math.max(0, idealLeft - maxLeft);
-    const elasticShift = Math.max(overflowLeft, overflowRight);
-    const maxElasticShift = toolbar.width * MAX_ELASTIC_SHIFT_RATIO;
-
-    if (elasticShift > maxElasticShift) {
-      updatePositionIfNeeded(HIDDEN_POSITION);
-      return;
-    }
+    const finalLeft = clamp(idealLeft, minLeft, maxLeft);
 
     const topLimit = boardRect.top + TOOLBAR_MARGIN;
     const idealTop = anchor.top - toolbar.height - TOOLBAR_MARGIN;
 
     updatePositionIfNeeded({
-      x: clampedLeft + toolbar.width / 2,
+      x: finalLeft + toolbar.width / 2,
       y: Math.max(topLimit, idealTop),
     });
   }, [
