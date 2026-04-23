@@ -27,7 +27,7 @@ const HIDDEN_POSITION: Position = { x: -9999, y: -9999 };
 const TOOLBAR_MARGIN = 8;
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
-export function useFloatingPosition({ activeElements, editingTextId, viewport, hasSelection }: UseFloatingPositionProps): Position {
+export function useFloatingPosition({ activeElements, editingTextId, viewport: _viewport, hasSelection }: UseFloatingPositionProps): Position {
   const [position, setPosition] = useState<Position>(HIDDEN_POSITION);
   const rafRef = useRef<number | null>(null);
   const lastPositionRef = useRef<Position>(HIDDEN_POSITION);
@@ -88,25 +88,8 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     if (activeElements.length === 0) return null;
 
     const elementRects = getElementRects(activeElements.map((element) => element.id));
-    const domAnchor = createBoardLocalAnchor(elementRects, boardRect);
-    if (domAnchor) return domAnchor;
-
-    let minX = Infinity;
-    let minY = Infinity;
-    let maxX = -Infinity;
-
-    activeElements.forEach((el) => {
-      const width = el.size?.width || 200;
-      minX = Math.min(minX, el.position.x);
-      minY = Math.min(minY, el.position.y);
-      maxX = Math.max(maxX, el.position.x + width);
-    });
-
-    return {
-      centerX: ((minX + maxX) / 2 + viewport.pan.x) * viewport.zoom,
-      top: (minY + viewport.pan.y) * viewport.zoom,
-    };
-  }, [activeElements, createBoardLocalAnchor, getElementRects, viewport.pan.x, viewport.pan.y, viewport.zoom]);
+    return createBoardLocalAnchor(elementRects, boardRect);
+  }, [activeElements, createBoardLocalAnchor, getElementRects]);
 
   const calculatePosition = useCallback(() => {
     if (!hasSelection) {
@@ -169,6 +152,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     const mutationObserver = new MutationObserver(scheduleUpdate);
     const resizeObserver = new ResizeObserver(scheduleUpdate);
     const boardElement = document.querySelector('[data-board-frame="true"]') as HTMLElement | null;
+    const overlayElement = document.querySelector('[data-floating-overlay="true"]') as HTMLElement | null;
     const toolbarElement = document.querySelector('[data-floating-toolbar="true"]') as HTMLElement | null;
 
     const observedElementIds = Array.from(new Set([
@@ -189,6 +173,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     });
 
     if (boardElement) resizeObserver.observe(boardElement);
+    if (overlayElement) resizeObserver.observe(overlayElement);
     if (toolbarElement) resizeObserver.observe(toolbarElement);
 
     window.addEventListener("resize", scheduleUpdate);
