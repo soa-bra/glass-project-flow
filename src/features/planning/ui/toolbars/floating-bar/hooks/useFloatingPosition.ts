@@ -63,12 +63,19 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     return { centerX: rect.left + rect.width / 2, top: rect.top };
   }, []);
 
+  const toScreenSpace = useCallback((boardRect: DOMRect, x: number, y: number) => {
+    return {
+      x: boardRect.left + viewport.pan.x + x * viewport.zoom,
+      y: boardRect.top + viewport.pan.y + y * viewport.zoom,
+    };
+  }, [viewport.pan.x, viewport.pan.y, viewport.zoom]);
+
   const calculateFromEditorDom = useCallback((): AnchorRect | null => {
     if (!editingTextId) return null;
     return getElementDomAnchor(editingTextId);
   }, [editingTextId, getElementDomAnchor]);
 
-  const calculateFromSelectionBounds = useCallback((): AnchorRect | null => {
+  const calculateFromSelectionBounds = useCallback((boardRect: DOMRect): AnchorRect | null => {
     if (activeElements.length === 0) return null;
 
     if (activeElements.length === 1) {
@@ -93,11 +100,15 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       maxY = Math.max(maxY, el.position.y + height);
     });
 
+    const centerWorldX = (minX + maxX) / 2;
+    const topWorldY = minY;
+    const centerScreen = toScreenSpace(boardRect, centerWorldX, topWorldY);
+
     return {
-      centerX: ((minX + maxX) / 2) * viewport.zoom + viewport.pan.x,
-      top: minY * viewport.zoom + viewport.pan.y,
+      centerX: centerScreen.x,
+      top: centerScreen.y,
     };
-  }, [activeElements, getElementDomAnchor, viewport.zoom, viewport.pan.x, viewport.pan.y]);
+  }, [activeElements, getElementDomAnchor, toScreenSpace]);
 
   const calculatePosition = useCallback(() => {
     if (!hasSelection) {
@@ -112,7 +123,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       return;
     }
 
-    const anchor = editingTextId ? calculateFromEditorDom() : calculateFromSelectionBounds();
+    const anchor = editingTextId ? calculateFromEditorDom() : calculateFromSelectionBounds(boardRect);
     if (!anchor) {
       updatePositionIfNeeded(HIDDEN_POSITION);
       return;
