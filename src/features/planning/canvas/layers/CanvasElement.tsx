@@ -312,6 +312,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   }, [stableMouseMove, stableMouseUp]);
 
   const shouldShowSelectionOutline = isSelected && !(element.type === 'text' && isEditingThisText) && !isElementArrow(element);
+  const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
 
   return (
     <div
@@ -337,24 +338,32 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       }}
     >
       {element.type === 'text' && (
-        isEditingThisText ? (
-          <TextEditor
-            element={element}
-            onUpdate={(content) => updateTextContent(element.id, content)}
-            onClose={() => stopEditingText(element.id)}
-            onDoubleClick={handleTextDoubleClick}
-          />
-        ) : (
-          <TextRenderer element={element} width={element.size.width} height={element.size.height} onDoubleClick={handleTextDoubleClick} />
-        )
+        <div {...selectionAnchorProps} className="w-full h-full">
+          {isEditingThisText ? (
+            <TextEditor
+              element={element}
+              onUpdate={(content) => updateTextContent(element.id, content)}
+              onClose={() => stopEditingText(element.id)}
+              onDoubleClick={handleTextDoubleClick}
+            />
+          ) : (
+            <TextRenderer element={element} width={element.size.width} height={element.size.height} onDoubleClick={handleTextDoubleClick} />
+          )}
+        </div>
       )}
 
-      {element.type === 'sticky' && <div className="text-[13px] text-[hsl(var(--ink))] leading-relaxed">{element.content || 'ملاحظة لاصقة'}</div>}
+      {element.type === 'sticky' && (
+        <div {...selectionAnchorProps} className="text-[13px] text-[hsl(var(--ink))] leading-relaxed">{element.content || 'ملاحظة لاصقة'}</div>
+      )}
 
-      {element.type === 'image' && element.src && <img src={element.src} alt={element.alt || 'صورة'} className="w-full h-full object-cover rounded-lg" />}
+      {element.type === 'image' && element.src && (
+        <div {...selectionAnchorProps} className="w-full h-full">
+          <img src={element.src} alt={element.alt || 'صورة'} className="w-full h-full object-cover rounded-lg" />
+        </div>
+      )}
 
       {element.type === 'shape' && (
-        <div onDoubleClick={handleStickyDoubleClick} className="w-full h-full">
+        <div {...selectionAnchorProps} onDoubleClick={handleStickyDoubleClick} className="w-full h-full">
           {isEditingStickyNote ? (
             <StickyNoteEditor
               element={element}
@@ -385,22 +394,24 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       )}
 
       {element.type === 'frame' && (
-        <FrameDropZone
-          frameId={element.id}
-          title={(element as any).title}
-          childrenCount={(element as any).children?.length || 0}
-          onTitleDoubleClick={handleTitleDoubleClick}
-          isEditingTitle={isEditingTitle}
-          editedTitle={editedTitle}
-          onTitleChange={(value) => setEditedTitle(value)}
-          onTitleSave={handleTitleSave}
-          onTitleKeyDown={handleTitleKeyDown}
-          titleInputRef={titleInputRef}
-        />
+        <div {...selectionAnchorProps} className="w-full h-full">
+          <FrameDropZone
+            frameId={element.id}
+            title={(element as any).title}
+            childrenCount={(element as any).children?.length || 0}
+            onTitleDoubleClick={handleTitleDoubleClick}
+            isEditingTitle={isEditingTitle}
+            editedTitle={editedTitle}
+            onTitleChange={(value) => setEditedTitle(value)}
+            onTitleSave={handleTitleSave}
+            onTitleKeyDown={handleTitleKeyDown}
+            titleInputRef={titleInputRef}
+          />
+        </div>
       )}
 
       {element.type === 'file' && (
-        <div className="flex flex-col items-center justify-center gap-2 p-4">
+        <div {...selectionAnchorProps} className="flex flex-col items-center justify-center gap-2 p-4 w-full h-full">
           <div className="w-12 h-12 rounded-lg bg-[hsl(var(--panel))] flex items-center justify-center">
             {element.fileType?.startsWith('image/') ? <span className="text-2xl">🖼️</span> : element.fileType?.includes('pdf') ? <span className="text-2xl">📄</span> : <span className="text-2xl">📁</span>}
           </div>
@@ -412,27 +423,31 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       )}
 
       {element.type === 'pen_path' && element.data?.path && (
-        <svg className="w-full h-full" viewBox={`0 0 ${element.size.width} ${element.size.height}`} style={{ overflow: 'visible' }}>
-          <path
-            d={element.data.path}
-            stroke={element.data.strokeColor || '#000000'}
-            strokeWidth={element.data.strokeWidth || 2}
-            strokeDasharray={element.data.strokeStyle === 'dashed' ? '5,5' : element.data.strokeStyle === 'dotted' ? '2,2' : undefined}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <div {...selectionAnchorProps} className="w-full h-full">
+          <svg className="w-full h-full" viewBox={`0 0 ${element.size.width} ${element.size.height}`} style={{ overflow: 'visible' }}>
+            <path
+              d={element.data.path}
+              stroke={element.data.strokeColor || '#000000'}
+              strokeWidth={element.data.strokeWidth || 2}
+              strokeDasharray={element.data.strokeStyle === 'dashed' ? '5,5' : element.data.strokeStyle === 'dotted' ? '2,2' : undefined}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
       )}
 
       {smartRenderableType && (
-        <SmartElementRenderer
-          element={{ ...(element as CanvasSmartElement), smartType: smartRenderableType } as CanvasSmartElement}
-          onUpdate={(data) => updateElement(element.id, { smartType: smartRenderableType, data: { ...element.data, ...data, smartType: smartRenderableType } })}
-        />
+        <div {...selectionAnchorProps} className="w-full h-full">
+          <SmartElementRenderer
+            element={{ ...(element as CanvasSmartElement), smartType: smartRenderableType } as CanvasSmartElement}
+            onUpdate={(data) => updateElement(element.id, { smartType: smartRenderableType, data: { ...element.data, ...data, smartType: smartRenderableType } })}
+          />
+        </div>
       )}
 
-      {isSelected && !isLocked && element.type !== 'text' && (
+      {isSelected && !isLocked && !(element.type === 'text' && isEditingThisText) && (
         element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
           <ArrowControlPoints element={element} viewport={viewport} />
         ) : (
