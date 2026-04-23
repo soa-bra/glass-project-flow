@@ -356,6 +356,12 @@ export const FloatingBar: React.FC = () => {
 
   if (!hasSelection || selectionType === null) return null;
 
+  const overlayRoot = typeof document !== "undefined"
+    ? document.getElementById("planning-floating-overlay")
+    : null;
+
+  if (!overlayRoot) return null;
+
   const layersList = layers.map((layer) => ({ id: layer.id, name: layer.name }));
   const currentBg = elementStyle.backgroundColor || "#ffffff";
   const currentStroke = elementStyle.borderColor || "#000000";
@@ -682,7 +688,7 @@ export const FloatingBar: React.FC = () => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 10, scale: 0.95 }}
         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[hsl(var(--border))] bg-white shadow-[var(--shadow-glass)] pointer-events-auto"
+        className="absolute flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[hsl(var(--border))] bg-white shadow-[var(--shadow-glass)] pointer-events-auto"
         style={{ left: position.x, top: position.y, zIndex: "var(--z-toolbar)", transform: "translateX(-50%)" }}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
@@ -691,7 +697,7 @@ export const FloatingBar: React.FC = () => {
         {renderContent()}
       </motion.div>
     </AnimatePresence>,
-    document.body,
+    overlayRoot,
   );
 };
 
