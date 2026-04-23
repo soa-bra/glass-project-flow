@@ -65,6 +65,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
         <div data-board-frame="true" className="flex-1 relative overflow-hidden">
           <InfiniteCanvas boardId={board.id} />
+          <div id="planning-floating-overlay" data-floating-overlay="true" className="absolute inset-0 pointer-events-none" />
         </div>
         <ToolZone activeTool={activeTool} />
       </div>
