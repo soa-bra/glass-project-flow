@@ -56,48 +56,57 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     return { width, height };
   }, []);
 
-  const getElementDomAnchor = useCallback((elementId: string): AnchorRect | null => {
-    const elementNode = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
-    if (!elementNode) return null;
-    const rect = elementNode.getBoundingClientRect();
-    return { centerX: rect.left + rect.width / 2, top: rect.top };
+  const getElementRects = useCallback((elementIds: string[]) => {
+    return elementIds
+      .map((elementId) => {
+        const elementNode = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
+        return elementNode?.getBoundingClientRect() || null;
+      })
+      .filter((rect): rect is DOMRect => rect !== null);
   }, []);
 
-  const calculateFromEditorDom = useCallback((): AnchorRect | null => {
-    if (!editingTextId) return null;
-    return getElementDomAnchor(editingTextId);
-  }, [editingTextId, getElementDomAnchor]);
+  const createBoardLocalAnchor = useCallback((rects: DOMRect[], boardRect: DOMRect): AnchorRect | null => {
+    if (rects.length === 0) return null;
 
-  const calculateFromSelectionBounds = useCallback((): AnchorRect | null => {
+    const minLeft = Math.min(...rects.map((rect) => rect.left));
+    const minTop = Math.min(...rects.map((rect) => rect.top));
+    const maxRight = Math.max(...rects.map((rect) => rect.right));
+
+    return {
+      centerX: minLeft - boardRect.left + (maxRight - minLeft) / 2,
+      top: minTop - boardRect.top,
+    };
+  }, []);
+
+  const calculateFromEditorDom = useCallback((boardRect: DOMRect): AnchorRect | null => {
+    if (!editingTextId) return null;
+    const rects = getElementRects([editingTextId]);
+    return createBoardLocalAnchor(rects, boardRect);
+  }, [createBoardLocalAnchor, editingTextId, getElementRects]);
+
+  const calculateFromSelectionBounds = useCallback((boardRect: DOMRect): AnchorRect | null => {
     if (activeElements.length === 0) return null;
 
-    if (activeElements.length === 1) {
-      const singleElement = activeElements[0];
-      if (singleElement.type === 'text') {
-        const domAnchor = getElementDomAnchor(singleElement.id);
-        if (domAnchor) return domAnchor;
-      }
-    }
+    const elementRects = getElementRects(activeElements.map((element) => element.id));
+    const domAnchor = createBoardLocalAnchor(elementRects, boardRect);
+    if (domAnchor) return domAnchor;
 
     let minX = Infinity;
     let minY = Infinity;
     let maxX = -Infinity;
-    let maxY = -Infinity;
 
     activeElements.forEach((el) => {
       const width = el.size?.width || 200;
-      const height = el.size?.height || 100;
       minX = Math.min(minX, el.position.x);
       minY = Math.min(minY, el.position.y);
       maxX = Math.max(maxX, el.position.x + width);
-      maxY = Math.max(maxY, el.position.y + height);
     });
 
     return {
-      centerX: ((minX + maxX) / 2) * viewport.zoom + viewport.pan.x,
-      top: minY * viewport.zoom + viewport.pan.y,
+      centerX: ((minX + maxX) / 2 + viewport.pan.x) * viewport.zoom,
+      top: (minY + viewport.pan.y) * viewport.zoom,
     };
-  }, [activeElements, getElementDomAnchor, viewport.zoom, viewport.pan.x, viewport.pan.y]);
+  }, [activeElements, createBoardLocalAnchor, getElementRects, viewport.pan.x, viewport.pan.y, viewport.zoom]);
 
   const calculatePosition = useCallback(() => {
     if (!hasSelection) {
@@ -112,7 +121,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       return;
     }
 
-    const anchor = editingTextId ? calculateFromEditorDom() : calculateFromSelectionBounds();
+    const anchor = editingTextId ? calculateFromEditorDom(boardRect) : calculateFromSelectionBounds(boardRect);
     if (!anchor) {
       updatePositionIfNeeded(HIDDEN_POSITION);
       return;
@@ -124,12 +133,12 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
       return;
     }
 
-    const minLeft = boardRect.left + TOOLBAR_MARGIN;
-    const maxLeft = boardRect.right - TOOLBAR_MARGIN - toolbar.width;
+    const minLeft = TOOLBAR_MARGIN;
+    const maxLeft = boardRect.width - TOOLBAR_MARGIN - toolbar.width;
     const idealLeft = anchor.centerX - toolbar.width / 2;
     const finalLeft = clamp(idealLeft, minLeft, maxLeft);
 
-    const topLimit = boardRect.top + TOOLBAR_MARGIN;
+    const topLimit = TOOLBAR_MARGIN;
     const idealTop = anchor.top - toolbar.height - TOOLBAR_MARGIN;
 
     updatePositionIfNeeded({
@@ -162,19 +171,22 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport, h
     const boardElement = document.querySelector('[data-board-frame="true"]') as HTMLElement | null;
     const toolbarElement = document.querySelector('[data-floating-toolbar="true"]') as HTMLElement | null;
 
-    const observedTextElementId = editingTextId || (activeElements.length === 1 && activeElements[0].type === 'text' ? activeElements[0].id : null);
-    if (observedTextElementId) {
-      const textElement = document.querySelector(`[data-element-id="${observedTextElementId}"]`) as HTMLElement | null;
-      if (textElement) {
-        mutationObserver.observe(textElement, {
-          attributes: true,
-          childList: true,
-          subtree: true,
-          characterData: true,
-        });
-        resizeObserver.observe(textElement);
-      }
-    }
+    const observedElementIds = Array.from(new Set([
+      ...activeElements.map((element) => element.id),
+      ...(editingTextId ? [editingTextId] : []),
+    ]));
+
+    observedElementIds.forEach((elementId) => {
+      const elementNode = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
+      if (!elementNode) return;
+      mutationObserver.observe(elementNode, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+      resizeObserver.observe(elementNode);
+    });
 
     if (boardElement) resizeObserver.observe(boardElement);
     if (toolbarElement) resizeObserver.observe(toolbarElement);
