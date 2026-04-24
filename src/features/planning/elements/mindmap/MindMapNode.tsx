@@ -293,14 +293,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   };
   const isNearestForConnection = nearestAnchor?.nodeId === element.id;
   const isFullTreeSelected = activeTool === 'selection_tool' && selectedElementIds.length > 1;
-  return <div ref={nodeRef} className={`absolute select-none transition-shadow ${activeTool === "selection_tool" ? "cursor-move" : "cursor-default"} ${isSelected ? "ring-2 ring-[hsl(var(--accent-green))] ring-offset-2" : ""}`} style={{
+  return <div ref={nodeRef} data-element-id={element.id} className={`absolute select-none transition-shadow ${activeTool === "selection_tool" ? "cursor-move" : "cursor-default"} ${isSelected ? "ring-2 ring-[hsl(var(--accent-green))] ring-offset-2" : ""}`} style={{
     left: element.position.x,
     top: element.position.y,
     width: element.size.width,
     height: element.size.height,
     zIndex: isSelected ? 100 : 10
   }} onMouseDown={handleMouseDown} onDoubleClick={handleDoubleClick}>
-      <div className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative" style={getNodeStyle()}>
+      <div data-selection-anchor-id={element.id} className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative" style={getNodeStyle()}>
         {isEditing ? <input ref={inputRef} type="text" value={editText} onChange={e => setEditText(e.target.value)} onBlur={handleSaveEdit} onKeyDown={e => {
         if (e.key === "Enter") handleSaveEdit();
         if (e.key === "Escape") setIsEditing(false);
