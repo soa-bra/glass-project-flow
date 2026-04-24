@@ -246,6 +246,11 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         const currentSelection = useCanvasStore.getState().selectedElementIds;
         const newSelection = currentSelection.filter((id) => id !== element.id);
         useCanvasStore.getState().selectElements(newSelection);
+        return;
+      }
+
+      if (!isEditingThisText) {
+        startDrag(e);
       }
       return;
     }
