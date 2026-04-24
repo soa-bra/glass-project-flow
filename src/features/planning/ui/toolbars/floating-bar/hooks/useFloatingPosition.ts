@@ -57,11 +57,7 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
   }, []);
 
   const getAnchorElement = useCallback((elementId: string): HTMLElement | null => {
-    const selectionAnchor = document.querySelector(`[data-selection-anchor-id="${elementId}"]`) as HTMLElement | null;
-    if (selectionAnchor) return selectionAnchor;
-
-    const legacyElement = document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
-    return legacyElement;
+    return document.querySelector(`[data-element-id="${elementId}"]`) as HTMLElement | null;
   }, []);
 
   const getElementRects = useCallback((elementIds: string[]) => {
@@ -91,7 +87,6 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
 
   const calculateFromSelectionBounds = useCallback((boardRect: DOMRect): AnchorRect | null => {
     if (activeElements.length === 0) return null;
-
     const elementRects = getElementRects(activeElements.map((element) => element.id));
     return createBoardLocalAnchor(elementRects, boardRect);
   }, [activeElements, createBoardLocalAnchor, getElementRects]);
