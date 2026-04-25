@@ -25,6 +25,7 @@ interface AnchorRect {
 
 const HIDDEN_POSITION: Position = { x: -9999, y: -9999 };
 const TOOLBAR_MARGIN = 8;
+const MAX_EDGE_SHIFT_RATIO = 0.15;
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 export function useFloatingPosition({ activeElements, editingTextId, viewport: _viewport, hasSelection }: UseFloatingPositionProps): Position {
@@ -120,6 +121,12 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
     const maxLeft = boardRect.width - TOOLBAR_MARGIN - toolbar.width;
     const idealLeft = anchor.centerX - toolbar.width / 2;
     const finalLeft = clamp(idealLeft, minLeft, maxLeft);
+    const edgeShift = Math.abs(finalLeft - idealLeft);
+
+    if (edgeShift > toolbar.width * MAX_EDGE_SHIFT_RATIO) {
+      updatePositionIfNeeded(HIDDEN_POSITION);
+      return;
+    }
 
     const topLimit = TOOLBAR_MARGIN;
     const idealTop = anchor.top - toolbar.height - TOOLBAR_MARGIN;
