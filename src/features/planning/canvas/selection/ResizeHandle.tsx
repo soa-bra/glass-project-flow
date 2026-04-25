@@ -33,22 +33,6 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
   const isResizingRef = useRef(false);
   const startRef = useRef({ x: 0, y: 0, width: 0, height: 0, posX: 0, posY: 0 });
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    const element = elements.find(el => el.id === elementId);
-    if (!element) return;
-
-    isResizingRef.current = true;
-    startRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      width: element.size.width,
-      height: element.size.height,
-      posX: element.position.x,
-      posY: element.position.y
-    };
-  }, [elementId, elements]);
-
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizingRef.current) return;
 
@@ -60,7 +44,6 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
     let newX = startRef.current.posX;
     let newY = startRef.current.posY;
 
-    // Calculate new dimensions based on handle position
     switch (position) {
       case 'nw':
         newWidth = Math.max(50, startRef.current.width - deltaX);
@@ -102,26 +85,43 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
       size: { width: newWidth, height: newHeight },
       position: { x: newX, y: newY }
     });
-  }, [elementId, updateElement, viewport, position]);
+  }, [elementId, updateElement, viewport.zoom, position]);
 
   const handleMouseUp = useCallback(() => {
     isResizingRef.current = false;
-  }, []);
+    window.removeEventListener('mousemove', handleMouseMove);
+    window.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseMove]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const element = elements.find(el => el.id === elementId);
+    if (!element) return;
+
+    isResizingRef.current = true;
+    startRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      width: element.size.width,
+      height: element.size.height,
+      posX: element.position.x,
+      posY: element.position.y
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  }, [elementId, elements, handleMouseMove, handleMouseUp]);
 
   useEffect(() => {
-    if (isResizingRef.current) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-
-      return () => {
-        window.removeEventListener('mousemove', handleMouseMove);
-        window.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
   }, [handleMouseMove, handleMouseUp]);
 
   return (
     <div
+      data-resize-handle={position}
       className="resize-handle absolute w-2 h-2 bg-[hsl(var(--accent-green))] rounded-full z-10"
       style={{
         ...positionMap[position],
