@@ -8,12 +8,13 @@ import { toast } from 'sonner';
 import { createStraightArrowData, type ArrowData } from '@/types/arrow-connections';
 import type { SmartElementType } from '@/types/smart-elements';
 
-// التحقق إذا كان الشكل سهماً
+const DEFAULT_SHAPE_SIZE = { width: 120, height: 120 };
+const DEFAULT_ARROW_SIZE = { width: 120, height: 60 };
+
 const isArrowShape = (shapeType: string): boolean => {
   return shapeType.startsWith('arrow_');
 };
 
-// إنشاء بيانات السهم الافتراضية بناءً على نوع السهم
 const createArrowData = (width: number, height: number, shapeType: string): ArrowData => {
   let startPoint: { x: number; y: number };
   let endPoint: { x: number; y: number };
@@ -89,16 +90,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
   } = useCanvasStore();
 
   const isDraggingRef = useRef(false);
-  
-  // Text tool dragging state
   const [isDraggingText, setIsDraggingText] = useState(false);
   const [textBoxStart, setTextBoxStart] = useState<{x: number, y: number} | null>(null);
 
-  /**
-   * معالج بدء النقر على الكانفاس
-   */
   const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
-    // تجاهل النقرات على العناصر الموجودة
     if ((e.target as HTMLElement).closest('[data-canvas-element]')) {
       return;
     }
@@ -106,7 +101,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return;
 
-    // ✅ استخدام Event Pipeline للتحويل
     const canvasPoint = eventPipeline.screenToWorld(
       e.clientX,
       e.clientY,
@@ -114,7 +108,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       viewport
     );
 
-    // ✅ استخدام Canvas Kernel للمحاذاة
     const snappedPoint = canvasKernel.snapToGrid(
       canvasPoint,
       settings.gridSize,
@@ -123,12 +116,8 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
     switch (activeTool) {
       case 'text_tool':
-        // 1️⃣ أولاً: التحقق من وجود عنصر تحت النقر
         const clickedElement = elements.find(el => {
-          // تجاهل العناصر النصية والإطارات
           if (el.type === 'text' || el.type === 'frame') return false;
-          
-          // التحقق من أن النقر داخل حدود العنصر
           const inBounds = (
             snappedPoint.x >= el.position.x &&
             snappedPoint.x <= el.position.x + el.size.width &&
@@ -138,13 +127,10 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
           return inBounds;
         });
         
-        // 2️⃣ إذا وجدنا عنصر، أنشئ نص مرتبط
         if (clickedElement) {
           const relativeX = snappedPoint.x - clickedElement.position.x;
           const relativeY = snappedPoint.y - clickedElement.position.y;
-          
           const { addText, startEditingText } = useCanvasStore.getState();
-          
           const attachedText = {
             type: 'text' as const,
             textType: 'attached' as const,
@@ -159,26 +145,19 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
             attachedTo: clickedElement.id,
             relativePosition: { x: relativeX, y: relativeY }
           };
-          
           const newId = addText(attachedText);
           setTimeout(() => startEditingText(newId), 50);
           toast.success('تم إضافة نص مرتبط - سيتحرك مع العنصر');
-        } 
-        // 3️⃣ وإلا، ابدأ السحب العادي
-        else {
+        } else {
           handleTextToolDragStart(snappedPoint);
         }
         break;
 
       case 'shapes_tool':
-        // ✅ قراءة أحدث القيم من الـ store مباشرة
         const { toolSettings: currentSettings } = useCanvasStore.getState();
         const currentShapeType = currentSettings.shapes.shapeType;
-        
-        // ✅ إذا كان الشكل ستيكي نوت، أضفه فوراً بحجم ثابت
         if (currentShapeType === 'sticky') {
           const STICKY_DEFAULT_SIZE = { width: 200, height: 200 };
-          
           addElement({
             type: 'shape',
             shapeType: 'sticky',
@@ -196,25 +175,19 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
               stickyText: ''
             }
           });
-          
           toast.success('تم إضافة ستيكي نوت - انقر مرتين للكتابة');
           return;
         }
-        
-        // باقي الأشكال تستخدم المنطق الحالي (سحب)
         handleShapesToolStart(snappedPoint);
         break;
 
       case 'smart_pen':
-        // يتم التعامل معه عبر PenInputLayer
         break;
 
       case 'frame_tool':
-        // ✨ يتم التعامل معه الآن عبر FrameInputLayer
         break;
       
       case 'file_uploader':
-        // يتم التعامل معه عبر FileUploadPanel
         toast.info('استخدم لوحة رفع الملفات أو اسحب ملفاً على الكانفاس');
         break;
 
@@ -235,24 +208,19 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'selection_tool':
-        // يتم التعامل معها في InfiniteCanvas
         break;
 
       default:
         break;
     }
-  }, [activeTool, viewport, settings, containerRef]);
+  }, [activeTool, viewport, settings, containerRef, elements, toolSettings, addElement]);
 
-  /**
-   * معالج حركة الماوس أثناء الرسم
-   */
   const handleCanvasMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDrawing || !drawStartPoint) return;
 
     const containerRect = containerRef.current?.getBoundingClientRect();
     if (!containerRect) return;
 
-    // ✅ استخدام Event Pipeline للتحويل
     const canvasPoint = eventPipeline.screenToWorld(
       e.clientX,
       e.clientY,
@@ -260,7 +228,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       viewport
     );
 
-    // ✅ استخدام Canvas Kernel للمحاذاة
     const snappedPoint = canvasKernel.snapToGrid(
       canvasPoint,
       settings.gridSize,
@@ -269,7 +236,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
 
     switch (activeTool) {
       case 'text_tool':
-        // تحديث مربع النص المؤقت أثناء السحب
         if (isDraggingText) {
           handleTextToolDragMove(snappedPoint);
         }
@@ -280,32 +246,53 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         break;
 
       case 'smart_pen':
-        // يتم التعامل معه عبر PenInputLayer
         break;
 
       case 'frame_tool':
-        // ✨ يتم التعامل معه الآن عبر FrameInputLayer
         break;
 
       default:
         break;
     }
-  }, [isDrawing, drawStartPoint, activeTool, viewport, settings, containerRef]);
+  }, [isDrawing, drawStartPoint, activeTool, viewport, settings, containerRef, isDraggingText, tempElement]);
 
-  /**
-   * معالج رفع زر الماوس (إنهاء الرسم)
-   */
   const handleCanvasMouseUp = useCallback(() => {
-    // التعامل مع نهاية سحب أداة النص
     if (activeTool === 'text_tool' && isDraggingText) {
       handleTextToolDragEnd();
       return;
     }
     
     if (isDrawing && tempElement) {
-      // تحويل العنصر المؤقت إلى عنصر دائم
-      const finalElement = { ...tempElement };
-      delete (finalElement as any).id;
+      const finalElement: any = { ...tempElement };
+      delete finalElement.id;
+
+      if (finalElement.type === 'shape') {
+        const resolvedShapeType = finalElement.shapeType || finalElement.data?.shapeType || '';
+        const isArrow = isArrowShape(resolvedShapeType);
+        const fallbackSize = isArrow ? DEFAULT_ARROW_SIZE : DEFAULT_SHAPE_SIZE;
+        const hasVisibleSize = finalElement.size.width >= 8 || finalElement.size.height >= 8;
+
+        if (!hasVisibleSize && drawStartPoint) {
+          finalElement.size = { ...fallbackSize };
+          finalElement.position = {
+            x: drawStartPoint.x - fallbackSize.width / 2,
+            y: drawStartPoint.y - fallbackSize.height / 2,
+          };
+        } else {
+          finalElement.size = {
+            width: Math.max(finalElement.size.width, fallbackSize.width / 3),
+            height: Math.max(finalElement.size.height, fallbackSize.height / 3),
+          };
+        }
+
+        if (isArrow) {
+          finalElement.data = {
+            ...(finalElement.data || {}),
+            shapeType: resolvedShapeType,
+            arrowData: createArrowData(finalElement.size.width, finalElement.size.height, resolvedShapeType),
+          };
+        }
+      }
       
       addElement(finalElement);
       toast.success('تم إضافة العنصر');
@@ -314,11 +301,8 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setIsDrawing(false);
     setDrawStartPoint(null);
     setTempElement(null);
-  }, [isDrawing, tempElement, addElement, setIsDrawing, setDrawStartPoint, setTempElement, activeTool, isDraggingText]);
+  }, [isDrawing, tempElement, addElement, setIsDrawing, setDrawStartPoint, setTempElement, activeTool, isDraggingText, drawStartPoint]);
 
-  /**
-   * أداة النص: بدء سحب محتمل
-   */
   const handleTextToolDragStart = (point: { x: number; y: number }) => {
     setIsDraggingText(true);
     setTextBoxStart(point);
@@ -326,18 +310,12 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setDrawStartPoint(point);
   };
   
-  /**
-   * أداة النص: تحديث مربع النص المؤقت أثناء السحب
-   */
   const handleTextToolDragMove = (currentPoint: { x: number; y: number }) => {
     if (!textBoxStart) return;
-    
     const width = Math.abs(currentPoint.x - textBoxStart.x);
     const height = Math.abs(currentPoint.y - textBoxStart.y);
     const x = Math.min(currentPoint.x, textBoxStart.x);
     const y = Math.min(currentPoint.y, textBoxStart.y);
-    
-    // عرض مستطيل مؤقت - الحد الأدنى للحجم 50x30
     if (width > 5 || height > 5) {
       setTempElement({
         id: 'temp-textbox',
@@ -354,20 +332,12 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     }
   };
   
-  /**
-   * أداة النص: إنهاء السحب وإنشاء النص النهائي
-   */
   const handleTextToolDragEnd = () => {
     if (!textBoxStart) return;
-    
     const { addText, startEditingText } = useCanvasStore.getState();
-    
-    // حساب المسافة الفعلية المسحوبة
     const dragDistance = tempElement 
       ? Math.max(tempElement.size.width, tempElement.size.height)
       : 0;
-    
-    // إذا لم يكن هناك tempElement أو المسافة صغيرة جداً → سطر نص
     if (!tempElement || dragDistance < 20) {
       const textData = {
         type: 'text' as const,
@@ -381,21 +351,14 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         fontWeight: toolSettings.text.fontWeight,
         alignment: toolSettings.text.alignment
       };
-
       const newId = addText(textData);
-      
-      // ✅ الدخول مباشرة في وضع الكتابة مع ضمان وجود العنصر
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           const el = useCanvasStore.getState().elements.find(e => e.id === newId);
-          if (el) {
-            startEditingText(newId);
-          }
+          if (el) startEditingText(newId);
         });
       });
-    } 
-    // إذا كان السحب كبير → مربع نص
-    else {
+    } else {
       const textBoxElement = {
         type: 'text' as const,
         textType: 'box' as const,
@@ -408,21 +371,14 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         fontWeight: toolSettings.text.fontWeight,
         alignment: toolSettings.text.alignment
       };
-      
       const newId = addText(textBoxElement);
-      
-      // ✅ الدخول مباشرة في وضع الكتابة مع ضمان وجود العنصر
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           const el = useCanvasStore.getState().elements.find(e => e.id === newId);
-          if (el) {
-            startEditingText(newId);
-          }
+          if (el) startEditingText(newId);
         });
       });
     }
-    
-    // إعادة تعيين الحالة
     setIsDraggingText(false);
     setTextBoxStart(null);
     setTempElement(null);
@@ -430,14 +386,9 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     setDrawStartPoint(null);
   };
 
-  /**
-   * أداة الأشكال: بدء رسم شكل
-   */
   const handleShapesToolStart = (point: { x: number; y: number }) => {
-    // ✅ قراءة أحدث القيم من الـ store مباشرة لضمان تحديث الخصائص فوراً
     const { toolSettings: currentSettings } = useCanvasStore.getState();
     const { shapeType, fillColor, strokeColor, strokeWidth, opacity, iconName, stickyText } = currentSettings.shapes;
-    
     setIsDrawing(true);
     setDrawStartPoint(point);
 
@@ -457,22 +408,17 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       strokeColor: strokeColor,
       strokeWidth: strokeWidth,
       data: {
-        shapeType: shapeType // حفظ shapeType أيضاً في data للتوافق
+        shapeType: shapeType
       }
     };
 
-    // إذا كان الشكل سهماً، أضف بيانات السهم مع حجم افتراضي معقول
     if (isArrowShape(shapeType)) {
-      // استخدام حجم افتراضي 100x50 للسهم الجديد حتى يتم تحديثه أثناء السحب
       initialElement.data.arrowData = createArrowData(100, 50, shapeType);
     }
 
     setTempElement(initialElement);
   };
 
-  /**
-   * أداة الأشكال: تحديث حجم الشكل أثناء السحب
-   */
   const handleShapesToolMove = (currentPoint: { x: number; y: number }) => {
     if (!drawStartPoint || !tempElement) return;
 
@@ -481,7 +427,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     const x = Math.min(currentPoint.x, drawStartPoint.x);
     const y = Math.min(currentPoint.y, drawStartPoint.y);
 
-    // تحديث بيانات السهم إذا كان الشكل سهماً
     let updatedData = { ...tempElement.data };
     if (tempElement.shapeType && isArrowShape(tempElement.shapeType)) {
       updatedData.arrowData = createArrowData(width, height, tempElement.shapeType);
@@ -495,27 +440,17 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
     });
   };
 
-  /**
-   * أداة العناصر الذكية: إنشاء عنصر ذكي
-   */
   const handleSmartElementClick = (point: { x: number; y: number }) => {
     const { selectedSmartElement, addElement: addCanvasElement } = useCanvasStore.getState();
-    
-    // ✅ قائمة أنواع المستندات الذكية (يجب إضافتها عبر أداة D وليس S)
     const SMART_DOC_TYPES = ['interactive_sheet', 'smart_text_doc'];
-    
     if (!selectedSmartElement) {
       toast.info('اختر عنصراً ذكياً من اللوحة الجانبية أولاً');
       return;
     }
-
-    // ✅ منع إضافة المستندات الذكية عبر أداة العناصر الذكية
     if (SMART_DOC_TYPES.includes(selectedSmartElement)) {
       toast.info('استخدم أداة المستند الذكي (D) لإضافة هذا العنصر');
       return;
     }
-
-    // ✅ حالة خاصة للخريطة الذهنية - إنشاء عقدة مباشرة على الكانفس
     if (selectedSmartElement === 'mind_map') {
       addCanvasElement({
         type: 'mindmap_node',
@@ -530,50 +465,34 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
           textColor: '#FFFFFF'
         }
       });
-      
       toast.success('تم إنشاء عقدة خريطة ذهنية - اسحب من نقاط الربط لإضافة فروع');
       useCanvasStore.getState().setSelectedSmartElement(null);
       return;
     }
 
-    // ✅ باقي العناصر الذكية (kanban, voting, etc.)
     const { addSmartElement } = useSmartElementsStore.getState();
-    
     addSmartElement(
       selectedSmartElement as SmartElementType,
       point,
       { title: selectedSmartElement }
     );
-    
     toast.success('تم إضافة العنصر الذكي');
-    
-    // إعادة تعيين العنصر المختار
     useCanvasStore.getState().setSelectedSmartElement(null);
   };
 
-  /**
-   * أداة المستند الذكي: إنشاء interactive_sheet أو smart_text_doc
-   */
   const handleSmartDocClick = (point: { x: number; y: number }) => {
-    // ✅ استخدام المتغير المنفصل للمستندات الذكية
     const { selectedSmartDoc } = useCanvasStore.getState();
-    
     if (!selectedSmartDoc) {
       toast.info('اختر نوع المستند الذكي من اللوحة الجانبية أولاً');
       return;
     }
-
-    // التأكد من أن النوع المختار هو مستند ذكي
     if (selectedSmartDoc !== 'interactive_sheet' && selectedSmartDoc !== 'smart_text_doc') {
       toast.info('اختر نوع المستند الذكي من اللوحة الجانبية');
       return;
     }
 
     const { addSmartElement } = useSmartElementsStore.getState();
-    
-    // إعداد البيانات الأولية بناءً على النوع
     const initialData: Record<string, any> = {};
-    
     if (selectedSmartDoc === 'interactive_sheet') {
       initialData.title = 'جدول تفاعلي';
       initialData.rows = 10;
@@ -591,21 +510,14 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       point,
       initialData
     );
-    
     toast.success(`تم إضافة ${selectedSmartDoc === 'interactive_sheet' ? 'الجدول التفاعلي' : 'المستند النصي الذكي'}`);
-    
-    // ✅ إعادة تعيين المتغير المنفصل
     useCanvasStore.getState().setSelectedSmartDoc(null);
   };
 
-  /**
-   * أداة الستيكي: إنشاء sticky note مباشرة
-   */
   const handleStickyToolClick = (point: { x: number; y: number }) => {
     const STICKY_DEFAULT_SIZE = { width: 200, height: 200 };
     const colors = ['#FEF9C3', '#DCFCE7', '#DBEAFE', '#FCE7F3', '#FED7AA'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
     addElement({
       type: 'shape',
       shapeType: 'sticky',
@@ -623,13 +535,9 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         stickyText: ''
       }
     });
-    
     toast.success('تم إضافة ستيكي نوت - انقر مرتين للكتابة');
   };
 
-  /**
-   * أداة الخريطة الذهنية: إنشاء عقدة مباشرة
-   */
   const handleMindMapToolClick = (point: { x: number; y: number }) => {
     addElement({
       type: 'mindmap_node',
@@ -644,7 +552,6 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
         textColor: '#FFFFFF'
       }
     });
-    
     toast.success('تم إنشاء عقدة - اسحب من نقاط الربط لإضافة فروع');
   };
 

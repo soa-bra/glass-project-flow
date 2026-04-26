@@ -682,20 +682,24 @@ export const FloatingBar: React.FC = () => {
 
   return createPortal(
     <AnimatePresence>
-      <motion.div
+      <div
         data-floating-toolbar="true"
-        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[hsl(var(--border))] bg-white shadow-[var(--shadow-glass)] pointer-events-auto"
+        className="absolute pointer-events-auto"
         style={{ left: position.x, top: position.y, zIndex: "var(--z-toolbar)", transform: "translateX(-50%)" }}
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
         dir="rtl"
       >
-        {renderContent()}
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-center gap-1 px-2 py-1.5 rounded-xl border border-[hsl(var(--border))] bg-white shadow-[var(--shadow-glass)]"
+        >
+          {renderContent()}
+        </motion.div>
+      </div>
     </AnimatePresence>,
     overlayRoot,
   );
