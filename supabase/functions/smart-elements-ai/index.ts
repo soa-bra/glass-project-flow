@@ -15,6 +15,13 @@ const SMART_ELEMENT_TYPES = [
 ] as const;
 
 const VALID_ACTIONS = ['generate', 'analyze', 'transform'] as const;
+const AUTO_APPROVE_CONFIDENCE_THRESHOLD = 0.85;
+const REVIEW_CONFIDENCE_THRESHOLD = 0.6;
+const SENSITIVE_TRANSFORMATION_KEYWORDS = [
+  'financial', 'finance', 'budget', 'invoice', 'payment', 'salary', 'payroll',
+  'contract', 'legal', 'compliance', 'gdpr', 'pii', 'ssn',
+  'medical', 'health', 'hr', 'employee', 'confidential', 'security'
+];
 
 // Tool definitions for structured output extraction
 const tools = [
@@ -432,6 +439,48 @@ serve(async (req) => {
 
     console.log(`[smart-elements-ai] Action: ${action}, Tool: ${selectedTool}`);
 
+    const sensitivityAssessment = assessTransformationSensitivity({
+      action: action || 'generate',
+      prompt,
+      selectedElements,
+      targetType: context?.targetType
+    });
+    const humanApprovalProvided = context?.humanApproval?.approved === true;
+
+    // Enforce human approval for sensitive transformations before model execution
+    if (action === 'transform' && sensitivityAssessment.isSensitive && !humanApprovalProvided) {
+      await storeExplainabilityTrace(supabaseClient, {
+        userId,
+        action: action || 'generate',
+        selectedTool,
+        model: 'google/gemini-2.5-flash',
+        prompt,
+        selectedElements,
+        targetType: context?.targetType,
+        confidenceSummary: null,
+        escalation: 'blocked_pending_human_approval',
+        sensitivity: sensitivityAssessment,
+        approval: {
+          required: true,
+          provided: false,
+          approverId: null,
+          approvedAt: null
+        },
+        outputSummary: null
+      });
+
+      return new Response(JSON.stringify({
+        success: false,
+        code: 'HUMAN_APPROVAL_REQUIRED',
+        error: 'التحويل حساس ويتطلب موافقة بشرية صريحة قبل التنفيذ',
+        approvalRequired: true,
+        sensitivity: sensitivityAssessment,
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -494,6 +543,8 @@ serve(async (req) => {
     }
 
     const toolResult = JSON.parse(toolCall.function.arguments);
+    const confidenceSummary = getConfidenceSummary(toolResult);
+    const escalation = determineEscalationGate(confidenceSummary);
     
     // Generate unique IDs for elements if not provided
     if (toolResult.elements) {
@@ -506,10 +557,38 @@ serve(async (req) => {
 
     console.log(`[smart-elements-ai] Generated ${toolResult.elements?.length || 0} elements`);
 
+    await storeExplainabilityTrace(supabaseClient, {
+      userId,
+      action: action || 'generate',
+      selectedTool,
+      model: 'google/gemini-2.5-flash',
+      prompt,
+      selectedElements,
+      targetType: context?.targetType,
+      confidenceSummary,
+      escalation,
+      sensitivity: sensitivityAssessment,
+      approval: {
+        required: action === 'transform' ? sensitivityAssessment.isSensitive : false,
+        provided: humanApprovalProvided,
+        approverId: context?.humanApproval?.approverId ?? null,
+        approvedAt: context?.humanApproval?.approvedAt ?? null
+      },
+      outputSummary: summarizeOutput(toolResult)
+    });
+
     return new Response(JSON.stringify({
       success: true,
       result: toolResult,
-      action: action || 'generate'
+      action: action || 'generate',
+      safety: {
+        confidenceThresholds: {
+          autoApprove: AUTO_APPROVE_CONFIDENCE_THRESHOLD,
+          review: REVIEW_CONFIDENCE_THRESHOLD
+        },
+        escalation,
+        sensitivity: sensitivityAssessment
+      }
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
@@ -553,5 +632,157 @@ function calculatePosition(index: number, total: number, layout: string): { x: n
     }
     default:
       return { x: baseX + (index * 50), y: baseY + (index * 50) };
+  }
+}
+
+type ExplainabilityTraceInput = {
+  userId: string;
+  action: string;
+  selectedTool: string;
+  model: string;
+  prompt?: string;
+  selectedElements?: unknown[];
+  targetType?: string;
+  confidenceSummary: {
+    min: number;
+    max: number;
+    average: number;
+    count: number;
+  } | null;
+  escalation: 'auto_apply' | 'review_recommended' | 'human_escalation_required' | 'blocked_pending_human_approval';
+  sensitivity: {
+    isSensitive: boolean;
+    score: number;
+    reasons: string[];
+  };
+  approval: {
+    required: boolean;
+    provided: boolean;
+    approverId: string | null;
+    approvedAt: string | null;
+  };
+  outputSummary: {
+    elementsCount: number;
+    suggestionsCount: number;
+    entityCount: number;
+    relationshipCount: number;
+  } | null;
+};
+
+function assessTransformationSensitivity(input: {
+  action: string;
+  prompt?: string;
+  selectedElements?: unknown[];
+  targetType?: string;
+}): { isSensitive: boolean; score: number; reasons: string[] } {
+  const reasons: string[] = [];
+  let score = 0;
+
+  if (input.action !== 'transform') {
+    return { isSensitive: false, score: 0, reasons: [] };
+  }
+
+  const blob = JSON.stringify({
+    prompt: input.prompt || '',
+    selectedElements: input.selectedElements || [],
+    targetType: input.targetType || '',
+  }).toLowerCase();
+
+  const keywordHits = SENSITIVE_TRANSFORMATION_KEYWORDS.filter((keyword) => blob.includes(keyword));
+  if (keywordHits.length > 0) {
+    score += Math.min(0.7, keywordHits.length * 0.15);
+    reasons.push(`Sensitive keywords detected: ${keywordHits.join(', ')}`);
+  }
+
+  const elementCount = Array.isArray(input.selectedElements) ? input.selectedElements.length : 0;
+  if (elementCount >= 10) {
+    score += 0.2;
+    reasons.push('Large-scale transformation (10+ elements)');
+  }
+
+  if (input.targetType === 'finance_card' || input.targetType === 'crm_card') {
+    score += 0.2;
+    reasons.push(`Sensitive target type: ${input.targetType}`);
+  }
+
+  const boundedScore = Math.min(1, Number(score.toFixed(2)));
+  return { isSensitive: boundedScore >= 0.5, score: boundedScore, reasons };
+}
+
+function getConfidenceSummary(toolResult: any): ExplainabilityTraceInput['confidenceSummary'] {
+  const scores = (toolResult?.suggestions || [])
+    .map((s: any) => typeof s?.confidence === 'number' ? s.confidence : null)
+    .filter((v: number | null): v is number => v !== null)
+    .map((score: number) => Math.max(0, Math.min(1, score)));
+
+  if (scores.length === 0) return null;
+
+  const min = Math.min(...scores);
+  const max = Math.max(...scores);
+  const average = scores.reduce((sum: number, score: number) => sum + score, 0) / scores.length;
+  return {
+    min: Number(min.toFixed(3)),
+    max: Number(max.toFixed(3)),
+    average: Number(average.toFixed(3)),
+    count: scores.length
+  };
+}
+
+function determineEscalationGate(
+  confidenceSummary: ExplainabilityTraceInput['confidenceSummary']
+): ExplainabilityTraceInput['escalation'] {
+  if (!confidenceSummary) return 'review_recommended';
+  if (confidenceSummary.min >= AUTO_APPROVE_CONFIDENCE_THRESHOLD) return 'auto_apply';
+  if (confidenceSummary.average >= REVIEW_CONFIDENCE_THRESHOLD) return 'review_recommended';
+  return 'human_escalation_required';
+}
+
+function summarizeOutput(toolResult: any): ExplainabilityTraceInput['outputSummary'] {
+  return {
+    elementsCount: Array.isArray(toolResult?.elements) ? toolResult.elements.length : 0,
+    suggestionsCount: Array.isArray(toolResult?.suggestions) ? toolResult.suggestions.length : 0,
+    entityCount: Array.isArray(toolResult?.entities) ? toolResult.entities.length : 0,
+    relationshipCount: Array.isArray(toolResult?.relationships) ? toolResult.relationships.length : 0,
+  };
+}
+
+async function storeExplainabilityTrace(supabaseClient: ReturnType<typeof createClient>, input: ExplainabilityTraceInput) {
+  const tracePayload = {
+    user_id: input.userId,
+    action: input.action,
+    selected_tool: input.selectedTool,
+    model: input.model,
+    prompt_excerpt: (input.prompt || '').slice(0, 500),
+    selected_elements_count: Array.isArray(input.selectedElements) ? input.selectedElements.length : 0,
+    target_type: input.targetType || null,
+    confidence_min: input.confidenceSummary?.min ?? null,
+    confidence_max: input.confidenceSummary?.max ?? null,
+    confidence_avg: input.confidenceSummary?.average ?? null,
+    confidence_count: input.confidenceSummary?.count ?? 0,
+    escalation_gate: input.escalation,
+    sensitivity_score: input.sensitivity.score,
+    sensitivity_reasons: input.sensitivity.reasons,
+    approval_required: input.approval.required,
+    approval_provided: input.approval.provided,
+    approver_id: input.approval.approverId,
+    approved_at: input.approval.approvedAt,
+    output_summary: input.outputSummary || {},
+    explainability_payload: {
+      action: input.action,
+      selectedTool: input.selectedTool,
+      thresholds: {
+        autoApprove: AUTO_APPROVE_CONFIDENCE_THRESHOLD,
+        review: REVIEW_CONFIDENCE_THRESHOLD,
+      },
+      confidenceSummary: input.confidenceSummary,
+      sensitivity: input.sensitivity,
+      approval: input.approval,
+      outputSummary: input.outputSummary,
+    }
+  };
+
+  const { error } = await supabaseClient.from('ai_command_traces').insert(tracePayload);
+  if (error) {
+    console.error('[smart-elements-ai] Failed to store explainability trace:', error);
   }
 }

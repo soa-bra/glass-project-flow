@@ -33,7 +33,8 @@ const BaseTaskCardLayout = ({
       width: '100%',
       backgroundColor,
       borderRadius: '32px',
-      padding: '12px',
+      paddingBlock: '12px',
+      paddingInline: 'clamp(10px, 2vw, 14px)',
       direction: 'rtl',
       fontFamily: 'IBM Plex Sans Arabic',
       opacity,
@@ -46,15 +47,7 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-      className={`font-arabic min-h-[120px] h-auto max-h-[360px] overflow-hidden flex flex-col gap-2 ${className}`}
-      style={getCardStyle()}
-      data-task-card-id={id}
-    >
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain pr-1">
-        <div className="shrink-0">{headerSection}</div>
-        <div className="shrink-0">{footerSection}</div>
-        {extraSections.length > 0 ? (
-          <div className="shrink-0">{extraSections}</div>
+
         ) : null}
       </div>
     </div>
