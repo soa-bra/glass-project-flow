@@ -13,8 +13,12 @@ const FeatureTaskCardTitle = ({
       color: '#000000',
       marginBottom: '2px',
       lineHeight: 1.1,
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-right font-bold text-base my-0 mx-[4px]">
+      fontFamily: 'IBM Plex Sans Arabic',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      maxWidth: '100%'
+    }} className="text-right font-bold text-base my-0 mx-[4px] min-w-0" data-overflow-guard="true" title={title}>
         {title}
       </h4>
       
@@ -24,8 +28,12 @@ const FeatureTaskCardTitle = ({
       color: '#858789',
       marginBottom: '0px',
       lineHeight: 1.1,
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-right my-[3px] text-sm font-normal text-gray-600 mx-[4px]">
+      fontFamily: 'IBM Plex Sans Arabic',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+      maxWidth: '100%'
+    }} className="text-right my-[3px] text-sm font-normal text-gray-600 mx-[4px] min-w-0" data-overflow-guard="true" title={description}>
         {description}
       </p>
     </div>;

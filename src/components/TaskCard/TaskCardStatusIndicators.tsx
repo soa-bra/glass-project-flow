@@ -46,7 +46,16 @@ const TaskCardStatusIndicators = ({
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic',
-    height: '20px'
+    minHeight: '20px',
+    maxWidth: '100%',
+    minWidth: 0
+  };
+  const pillTextStyle = {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap' as const,
+    maxWidth: '100%',
+    display: 'inline-block'
   };
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -79,7 +88,8 @@ const TaskCardStatusIndicators = ({
         ...pillStyle,
         display: 'flex',
         alignItems: 'center',
-        gap: '4px'
+        gap: '4px',
+        minWidth: 0
       }}>
           <div style={{
           width: '8px',
@@ -87,12 +97,20 @@ const TaskCardStatusIndicators = ({
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>
-          {status}
+          <span style={pillTextStyle} data-overflow-guard="true" title={status}>
+            {status}
+          </span>
         </div>
 
-        <div style={pillStyle}>{date}</div>
-        <div style={pillStyle}>{assignee}</div>
-        <div style={pillStyle}>{members}</div>
+        <div style={pillStyle}>
+          <span style={pillTextStyle} data-overflow-guard="true" title={date}>{date}</span>
+        </div>
+        <div style={pillStyle}>
+          <span style={pillTextStyle} data-overflow-guard="true" title={assignee}>{assignee}</span>
+        </div>
+        <div style={pillStyle}>
+          <span style={pillTextStyle} data-overflow-guard="true" title={members}>{members}</span>
+        </div>
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
         {isSelectionMode ? <div style={{
