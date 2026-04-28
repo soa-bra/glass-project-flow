@@ -2,37 +2,67 @@
 
 import { logger } from "../src/infra/logger";
 import { metrics } from "../src/infra/metrics";
-import { handlerRegistry } from "../src/core/events/handlers";
+import { handlerRegistry } from "../src/shared/events/handlers";
 
-// Mock Prisma client - replace with actual prisma import
+type RetryTier = "fast" | "standard" | "critical";
+
+interface OutboxEvent {
+  id: string;
+  eventName: string;
+  eventVersion: number;
+  payload: Record<string, unknown>;
+  dedupKey?: string;
+  idempotencyKey?: string;
+  status: "pending" | "failed" | "sent";
+  retryCount: number;
+  maxRetries: number;
+  retryTier?: RetryTier;
+  nextRetryAt?: Date;
+  createdAt: Date;
+  updatedAt?: Date;
+}
+
 interface PrismaClient {
   eventOutbox: {
-    findMany: (query: any) => Promise<any[]>;
-    update: (query: any) => Promise<any>;
-    delete: (query: any) => Promise<any>;
+    findMany: (query: unknown) => Promise<OutboxEvent[]>;
+    update: (query: unknown) => Promise<unknown>;
+    delete: (query: unknown) => Promise<unknown>;
   };
   eventDLQ: {
-    create: (data: { data: any }) => Promise<any>;
+    create: (data: { data: Record<string, unknown> }) => Promise<unknown>;
   };
 }
 
-// This would be your actual prisma client
 let prisma: PrismaClient;
+
+const RETRY_TIER_CONFIG: Record<RetryTier, { maxRetries: number; scheduleMs: number[] }> = {
+  fast: {
+    maxRetries: 3,
+    scheduleMs: [5_000, 15_000, 60_000],
+  },
+  standard: {
+    maxRetries: 6,
+    scheduleMs: [10_000, 30_000, 60_000, 300_000, 900_000, 3_600_000],
+  },
+  critical: {
+    maxRetries: 10,
+    scheduleMs: [5_000, 10_000, 30_000, 60_000, 120_000, 300_000, 600_000, 1_800_000, 3_600_000, 7_200_000],
+  },
+};
+
+export function initOutboxRelay(client: PrismaClient): void {
+  prisma = client;
+}
 
 export class OutboxRelay {
   private isRunning = false;
-  private intervalMs: number;
-  private batchSize: number;
 
   constructor(
-    options: {
+    private readonly options: {
       intervalMs?: number;
       batchSize?: number;
     } = {},
-  ) {
-    this.intervalMs = options.intervalMs || 5000; // 5 seconds
-    this.batchSize = options.batchSize || 10;
-  }
+  ) {}
 
   async start(): Promise<void> {
     if (this.isRunning) {
@@ -53,32 +83,36 @@ export class OutboxRelay {
         await this.sleep(this.intervalMs);
       } catch (error) {
         logger.error({
-          msg: "Outbox relay error",
+          msg: "Outbox relay loop error",
           error: error instanceof Error ? error.message : "Unknown error",
         });
-
-        // Back off on error
         await this.sleep(this.intervalMs * 2);
       }
     }
   }
 
   stop(): void {
-    logger.info({ msg: "Stopping outbox relay" });
     this.isRunning = false;
+    logger.info({ msg: "Stopping outbox relay" });
+  }
+
+  private get intervalMs(): number {
+    return this.options.intervalMs ?? 5000;
+  }
+
+  private get batchSize(): number {
+    return this.options.batchSize ?? 10;
   }
 
   private async processBatch(): Promise<void> {
-    const startTime = Date.now();
+    const startedAt = Date.now();
 
-    // Get pending events ready for processing
     const events = await prisma.eventOutbox.findMany({
       where: {
         OR: [
           { status: "pending" },
           {
             status: "failed",
-            retryCount: { lt: prisma.eventOutbox.maxRetries },
             nextRetryAt: { lte: new Date() },
           },
         ],
@@ -87,158 +121,123 @@ export class OutboxRelay {
       take: this.batchSize,
     });
 
-    if (events.length === 0) {
+    if (!events.length) {
       return;
     }
 
-    logger.debug({
-      msg: "Processing outbox batch",
-      eventCount: events.length,
-    });
+    logger.debug({ msg: "Processing outbox batch", count: events.length });
 
-    const results = await Promise.allSettled(events.map((event) => this.processEvent(event)));
+    const result = await Promise.allSettled(events.map((event) => this.processEvent(event)));
+    const successful = result.filter((x) => x.status === "fulfilled").length;
+    const failed = result.length - successful;
 
-    const successful = results.filter((r) => r.status === "fulfilled").length;
-    const failed = results.filter((r) => r.status === "rejected").length;
+    metrics.outboxEventsTotal.inc({ status: "processed" }, events.length);
 
     logger.info({
       msg: "Outbox batch processed",
       total: events.length,
       successful,
       failed,
-      durationMs: Date.now() - startTime,
+      durationMs: Date.now() - startedAt,
     });
-
-    metrics.counter("outbox_events_processed_total").inc(events.length);
-    metrics.counter("outbox_events_successful_total").inc(successful);
-    metrics.counter("outbox_events_failed_total").inc(failed);
-    metrics.histogram("outbox_batch_duration_ms").observe(Date.now() - startTime);
   }
 
-  private async processEvent(event: any): Promise<void> {
-    const startTime = Date.now();
-
+  private async processEvent(event: OutboxEvent): Promise<void> {
+    const idempotencyKey = event.idempotencyKey ?? event.dedupKey;
     try {
-      logger.debug({
-        msg: "Processing outbox event",
-        eventId: event.id,
-        eventName: event.eventName,
-        retryCount: event.retryCount,
-      });
-
-      // Execute handlers
-      await handlerRegistry.handle(event.eventName, event.eventVersion, event.payload, {
+      await handlerRegistry.handle(event.eventName as never, event.eventVersion, event.payload, {
         eventId: event.id,
         timestamp: event.createdAt,
         source: "SoaBra-system",
-        dedupKey: event.dedupKey,
+        dedupKey: idempotencyKey,
       });
 
-      // Mark as sent
       await prisma.eventOutbox.update({
         where: { id: event.id },
         data: {
           status: "sent",
           sentAt: new Date(),
+          idempotencyKey,
         },
       });
 
-      metrics
-        .histogram("outbox_event_duration_ms", {
-          event_name: event.eventName,
-        })
-        .observe(Date.now() - startTime);
-
-      logger.debug({
-        msg: "Outbox event processed successfully",
-        eventId: event.id,
-        eventName: event.eventName,
-        durationMs: Date.now() - startTime,
+      metrics.eventsProcessedTotal.inc({
+        event_name: event.eventName,
+        version: String(event.eventVersion),
+        status: "sent",
       });
     } catch (error) {
-      await this.handleEventFailure(event, error);
+      await this.handleFailure(event, error);
     }
   }
 
-  private async handleEventFailure(event: any, error: any): Promise<void> {
+  private async handleFailure(event: OutboxEvent, error: unknown): Promise<void> {
+    const tier = event.retryTier ?? "standard";
     const newRetryCount = event.retryCount + 1;
-    const isMaxRetriesReached = newRetryCount >= event.maxRetries;
+    const maxRetries = Math.max(event.maxRetries, RETRY_TIER_CONFIG[tier].maxRetries);
+    const reachedMax = newRetryCount >= maxRetries;
 
     logger.error({
-      msg: "Outbox event processing failed",
+      msg: "Outbox event failed",
       eventId: event.id,
       eventName: event.eventName,
+      retryTier: tier,
       retryCount: newRetryCount,
-      maxRetries: event.maxRetries,
-      isMaxRetriesReached,
+      maxRetries,
       error: error instanceof Error ? error.message : "Unknown error",
     });
 
-    if (isMaxRetriesReached) {
-      // Move to DLQ
-      await this.moveToDeadLetterQueue(event, error);
+    metrics.outboxRetryTotal.inc({
+      event_name: event.eventName,
+      retry_count: String(newRetryCount),
+    });
 
-      // Delete from outbox
-      await prisma.eventOutbox.delete({
-        where: { id: event.id },
-      });
-
-      metrics
-        .counter("outbox_events_dlq_total", {
-          event_name: event.eventName,
-        })
-        .inc();
-    } else {
-      // Schedule retry with exponential backoff
-      const backoffMs = Math.min(
-        1000 * Math.pow(2, newRetryCount), // Exponential backoff
-        300000, // Max 5 minutes
-      );
-
-      const nextRetryAt = new Date(Date.now() + backoffMs);
-
-      await prisma.eventOutbox.update({
-        where: { id: event.id },
-        data: {
-          status: "failed",
-          retryCount: newRetryCount,
-          nextRetryAt,
-        },
-      });
-
-      logger.info({
-        msg: "Event scheduled for retry",
-        eventId: event.id,
-        nextRetryAt,
-        backoffMs,
-      });
+    if (reachedMax) {
+      await this.moveToDLQ(event, error, tier, newRetryCount);
+      await prisma.eventOutbox.delete({ where: { id: event.id } });
+      return;
     }
 
-    metrics
-      .counter("outbox_events_retry_total", {
-        event_name: event.eventName,
-        retry_count: newRetryCount.toString(),
-      })
-      .inc();
+    const nextRetryAt = new Date(Date.now() + this.calculateBackoffMs(tier, newRetryCount));
+    await prisma.eventOutbox.update({
+      where: { id: event.id },
+      data: {
+        status: "failed",
+        retryCount: newRetryCount,
+        retryTier: tier,
+        nextRetryAt,
+      },
+    });
   }
 
-  private async moveToDeadLetterQueue(event: any, error: any): Promise<void> {
+  private calculateBackoffMs(tier: RetryTier, retryCount: number): number {
+    const offsets = RETRY_TIER_CONFIG[tier].scheduleMs;
+    return offsets[Math.min(offsets.length - 1, retryCount - 1)] ?? offsets[offsets.length - 1];
+  }
+
+  private async moveToDLQ(
+    event: OutboxEvent,
+    error: unknown,
+    retryTier: RetryTier,
+    retryCount: number,
+  ): Promise<void> {
     await prisma.eventDLQ.create({
       data: {
         eventName: event.eventName,
         eventVersion: event.eventVersion,
         payload: event.payload,
         dedupKey: event.dedupKey,
+        idempotencyKey: event.idempotencyKey ?? event.dedupKey,
+        retryTier,
+        retryCount,
         reason: error instanceof Error ? error.message : "Unknown error",
-        retryCount: event.retryCount,
+        failedAt: new Date(),
       },
     });
 
-    logger.warn({
-      msg: "Event moved to dead letter queue",
-      eventId: event.id,
-      eventName: event.eventName,
-      retryCount: event.retryCount,
+    metrics.outboxDlqTotal.inc({
+      event_name: event.eventName,
+      reason: "max_retries_exhausted",
     });
   }
 
@@ -247,27 +246,22 @@ export class OutboxRelay {
   }
 }
 
-// CLI execution
 if (require.main === module) {
   const relay = new OutboxRelay({
-    intervalMs: parseInt(process.env.OUTBOX_INTERVAL_MS || "5000"),
-    batchSize: parseInt(process.env.OUTBOX_BATCH_SIZE || "10"),
+    intervalMs: Number(process.env.OUTBOX_INTERVAL_MS ?? "5000"),
+    batchSize: Number(process.env.OUTBOX_BATCH_SIZE ?? "10"),
   });
 
-  // Graceful shutdown
   process.on("SIGINT", () => {
-    logger.info({ msg: "Received SIGINT, shutting down gracefully" });
     relay.stop();
     process.exit(0);
   });
 
   process.on("SIGTERM", () => {
-    logger.info({ msg: "Received SIGTERM, shutting down gracefully" });
     relay.stop();
     process.exit(0);
   });
 
-  // Start the relay
   relay.start().catch((error) => {
     logger.fatal({
       msg: "Failed to start outbox relay",
@@ -276,5 +270,3 @@ if (require.main === module) {
     process.exit(1);
   });
 }
-
-export { OutboxRelay };

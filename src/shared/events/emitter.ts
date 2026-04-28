@@ -22,7 +22,9 @@ export interface EmitEventInput {
   name: EventName;
   version: number;
   payload: Record<string, any>;
+  /** @deprecated prefer idempotencyKey */
   dedupKey?: string;
+  idempotencyKey?: string;
   source?: string;
 }
 
@@ -40,12 +42,14 @@ export class EventEmitter {
     const startTime = Date.now();
     
     try {
+      const dedupKey = input.idempotencyKey ?? input.dedupKey;
+
       // Validate base event structure
-      const baseEvent = BaseEventSchema.parse({
+      BaseEventSchema.parse({
         name: input.name,
         version: input.version,
         payload: input.payload,
-        dedupKey: input.dedupKey,
+        dedupKey,
         source: input.source,
       });
 
@@ -53,17 +57,17 @@ export class EventEmitter {
       const schema = getEventSchema(input.name, input.version);
       const validatedPayload = schema.parse(input.payload);
 
-      // Check for duplicate if dedupKey provided
-      if (input.dedupKey) {
+      // Check for duplicate if idempotency key provided
+      if (dedupKey) {
         const existing = await prisma.eventOutbox.findFirst({
-          where: { dedupKey: input.dedupKey }
+          where: { dedupKey }
         });
         
         if (existing) {
           logger.warn({
             msg: 'Duplicate event ignored',
             eventName: input.name,
-            dedupKey: input.dedupKey,
+            dedupKey,
           });
           
           metrics.counter('events_duplicate_total', {
@@ -81,7 +85,7 @@ export class EventEmitter {
           eventName: input.name,
           eventVersion: input.version,
           payload: validatedPayload,
-          dedupKey: input.dedupKey,
+          dedupKey,
           status: 'pending',
           retryCount: 0,
           maxRetries: 3,
@@ -93,7 +97,7 @@ export class EventEmitter {
         eventId: outboxEntry.id,
         eventName: input.name,
         version: input.version,
-        dedupKey: input.dedupKey,
+        dedupKey,
       });
 
       // Metrics
@@ -130,13 +134,13 @@ export class EventEmitter {
     name: TName,
     version: number,
     payload: any, // This would be properly typed in a real implementation
-    options?: { dedupKey?: string; source?: string }
+    options?: { dedupKey?: string; idempotencyKey?: string; source?: string }
   ): Promise<string> {
     return this.emit({
       name,
       version,
       payload,
-      dedupKey: options?.dedupKey,
+      idempotencyKey: options?.idempotencyKey ?? options?.dedupKey,
       source: options?.source,
     });
   }
