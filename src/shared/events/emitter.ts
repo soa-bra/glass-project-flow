@@ -1,4 +1,5 @@
-import { BaseEventSchema, getEventSchema, EventName } from './contracts';
+import { EventName } from './contracts';
+import { validateEventInput } from './validation';
 import { logger } from '@/infra/logger';
 import { metrics } from '@/infra/metrics';
 
@@ -24,6 +25,11 @@ export interface EmitEventInput {
   payload: Record<string, any>;
   dedupKey?: string;
   source?: string;
+  id?: string;
+  state?: string;
+  audit?: Record<string, any>;
+  links?: Array<Record<string, any>>;
+  board_refs?: Array<Record<string, any>>;
 }
 
 export class EventEmitter {
@@ -40,18 +46,24 @@ export class EventEmitter {
     const startTime = Date.now();
     
     try {
-      // Validate base event structure
-      const baseEvent = BaseEventSchema.parse({
-        name: input.name,
+      const validated = validateEventInput({
+        id: input.id,
         version: input.version,
+        state: input.state,
+        audit: input.audit,
+        links: input.links,
+        board_refs: input.board_refs,
+        name: input.name,
         payload: input.payload,
         dedupKey: input.dedupKey,
         source: input.source,
       });
 
-      // Validate payload against specific event contract
-      const schema = getEventSchema(input.name, input.version);
-      const validatedPayload = schema.parse(input.payload);
+      if (!validated.ok) {
+        throw new Error(`Event validation failed: ${validated.errors.join('; ')}`);
+      }
+
+      const validatedEvent = validated.data;
 
       // Check for duplicate if dedupKey provided
       if (input.dedupKey) {
@@ -80,7 +92,7 @@ export class EventEmitter {
         data: {
           eventName: input.name,
           eventVersion: input.version,
-          payload: validatedPayload,
+          payload: validatedEvent.payload,
           dedupKey: input.dedupKey,
           status: 'pending',
           retryCount: 0,
