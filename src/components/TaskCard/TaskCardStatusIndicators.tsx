@@ -41,12 +41,13 @@ const TaskCardStatusIndicators = ({
     backgroundColor: '#FFFFFF',
     border: '1px solid #DADCE0',
     borderRadius: '15px',
-    padding: '3px 8px',
+    padding: '0 8px',
     fontSize: '10px',
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic',
-    height: '20px'
+    height: '24px',
+    minWidth: 0
   };
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -67,14 +68,9 @@ const TaskCardStatusIndicators = ({
     e.stopPropagation();
   };
   return <>
-      <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '6px',
-      flexWrap: 'wrap',
-      marginTop: '8px'
-    }}>
+      <div
+        className="mt-2 grid w-full items-stretch gap-1.5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
+      >
         <div style={{
         ...pillStyle,
         display: 'flex',
@@ -87,12 +83,18 @@ const TaskCardStatusIndicators = ({
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>
-          {status}
+          <span className="min-w-0 truncate">{status}</span>
         </div>
 
-        <div style={pillStyle}>{date}</div>
-        <div style={pillStyle}>{assignee}</div>
-        <div style={pillStyle}>{members}</div>
+        <div style={pillStyle} className="min-w-0 flex items-center">
+          <span className="min-w-0 truncate">{date}</span>
+        </div>
+        <div style={pillStyle} className="min-w-0 flex items-center">
+          <span className="min-w-0 truncate">{assignee}</span>
+        </div>
+        <div style={pillStyle} className="min-w-0 flex items-center">
+          <span className="min-w-0 truncate">{members}</span>
+        </div>
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
         {isSelectionMode ? <div style={{
@@ -107,7 +109,9 @@ const TaskCardStatusIndicators = ({
         border: isSelected ? 'none' : '1px solid #858789',
         backgroundColor: isSelected ? '#858789' : 'transparent',
         color: isSelected ? '#fff' : '#858789'
-      }}>
+      }}
+      className="justify-self-end lg:justify-self-auto"
+      >
             {isSelected ? <Check size={12} color="white" /> : null}
           </div> : <div className="relative" ref={menuRef}>
             <button
@@ -127,6 +131,7 @@ const TaskCardStatusIndicators = ({
                 border: 'none',
                 cursor: 'pointer'
               }}
+              className="justify-self-end"
             >
               <motion.span
                 animate={{ rotate: open ? 90 : 0 }}
