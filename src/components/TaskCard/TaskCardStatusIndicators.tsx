@@ -3,7 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { EllipsisVertical, Check, Edit, Archive, Trash, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskData } from '@/types';
-import { taskCardSingleLineTextStyle, taskCardSizeTokens } from './taskCardSizeTokens';
+import { taskCardSingleLineTextStyle, useTaskCardSizeTokens } from './taskCardSizeTokens';
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -34,6 +34,7 @@ const TaskCardStatusIndicators = ({
   onArchive,
   onDelete
 }: TaskCardStatusIndicatorsProps) => {
+  const tokens = useTaskCardSizeTokens();
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [open, setOpen] = useState(false);
@@ -41,13 +42,13 @@ const TaskCardStatusIndicators = ({
   const pillStyle = {
     backgroundColor: '#FFFFFF',
     border: '1px solid #DADCE0',
-    borderRadius: taskCardSizeTokens.pillRadius,
-    padding: `${taskCardSizeTokens.pillPaddingBlock} ${taskCardSizeTokens.pillPaddingInline}`,
-    fontSize: taskCardSizeTokens.pillFontSize,
+    borderRadius: tokens.pillRadiusPx,
+    padding: `${tokens.pillPaddingBlockPx} ${tokens.pillPaddingInlinePx}`,
+    fontSize: tokens.pillFontSizePx,
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic',
-    height: taskCardSizeTokens.pillHeight,
+    height: tokens.pillHeightPx,
     minWidth: 0,
     maxWidth: '100%',
     ...taskCardSingleLineTextStyle
@@ -75,9 +76,9 @@ const TaskCardStatusIndicators = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: taskCardSizeTokens.footerGap,
+      gap: tokens.footerGapPx,
       flexWrap: 'wrap',
-      marginTop: taskCardSizeTokens.footerMarginTop,
+      marginTop: tokens.footerMarginTopPx,
       width: '100%',
       overflow: 'hidden'
     }}>
@@ -88,8 +89,8 @@ const TaskCardStatusIndicators = ({
         gap: '4px'
       }}>
           <div style={{
-          width: taskCardSizeTokens.statusDotSize,
-          height: taskCardSizeTokens.statusDotSize,
+          width: tokens.statusDotSizePx,
+          height: tokens.statusDotSizePx,
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>
@@ -106,15 +107,15 @@ const TaskCardStatusIndicators = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: taskCardSizeTokens.iconButtonSize,
-        height: taskCardSizeTokens.iconButtonSize,
+        width: tokens.iconButtonSizePx,
+        height: tokens.iconButtonSizePx,
         borderRadius: '50%',
         padding: '0',
         border: isSelected ? 'none' : '1px solid #858789',
         backgroundColor: isSelected ? '#858789' : 'transparent',
         color: isSelected ? '#fff' : '#858789'
       }}>
-            {isSelected ? <Check color="white" style={{ width: taskCardSizeTokens.iconSize, height: taskCardSizeTokens.iconSize }} /> : null}
+            {isSelected ? <Check color="white" style={{ width: tokens.iconSizePx, height: tokens.iconSizePx }} /> : null}
           </div> : <div className="relative" ref={menuRef}>
             <button
               onClick={(e) => {
@@ -126,8 +127,8 @@ const TaskCardStatusIndicators = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: taskCardSizeTokens.iconButtonSize,
-                height: taskCardSizeTokens.iconButtonSize,
+                width: tokens.iconButtonSizePx,
+                height: tokens.iconButtonSizePx,
                 borderRadius: '50%',
                 padding: '0',
                 border: 'none',
@@ -138,7 +139,7 @@ const TaskCardStatusIndicators = ({
                 animate={{ rotate: open ? 90 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut", type: "spring", stiffness: 300, damping: 20 }}
               >
-                <EllipsisVertical color="#858789" style={{ width: taskCardSizeTokens.iconSize, height: taskCardSizeTokens.iconSize }} />
+                <EllipsisVertical color="#858789" style={{ width: tokens.iconSizePx, height: tokens.iconSizePx }} />
               </motion.span>
             </button>
                 

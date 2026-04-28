@@ -1,4 +1,4 @@
-import { taskCardSizeTokens } from './taskCardSizeTokens';
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
 
 interface FeatureTaskCardPriorityCircleProps {
   priority: string;
@@ -6,6 +6,8 @@ interface FeatureTaskCardPriorityCircleProps {
 const FeatureTaskCardPriorityCircle = ({
   priority
 }: FeatureTaskCardPriorityCircleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   const getPriorityConfig = (priority: string) => {
     const configs = {
       'urgent-important': {
@@ -36,8 +38,8 @@ const FeatureTaskCardPriorityCircle = ({
     position: 'absolute',
     top: '0px',
     right: '0px',
-    width: taskCardSizeTokens.circleSize,
-    height: taskCardSizeTokens.circleSize,
+    width: tokens.circleSizePx,
+    height: tokens.circleSizePx,
     borderRadius: '50%',
     backgroundColor: config.bg,
     display: 'flex',
@@ -47,7 +49,7 @@ const FeatureTaskCardPriorityCircle = ({
     flexShrink: 0
   }}>
       <span style={{
-      fontSize: taskCardSizeTokens.priorityLine1FontSize,
+      fontSize: tokens.priorityLine1FontSizePx,
       fontWeight: 600,
       color: '#000000',
       lineHeight: 1,
@@ -56,7 +58,7 @@ const FeatureTaskCardPriorityCircle = ({
         {config.line1}
       </span>
       <span style={{
-      fontSize: taskCardSizeTokens.priorityLine2FontSize,
+      fontSize: tokens.priorityLine2FontSizePx,
       fontWeight: 400,
       color: '#000000',
       marginTop: '1px',

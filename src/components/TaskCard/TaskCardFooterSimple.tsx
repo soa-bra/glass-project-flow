@@ -1,5 +1,5 @@
 import React from 'react';
-import { taskCardSingleLineTextStyle, taskCardSizeTokens } from './taskCardSizeTokens';
+import { taskCardSingleLineTextStyle, useTaskCardSizeTokens } from './taskCardSizeTokens';
 
 interface TaskCardFooterSimpleProps {
   status: string;
@@ -17,15 +17,17 @@ const TaskCardFooterSimple = ({
   assignee,
   members
 }: TaskCardFooterSimpleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   const pillStyle = {
     backgroundColor: '#F7FFFF',
-    borderRadius: taskCardSizeTokens.pillRadius,
-    padding: `${taskCardSizeTokens.pillPaddingBlock} ${taskCardSizeTokens.pillPaddingInline}`,
-    fontSize: taskCardSizeTokens.pillFontSize,
+    borderRadius: tokens.pillRadiusPx,
+    padding: `${tokens.pillPaddingBlockPx} ${tokens.pillPaddingInlinePx}`,
+    fontSize: tokens.pillFontSizePx,
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic',
-    height: taskCardSizeTokens.pillHeight,
+    height: tokens.pillHeightPx,
     minWidth: 0,
     maxWidth: '100%',
     ...taskCardSingleLineTextStyle
@@ -36,9 +38,9 @@ const TaskCardFooterSimple = ({
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      gap: taskCardSizeTokens.footerGap,
+      gap: tokens.footerGapPx,
       flexWrap: 'wrap',
-      marginTop: taskCardSizeTokens.footerMarginTop,
+      marginTop: tokens.footerMarginTopPx,
       width: '100%',
       overflow: 'hidden'
     }}>
@@ -49,8 +51,8 @@ const TaskCardFooterSimple = ({
         gap: '4px'
       }}>
         <div style={{
-          width: taskCardSizeTokens.statusDotSize,
-          height: taskCardSizeTokens.statusDotSize,
+          width: tokens.statusDotSizePx,
+          height: tokens.statusDotSizePx,
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>

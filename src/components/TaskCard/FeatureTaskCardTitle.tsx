@@ -1,4 +1,4 @@
-import { taskCardSizeTokens } from './taskCardSizeTokens';
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
 
 interface FeatureTaskCardTitleProps {
   title: string;
@@ -8,18 +8,20 @@ const FeatureTaskCardTitle = ({
   title,
   description
 }: FeatureTaskCardTitleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   return <div className="px-0" style={{
-    margin: `${taskCardSizeTokens.titleOuterMarginBlock} ${taskCardSizeTokens.titleOuterMarginInline}`,
+    margin: `${tokens.titleOuterMarginBlockPx} ${tokens.titleOuterMarginInlinePx}`,
     minWidth: 0
   }}>
       <h4 style={{
-      fontSize: taskCardSizeTokens.titleFontSize,
+      fontSize: tokens.titleFontSizePx,
       fontWeight: 700,
       color: '#000000',
       marginBottom: '2px',
       lineHeight: 1.1,
       fontFamily: 'IBM Plex Sans Arabic',
-      marginInline: taskCardSizeTokens.titleInnerMarginInline,
+      marginInline: tokens.titleInnerMarginInlinePx,
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap'
@@ -28,13 +30,13 @@ const FeatureTaskCardTitle = ({
       </h4>
       
       <p style={{
-      fontSize: taskCardSizeTokens.descriptionFontSize,
+      fontSize: tokens.descriptionFontSizePx,
       fontWeight: 400,
       color: '#858789',
       marginBottom: '0px',
       lineHeight: 1.1,
       fontFamily: 'IBM Plex Sans Arabic',
-      marginInline: taskCardSizeTokens.titleInnerMarginInline,
+      marginInline: tokens.titleInnerMarginInlinePx,
       marginTop: '3px',
       overflow: 'hidden',
       textOverflow: 'ellipsis',

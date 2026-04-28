@@ -1,18 +1,20 @@
 
-import { taskCardSizeTokens } from './taskCardSizeTokens';
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
 
 interface FeatureTaskCardDaysCircleProps {
   daysLeft: number;
 }
 
 const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   return (
     <div style={{
       position: 'absolute',
       top: '0px',
       left: '0px',
-      width: taskCardSizeTokens.circleSize,
-      height: taskCardSizeTokens.circleSize,
+      width: tokens.circleSizePx,
+      height: tokens.circleSizePx,
       borderRadius: '50%',
       border: '1px solid #000000',
       backgroundColor: 'transparent',
@@ -23,7 +25,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       flexShrink: 0
     }}>
       <span style={{
-        fontSize: taskCardSizeTokens.daysNumberFontSize,
+        fontSize: tokens.daysNumberFontSizePx,
         fontWeight: 700,
         color: '#000000',
         lineHeight: 1,
@@ -32,7 +34,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
         {daysLeft.toString().padStart(2, '0')}
       </span>
       <span style={{
-        fontSize: taskCardSizeTokens.daysLabelFontSize,
+        fontSize: tokens.daysLabelFontSizePx,
         fontWeight: 400,
         color: '#000000',
         marginTop: '2px',
