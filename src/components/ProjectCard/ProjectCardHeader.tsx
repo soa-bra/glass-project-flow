@@ -1,4 +1,3 @@
-
 import ProjectCardDaysCircle from './ProjectCardDaysCircle';
 import ProjectCardTitle from './ProjectCardTitle';
 import ProjectCardTasksCircle from './ProjectCardTasksCircle';
@@ -19,12 +18,17 @@ const ProjectCardHeader = ({
   status
 }: ProjectCardHeaderProps) => {
   return (
-    <div className="flex items-start justify-between mb-2 mx-0 relative py-0 my-0 px-0">
-      <div className="relative">
+    <div
+      dir="rtl"
+      className="flex items-start justify-between gap-2 sm:gap-3 mb-2 mx-0 relative py-0 my-0 px-0"
+    >
+      <div className="relative shrink-0">
         <ProjectCardDaysCircle daysLeft={daysLeft} />
       </div>
       <ProjectCardTitle title={title} description={description} />
-      <ProjectCardTasksCircle projectId={projectId} />
+      <div className="shrink-0">
+        <ProjectCardTasksCircle projectId={projectId} />
+      </div>
     </div>
   );
 };
