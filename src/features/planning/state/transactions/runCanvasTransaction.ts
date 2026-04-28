@@ -4,7 +4,7 @@
 
 import { captureBoardSnapshot } from '../history/boardSnapshot';
 
-const MAX_HISTORY_ENTRIES = 20;
+const MAX_HISTORY_ENTRIES = 50;
 
 type HistoryState = {
   history: {
@@ -15,11 +15,15 @@ type HistoryState = {
 
 export function runCanvasTransaction<TState extends HistoryState>(
   set: (fn: (state: TState) => Partial<TState>) => void,
-  mutate: (state: TState) => Partial<TState>,
+  mutate: (state: TState) => Partial<TState> | null | undefined,
 ): void {
   set((state: TState) => {
     const beforeSnapshot = captureBoardSnapshot(state as any);
     const updates = mutate(state);
+
+    if (!updates || Object.keys(updates).length === 0) {
+      return {} as Partial<TState>;
+    }
 
     return {
       ...updates,
