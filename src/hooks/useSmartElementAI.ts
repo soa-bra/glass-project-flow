@@ -93,6 +93,10 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
           toast.error('الرصيد غير كافٍ', {
             description: 'يرجى إضافة رصيد لاستخدام الذكاء الاصطناعي'
           });
+        } else if (data.code === 'HUMAN_APPROVAL_REQUIRED') {
+          toast.error('مطلوب اعتماد بشري', {
+            description: 'هذا التحويل حساس ويتطلب موافقة بشرية قبل التنفيذ'
+          });
         }
         
         throw new Error(errorMessage);
@@ -152,11 +156,30 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
       return null;
     }
 
-    const result = await callAI('transform', {
+    let result = await callAI('transform', {
       selectedElements: elements,
       prompt,
       context: { targetType }
     });
+
+    // Human-in-the-loop enforcement for sensitive transformations.
+    if (!result) {
+      const shouldApprove = window.confirm('التحويل حساس. هل تريد تأكيد الموافقة البشرية ومتابعة التنفيذ؟');
+      if (shouldApprove) {
+        result = await callAI('transform', {
+          selectedElements: elements,
+          prompt,
+          context: {
+            targetType,
+            humanApproval: {
+              approved: true,
+              approvedAt: new Date().toISOString(),
+              approverId: 'local-user'
+            }
+          }
+        });
+      }
+    }
 
     if (result) {
       toast.success('تم تحويل العناصر بنجاح', {
