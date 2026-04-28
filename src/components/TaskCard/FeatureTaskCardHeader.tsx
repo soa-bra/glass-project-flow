@@ -17,16 +17,16 @@ const FeatureTaskCardHeader = ({
 }: FeatureTaskCardHeaderProps) => {
   return (
     <div
-      className="grid h-full min-h-[84px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2 px-1.5 pt-2 sm:min-h-[92px] sm:gap-3 sm:px-2 sm:pt-2.5 lg:min-h-[96px]"
+      className="grid h-full min-h-[84px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-[clamp(0.375rem,1.2vw,0.75rem)] pt-[clamp(0.5rem,1.7vw,0.75rem)] sm:min-h-[92px] lg:min-h-[96px]"
       style={{
-        paddingInline: 'clamp(6px, 2.2vw, 14px)',
+        paddingInline: 'clamp(0.4rem, 2.2vw, 0.9rem)',
       }}
     >
       <div className="flex min-w-0 items-start justify-start">
         <FeatureTaskCardDaysCircle daysLeft={daysLeft} />
       </div>
 
-      <div className="flex h-full min-w-0 items-start justify-center overflow-hidden pt-1">
+      <div className="flex h-full min-w-0 items-start justify-center overflow-hidden pt-[clamp(0.125rem,0.5vw,0.25rem)]">
         <FeatureTaskCardTitle title={title} description={description} />
       </div>
 

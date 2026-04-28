@@ -47,15 +47,9 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-      className={`font-arabic min-h-[132px] h-auto overflow-hidden grid grid-cols-1 grid-rows-[minmax(86px,_66%)_minmax(40px,_34%)] sm:grid-rows-[minmax(94px,_66%)_minmax(40px,_34%)] lg:grid-rows-[minmax(98px,_64%)_minmax(44px,_36%)] gap-2 ${className}`}
-      style={getCardStyle()}
-      data-task-card-id={id}
-    >
-      <div className="min-h-0 overflow-hidden">{headerSection}</div>
-      <div className="min-h-0 overflow-hidden">{footerSection}</div>
-      {extraSections.length > 0 ? (
-        <div className="min-h-0 overflow-hidden">{extraSections}</div>
-      ) : null}
+
+        ) : null}
+      </div>
     </div>
   );
 };

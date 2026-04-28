@@ -4,11 +4,12 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { 
-  collaborationEngine, 
-  CollaboratorPresence, 
+import {
+  collaborationEngine,
+  CollaboratorPresence,
   CollaborationEvent,
-  CollaborationEventType 
+  ConflictResolutionLog,
+  CollaborationEventType
 } from '@/engine/canvas/collaboration/collaborationEngine';
 import { useCanvasStore } from '@/stores/canvasStore';
 
@@ -34,6 +35,7 @@ export function useCollaboration(options: UseCollaborationOptions) {
   const [remoteCursors, setRemoteCursors] = useState<Map<string, RemoteCursor>>(new Map());
   const [isConnected, setIsConnected] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
+  const [resolutionLogs, setResolutionLogs] = useState<ConflictResolutionLog[]>([]);
   
   const { updateElement, addElement, deleteElement, elements } = useCanvasStore();
   const cursorThrottleRef = useRef<number>(0);
@@ -69,9 +71,9 @@ export function useCollaboration(options: UseCollaborationOptions) {
       onLockChange: (elementId, lockedBy) => {
         console.log(`Element ${elementId} lock changed to: ${lockedBy}`);
       },
-      onConflict: (event, localVersion) => {
-        console.warn('Conflict detected:', event, 'local version:', localVersion);
-        // يمكن إضافة منطق حل التعارضات هنا
+      onConflict: (event, localVersion, resolution) => {
+        console.warn('Conflict detected:', event, 'local version:', localVersion, 'resolution:', resolution);
+        setResolutionLogs((prev) => [resolution, ...prev].slice(0, 100));
       },
     });
   }, [odId, userName, enabled, collaborators]);
@@ -192,7 +194,11 @@ export function useCollaboration(options: UseCollaborationOptions) {
 
   // بث إنشاء عنصر
   const broadcastElementCreated = useCallback(async (element: typeof elements[0]) => {
-    await broadcastElementChange('element_created', { element });
+    await broadcastElementChange('element_created', {
+      entityType: 'element',
+      entityId: element.id,
+      element,
+    });
   }, [broadcastElementChange, elements]);
 
   // بث تحديث عنصر
@@ -200,12 +206,21 @@ export function useCollaboration(options: UseCollaborationOptions) {
     elementId: string, 
     updates: Partial<typeof elements[0]>
   ) => {
-    await broadcastElementChange('element_updated', { elementId, updates });
+    await broadcastElementChange('element_updated', {
+      entityType: 'element',
+      entityId: elementId,
+      elementId,
+      updates,
+    });
   }, [broadcastElementChange, elements]);
 
   // بث حذف عنصر
   const broadcastElementDeleted = useCallback(async (elementId: string) => {
-    await broadcastElementChange('element_deleted', { elementId });
+    await broadcastElementChange('element_deleted', {
+      entityType: 'element',
+      entityId: elementId,
+      elementId,
+    });
   }, [broadcastElementChange]);
 
   // بث تحريك عنصر
@@ -214,6 +229,8 @@ export function useCollaboration(options: UseCollaborationOptions) {
     position: { x: number; y: number }
   ) => {
     await broadcastElementChange('element_moved', { 
+      entityType: 'element',
+      entityId: elementId,
       elementId, 
       updates: { position } 
     });
@@ -225,6 +242,8 @@ export function useCollaboration(options: UseCollaborationOptions) {
     size: { width: number; height: number }
   ) => {
     await broadcastElementChange('element_resized', { 
+      entityType: 'element',
+      entityId: elementId,
       elementId, 
       updates: { size } 
     });
@@ -236,6 +255,7 @@ export function useCollaboration(options: UseCollaborationOptions) {
     connectionError,
     collaborators,
     remoteCursors: Array.from(remoteCursors.values()),
+    resolutionLogs,
     
     // المؤشر
     updateCursor,
