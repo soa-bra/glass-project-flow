@@ -8,7 +8,7 @@ const FeatureTaskCardTitle = ({
   description
 }: FeatureTaskCardTitleProps) => {
   return (
-    <div className="w-full min-w-0 text-right overflow-hidden" dir="rtl">
+    <div className="w-full min-w-0 overflow-hidden text-right" dir="rtl">
       <h4
         style={{
           fontWeight: 700,
@@ -16,7 +16,7 @@ const FeatureTaskCardTitle = ({
           lineHeight: 1.2,
           fontFamily: 'IBM Plex Sans Arabic'
         }}
-        className="text-[13px] sm:text-sm lg:text-base my-0 min-w-0 overflow-hidden text-ellipsis line-clamp-2 [overflow-wrap:anywhere] [word-break:break-word] [unicode-bidi:plaintext]"
+        className="my-0 min-w-0 overflow-hidden text-[13px] sm:text-sm lg:text-base line-clamp-2 break-words [overflow-wrap:anywhere]"
         title={title}
       >
         {title}
@@ -30,7 +30,7 @@ const FeatureTaskCardTitle = ({
           lineHeight: 1.2,
           fontFamily: 'IBM Plex Sans Arabic'
         }}
-        className="mt-1 text-[10px] sm:text-[11px] lg:text-xs font-normal text-gray-600 min-w-0 overflow-hidden text-ellipsis line-clamp-2 [overflow-wrap:anywhere] [word-break:break-word] [unicode-bidi:plaintext]"
+        className="mt-1 min-w-0 overflow-hidden text-[10px] sm:text-[11px] lg:text-xs font-normal text-gray-600 line-clamp-2 break-words [overflow-wrap:anywhere]"
         title={description}
       >
         {description}
