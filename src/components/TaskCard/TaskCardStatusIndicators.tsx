@@ -49,6 +49,8 @@ const TaskCardStatusIndicators = ({
     height: '24px',
     minWidth: 0
   };
+  const pillTextClassName = "block min-w-0 overflow-hidden text-ellipsis whitespace-nowrap";
+  const basePillClassName = "min-w-0 flex items-center w-full";
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     // تعديل المهمة
@@ -68,32 +70,38 @@ const TaskCardStatusIndicators = ({
     e.stopPropagation();
   };
   return <>
-      <div
-        className="mt-2 grid w-full items-stretch gap-1.5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto]"
-      >
-        <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
-      }}>
-          <div style={{
-          width: '8px',
-          height: '8px',
-          borderRadius: '50%',
-          backgroundColor: statusColor
-        }}></div>
-          <span className="min-w-0 truncate">{status}</span>
-        </div>
+      <div className="mt-2 w-full lg:grid lg:grid-cols-[minmax(140px,1.35fr)_minmax(110px,1fr)_minmax(120px,1fr)_minmax(90px,0.9fr)_auto] lg:items-stretch lg:gap-1.5">
+        <div className="grid min-w-0 grid-cols-2 items-stretch gap-1.5 lg:col-span-4 lg:grid-cols-subgrid">
+          <div
+            style={{
+              ...pillStyle,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              maxWidth: '240px'
+            }}
+            className={basePillClassName}
+            title={status}
+          >
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: statusColor,
+              flexShrink: 0
+            }}></div>
+            <span className={pillTextClassName} dir="auto">{status}</span>
+          </div>
 
-        <div style={pillStyle} className="min-w-0 flex items-center">
-          <span className="min-w-0 truncate">{date}</span>
-        </div>
-        <div style={pillStyle} className="min-w-0 flex items-center">
-          <span className="min-w-0 truncate">{assignee}</span>
-        </div>
-        <div style={pillStyle} className="min-w-0 flex items-center">
-          <span className="min-w-0 truncate">{members}</span>
+          <div style={{ ...pillStyle, maxWidth: '180px' }} className={basePillClassName} title={date}>
+            <span className={pillTextClassName} dir="auto">{date}</span>
+          </div>
+          <div style={{ ...pillStyle, maxWidth: '210px' }} className={basePillClassName} title={assignee}>
+            <span className={pillTextClassName} dir="auto">{assignee}</span>
+          </div>
+          <div style={{ ...pillStyle, maxWidth: '150px' }} className={basePillClassName} title={members}>
+            <span className={pillTextClassName} dir="auto">{members}</span>
+          </div>
         </div>
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
@@ -110,7 +118,7 @@ const TaskCardStatusIndicators = ({
         backgroundColor: isSelected ? '#858789' : 'transparent',
         color: isSelected ? '#fff' : '#858789'
       }}
-      className="justify-self-end lg:justify-self-auto"
+      className="mt-1 justify-self-end lg:mt-0 lg:justify-self-auto"
       >
             {isSelected ? <Check size={12} color="white" /> : null}
           </div> : <div className="relative" ref={menuRef}>
@@ -131,7 +139,7 @@ const TaskCardStatusIndicators = ({
                 border: 'none',
                 cursor: 'pointer'
               }}
-              className="justify-self-end"
+              className="mt-1 justify-self-end lg:mt-0"
             >
               <motion.span
                 animate={{ rotate: open ? 90 : 0 }}
