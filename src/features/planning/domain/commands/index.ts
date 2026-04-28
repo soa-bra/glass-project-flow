@@ -7,3 +7,5 @@
 // export { addElement } from './addElement';
 // export { deleteElement } from './deleteElement';
 // export { moveElement } from './moveElement';
+
+export * from './commandProcessor';

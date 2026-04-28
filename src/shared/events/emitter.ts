@@ -1,4 +1,5 @@
-import { BaseEventSchema, getEventSchema, EventName } from './contracts';
+import { EventName } from './contracts';
+import { validateEventInput } from './validation';
 import { logger } from '@/infra/logger';
 import { metrics } from '@/infra/metrics';
 
@@ -26,6 +27,11 @@ export interface EmitEventInput {
   dedupKey?: string;
   idempotencyKey?: string;
   source?: string;
+  id?: string;
+  state?: string;
+  audit?: Record<string, any>;
+  links?: Array<Record<string, any>>;
+  board_refs?: Array<Record<string, any>>;
 }
 
 export class EventEmitter {
@@ -42,20 +48,23 @@ export class EventEmitter {
     const startTime = Date.now();
     
     try {
-      const dedupKey = input.idempotencyKey ?? input.dedupKey;
 
-      // Validate base event structure
-      BaseEventSchema.parse({
-        name: input.name,
         version: input.version,
+        state: input.state,
+        audit: input.audit,
+        links: input.links,
+        board_refs: input.board_refs,
+        name: input.name,
         payload: input.payload,
         dedupKey,
         source: input.source,
       });
 
-      // Validate payload against specific event contract
-      const schema = getEventSchema(input.name, input.version);
-      const validatedPayload = schema.parse(input.payload);
+      if (!validated.ok) {
+        throw new Error(`Event validation failed: ${validated.errors.join('; ')}`);
+      }
+
+      const validatedEvent = validated.data;
 
       // Check for duplicate if idempotency key provided
       if (dedupKey) {
@@ -84,8 +93,7 @@ export class EventEmitter {
         data: {
           eventName: input.name,
           eventVersion: input.version,
-          payload: validatedPayload,
-          dedupKey,
+
           status: 'pending',
           retryCount: 0,
           maxRetries: 3,

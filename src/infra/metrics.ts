@@ -161,6 +161,57 @@ export const metrics = {
     labelNames: ["namespace"],
   }),
 
+  // Collaboration SLO metrics
+  boardSyncOperationsTotal: new Counter({
+    name: "SoaBra_board_sync_operations_total",
+    help: "Total board sync operations by result",
+    labelNames: ["operation", "result"],
+  }),
+
+  boardSyncLatencySeconds: new Histogram({
+    name: "SoaBra_board_sync_latency_seconds",
+    help: "Board sync latency in seconds",
+    labelNames: ["operation", "result"],
+    buckets: [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.35, 0.5, 1, 2],
+  }),
+
+  boardSyncErrorsTotal: new Counter({
+    name: "SoaBra_board_sync_errors_total",
+    help: "Total board sync errors",
+    labelNames: ["operation"],
+  }),
+
+  domainCommandsTotal: new Counter({
+    name: "SoaBra_domain_commands_total",
+    help: "Total domain commands processed",
+    labelNames: ["command_name", "result"],
+  }),
+
+  domainCommandDurationSeconds: new Histogram({
+    name: "SoaBra_domain_command_duration_seconds",
+    help: "Domain command processing duration in seconds",
+    labelNames: ["command_name", "result"],
+    buckets: [0.001, 0.003, 0.005, 0.01, 0.015, 0.025, 0.04, 0.06, 0.1, 0.25, 0.5, 1],
+  }),
+
+  domainCommandQueueDepth: new Gauge({
+    name: "SoaBra_domain_command_queue_depth",
+    help: "Current queued domain commands",
+    labelNames: ["queue"],
+  }),
+
+  errorBudgetRemainingPercent: new Gauge({
+    name: "SoaBra_error_budget_remaining_percent",
+    help: "Remaining error budget percent per objective",
+    labelNames: ["objective"],
+  }),
+
+  errorBudgetBurnRate: new Gauge({
+    name: "SoaBra_error_budget_burn_rate",
+    help: "Error budget burn rate by objective and window",
+    labelNames: ["objective", "window"],
+  }),
+
   // Convenience methods
   getCounter: (metricName: keyof typeof metrics, labels?: Record<string, string>) => {
     const metric = metrics[metricName];
