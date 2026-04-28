@@ -16,7 +16,7 @@ const FeatureTaskCardTitle = ({
           lineHeight: 1.2,
           fontFamily: 'IBM Plex Sans Arabic'
         }}
-        className="my-0 min-w-0 max-w-full overflow-hidden whitespace-normal text-[13px] sm:text-sm lg:text-base line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+        className="my-0 min-w-0 max-w-full overflow-hidden whitespace-normal text-[13px] sm:text-sm lg:text-base line-clamp-2 [overflow-wrap:anywhere]"
         title={title}
       >
         {title}
@@ -30,7 +30,7 @@ const FeatureTaskCardTitle = ({
           lineHeight: 1.2,
           fontFamily: 'IBM Plex Sans Arabic'
         }}
-        className="mt-1 min-w-0 max-w-full overflow-hidden whitespace-normal text-[10px] sm:text-[11px] lg:text-xs font-normal text-gray-600 line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+        className="mt-1 min-w-0 max-w-full overflow-hidden whitespace-normal text-[10px] sm:text-[11px] lg:text-xs font-normal text-gray-600 line-clamp-2 [overflow-wrap:anywhere]"
         title={description}
       >
         {description}
