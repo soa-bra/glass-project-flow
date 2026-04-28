@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { RefObject } from 'react';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
-import type { CanvasElement, CanvasLayer, CanvasSettings } from '@/types/canvas';
+import type { CanvasElement, CanvasSettings, LayerInfo } from '@/types/canvas';
 
 function getCanvasHostSize(container: HTMLDivElement | null): { width: number; height: number } {
   if (container) {
@@ -17,7 +17,7 @@ function getCanvasHostSize(container: HTMLDivElement | null): { width: number; h
 interface UseCanvasViewportControllerOptions {
   containerRef: RefObject<HTMLDivElement>;
   elements: CanvasElement[];
-  layers: CanvasLayer[];
+  layers: LayerInfo[];
   viewport: { zoom: number; pan: { x: number; y: number } };
   settings: CanvasSettings;
   activeTool: string;
@@ -68,8 +68,8 @@ export function useCanvasViewportController({
   const visibleElements = useMemo(() => {
     const padding = 200;
     return elements.filter((el) => {
-      const isLayerVisible = el.layerId ? layerVisibilityMap.get(el.layerId) : undefined;
-      if (!isLayerVisible || !el.visible) return false;
+      const isLayerVisible = el.layerId ? layerVisibilityMap.get(el.layerId) !== false : true;
+      if (!isLayerVisible || el.visible === false) return false;
       if (el.type === 'mindmap_connector') return true;
 
       return (
