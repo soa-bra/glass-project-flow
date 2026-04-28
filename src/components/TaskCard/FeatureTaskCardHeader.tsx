@@ -1,30 +1,35 @@
 import FeatureTaskCardDaysCircle from './FeatureTaskCardDaysCircle';
 import FeatureTaskCardTitle from './FeatureTaskCardTitle';
 import FeatureTaskCardPriorityCircle from './FeatureTaskCardPriorityCircle';
+
 interface FeatureTaskCardHeaderProps {
   daysLeft: number;
   title: string;
   description: string;
   priority: 'urgent-important' | 'urgent-not-important' | 'not-urgent-important' | 'not-urgent-not-important';
 }
+
 const FeatureTaskCardHeader = ({
   daysLeft,
   title,
   description,
   priority
 }: FeatureTaskCardHeaderProps) => {
-  return <div className="relative flex-1">
-      <FeatureTaskCardDaysCircle daysLeft={daysLeft} />
-      <FeatureTaskCardPriorityCircle priority={priority} />
-      <div style={{
-      marginTop: '0px',
-      marginLeft: '55px',
-      marginRight: '55px',
-      textAlign: 'center',
-      paddingTop: '4px'
-    }} className="px-0 mx-[67px] my-[5px] py-0">
+  return (
+    <div className="h-full min-h-0 grid grid-cols-[22%_56%_22%] sm:grid-cols-[20%_60%_20%] lg:grid-cols-[18%_64%_18%] items-start gap-2 sm:gap-3">
+      <div className="flex items-start justify-start min-w-0">
+        <FeatureTaskCardDaysCircle daysLeft={daysLeft} />
+      </div>
+
+      <div className="min-w-0 h-full flex items-center justify-center overflow-hidden">
         <FeatureTaskCardTitle title={title} description={description} />
       </div>
-    </div>;
+
+      <div className="flex items-start justify-end min-w-0">
+        <FeatureTaskCardPriorityCircle priority={priority} />
+      </div>
+    </div>
+  );
 };
+
 export default FeatureTaskCardHeader;

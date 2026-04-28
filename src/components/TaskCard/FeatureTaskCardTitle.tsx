@@ -2,32 +2,41 @@ interface FeatureTaskCardTitleProps {
   title: string;
   description: string;
 }
+
 const FeatureTaskCardTitle = ({
   title,
   description
 }: FeatureTaskCardTitleProps) => {
-  return <div className="px-0 my-[15px] mx-[15px]">
-      <h4 style={{
-      fontSize: '16px',
-      fontWeight: 700,
-      color: '#000000',
-      marginBottom: '2px',
-      lineHeight: 1.1,
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-right font-bold text-base my-0 mx-[4px]">
+  return (
+    <div className="w-full min-w-0 px-0.5 sm:px-1 text-right overflow-hidden">
+      <h4
+        style={{
+          fontWeight: 700,
+          color: '#000000',
+          lineHeight: 1.2,
+          fontFamily: 'IBM Plex Sans Arabic'
+        }}
+        className="text-[13px] sm:text-sm lg:text-base my-0 mx-[2px] sm:mx-1 min-w-0 overflow-hidden [overflow-wrap:anywhere] break-words line-clamp-2"
+        title={title}
+      >
         {title}
       </h4>
-      
-      <p style={{
-      fontSize: '12px',
-      fontWeight: 400,
-      color: '#858789',
-      marginBottom: '0px',
-      lineHeight: 1.1,
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-right my-[3px] text-sm font-normal text-gray-600 mx-[4px]">
+
+      <p
+        style={{
+          fontWeight: 400,
+          color: '#858789',
+          marginBottom: '0px',
+          lineHeight: 1.2,
+          fontFamily: 'IBM Plex Sans Arabic'
+        }}
+        className="mt-1 text-[10px] sm:text-[11px] lg:text-xs font-normal text-gray-600 mx-[2px] sm:mx-1 min-w-0 overflow-hidden [overflow-wrap:anywhere] break-words line-clamp-2"
+        title={description}
+      >
         {description}
       </p>
-    </div>;
+    </div>
+  );
 };
+
 export default FeatureTaskCardTitle;
