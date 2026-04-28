@@ -1,4 +1,6 @@
 
+import { taskCardSizeTokens } from './taskCardSizeTokens';
+
 interface FeatureTaskCardDaysCircleProps {
   daysLeft: number;
 }
@@ -9,18 +11,19 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
       position: 'absolute',
       top: '0px',
       left: '0px',
-      width: '60px',
-      height: '60px',
+      width: taskCardSizeTokens.circleSize,
+      height: taskCardSizeTokens.circleSize,
       borderRadius: '50%',
       border: '1px solid #000000',
       backgroundColor: 'transparent',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      flexShrink: 0
     }}>
       <span style={{
-        fontSize: '16px',
+        fontSize: taskCardSizeTokens.daysNumberFontSize,
         fontWeight: 700,
         color: '#000000',
         lineHeight: 1,
@@ -29,7 +32,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
         {daysLeft.toString().padStart(2, '0')}
       </span>
       <span style={{
-        fontSize: '10px',
+        fontSize: taskCardSizeTokens.daysLabelFontSize,
         fontWeight: 400,
         color: '#000000',
         marginTop: '2px',

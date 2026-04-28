@@ -3,6 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { EllipsisVertical, Check, Edit, Archive, Trash, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskData } from '@/types';
+import { taskCardSingleLineTextStyle, taskCardSizeTokens } from './taskCardSizeTokens';
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -40,13 +41,16 @@ const TaskCardStatusIndicators = ({
   const pillStyle = {
     backgroundColor: '#FFFFFF',
     border: '1px solid #DADCE0',
-    borderRadius: '15px',
-    padding: '3px 8px',
-    fontSize: '10px',
+    borderRadius: taskCardSizeTokens.pillRadius,
+    padding: `${taskCardSizeTokens.pillPaddingBlock} ${taskCardSizeTokens.pillPaddingInline}`,
+    fontSize: taskCardSizeTokens.pillFontSize,
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic',
-    height: '20px'
+    height: taskCardSizeTokens.pillHeight,
+    minWidth: 0,
+    maxWidth: '100%',
+    ...taskCardSingleLineTextStyle
   };
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -71,9 +75,11 @@ const TaskCardStatusIndicators = ({
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '6px',
+      gap: taskCardSizeTokens.footerGap,
       flexWrap: 'wrap',
-      marginTop: '8px'
+      marginTop: taskCardSizeTokens.footerMarginTop,
+      width: '100%',
+      overflow: 'hidden'
     }}>
         <div style={{
         ...pillStyle,
@@ -82,8 +88,8 @@ const TaskCardStatusIndicators = ({
         gap: '4px'
       }}>
           <div style={{
-          width: '8px',
-          height: '8px',
+          width: taskCardSizeTokens.statusDotSize,
+          height: taskCardSizeTokens.statusDotSize,
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>
@@ -100,15 +106,15 @@ const TaskCardStatusIndicators = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '20px',
-        height: '20px',
+        width: taskCardSizeTokens.iconButtonSize,
+        height: taskCardSizeTokens.iconButtonSize,
         borderRadius: '50%',
         padding: '0',
         border: isSelected ? 'none' : '1px solid #858789',
         backgroundColor: isSelected ? '#858789' : 'transparent',
         color: isSelected ? '#fff' : '#858789'
       }}>
-            {isSelected ? <Check size={12} color="white" /> : null}
+            {isSelected ? <Check color="white" style={{ width: taskCardSizeTokens.iconSize, height: taskCardSizeTokens.iconSize }} /> : null}
           </div> : <div className="relative" ref={menuRef}>
             <button
               onClick={(e) => {
@@ -120,8 +126,8 @@ const TaskCardStatusIndicators = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '20px',
-                height: '20px',
+                width: taskCardSizeTokens.iconButtonSize,
+                height: taskCardSizeTokens.iconButtonSize,
                 borderRadius: '50%',
                 padding: '0',
                 border: 'none',
@@ -132,7 +138,7 @@ const TaskCardStatusIndicators = ({
                 animate={{ rotate: open ? 90 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut", type: "spring", stiffness: 300, damping: 20 }}
               >
-                <EllipsisVertical size={12} color="#858789" />
+                <EllipsisVertical color="#858789" style={{ width: taskCardSizeTokens.iconSize, height: taskCardSizeTokens.iconSize }} />
               </motion.span>
             </button>
                 

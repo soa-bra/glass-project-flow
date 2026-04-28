@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { taskCardSingleLineTextStyle, taskCardSizeTokens } from './taskCardSizeTokens';
 
 interface TaskCardFooterSimpleProps {
   status: string;
@@ -15,18 +15,20 @@ const TaskCardFooterSimple = ({
   statusColor,
   date,
   assignee,
-  members,
-  isSelected = false
+  members
 }: TaskCardFooterSimpleProps) => {
   const pillStyle = {
     backgroundColor: '#F7FFFF',
-    borderRadius: '15px',
-    padding: '3px 8px',
-    fontSize: '10px',
+    borderRadius: taskCardSizeTokens.pillRadius,
+    padding: `${taskCardSizeTokens.pillPaddingBlock} ${taskCardSizeTokens.pillPaddingInline}`,
+    fontSize: taskCardSizeTokens.pillFontSize,
     fontWeight: 500,
     color: '#858789',
     fontFamily: 'IBM Plex Sans Arabic',
-    height: '20px'
+    height: taskCardSizeTokens.pillHeight,
+    minWidth: 0,
+    maxWidth: '100%',
+    ...taskCardSingleLineTextStyle
   };
 
   return (
@@ -34,9 +36,11 @@ const TaskCardFooterSimple = ({
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      gap: '6px',
+      gap: taskCardSizeTokens.footerGap,
       flexWrap: 'wrap',
-      marginTop: '8px'
+      marginTop: taskCardSizeTokens.footerMarginTop,
+      width: '100%',
+      overflow: 'hidden'
     }}>
       <div style={{
         ...pillStyle,
@@ -45,8 +49,8 @@ const TaskCardFooterSimple = ({
         gap: '4px'
       }}>
         <div style={{
-          width: '8px',
-          height: '8px',
+          width: taskCardSizeTokens.statusDotSize,
+          height: taskCardSizeTokens.statusDotSize,
           borderRadius: '50%',
           backgroundColor: statusColor
         }}></div>

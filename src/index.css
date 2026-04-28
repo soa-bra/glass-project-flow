@@ -37,6 +37,29 @@
     --sb-project-card-bg: #F1F5F9;
     --sb-task-card-bg: #F8F9FA;
     --sb-box-bg: #FFFFFF;
+
+
+    /* Task Card size tokens */
+    --task-card-circle-size: 60px;
+    --task-card-days-number-font-size: 16px;
+    --task-card-days-label-font-size: 10px;
+    --task-card-priority-line1-font-size: 10px;
+    --task-card-priority-line2-font-size: 8px;
+    --task-card-title-font-size: 16px;
+    --task-card-description-font-size: 12px;
+    --task-card-title-margin-inline: 15px;
+    --task-card-title-margin-block: 15px;
+    --task-card-title-inner-margin-inline: 4px;
+    --task-card-pill-height: 20px;
+    --task-card-pill-radius: 15px;
+    --task-card-pill-padding-block: 3px;
+    --task-card-pill-padding-inline: 8px;
+    --task-card-pill-font-size: 10px;
+    --task-card-footer-gap: 6px;
+    --task-card-footer-margin-top: 8px;
+    --task-card-status-dot-size: 8px;
+    --task-card-icon-button-size: 20px;
+    --task-card-icon-size: 12px;
     --sb-modal-scrim: rgba(0,0,0,0.2);
     
     /* نظام الألوان الجديد */
@@ -687,4 +710,44 @@
 
 .text-tool-active * {
   cursor: text !important;
+}
+
+
+@media (max-width: 1279px) {
+  :root {
+    --task-card-circle-size: 54px;
+    --task-card-days-number-font-size: 14px;
+    --task-card-title-font-size: 14px;
+    --task-card-description-font-size: 11px;
+    --task-card-title-margin-inline: 12px;
+    --task-card-title-margin-block: 12px;
+    --task-card-pill-padding-inline: 6px;
+    --task-card-pill-font-size: 9px;
+    --task-card-footer-gap: 4px;
+  }
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --task-card-circle-size: 48px;
+    --task-card-days-number-font-size: 13px;
+    --task-card-days-label-font-size: 9px;
+    --task-card-priority-line1-font-size: 9px;
+    --task-card-priority-line2-font-size: 7px;
+    --task-card-title-font-size: 13px;
+    --task-card-description-font-size: 10px;
+    --task-card-title-margin-inline: 10px;
+    --task-card-title-margin-block: 10px;
+    --task-card-title-inner-margin-inline: 2px;
+    --task-card-pill-height: 18px;
+    --task-card-pill-radius: 13px;
+    --task-card-pill-padding-block: 2px;
+    --task-card-pill-padding-inline: 5px;
+    --task-card-pill-font-size: 8px;
+    --task-card-footer-gap: 3px;
+    --task-card-footer-margin-top: 6px;
+    --task-card-status-dot-size: 7px;
+    --task-card-icon-button-size: 18px;
+    --task-card-icon-size: 10px;
+  }
 }

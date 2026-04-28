@@ -1,3 +1,5 @@
+import { taskCardSizeTokens } from './taskCardSizeTokens';
+
 interface FeatureTaskCardPriorityCircleProps {
   priority: string;
 }
@@ -34,17 +36,18 @@ const FeatureTaskCardPriorityCircle = ({
     position: 'absolute',
     top: '0px',
     right: '0px',
-    width: '60px',
-    height: '60px',
+    width: taskCardSizeTokens.circleSize,
+    height: taskCardSizeTokens.circleSize,
     borderRadius: '50%',
     backgroundColor: config.bg,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flexShrink: 0
   }}>
       <span style={{
-      fontSize: '10px',
+      fontSize: taskCardSizeTokens.priorityLine1FontSize,
       fontWeight: 600,
       color: '#000000',
       lineHeight: 1,
@@ -53,7 +56,7 @@ const FeatureTaskCardPriorityCircle = ({
         {config.line1}
       </span>
       <span style={{
-      fontSize: '8px',
+      fontSize: taskCardSizeTokens.priorityLine2FontSize,
       fontWeight: 400,
       color: '#000000',
       marginTop: '1px',
