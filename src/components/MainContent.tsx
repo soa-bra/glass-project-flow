@@ -22,6 +22,7 @@ const MainContent = () => {
   const { navigationState, setActiveSection } = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [previousSidebarState, setPreviousSidebarState] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // Update local state when navigation state changes
   useEffect(() => {
@@ -30,19 +31,27 @@ const MainContent = () => {
     }
   }, [navigationState.activeSection, previousSidebarState]);
 
-  // Handle section changes and sidebar state
+  // Cmd/Ctrl + K toggles cross-workspace search (P5)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((s) => !s);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const handleSectionChange = (section: string) => {
     if (section === 'planning' && navigationState.activeSection !== 'planning') {
-      // Entering planning section - save current state and force collapse
       setPreviousSidebarState(isSidebarCollapsed);
     } else if (navigationState.activeSection === 'planning' && section !== 'planning') {
-      // Leaving planning section - restore previous state
       setIsSidebarCollapsed(previousSidebarState);
     }
     setActiveSection(section);
   };
 
-  // Force collapsed state for planning section
   const forceCollapsed = navigationState.activeSection === 'planning';
   const effectiveCollapsed = forceCollapsed || isSidebarCollapsed;
   const renderWorkspace = () => {
@@ -59,14 +68,28 @@ const MainContent = () => {
         return <ProjectWorkspace isSidebarCollapsed={effectiveCollapsed} />;
     }
   };
-  return <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-0 mx-0 bg-slate-100">
-      <div style={{
-      transition: 'all var(--animation-duration-main) var(--animation-easing)'
-    }} className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-sidebar sidebar-layout bg-slate-100">
-        <Sidebar onToggle={setIsSidebarCollapsed} activeSection={navigationState.activeSection} onSectionChange={handleSectionChange} forceCollapsed={forceCollapsed} />
+  return (
+    <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-0 mx-0 bg-slate-100">
+      <div
+        style={{ transition: 'all var(--animation-duration-main) var(--animation-easing)' }}
+        className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-sidebar sidebar-layout bg-slate-100"
+      >
+        <Sidebar
+          onToggle={setIsSidebarCollapsed}
+          activeSection={navigationState.activeSection}
+          onSectionChange={handleSectionChange}
+          forceCollapsed={forceCollapsed}
+        />
       </div>
 
-      {renderWorkspace()}
-    </div>;
+      <WorkspaceErrorBoundary workspaceName={navigationState.activeSection}>
+        <Suspense fallback={<WorkspaceFallback />}>
+          {renderWorkspace()}
+        </Suspense>
+      </WorkspaceErrorBoundary>
+
+      <CrossWorkspaceSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+    </div>
+  );
 };
 export default MainContent;
