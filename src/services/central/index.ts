@@ -12,3 +12,5 @@ export * as CentralBoardsService from "./centralBoards.service";
 export * as ToolsService from "./tools.service";
 export * as EngineJobsService from "./engineJobs.service";
 export * as DependenciesService from "./dependencies.service";
+export * as SearchService from "./search.service";
+export * as RolesService from "./roles.service";
