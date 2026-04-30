@@ -61,8 +61,9 @@ export class EventEmitter {
         source: input.source,
       });
 
-      if (!validated.ok) {
-        throw new Error(`Event validation failed: ${validated.errors.join('; ')}`);
+      if (validated.ok !== true) {
+        const failure = validated as { ok: false; errors: string[] };
+        throw new Error(`Event validation failed: ${failure.errors.join('; ')}`);
       }
 
       const validatedEvent = validated.data;
