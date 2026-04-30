@@ -42,7 +42,7 @@ export const AuditCenterPanel: React.FC = () => {
             <p className="text-sm text-muted-foreground">آخر 100 حدث — يُحدَّث كل 30 ثانية</p>
           </div>
         </div>
-        <Badge variant="secondary">{filtered.length} حدث</Badge>
+        <BaseBadge variant="secondary">{filtered.length} حدث</BaseBadge>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -107,9 +107,9 @@ export const AuditCenterPanel: React.FC = () => {
                     {ev.resource_id ? ` · ${ev.resource_id.slice(0, 8)}` : ""}
                   </td>
                   <td className="p-3">
-                    <Badge variant={ev.decision === "allowed" ? "secondary" : "destructive"}>
+                    <BaseBadge variant={ev.decision === "allowed" ? "success" : "error"}>
                       {ev.decision}
-                    </Badge>
+                    </BaseBadge>
                   </td>
                   <td className="p-3 text-muted-foreground tabular-nums">
                     {ev.actor_id ? ev.actor_id.slice(0, 8) : "—"}
