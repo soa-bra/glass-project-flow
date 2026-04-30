@@ -17,7 +17,6 @@ import MindMapConnector from '@/features/planning/elements/mindmap/MindMapConnec
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
-import { isTypedSmartCanvasElementType } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
 
 const isArrowShape = (shapeType: string | undefined): boolean => {
   if (!shapeType) return false;
@@ -133,7 +132,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     if (element.type === 'smart') {
       return (element as any).smartType || element.data?.smartType || element.metadata?.smartType || null;
     }
-    return isTypedSmartCanvasElementType(element.type) ? element.type : null;
+    return null;
   }, [element]);
 
   const getGroupElementIds = useCallback((): string[] => {
