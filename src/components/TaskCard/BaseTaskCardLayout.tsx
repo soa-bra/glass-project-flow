@@ -47,9 +47,19 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-
-        ) : null}
-      </div>
+      id={id}
+      className={className}
+      style={getCardStyle()}
+      data-task-id={id}
+      data-selected={isSelected || undefined}
+    >
+      {headerSection}
+      {footerSection}
+      {extraSections.length > 0 ? (
+        <div className="mt-2 flex flex-col gap-2">
+          {extraSections}
+        </div>
+      ) : null}
     </div>
   );
 };

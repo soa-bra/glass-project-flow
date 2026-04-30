@@ -317,3 +317,26 @@ create policy "authenticated users can manage dependencies" on public.dependenci
   for all to authenticated
   using (true)
   with check (true);
+-- Protect central model tables behind RLS (default deny until explicit policies are added)
+alter table public.boards enable row level security;
+alter table public.boards force row level security;
+alter table public.departments enable row level security;
+alter table public.departments force row level security;
+alter table public.projects enable row level security;
+alter table public.projects force row level security;
+alter table public.department_projects enable row level security;
+alter table public.department_projects force row level security;
+alter table public.tasks enable row level security;
+alter table public.tasks force row level security;
+alter table public.tools enable row level security;
+alter table public.tools force row level security;
+alter table public.engine_jobs enable row level security;
+alter table public.engine_jobs force row level security;
+alter table public.task_tool_engine_links enable row level security;
+alter table public.task_tool_engine_links force row level security;
+alter table public.project_cards enable row level security;
+alter table public.project_cards force row level security;
+alter table public.task_cards enable row level security;
+alter table public.task_cards force row level security;
+alter table public.dependencies enable row level security;
+alter table public.dependencies force row level security;

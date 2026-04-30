@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
-import type { CanvasBoard, CanvasTemplate } from '@/types/planning';
+import type { CanvasBoard, CanvasBoardStateSnapshot, CanvasTemplate } from '@/types/planning';
 
 interface PlanningState {
   boards: CanvasBoard[];
@@ -10,7 +10,7 @@ interface PlanningState {
   createBoard: (type: 'blank' | 'template' | 'from_file', data?: any) => void;
   deleteBoard: (id: string) => void;
   renameBoard: (id: string, name: string) => void;
-  saveBoard: (id: string, savedAt?: Date) => void;
+  saveBoard: (id: string, savedAt?: Date, canvasState?: CanvasBoardStateSnapshot) => void;
   duplicateBoard: (id: string) => void;
   setCurrentBoard: (board: CanvasBoard | null) => void;
   loadBoards: () => void;
@@ -18,6 +18,10 @@ interface PlanningState {
 
 const updateBoards = (boards: CanvasBoard[], id: string, updater: (board: CanvasBoard) => CanvasBoard) =>
   boards.map((board) => (board.id === id ? updater(board) : board));
+
+function cloneCanvasState(canvasState: CanvasBoardStateSnapshot | undefined): CanvasBoardStateSnapshot | undefined {
+  return canvasState ? JSON.parse(JSON.stringify(canvasState)) : undefined;
+}
 
 export const usePlanningStore = create<PlanningState>()(
   persist(
@@ -35,6 +39,7 @@ export const usePlanningStore = create<PlanningState>()(
           lastModified: now,
           createdAt: now,
           owner: 'current-user',
+          canvasState: cloneCanvasState(data?.canvasState),
         };
         set({ boards: [newBoard, ...get().boards], currentBoard: newBoard });
       },
@@ -56,12 +61,20 @@ export const usePlanningStore = create<PlanningState>()(
               : state.currentBoard,
         }));
       },
-      saveBoard: (id, savedAt = new Date()) => {
+      saveBoard: (id, savedAt = new Date(), canvasState) => {
+        const savedState = canvasState
+          ? {
+              ...cloneCanvasState(canvasState)!,
+              savedAt: savedAt.toISOString(),
+            }
+          : undefined;
+
         set((state) => ({
           boards: updateBoards(state.boards, id, (board) => ({
             ...board,
             status: board.status === 'archived' ? 'archived' : 'active',
             lastModified: savedAt,
+            canvasState: savedState ?? board.canvasState,
           })),
           currentBoard:
             state.currentBoard?.id === id
@@ -69,6 +82,7 @@ export const usePlanningStore = create<PlanningState>()(
                   ...state.currentBoard,
                   status: state.currentBoard.status === 'archived' ? 'archived' : 'active',
                   lastModified: savedAt,
+                  canvasState: savedState ?? state.currentBoard.canvasState,
                 }
               : state.currentBoard,
         }));
@@ -83,6 +97,7 @@ export const usePlanningStore = create<PlanningState>()(
           name: `${original.name} (نسخة)`,
           createdAt: now,
           lastModified: now,
+          canvasState: cloneCanvasState(original.canvasState),
         };
         set({ boards: [duplicate, ...get().boards] });
       },
