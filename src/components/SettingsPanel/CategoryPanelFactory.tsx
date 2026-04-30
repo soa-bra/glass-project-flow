@@ -9,6 +9,14 @@ import { ThemeSettingsPanel } from './categories/ThemeSettingsPanel';
 import { DataGovernanceSettingsPanel } from './categories/DataGovernanceSettingsPanel';
 import { UsersRolesSettingsPanel } from './categories/UsersRolesSettingsPanel';
 import { AuditCenterPanel } from './categories/AuditCenterPanel';
+import { EngineJobsDashboard } from '@/features/engine-jobs';
+import { DependencyGraphVisualizer } from '@/features/dependency-graph';
+import { ToolsMarketplace } from '@/features/tools-marketplace';
+import { AdminRolesPanel } from '@/features/admin-roles';
+
+const wrap = (Component: React.ComponentType) => () => (
+  <div className="p-6 h-full overflow-auto"><Component /></div>
+);
 
 export class CategoryPanelFactory {
   static getComponent(category: string): React.ComponentType<any> {
@@ -31,7 +39,15 @@ export class CategoryPanelFactory {
         return UsersRolesSettingsPanel;
       case 'audit':
         return AuditCenterPanel;
-      
+      case 'engine-jobs':
+        return wrap(EngineJobsDashboard);
+      case 'dependency-graph':
+        return wrap(DependencyGraphVisualizer);
+      case 'tools-marketplace':
+        return wrap(ToolsMarketplace);
+      case 'admin-roles':
+        return wrap(AdminRolesPanel);
+
       default:
         return (props: any) => <GenericSettingsPanel category={category} {...props} />;
     }
