@@ -8,6 +8,7 @@ import { AISettingsPanel } from './categories/AISettingsPanel';
 import { ThemeSettingsPanel } from './categories/ThemeSettingsPanel';
 import { DataGovernanceSettingsPanel } from './categories/DataGovernanceSettingsPanel';
 import { UsersRolesSettingsPanel } from './categories/UsersRolesSettingsPanel';
+import { AuditCenterPanel } from './categories/AuditCenterPanel';
 
 export class CategoryPanelFactory {
   static getComponent(category: string): React.ComponentType<any> {
@@ -28,6 +29,8 @@ export class CategoryPanelFactory {
         return DataGovernanceSettingsPanel;
       case 'users-roles':
         return UsersRolesSettingsPanel;
+      case 'audit':
+        return AuditCenterPanel;
       
       default:
         return (props: any) => <GenericSettingsPanel category={category} {...props} />;
