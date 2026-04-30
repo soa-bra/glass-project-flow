@@ -45,6 +45,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
   const panBy = useCanvasStore((state) => state.panBy);
   const zoomByWheel = useCanvasStore((state) => state.zoomByWheel);
+  const setViewportHostSize = useCanvasStore((state) => state.setViewportHostSize);
   const clearSelection = useCanvasStore((state) => state.clearSelection);
   const selectElement = useCanvasStore((state) => state.selectElement);
 
@@ -112,6 +113,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     interactionMode,
     panBy,
     zoomByWheel,
+    setViewportHostSize,
   });
 
   const {
