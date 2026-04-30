@@ -82,7 +82,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   if (element.type === 'visual_node') {
     const { isVisualAncestorCollapsed } = require('@/utils/visual-diagram-layout');
     if (isVisualAncestorCollapsed(element.id, elements)) return null;
-    const VisualNode = require('./VisualNode').default;
+    const VisualNode = require('@/features/planning/elements/diagram/VisualNode').default;
     return (
       <VisualNode
         element={element}
