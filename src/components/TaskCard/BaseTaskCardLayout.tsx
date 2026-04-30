@@ -47,15 +47,7 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-      className={`font-arabic min-h-[120px] h-auto max-h-[min(52vh,320px)] overflow-hidden ${className}`}
-      style={getCardStyle()}
-      data-task-card-id={id}
-    >
-      <div className="flex h-full min-h-0 flex-col gap-2 overflow-y-auto overflow-x-hidden">
-        <div className="min-h-0 overflow-hidden">{headerSection}</div>
-        <div className="min-h-0 overflow-hidden">{footerSection}</div>
-        {extraSections.length > 0 ? (
-          <div className="min-h-0 overflow-hidden">{extraSections}</div>
+
         ) : null}
       </div>
     </div>
