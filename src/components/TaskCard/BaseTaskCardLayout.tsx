@@ -1,5 +1,4 @@
-
-import { ReactNode, CSSProperties } from 'react';
+import { ReactNode, CSSProperties, Children } from 'react';
 
 interface BaseTaskCardLayoutProps {
   children: ReactNode;
@@ -19,39 +18,47 @@ const BaseTaskCardLayout = ({
   isOtherSelected = false
 }: BaseTaskCardLayoutProps) => {
   const getCardStyle = () => {
-    let backgroundColor = '#f8f9fa';
+    const backgroundColor = '#f8f9fa';
     let opacity = 1;
-    
+
     if (isSelectionMode) {
       if (isSelected) {
-        opacity = 1; // Selected card stays normal
+        opacity = 1;
       } else {
-        opacity = 0.5; // Unselected cards are faded
+        opacity = 0.5;
       }
     }
-    
+
     return {
       width: '100%',
-      height: '120px',
       backgroundColor,
       borderRadius: '32px',
-      padding: '12px',
+      paddingBlock: '12px',
+      paddingInline: 'clamp(10px, 2vw, 14px)',
       direction: 'rtl',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
       fontFamily: 'IBM Plex Sans Arabic',
       opacity,
       transition: 'opacity 0.2s ease-in-out'
     } as CSSProperties;
   };
 
+  const layoutChildren = Children.toArray(children);
+  const [headerSection, footerSection, ...extraSections] = layoutChildren;
+
   return (
     <div
-      className={`font-arabic ${className}`}
+
       style={getCardStyle()}
+      data-task-id={id}
+      data-selected={isSelected || undefined}
     >
-      {children}
+      {headerSection}
+      {footerSection}
+      {extraSections.length > 0 ? (
+        <div className="mt-2 flex flex-col gap-2">
+          {extraSections}
+        </div>
+      ) : null}
     </div>
   );
 };

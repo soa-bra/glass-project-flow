@@ -39,6 +39,8 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
   });
 
   const textType = element.data?.textType || 'line';
+  const autoGrow = element.data?.autoGrow !== false;
+  const isResizableTextBox = textType === 'box' || !autoGrow;
   const style = element.style || {};
   const justifyContent =
     style.alignItems === 'center'
@@ -59,15 +61,17 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
       direction: style.direction || 'rtl',
       unicodeBidi: 'plaintext',
       lineHeight: style.lineHeight || 1.35,
-      whiteSpace: textType === 'box' ? 'pre-wrap' : 'pre',
+      whiteSpace: isResizableTextBox ? 'pre-wrap' : 'pre',
       wordBreak: 'break-word',
       overflowWrap: 'break-word',
     }),
-    [style.color, style.direction, style.fontFamily, style.fontSize, style.fontStyle, style.fontWeight, style.lineHeight, style.textAlign, style.textDecoration, textType],
+    [isResizableTextBox, style.color, style.direction, style.fontFamily, style.fontSize, style.fontStyle, style.fontWeight, style.lineHeight, style.textAlign, style.textDecoration],
   );
 
   const syncSize = useCallback(
     (htmlContent?: string) => {
+      if (!autoGrow) return;
+
       const nextLayout = measureTextLayout({ element, htmlContent });
       const currentWidth = element.size?.width || 0;
       const currentHeight = element.size?.height || 0;
@@ -83,7 +87,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
         },
       });
     },
-    [element, updateElement],
+    [autoGrow, element, updateElement],
   );
 
   const restoreFocus = useCallback(() => {
@@ -309,7 +313,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
     >
       {placeholderVisible && (
         <div
-          className="absolute inset-0 pointer-events-none flex flex-col w-full"
+          className="absolute inset-0 pointer-events-none flex flex-col w-full h-full"
           style={{ justifyContent }}
         >
           <span
@@ -317,7 +321,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
               ...sharedTextStyle,
               color: 'hsl(var(--ink-30))',
               fontStyle: 'italic',
-              whiteSpace: textType === 'box' ? 'pre-wrap' : 'pre',
+              whiteSpace: isResizableTextBox ? 'pre-wrap' : 'pre',
             }}
           >
             {PLACEHOLDER_TEXT}
@@ -347,12 +351,13 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
         style={{
           ...sharedTextStyle,
           width: '100%',
+          height: isResizableTextBox ? '100%' : undefined,
           minHeight: '1em',
           display: 'block',
           outline: 'none',
           background: 'transparent',
           border: 'none',
-          overflow: textType === 'box' ? 'hidden' : 'visible',
+          overflow: isResizableTextBox ? 'hidden' : 'visible',
           cursor: isEditing ? 'text' : 'inherit',
           userSelect: isEditing ? 'text' : 'none',
           WebkitUserModify: isEditing ? ('read-write-plaintext-only' as any) : undefined,

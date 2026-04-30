@@ -3,6 +3,7 @@ import { useTaskCardSizeTokens } from './taskCardSizeTokens';
 interface FeatureTaskCardPriorityCircleProps {
   priority: string;
 }
+
 const FeatureTaskCardPriorityCircle = ({
   priority
 }: FeatureTaskCardPriorityCircleProps) => {
@@ -31,41 +32,16 @@ const FeatureTaskCardPriorityCircle = ({
         line2: 'غير مهم'
       }
     };
+
     return configs[priority as keyof typeof configs] || configs['urgent-important'];
   };
+
   const config = getPriorityConfig(priority);
-  return <div style={{
-    position: 'absolute',
-    top: '0px',
-    right: '0px',
-    width: tokens.circleSizePx,
-    height: tokens.circleSizePx,
-    borderRadius: '50%',
-    backgroundColor: config.bg,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0
-  }}>
-      <span style={{
-      fontSize: tokens.priorityLine1FontSizePx,
-      fontWeight: 600,
-      color: '#000000',
-      lineHeight: 1,
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-xs font-bold">
-        {config.line1}
-      </span>
-      <span style={{
-      fontSize: tokens.priorityLine2FontSizePx,
-      fontWeight: 400,
-      color: '#000000',
-      marginTop: '1px',
-      fontFamily: 'IBM Plex Sans Arabic'
-    }} className="text-xs">
+
         {config.line2}
       </span>
-    </div>;
+    </div>
+  );
 };
+
 export default FeatureTaskCardPriorityCircle;

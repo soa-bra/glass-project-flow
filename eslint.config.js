@@ -127,6 +127,20 @@ export default tseslint.config(
               message:
                 "❌ Canvas layer لا يمكنها استيراد من integration مباشرة. استخدم state/ أو hooks/adapters.",
             },
+            {
+              group: [
+                "@/features/planning/canvas/transforms/SnapGuides",
+                "@/features/planning/canvas/transforms/SnapGuides.tsx",
+                "@/features/planning/canvas/layers/SnapGuides",
+                "@/features/planning/canvas/layers/SnapGuides.tsx",
+                "**/canvas/transforms/SnapGuides",
+                "**/canvas/transforms/SnapGuides.tsx",
+                "**/canvas/layers/SnapGuides",
+                "**/canvas/layers/SnapGuides.tsx"
+              ],
+              message:
+                "❌ SnapGuides يجب استيراده فقط عبر نقطة الدخول الموحدة: @/features/planning/canvas.",
+            },
           ],
         },
       ],

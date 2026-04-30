@@ -42,17 +42,16 @@ const TaskCardStatusIndicators = ({
   const pillStyle = {
     backgroundColor: '#FFFFFF',
     border: '1px solid #DADCE0',
-    borderRadius: tokens.pillRadiusPx,
-    padding: `${tokens.pillPaddingBlockPx} ${tokens.pillPaddingInlinePx}`,
-    fontSize: tokens.pillFontSizePx,
-    fontWeight: 500,
-    color: '#858789',
-    fontFamily: 'IBM Plex Sans Arabic',
-    height: tokens.pillHeightPx,
-    minWidth: 0,
-    maxWidth: '100%',
-    ...taskCardSingleLineTextStyle
+
   };
+  const pillWidthByType = {
+    status: { minWidth: '140px', maxWidth: '240px' },
+    date: { minWidth: '120px', maxWidth: '180px' },
+    assignee: { minWidth: '130px', maxWidth: '210px' },
+    members: { minWidth: '110px', maxWidth: '150px' }
+  } as const;
+  const pillTextClassName = "block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap";
+  const basePillClassName = "min-w-0 flex items-center w-full overflow-hidden";
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     // تعديل المهمة
@@ -72,34 +71,39 @@ const TaskCardStatusIndicators = ({
     e.stopPropagation();
   };
   return <>
-      <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: tokens.footerGapPx,
-      flexWrap: 'wrap',
-      marginTop: tokens.footerMarginTopPx,
-      width: '100%',
-      overflow: 'hidden'
-    }}>
-        <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px'
-      }}>
-          <div style={{
-          width: tokens.statusDotSizePx,
-          height: tokens.statusDotSizePx,
-          borderRadius: '50%',
-          backgroundColor: statusColor
-        }}></div>
-          {status}
-        </div>
+      <div className="mt-2 grid w-full grid-cols-[minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(110px,1fr)_minmax(120px,1fr)_minmax(90px,0.9fr)_auto] lg:grid-rows-1">
+        <div className="row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1">
+          <div
+            style={{
+              ...pillStyle,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              ...pillWidthByType.status
+            }}
+            className={basePillClassName}
+            title={status}
+          >
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              backgroundColor: statusColor,
+              flexShrink: 0
+            }}></div>
+            <span className={pillTextClassName} dir="auto">{status}</span>
+          </div>
 
-        <div style={pillStyle}>{date}</div>
-        <div style={pillStyle}>{assignee}</div>
-        <div style={pillStyle}>{members}</div>
+          <div style={{ ...pillStyle, ...pillWidthByType.date }} className={basePillClassName} title={date}>
+            <span className={pillTextClassName} dir="auto">{date}</span>
+          </div>
+          <div style={{ ...pillStyle, ...pillWidthByType.assignee }} className={basePillClassName} title={assignee}>
+            <span className={pillTextClassName} dir="auto">{assignee}</span>
+          </div>
+          <div style={{ ...pillStyle, ...pillWidthByType.members }} className={basePillClassName} title={members}>
+            <span className={pillTextClassName} dir="auto">{members}</span>
+          </div>
+        </div>
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
         {isSelectionMode ? <div style={{
@@ -114,8 +118,7 @@ const TaskCardStatusIndicators = ({
         border: isSelected ? 'none' : '1px solid #858789',
         backgroundColor: isSelected ? '#858789' : 'transparent',
         color: isSelected ? '#fff' : '#858789'
-      }}>
-            {isSelected ? <Check color="white" style={{ width: tokens.iconSizePx, height: tokens.iconSizePx }} /> : null}
+
           </div> : <div className="relative" ref={menuRef}>
             <button
               onClick={(e) => {
@@ -134,6 +137,7 @@ const TaskCardStatusIndicators = ({
                 border: 'none',
                 cursor: 'pointer'
               }}
+              className="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
             >
               <motion.span
                 animate={{ rotate: open ? 90 : 0 }}
