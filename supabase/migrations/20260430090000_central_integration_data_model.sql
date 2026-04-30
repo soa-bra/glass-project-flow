@@ -200,3 +200,120 @@ create index idx_dependencies_to on public.dependencies(to_entity_type, to_entit
 
 create index idx_project_cards_project on public.project_cards(linked_project_id);
 create index idx_task_cards_task on public.task_cards(linked_task_id);
+
+alter table public.boards enable row level security;
+alter table public.departments enable row level security;
+alter table public.projects enable row level security;
+alter table public.department_projects enable row level security;
+alter table public.tasks enable row level security;
+alter table public.tools enable row level security;
+alter table public.engine_jobs enable row level security;
+alter table public.task_tool_engine_links enable row level security;
+alter table public.project_cards enable row level security;
+alter table public.task_cards enable row level security;
+alter table public.dependencies enable row level security;
+
+create policy "owners can manage boards" on public.boards
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "owners can manage departments" on public.departments
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "owners can manage projects" on public.projects
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "owners can manage department projects" on public.department_projects
+  for all to authenticated
+  using (
+    exists (
+      select 1 from public.departments d
+      where d.id = department_projects.department_id
+        and d.owner_id = auth.uid()
+    )
+    and exists (
+      select 1 from public.projects p
+      where p.id = department_projects.project_id
+        and p.owner_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.departments d
+      where d.id = department_projects.department_id
+        and d.owner_id = auth.uid()
+    )
+    and exists (
+      select 1 from public.projects p
+      where p.id = department_projects.project_id
+        and p.owner_id = auth.uid()
+    )
+  );
+
+create policy "owners or assignees can access tasks" on public.tasks
+  for all to authenticated
+  using (
+    owner_id = auth.uid()
+    or assignee_id = auth.uid()
+    or exists (
+      select 1 from public.projects p
+      where p.id = tasks.linked_project_id
+        and p.owner_id = auth.uid()
+    )
+  )
+  with check (
+    owner_id = auth.uid()
+    or assignee_id = auth.uid()
+    or exists (
+      select 1 from public.projects p
+      where p.id = tasks.linked_project_id
+        and p.owner_id = auth.uid()
+    )
+  );
+
+create policy "owners can manage tools" on public.tools
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "owners can manage engine jobs" on public.engine_jobs
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "owners can manage task tool engine links" on public.task_tool_engine_links
+  for all to authenticated
+  using (
+    exists (
+      select 1 from public.tasks t
+      where t.id = task_tool_engine_links.task_id
+        and (t.owner_id = auth.uid() or t.assignee_id = auth.uid())
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.tasks t
+      where t.id = task_tool_engine_links.task_id
+        and (t.owner_id = auth.uid() or t.assignee_id = auth.uid())
+    )
+  );
+
+create policy "owners can manage project cards" on public.project_cards
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "owners can manage task cards" on public.task_cards
+  for all to authenticated
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+
+create policy "authenticated users can manage dependencies" on public.dependencies
+  for all to authenticated
+  using (true)
+  with check (true);
