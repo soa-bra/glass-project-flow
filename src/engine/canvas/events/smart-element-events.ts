@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { SmartElementTypeSchema } from '@/types/smart-elements';
+import { SmartCardTypes, SmartElementTypeSchema } from '@/types/smart-elements';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Base Event Schema
@@ -439,7 +439,7 @@ export const SheetElementLinkedV1Schema = SmartElementEventBaseSchema.extend({
 export const SmartCardLinkedV1Schema = SmartElementEventBaseSchema.extend({
   name: z.literal('smartcard.linked'),
   payload: z.object({
-    cardType: z.enum(['project_card', 'finance_card', 'csr_card', 'crm_card']),
+    cardType: z.enum(SmartCardTypes),
     linkedEntityId: z.string().uuid(),
     linkedEntityType: z.string(),
     linkedBy: z.string().uuid(),
@@ -449,7 +449,7 @@ export const SmartCardLinkedV1Schema = SmartElementEventBaseSchema.extend({
 export const SmartCardRefreshedV1Schema = SmartElementEventBaseSchema.extend({
   name: z.literal('smartcard.refreshed'),
   payload: z.object({
-    cardType: z.enum(['project_card', 'finance_card', 'csr_card', 'crm_card']),
+    cardType: z.enum(SmartCardTypes),
     dataSnapshot: z.record(z.any()),
     refreshedBy: z.string().uuid().optional(),
     refreshTrigger: z.enum(['manual', 'auto', 'webhook']),

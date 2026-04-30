@@ -49,6 +49,7 @@ const DEFAULT_SIZES: Record<SmartElementType, Size> = {
   interactive_sheet: { width: 600, height: 400 },
   mind_map: { width: 600, height: 500 },
   project_card: { width: 320, height: 200 },
+  task_card: { width: 320, height: 200 },
   finance_card: { width: 320, height: 200 },
   csr_card: { width: 320, height: 200 },
   crm_card: { width: 320, height: 200 },

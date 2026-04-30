@@ -29,6 +29,7 @@ import {
   type MindMapConnection,
   type SheetCell,
   type AISuggestion,
+  SmartCardTypes,
   SmartElementDataSchemaMap,
   getDefaultSmartElementData,
   parseSmartElementData,
@@ -634,6 +635,7 @@ const DEFAULT_SMART_ELEMENT_SIZES: Record<SmartElementType, { width: number; hei
   interactive_sheet: { width: 600, height: 400 },
   mind_map: { width: 600, height: 500 },
   project_card: { width: 320, height: 200 },
+  task_card: { width: 320, height: 200 },
   finance_card: { width: 320, height: 200 },
   csr_card: { width: 320, height: 200 },
   crm_card: { width: 320, height: 200 },
@@ -1822,6 +1824,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     
     const typeMapping: Record<string, SmartElementType> = {
       project: 'project_card',
+      task: 'task_card',
       client: 'crm_card',
       initiative: 'csr_card',
       department: 'finance_card',
@@ -1832,6 +1835,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     
     const fieldMapping: Record<string, string> = {
       project: 'projectId',
+      task: 'taskId',
       client: 'clientId',
       initiative: 'initiativeId',
       department: 'departmentId',
@@ -1843,26 +1847,34 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
   },
   
   refreshSmartCard: async (elementId) => {
-    // TODO: Implement data fetching when connected to backend
-    // Placeholder for future implementation
-    void elementId;
+    const entry = get().smartElements[elementId];
+    if (!entry) return;
+    if (!SmartCardTypes.includes(entry.smartType as typeof SmartCardTypes[number])) return;
+
+    // Until backend provider is wired, ensure card data is normalized by schema.
+    const normalizedData = parseSmartElementData(entry.smartType, entry.data) as Record<string, unknown>;
+    get().updateSmartElementData(elementId, {
+      ...normalizedData,
+    });
   },
   
   toggleSmartCardMetric: (elementId, metric) => {
     const entry = get().smartElements[elementId];
     if (!entry) return;
     
-    const cardTypes: SmartElementType[] = ['project_card', 'finance_card', 'csr_card', 'crm_card'];
-    if (!cardTypes.includes(entry.smartType)) return;
+    if (!SmartCardTypes.includes(entry.smartType as typeof SmartCardTypes[number])) return;
     
-    const data = entry.data as any;
-    const currentMetrics = data.displayMetrics || [];
+    const data = entry.data as Record<string, unknown>;
+    const key = entry.smartType === 'task_card' || entry.smartType === 'project_card'
+      ? 'displayFields'
+      : 'displayMetrics';
+    const currentMetrics = Array.isArray(data[key]) ? (data[key] as string[]) : [];
     
     const newMetrics = currentMetrics.includes(metric)
       ? currentMetrics.filter((m: string) => m !== metric)
       : [...currentMetrics, metric];
     
-    get().updateSmartElementData(elementId, { displayMetrics: newMetrics });
+    get().updateSmartElementData(elementId, { [key]: newMetrics });
   },
   
   // ═══════════════════════════════════════════════════════════════════════════
