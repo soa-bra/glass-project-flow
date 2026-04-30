@@ -47,8 +47,7 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-      id={id}
-      className={className}
+
       style={getCardStyle()}
       data-task-id={id}
       data-selected={isSelected || undefined}

@@ -54,9 +54,11 @@ describe('Task card overflow guards', () => {
       );
 
       const headerGrid = container.firstElementChild as HTMLDivElement;
-      expect(headerGrid.className).toContain('grid-cols-[22%_56%_22%]');
+      const innerHeaderGrid = headerGrid.firstElementChild as HTMLDivElement;
+      expect(headerGrid.className).toContain('min-h-[96px]');
+      expect(innerHeaderGrid.className).toContain('grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)]');
 
-      const [leftCircleWrap, titleWrap, rightCircleWrap] = Array.from(headerGrid.children) as HTMLDivElement[];
+      const [leftCircleWrap, titleWrap, rightCircleWrap] = Array.from(innerHeaderGrid.children) as HTMLDivElement[];
       expect(leftCircleWrap.className).toContain('min-w-0');
       expect(rightCircleWrap.className).toContain('min-w-0');
       expect(titleWrap.className).toContain('overflow-hidden');
