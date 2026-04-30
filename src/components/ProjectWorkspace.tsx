@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
@@ -11,14 +11,34 @@ import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
+import { useProjects, useCreateProject, useUpdateProject } from '@/hooks/central';
+import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
+import { AuditService } from '@/services/central/audit.service';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_PROJECTS !== 'false';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  // إدارة حالة المشاريع على مستوى ProjectWorkspace
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
+  // مصدر البيانات: mock (P0/P1) أو central (P3.1).
+  const { data: centralProjects } = useProjects();
+  const createProject = useCreateProject();
+  const updateProject = useUpdateProject();
+
+  const centralUiProjects = useMemo<Project[]>(
+    () => (centralProjects ?? []).map(centralToUiProject),
+    [centralProjects],
+  );
+
+  const [projects, setProjects] = useState<Project[]>(USE_MOCK ? mockProjects : []);
+
+  // عند الوضع الحقيقي، أعكس بيانات DB في الحالة المحلية للحفاظ على الفلترة/الترتيب الموجودَين.
+  useEffect(() => {
+    if (!USE_MOCK) setProjects(centralUiProjects);
+  }, [centralUiProjects]);
+
   const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'deadline', direction: 'asc' });
 
   const {
