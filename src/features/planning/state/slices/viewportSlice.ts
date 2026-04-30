@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import type { CanvasElement, CanvasSettings } from '@/types/canvas';
+import type { CanvasElement, CanvasSettings, LayerInfo } from '@/types/canvas';
 
 const ZOOM_CONFIG = { min: 0.1, max: 5, step: 0.1, wheelSensitivity: 0.001 } as const;
 const DEFAULT_VIEWPORT = { zoom: 1, pan: { x: 0, y: 0 } } as const;
@@ -7,6 +7,13 @@ const DEFAULT_VIEWPORT_SIZE = { width: 1280, height: 720 } as const;
 
 function clampZoomValue(zoom: number): number {
   return Math.max(ZOOM_CONFIG.min, Math.min(ZOOM_CONFIG.max, zoom));
+}
+
+function normalizeHostSize(hostSize: { width: number; height: number } | undefined): { width: number; height: number } {
+  return {
+    width: hostSize && hostSize.width > 0 ? hostSize.width : DEFAULT_VIEWPORT_SIZE.width,
+    height: hostSize && hostSize.height > 0 ? hostSize.height : DEFAULT_VIEWPORT_SIZE.height,
+  };
 }
 
 function buildViewportState(
@@ -60,6 +67,18 @@ export function calculateCenterZoom(
     { x: containerWidth / 2, y: containerHeight / 2 },
     zoomDelta,
   );
+}
+
+function getRenderableElementsForZoom(elements: CanvasElement[], layers: LayerInfo[] = []): CanvasElement[] {
+  const layerVisibilityMap = new Map(layers.map((layer) => [layer.id, layer.visible]));
+
+  return elements.filter((element) => {
+    if (element.visible === false) return false;
+    if (element.layerId && layerVisibilityMap.get(element.layerId) === false) return false;
+    if (!Number.isFinite(element.position?.x) || !Number.isFinite(element.position?.y)) return false;
+    if (!Number.isFinite(element.size?.width) || !Number.isFinite(element.size?.height)) return false;
+    return element.size.width > 0 && element.size.height > 0;
+  });
 }
 
 export interface ViewportSlice {
@@ -160,11 +179,12 @@ export const createViewportSlice: StateCreator<any, [], [], ViewportSlice> = (se
 
   zoomIn: () => {
     const state = get();
+    const hostSize = normalizeHostSize(state.viewportHostSize);
     const result = calculateCenterZoom(
       state.viewport.zoom,
       state.viewport.pan,
-      state.viewportHostSize.width,
-      state.viewportHostSize.height,
+      hostSize.width,
+      hostSize.height,
       ZOOM_CONFIG.step,
     );
     set(buildViewportState(state.settings, result));
@@ -172,18 +192,20 @@ export const createViewportSlice: StateCreator<any, [], [], ViewportSlice> = (se
 
   zoomOut: () => {
     const state = get();
+    const hostSize = normalizeHostSize(state.viewportHostSize);
     const result = calculateCenterZoom(
       state.viewport.zoom,
       state.viewport.pan,
-      state.viewportHostSize.width,
-      state.viewportHostSize.height,
+      hostSize.width,
+      hostSize.height,
       -ZOOM_CONFIG.step,
     );
     set(buildViewportState(state.settings, result));
   },
 
   zoomToFit: () => {
-    const elements = get().elements as CanvasElement[];
+    const state = get();
+    const elements = getRenderableElementsForZoom(state.elements as CanvasElement[], state.layers as LayerInfo[]);
     if (elements.length === 0) {
       get().resetViewport();
       return;
@@ -196,16 +218,16 @@ export const createViewportSlice: StateCreator<any, [], [], ViewportSlice> = (se
       maxY: Math.max(acc.maxY, el.position.y + el.size.height),
     }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
 
-    const width = bounds.maxX - bounds.minX;
-    const height = bounds.maxY - bounds.minY;
+    const width = Math.max(bounds.maxX - bounds.minX, 1);
+    const height = Math.max(bounds.maxY - bounds.minY, 1);
     const centerX = bounds.minX + width / 2;
     const centerY = bounds.minY + height / 2;
-    const { width: hostWidth, height: hostHeight } = get().viewportHostSize as { width: number; height: number };
+    const { width: hostWidth, height: hostHeight } = normalizeHostSize(state.viewportHostSize);
 
     const zoom = Math.min(hostWidth / (width + 100), hostHeight / (height + 100), 1);
     const clampedZoom = clampZoomValue(zoom);
 
-    set((state: any) => buildViewportState(state.settings, {
+    set((currentState: any) => buildViewportState(currentState.settings, {
       zoom: clampedZoom,
       pan: {
         x: -centerX * clampedZoom + hostWidth / 2,
