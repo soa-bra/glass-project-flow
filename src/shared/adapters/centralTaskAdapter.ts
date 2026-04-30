@@ -19,11 +19,14 @@ type CentralTask = Database["public"]["Tables"]["tasks"]["Row"];
 
 const STATE_TO_STATUS: Record<CentralTask["state"], UnifiedTask["status"]> = {
   draft: "todo",
+  planned: "todo",
   active: "in-progress",
   paused: "stopped",
+  blocked: "stopped",
   completed: "completed",
   archived: "completed",
   cancelled: "stopped",
+  failed: "stopped",
 };
 
 const PRIORITY_MAP: Record<CentralTask["priority"], UnifiedTask["priority"]> = {
