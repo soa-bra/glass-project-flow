@@ -81,9 +81,15 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
         break;
     }
 
+    const element = useCanvasStore.getState().elements.find((entry) => entry.id === elementId);
+    const data = element?.type === 'text'
+      ? { ...(element.data || {}), manualSize: true, autoSize: false }
+      : element?.data;
+
     updateElement(elementId, {
       size: { width: newWidth, height: newHeight },
-      position: { x: newX, y: newY }
+      position: { x: newX, y: newY },
+      ...(element?.type === 'text' ? { data } : {})
     });
   }, [elementId, updateElement, viewport.zoom, position]);
 
