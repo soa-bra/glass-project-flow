@@ -1,91 +1,210 @@
-# خطة بناء التوثيق الجديد لمشروع SoaBra من الصفر
+# خطة الوصول إلى النسخة النهائية الجاهزة للتسليم والإطلاق
 
-## الهدف
-إيقاف الاعتماد على الوثيقة التوصيفية القديمة، وبناء **4 وثائق جديدة** مبنيّة على فحص الكود الفعلي للمستودع `glass-project-flow`، بدون أي تعديل على الوثيقة القديمة وبدون أي تعديل على الملفات التنفيذية.
-
----
-
-## ما تم اكتشافه من فحص أوّلي للكود (ملخّص يبرّر الخطة)
-
-- **التقنيات الفعلية** (`package.json`): React 18 + Vite 8 + TypeScript 5.5 + Tailwind 3 + Zustand 5 + React Query + Supabase JS + Zod + Framer Motion 12 + Recharts/Chart.js + DnD-Kit + jspdf/xlsx + pino + prom-client + OpenTelemetry. **لا يوجد Node.js API منفصل**، الـ backend هو Supabase فقط.
-- **مساحات العمل الفعلية** (`MainContent.tsx`): `projects` (افتراضي) + `departments` + `planning` + `archive` + `settings`. التنقّل عبر `NavigationContext`.
-- **Projects Workspace**: يعتمد كليًّا على `mockProjects` (in-memory `useState`) + `ProjectTasksContext` + `ProjectManagementBoard` + `OperationsBoard`. **لا ربط حقيقي بقاعدة البيانات** للمشاريع رغم وجود جدول `projects` في Supabase.
-- **Departments Workspace**: شريط جانبي + لوحة `DepartmentPanel`. أقسام موجودة فعليًا: `Brand, CRM, CSR, Financial, HR, KMPA, Legal, Marketing, Templates, Training` + `GeneralOverview, Reports, Templates`.
-- **Planning Workspace**: بنية ناضجة تحت `src/features/planning/` (FSD): `ui/{panels,toolbars,widgets,overlays}` + `canvas/` + `elements/{mindmap,diagram,text,smart,smart-doc,shared}` + `domain/{commands,policies,selectors,types}` + `state/{slices,history,transactions,store}` + `integration/{collaboration,persistence,export,telemetry,accessibility}`. **هذا هو الجزء الأكثر اكتمالًا**.
-- **Engine Microkernel** (`src/engine/canvas/`): kernel + graph + spatial + history + interaction + io + rendering + routing + collaboration + voice + transform + math + events. **بنية موجودة ومُختبرة**.
-- **Supabase Migrations** (7 ملفات):
-  - جداول حقيقية: `boards, board_objects, board_permissions, board_invite_links, board_join_requests, links, op_log, snapshots, smart_element_data, projects, project_phases, project_tasks, invoices, invoice_items, invoice_payments, telemetry_events, ai_command_traces`.
-  - **migration حديثة جدًا** `20260430090000_central_integration_data_model.sql` تُعرّف نموذج مركزي جديد (`boards, departments, projects, tasks, tools, engine_jobs, dependencies, project_cards, task_cards, task_tool_engine_links, department_projects`) مع `central_state` enum. **لكن لا يوجد كود Frontend يستخدمه بعد** — هذا قلب المعمارية المستهدفة.
-- **RBAC الفعلي**: محدود جدًا. فقط `board_role` enum (`host/editor/viewer`) + `user_has_board_role()` RPC + `evaluateCommandAuthorization` لأمر واحد فقط (`canvas.smart-elements.generate`). **لا يوجد RBAC/ABAC شامل** كما في الوثيقة القديمة.
-- **Audit**: `auditService` (`src/services/audit.ts`) + جدول `op_log` + `ai_command_traces` + `telemetry_events`. **جزئي**.
-- **Event Bus**: `prisma/V2.prisma.additions.txt` يُعرّف `EventOutbox` و `EventDLQ` و `FeatureStore` — لكن **لا يوجد Prisma client مُفعَّل**، فقط ملف نصّي `.txt`. الكود يستخدم `src/shared/events/` (in-process emitter + handlers).
-- **Mock Data**: `mockProjects.ts`, `OperationsBoard/mockData.ts`, `kv_store_*` tables (5 جداول مفاتيح/قيم).
+> مبنية على: `CURRENT_SYSTEM_SPECIFICATION.md` + `LEGACY_SPEC_AUDIT.md` + `TARGET_ARCHITECTURE_SPECIFICATION.md` + `MIGRATION_PLAN.md`.
+> القاعدة: لا قفز فوق المراحل — كل مرحلة لها Definition of Done صارم.
 
 ---
 
-## المخرجات (4 ملفات Markdown جديدة فقط)
+## نظرة عامة على المراحل
 
-### 1) `docs/CURRENT_SYSTEM_SPECIFICATION.md`
-وصف الواقع الحالي **فقط** بناءً على الكود، بالأقسام المطلوبة:
-- **A. System Overview**: تعريف النظام كـ React SPA + Supabase backend، 5 مساحات عمل، حالة الاكتمال لكل مساحة.
-- **B. Application Structure**: شجرة `MainContent → Workspaces → Sidebar` + علاقة `NavigationContext`.
-- **C. Current Domains**: Projects (Mock), Departments (UI + بعض الخدمات), Planning (Implemented), Archive (UI), Settings (UI), Collaboration (Implemented داخل Planning), Permissions (Partial — board-level only), Files (Partial — bucket موجود), Audit (Partial), Events (in-process Partial), AI/Smart Elements (Implemented داخل Planning + ai_command_traces table).
-- **D. Planning Module**: الكانفاس + الأدوات (`selection, smart_pen, sticky, text, file_uploader, shapes, mindmap, smart_element, research, frame, smart_doc`) + `PlanningCommandDeck` + `collaborationStore` + سياسة `evaluateCommandAuthorization` (أمر واحد فقط).
-- **E. Permissions**: فقط `board_role` (host/editor/viewer) + `user_has_board_role()` + RLS على جداول boards. **لا RBAC/ABAC شامل**.
-- **F. Data Model**: جدول لكل كيان مع تصنيف Implemented/Partial/Mock/Planned/Unknown ومصدره (types/store/migration).
-- **G. Backend/Infrastructure**: Supabase (DB + Storage `make-7c857198-whiteboard`, `board-assets` + Edge Functions config) + `infra/{logger,metrics,tracing}` + سكربتات `ExportRunner, outbox-relay, replay-events`.
-- **H. Design System**: tokens من `project-knowledge` (IBM Plex Sans Arabic + ألوان + glass + radii) + `tailwind.config.ts` + مكونات `ui/` و `shared/`.
-- **I. Current Limitations**: قائمة صريحة (Projects على mock, لا RBAC شامل, Prisma غير مُفعَّل, central data model غير مستخدم في UI, إلخ).
-- **J. Evidence Map**: لكل ادّعاء → مسار الملف الداعم.
+```text
+P0 Stabilize ─▶ P1 Auth & Roles ─▶ P2 Central Data ─▶ P3 Workspace Integration
 
-### 2) `docs/LEGACY_SPEC_AUDIT.md`
-مراجعة الوثيقة القديمة بنود البنود، مع تصنيف كل بند:
-- **Accurate**: مثل الـ Design Tokens، فلسفة RTL-first، استخدام Supabase.
-- **Partially Accurate**: مثل التكاملات بين الوحدات (موجودة جزئيًا)، Audit (جزئي).
-- **Outdated**: ذكر Node.js API، Identity & RBAC Service، microservices/Kubernetes/Istio، gRPC.
-- **Planned/Vision**: نظام RBAC/ABAC الكامل بـ 18 دور، JIT, Break-Glass, SoD Matrix, Access Review Campaigns, SCIM, KMS rotation.
-- **Unsupported**: AI Gateway موصّلات، SIEM/SOC integration، PagerDuty.
-- **Conflicting**: الفصل بين Owner/CISO/DPO/Infra Admin غير منفّذ — الواقع هو host/editor/viewer فقط.
+                                                            │
+                                                            ▼
+P6 Launch ◀── P5 Hardening ◀── P4 Audit / Events / Engine Jobs
 
-كل بند: نص مختصر + تصنيف + سبب + ملفات دالّة (إن وُجدت).
+```
 
-### 3) `docs/TARGET_ARCHITECTURE_SPECIFICATION.md`
-وصف المعمارية المستهدفة بناءً على نموذج المستخدم + migration الموجودة `20260430090000_central_integration_data_model.sql`:
-- الكيانات: **Board, Department, Project, Task, Tool, Engine Job, Dependency, State** (مع mapping لكل enum/جدول من الـ migration).
-- العلاقات الـ 10 المطلوبة (Board⊃Tools, Department⊃Projects, Project⊃Tasks, Task→Tool, Task→EngineJob, Task↔Tool↔EngineJob, Tool↔EngineJob, Dependency, State).
-- مخطط ASCII للعلاقات.
-- States القانونية لكل كيان (`central_state` enum: draft/planned/active/blocked/paused/completed/cancelled/archived/failed).
-- ملاحظة صريحة: هذه **معمارية مستهدفة** لا تعكس الواقع الحالي للـ UI.
-
-### 4) `docs/MIGRATION_PLAN.md`
-خطة 5 مراحل من الواقع إلى المستهدف:
-- **Phase 1 — Stabilization**: ربط المخرجات الـ 3 السابقة + قائمة ملفات حرجة + قائمة mock data + قائمة تعارضات.
-- **Phase 2 — Central Data Model**: إنشاء `src/types/central/` مطابقة للـ migration + خدمات قراءة/كتابة عبر Supabase client + **بدون أي UI جديد**.
-- **Phase 3 — Access Control Model**: توسيع `board_role` إلى نموذج موحّد (Owner/Manager/Member/Viewer/Guest) + ربط الصلاحيات بالكيانات المركزية + توسيع `auditService` لتغطية الأوامر الحساسة.
-- **Phase 4 — Workspace Integration**: ربط `ProjectWorkspace` بجدول `projects` الفعلي (إزالة mock)، ربط `Departments` بـ `departments` + `department_projects`، ربط `Planning boards` بـ `boards` + `tools`، ربط `Tasks` بـ `tasks` + `task_tool_engine_links`.
-- **Phase 5 — UI/Feature Expansion**: بناء الواجهات الجديدة بعد اكتمال النموذج.
+&nbsp;
 
 ---
 
-## ضوابط التنفيذ (قواعد صارمة)
-- لا تعديل على الوثيقة القديمة `glass-project-flow/الوثيقة التوصيفية الشاملة...md`.
-- لا تعديل على أي ملف `.ts/.tsx/.sql/.json` تنفيذي.
-- لا إنشاء واجهات أو ميزات جديدة.
-- كل ادّعاء في `CURRENT_SYSTEM_SPECIFICATION` يُربط بـ Evidence Map (مسار ملف).
-- كل بند مصنّف Implemented/Partial/Mock/Planned/Unknown.
-- اللغة: عربية للوصف + إنجليزية للمصطلحات والمسارات.
+## P0 — التثبيت وإصلاح الأساسات
+
+**الهدف:** قاعدة بناء نظيفة قبل أي عمل كبير.
+
+1. إصلاح أخطاء البناء المعروفة في `src/shared/events/emitter.ts` و `src/components/TaskCard/BaseTaskCardLayout.tsx`.
+2. تفعيل CI صارم: `tsc --noEmit` + `eslint` + `vitest run` على كل PR (موجود `.github/workflows/pr-checks.yml`).
+3. حذف أو وسم `@deprecated` للملفات الميتة: `prisma/V2.prisma.additions.txt` (تتحول لاحقًا إلى migration).
+4. اعتماد قرار رسمي حول `kv_store_*` (5 جداول): إبقاء/حذف.
+5. تنظيف `mockProjects` و `OperationsBoard/mockData.ts` خلف Feature Flag `VITE_USE_MOCK_DATA` ليسهل تتبّعها.
+6. توثيق Environment Variables المطلوبة في `.env.example`.
+
+**Definition of Done:** Build أخضر، اختبارات تمرّ، CI يحجب أي PR كاسر.
 
 ---
 
-## المخرجات النهائية في رسالة الإغلاق
-- قائمة الملفات الـ 4 الجديدة.
-- ملخّص أهم 10 اكتشافات عن الواقع.
-- أهم 5 فروقات بين الوثيقة القديمة والكود.
-- أهم 5 مخاطر مستقبلية.
-- توصية الخطوة التالية (المرشّح: البدء بـ Phase 2 — توليد types من migration المركزية).
-- الافتراضات + الأجزاء التي تحتاج مراجعة بشرية (مثل: هل migration `20260430090000` مُعتمدة فعليًا أم تجريبية؟).
+## P1 — المصادقة والأدوار الموحّدة
+
+**الهدف:** نظام هوية وصلاحيات حقيقي بدل البيانات المحلية المقلّدة.
+
+1. **Supabase Auth:** صفحة `/auth` (تسجيل/دخول)، email + password، حماية كل الصفحات بـ `ProtectedRoute`.
+2. جدول `profiles` بمعلومات المستخدم (لا تخزّن أدوار فيه).
+3. **جدول `user_roles` منفصل** + `app_role` enum (`owner | manager | member | viewer | guest`) + دالة `has_role()` مع `SECURITY DEFINER` (وفق memory `user-roles`).
+4. توحيد `board_role` الحالي مع `app_role` عبر طبقة تجريدية.
+5. Hook موحَّد `usePermission(action, scope)`.
+6. لوحة Admin بسيطة لإسناد الأدوار (Owner فقط).
+
+**Definition of Done:** كل الجداول الحساسة محمية بـ RLS مبنية على `has_role()`، اختبارات RLS تمرّ، Supabase Linter بدون تحذيرات حرجة.
 
 ---
 
-## النطاق الزمني المتوقّع
-4 ملفات Markdown، إجمالي ~50–80KB. لا تنفيذ كود، فقط قراءة + كتابة توثيق. عملية واحدة في default mode بعد الموافقة.
+## P2 — ربط نموذج البيانات المركزي
+
+**الهدف:** تفعيل migration `20260430090000` في الـ Frontend بدون أي UI جديد.
+
+1. توليد Types من Supabase (`src/integrations/supabase/types.ts` آلي).
+2. طبقة خدمات `src/services/central/{boards, departments, projects, tasks, tools, engineJobs, dependencies}.service.ts`.
+3. Zod Schemas للتحقق من المدخلات.
+4. React Query Hooks للقراءة فقط (`useBoards, useDepartments, useProjects, …`).
+5. Seed تجريبي + اختبارات تكامل End-to-End لإنشاء Department→Project→Task→Tool→EngineJob+Dependency.
+6. مراجعة RLS لكل جدول مركزي (تأكد أن كل `select/insert/update/delete` آمن).
+
+**Definition of Done:** يمكن قراءة/كتابة كل كيانات النموذج المركزي من الـ Frontend عبر الخدمات، تغطية اختبارات ≥ 70% للخدمات.
+
+---
+
+## P3 — ربط مساحات العمل
+
+**الهدف:** استبدال كل Mock بقراءات حقيقية، مع الإبقاء على نفس الـ UI.
+
+ترتيب الأولوية:
+
+1. **Projects Workspace ⇆ `projects`:** `ProjectWorkspace`, `ProjectsColumn`, `ProjectManagementBoard` يقرؤون من `useProjects()`.
+2. **Tasks ⇆ `tasks` + `task_tool_engine_links`:** `ProjectTasksContext` يستخدم `useProjectTasks(projectId)`.
+3. **Departments ⇆ `departments` + `department_projects`:** `DepartmentsSidebar` يقرأ ديناميكيًا.
+4. **Planning Boards ⇆ `boards` + `tools`:** `PlanningEntryScreen` يعرض سبورات حقيقية للمستخدم.
+5. **OperationsBoard ⇆ Aggregations:** استبدال `mockData.ts` بقراءات تجميعية حقيقية.
+6. **Invoices** (مرتبطة سابقًا) — ربط بالمشروع المركزي عبر `project_id`.
+
+كل خطوة خلف Feature Flag، مع Fallback مؤقت للـ Mock حتى التحقق.
+
+**Definition of Done:** لا استدعاء واحد لـ `mockProjects` في الإنتاج، اختلاف بيانات بين مستخدمَين يعمل (RLS فعّال).
+
+---
+
+## P4 — Audit + Events + Engine Jobs
+
+**الهدف:** تحويل التدقيق والأحداث من Mock إلى نظام حقيقي.
+
+1. **Audit Service حقيقي:** استبدال `mockAuditEvents` في `src/services/audit.ts` بكتابة فعلية إلى جدول `audit_events` (جديد) أو `op_log` موسّع.
+2. **Decorator/Wrapper موحَّد** يلفّ كل Command حسّاس بسلسلة: Permission Check → Execute → Audit Log.
+3. **Outbox Pattern:** تفعيل `EventOutbox + EventDLQ` كـ migration حقيقية (تحويل `prisma/V2.prisma.additions.txt`).
+4. **Edge Function لمعالجة Outbox** (تحلّ محل سكربت `outbox-relay.ts` في الإنتاج).
+5. **Engine Jobs Worker:** Edge Function لتشغيل `engine_jobs` (kind=`automation|sync|analytics|...`) بشكل غير متزامن.
+6. **Realtime Subscriptions** على `engine_jobs.state` لإظهار التقدم في الـ UI.
+7. **Audit Center داخل Settings:** عرض آخر 100 حدث + فلترة.
+
+**Definition of Done:** كل أمر حسّاس يولّد سجلًا، Outbox/DLQ يعملان، Engine Job ينفّذ بنجاح ويحدّث حالته.
+
+---
+
+## P5 — التحصين (Hardening) 
+
+**الهدف:** استعداد للإنتاج.
+
+### الأمن
+
+- Supabase Linter صفر تحذيرات حرجة.
+- مراجعة RLS يدوية لكل جدول.
+- إعدادات Auth: Email confirmation، Password strength، Session timeout مناسب.
+- منع تسريب أي `service_role_key` لجانب العميل.
+
+### الأداء
+
+- React Query staleTime/gcTime مناسبة لكل query.
+- Code Splitting لكل Workspace.
+- Lazy load للكانفاس وأدواته الثقيلة.
+- اختبار حمل: 50 مستخدم متزامن على نفس السبورة (موجود `peak-collaboration-load.test.ts` كأساس).
+- Lighthouse score ≥ 85.
+
+### الاختبار
+
+- Unit ≥ 70% على الخدمات والـ stores.
+- اختبارات تكامل لكل Workspace.
+- E2E (Playwright/Cypress) للمسارات الحرجة: تسجيل دخول → إنشاء مشروع → إضافة مهمة → تنفيذ Engine Job.
+
+### الموثوقية
+
+- Error Boundary على مستوى App + كل Workspace.
+- Sentry أو ما يعادله للأخطاء (يستفيد من `pino` الموجود).
+- Backup policy لـ Supabase (يومي + أسبوعي).
+
+### إمكانية الوصول
+
+- WCAG AA للنماذج والأزرار.
+- Focus rings + ARIA labels (موجودة جزئيًا في tokens).
+- اختبار قارئ شاشة (NVDA/VoiceOver) لمسار حرج واحد على الأقل.
+
+### التوثيق النهائي
+
+- `docs/USER_GUIDE.md` (للمستخدم النهائي بالعربية).
+- `docs/ADMIN_GUIDE.md` (لإدارة الأدوار + Settings).
+- `docs/RUNBOOK.md` (للحوادث والاستعادة).
+- تحديث `README.md` و `CHANGELOG.md`.
+
+**Definition of Done:** كل ما سبق ≥ هدفه، اختبار قبول من 3 مستخدمين حقيقيين بدون أخطاء كاسرة.
+
+---
+
+## P6 — الإطلاق
+
+1. **Staging Environment** مطابق للإنتاج، اختبار قبول نهائي.
+2. **خطة Rollout متدرّجة:** Soft Launch لمجموعة 5-10 مستخدمين → أسبوع → فتح كامل.
+3. **Domain + SSL + Email** (عبر Lovable Publish + Custom Domain).
+4. **Monitoring Live:** لوحة Metrics (Prometheus/Grafana أو ما يعادله)، تنبيهات على Errors > threshold.
+5. **خطة Rollback** موثّقة (snapshot DB قبل كل deploy، إمكانية الرجوع لـ tag سابق).
+6. **Day-1 Support:** قناة دعم + متابعة 48 ساعة بعد الإطلاق.
+
+**Definition of Done:** المنتج في الإنتاج، لا أخطاء حرجة لمدة 7 أيام، مستخدمون فعليون يستخدمونه.
+
+---
+
+## ميزات مؤجَّلة بعد v1.0 (Post-Launch)
+
+تبقى ضمن "النوايا" من الوثيقة القديمة، تُجدوَل كـ v1.x:
+
+- نظام موافقات متدرّج (Approvals Workflow) — بعض البنية موجودة في `src/services/approvals.ts`.
+- Dependency Graph Visualizer.
+- Tools Marketplace.
+- AI Gateway connectors / تحليل شذوذ.
+- SCIM / SSO Enterprise.
+- SIEM/PagerDuty integration.
+- JIT Access + Break-Glass.
+- 18 دور مؤسسي (يبقى الحالي 5 أدوار).
+
+---
+
+## مخاطر رئيسية ومُلطِّفات
+
+
+| المخاطرة                                   | اللطّف                                         |
+| ------------------------------------------ | ---------------------------------------------- |
+| Migration `20260430090000` لم تُختبر مع UI | P2 يفعل seed + integration tests               |
+| استبدال Mock يكسر Workspaces               | Feature flags + rollout تدريجي في P3           |
+| Edge Functions بطيئة لـ Engine Jobs        | Workers + queue pattern في P4                  |
+| RLS misconfiguration                       | مراجعة يدوية + Linter + اختبارات RLS في P1/P5  |
+| تأخر بسبب Refactor متزامن                  | تجميد المعمارية بعد P2، أي تغيير يحتاج مبرّرًا |
+
+
+---
+
+## قرارات مطلوبة قبل البدء
+
+1. هل migration `20260430090000` نهائية؟ (تجمّد بعد البدء بـ P2).
+2. الأدوار الخمسة المقترحة (`owner|manager|member|viewer|guest`) مقبولة؟
+3. هل `kv_store_*` تُحذف أم تبقى؟
+4. أولوية Workspaces في P3 — هل ترتيبي مقبول (Projects → Tasks → Departments → Planning → Operations)؟
+5. متطلبات Compliance خاصة (PDPL سعودي/GDPR) قبل الإطلاق؟
+
+---
+
+## المخرجات النهائية للتسليم
+
+- تطبيق Production يعمل على Domain.
+- 4 وثائق توصيف (موجودة) + 3 أدلة تشغيلية (USER/ADMIN/RUNBOOK).
+- اختبارات تلقائية (Unit + Integration + E2E).
+- Monitoring + Alerts.
+- خطة Rollback + Backup.
+- تدريب فريق العميل (جلسة واحدة + فيديو).
