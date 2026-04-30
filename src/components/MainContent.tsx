@@ -1,11 +1,23 @@
 import Sidebar from '@/components/Sidebar';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigation } from '@/contexts/NavigationContext';
-import ProjectWorkspace from './ProjectWorkspace';
-import DepartmentsWorkspace from './DepartmentsWorkspace';
-import ArchiveWorkspace from './ArchiveWorkspace';
-import SettingsWorkspace from './SettingsWorkspace';
-import PlanningWorkspace from './PlanningWorkspace';
+import { WorkspaceErrorBoundary } from '@/components/shared/WorkspaceErrorBoundary';
+import { CrossWorkspaceSearch } from '@/features/cross-search';
+import { Loader2 } from 'lucide-react';
+
+// Code-split heavy workspaces (P5 — performance)
+const ProjectWorkspace = lazy(() => import('./ProjectWorkspace'));
+const DepartmentsWorkspace = lazy(() => import('./DepartmentsWorkspace'));
+const ArchiveWorkspace = lazy(() => import('./ArchiveWorkspace'));
+const SettingsWorkspace = lazy(() => import('./SettingsWorkspace'));
+const PlanningWorkspace = lazy(() => import('./PlanningWorkspace'));
+
+const WorkspaceFallback = () => (
+  <div className="flex-1 flex items-center justify-center">
+    <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+  </div>
+);
+
 const MainContent = () => {
   const { navigationState, setActiveSection } = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
