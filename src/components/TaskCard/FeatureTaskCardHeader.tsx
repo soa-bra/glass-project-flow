@@ -17,10 +17,7 @@ const FeatureTaskCardHeader = ({
 }: FeatureTaskCardHeaderProps) => {
   return (
     <div
-      className="h-full min-h-[96px] sm:min-h-[104px] lg:min-h-[112px]"
-      style={{
-        paddingTop: 'clamp(8px, 1.8vw, 14px)',
-        paddingInline: 'clamp(6px, 2.4vw, 14px)',
+
       }}
     >
       <div
@@ -31,10 +28,6 @@ const FeatureTaskCardHeader = ({
       >
         <div className="flex min-w-0 items-start justify-start">
           <FeatureTaskCardDaysCircle daysLeft={daysLeft} />
-        </div>
-
-        <div className="flex h-full min-w-0 items-start justify-center overflow-hidden pt-1">
-          <FeatureTaskCardTitle title={title} description={description} />
         </div>
 
         <div className="flex min-w-0 items-start justify-end">

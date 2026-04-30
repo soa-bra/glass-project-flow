@@ -10,6 +10,9 @@ import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
 import ContextualToolbarManager from '@/features/planning/ui/toolbars/ContextualToolbarManager';
 import { SmartCommandBar, useSmartCommandBar } from '@/features/planning/elements/smart/SmartCommandBar';
 import { createTypedSmartElement } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
+import { executeCommandWithAuthorization } from '@/features/planning/domain/commands';
+import { useCollaborationStore } from '@/stores/collaborationStore';
+import { useBoardCanvasLifecycle } from '@/features/planning/hooks/useBoardCanvasLifecycle';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -23,6 +26,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const viewport = useCanvasStore((state) => state.viewport);
   const canvasHostRef = useRef<HTMLDivElement>(null);
   const commandBar = useSmartCommandBar();
+  const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
+  const isHost = useCollaborationStore((state) => state.isHost);
+  const participants = useCollaborationStore((state) => state.participants);
+
+  useBoardCanvasLifecycle(board);
 
   useEffect(() => {
     const host = canvasHostRef.current;
@@ -46,17 +54,39 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   const handleElementsGenerated = useCallback(
     (elements: any[]) => {
-      elements.forEach((element, index) => {
-        addElement(
-          createTypedSmartElement({
-            element,
-            index,
-            viewport,
-          }),
-        );
-      });
+      const currentParticipant = participants.find((participant) => participant.id === currentUserId);
+      const actorRole = isHost ? 'host' : currentParticipant?.role ?? 'viewer';
+
+      executeCommandWithAuthorization(
+        {
+          command: 'canvas.smart-elements.generate',
+          actor: {
+            id: currentUserId,
+            role: actorRole,
+          },
+          attributes: {
+            boardId: board.id,
+            boardStatus: board.status,
+            boardOwnerId: board.owner,
+            source: 'smart-command-bar',
+            generatedElementCount: elements.length,
+            isTrustedSession: currentUserId !== 'anonymous-user',
+          },
+        },
+        () => {
+          elements.forEach((element, index) => {
+            addElement(
+              createTypedSmartElement({
+                element,
+                index,
+                viewport,
+              }),
+            );
+          });
+        },
+      );
     },
-    [addElement, viewport],
+    [addElement, board.id, board.owner, board.status, currentUserId, isHost, participants, viewport],
   );
 
   return (

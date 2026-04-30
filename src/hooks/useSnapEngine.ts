@@ -4,7 +4,7 @@
  * يوفر واجهة React للتفاعل مع Snap Engine
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { snapEngine, type SnapConfig, type SnapLine, type SnapResult } from '@/engine/canvas/interaction/snapEngine';
 import type { Point, Bounds } from '@/engine/canvas/kernel/canvasKernel';
@@ -37,6 +37,7 @@ export const useSnapEngine = (options: UseSnapEngineOptions = {}): UseSnapEngine
   const { excludeIds = [], enabled = true } = options;
   
   const [guides, setGuides] = useState<SnapLine[]>([]);
+  const [config, setConfig] = useState<SnapConfig>(() => snapEngine.config);
   
   const elements = useCanvasStore(state => state.elements);
   const settings = useCanvasStore(state => state.settings);
@@ -52,7 +53,21 @@ export const useSnapEngine = (options: UseSnapEngineOptions = {}): UseSnapEngine
       edgeSnapEnabled: true,
       distributionGuidesEnabled: true
     });
+    setConfig(snapEngine.config);
   }, [settings.snapToGrid, settings.gridSize]);
+
+  useEffect(() => {
+    if (typeof snapEngine.subscribe !== 'function') {
+      return;
+    }
+
+    const unsubscribe = snapEngine.subscribe(() => {
+      setConfig(snapEngine.config);
+      setGuides(snapEngine.guides);
+    });
+
+    return unsubscribe;
+  }, []);
 
   // تحديث العناصر المستهدفة
   const refreshTargets = useCallback(() => {
@@ -111,15 +126,14 @@ export const useSnapEngine = (options: UseSnapEngineOptions = {}): UseSnapEngine
   // تحديث الإعدادات
   const updateConfig = useCallback((config: Partial<SnapConfig>) => {
     snapEngine.updateConfig(config);
+    setConfig(snapEngine.config);
   }, []);
 
   // مسح خطوط الإرشاد
   const clearGuides = useCallback(() => {
+    snapEngine.clearGuides();
     setGuides([]);
   }, []);
-
-  // الإعدادات الحالية
-  const config = useMemo(() => snapEngine.config, []);
 
   return {
     guides,

@@ -5,6 +5,7 @@
  */
 
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
+import type { BoardSnapshot } from './history/boardSnapshot';
 import { spatialIndex, queryIntersectingElements } from '@/engine/canvas/spatial/spatialIndex';
 
 export interface CanvasState {
@@ -12,7 +13,7 @@ export interface CanvasState {
   selectedElementIds: string[];
   layers: LayerInfo[];
   viewport: { zoom: number; pan: { x: number; y: number } };
-  history: { past: CanvasElement[][]; future: CanvasElement[][] };
+  history: { past: BoardSnapshot[]; future: BoardSnapshot[] };
   activeTool: string;
   activeLayerId: string | null;
 }
