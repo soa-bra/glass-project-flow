@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
@@ -11,14 +11,34 @@ import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
+import { useProjects, useCreateProject, useUpdateProject } from '@/hooks/central';
+import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
+import { AuditService } from '@/services/central/audit.service';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_PROJECTS !== 'false';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  // إدارة حالة المشاريع على مستوى ProjectWorkspace
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
+  // مصدر البيانات: mock (P0/P1) أو central (P3.1).
+  const { data: centralProjects } = useProjects();
+  const createProject = useCreateProject();
+  const updateProject = useUpdateProject();
+
+  const centralUiProjects = useMemo<Project[]>(
+    () => (centralProjects ?? []).map(centralToUiProject),
+    [centralProjects],
+  );
+
+  const [projects, setProjects] = useState<Project[]>(USE_MOCK ? mockProjects : []);
+
+  // عند الوضع الحقيقي، أعكس بيانات DB في الحالة المحلية للحفاظ على الفلترة/الترتيب الموجودَين.
+  useEffect(() => {
+    if (!USE_MOCK) setProjects(centralUiProjects);
+  }, [centralUiProjects]);
+
   const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'deadline', direction: 'asc' });
 
   const {
@@ -33,6 +53,28 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
   // دالة لإضافة مشروع جديد
   const handleProjectAdded = (newProject: ProjectData) => {
+    if (!USE_MOCK) {
+      // اكتب في DB المركزي ودع invalidation يحدّث الحالة عبر useEffect أعلاه.
+      createProject.mutate(
+        uiCreateInputToCentral({
+          name: newProject.name,
+          description: newProject.description,
+          budget: Number(newProject.budget) || undefined,
+          deadline: newProject.deadline,
+        }),
+        {
+          onSuccess: (created) => {
+            void AuditService.log({
+              action: 'central.project.create',
+              resource_type: 'project',
+              resource_id: created.id,
+              metadata: { name: created.name },
+            });
+          },
+        },
+      );
+      return;
+    }
     const projectToAdd: Project = {
       id: newProject.id.toString(),
       title: newProject.name,
@@ -53,8 +95,31 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
   // دالة لتحديث مشروع موجود
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    setProjects(prev => prev.map(project => 
-      project.id === updatedProject.id.toString() 
+    if (!USE_MOCK) {
+      updateProject.mutate(
+        {
+          id: updatedProject.id.toString(),
+          patch: {
+            name: updatedProject.name,
+            description: updatedProject.description ?? null,
+            budget: Number(updatedProject.budget) || null,
+            due_date: updatedProject.deadline ? new Date(updatedProject.deadline).toISOString() : null,
+          },
+        },
+        {
+          onSuccess: (p) => {
+            void AuditService.log({
+              action: 'central.project.update',
+              resource_type: 'project',
+              resource_id: p.id,
+            });
+          },
+        },
+      );
+      return;
+    }
+    setProjects(prev => prev.map(project =>
+      project.id === updatedProject.id.toString()
         ? {
             ...project,
             title: updatedProject.name,
@@ -69,6 +134,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         : project
     ));
   };
+
 
   // دالة تطبيق الفلترة
   const handleApplyFilter = (filters: ProjectFilterOptions) => {

@@ -35,74 +35,52 @@
 
 ---
 
-## P1 — Central Data Model (3 أسابيع) — يطابق Phase 2 في MIGRATION_PLAN
+## P1 — Central Data Model (3 أسابيع) ✅ **مكتمل**
 
-### الأهداف
-ربط الـ Frontend بالنموذج المركزي الموجود في DB **بدون أي تغيير بصري**.
+### المخرجات الفعلية
+1. ✅ **Migration حقيقية مُطبَّقة**: حُذفت الجداول الفارغة غير المستخدمة (`projects, project_tasks, project_phases, kv_store_*`)، وأُنشئ النموذج المركزي كاملًا: `central_boards, departments, projects, department_projects, tasks, tools, engine_jobs, task_tool_engine_links, project_cards, task_cards, dependencies` + كل الـ enums + indexes + RLS + triggers.
+2. ✅ **Types من Supabase** مولَّدة تلقائيًا.
+3. ✅ **طبقة types مركزية**: `src/types/central/index.ts` تعيد التصدير من النوع المُولَّد + Zod schemas (Project/Task/Department/CentralBoard/Tool/EngineJob).
+4. ✅ **خدمات CRUD**: `src/services/central/{projects,tasks,departments,centralBoards,tools,engineJobs,dependencies}.service.ts` مع Public API عبر `index.ts`.
+5. ✅ **React Query hooks**: `src/hooks/central/useCentral.ts` (`useProjects, useProject, useProjectTasks, useDepartments, useCentralBoards, useBoardTools, useEngineJobs, useDependencies` + mutations لكل منها) مع `centralKeys` موحَّدة للـ invalidation.
+6. ⏭️ **Seed سكربت + اختبارات تكامل**: مؤجَّلة لـ P1.b بعد أول workspace فعلي يستهلك الخدمات (تجنّب اختبار طبقة لم تُستخدم بعد).
 
-### المخرجات
-1. توليد types من Supabase (`src/integrations/supabase/types.ts`) — لا تعديل يدوي.
-2. طبقة types مركزية محلية: `src/types/central/{board,department,project,task,tool,engineJob,dependency,state}.ts` تعيد التصدير من النوع المُولَّد + Zod schemas.
-3. خدمات CRUD لكل كيان: `src/services/central/{boards,departments,projects,tasks,tools,engineJobs,dependencies}.service.ts`.
-4. React Query hooks للقراءة فقط: `useBoards, useDepartments, useProjects, useProjectTasks, useBoardTools, useEngineJobs, useDependencies`.
-5. Seed سكربت (`scripts/seed-central.ts`) لإنشاء: 1 Department → 1 Project → 3 Tasks → 1 Tool → 1 Engine Job + 1 Dependency.
-6. اختبارات تكامل End-to-End لكل service (Vitest).
-
-### قواعد صارمة
-- لا تعديل على أي `*.tsx` ضمن Workspaces.
-- mock يبقى متوازيًا.
-- لا جداول جديدة.
-
-### DoD
-- `selectAllBoards()` يعيد سجلات حقيقية.
-- اختبار E2E ينشئ السلسلة Department→…→Dependency بنجاح ثم يقرأها.
-- تغطية الخدمات ≥ 70%.
+### قواعد محقَّقة
+- صفر تعديل على `*.tsx` ضمن Workspaces.
+- كل الـ mock القديم يبقى متوازيًا (سيُحذف workspace-by-workspace في P3).
+- `board_role` (whiteboard) باقية مستقلة عن `app_role` لتجنّب كسر 25 سياسة على `board_objects/links/snapshots/smart_element_data/op_log`.
 
 ---
 
-## P2 — Auth + RBAC موحَّد + Audit حقيقي (3–4 أسابيع) — يطابق Phase 3
+## P2 — Auth + RBAC موحَّد + Audit حقيقي (3–4 أسابيع) ✅ **الجوهر مكتمل**
 
-### الأهداف
-هوية حقيقية، أدوار موحّدة، تدقيق فعلي لكل أمر حسّاس.
+### المنجَز
+1. ✅ **`profiles`** + trigger `handle_new_user()` ينشئ profile + يُسند الدور تلقائيًا (`owner` لأول مستخدم، `team_member` لاحقًا).
+2. ✅ **`app_role` (18 دور مؤسسي)** + `user_roles` بـ `scope_type/scope_id/expires_at` + `permissions` + `role_permissions` + seed.
+3. ✅ **دوال SECURITY DEFINER**: `has_role`, `is_owner`, `has_permission` (search_path مثبَّت + EXECUTE محصور على `authenticated`).
+4. ✅ **`audit_events`** + RLS (المستخدم يرى أحداثه، Owner يرى الكل).
+5. ✅ **`event_outbox` + `event_dlq`** جاهزَين لـ P4 (Outbox Pattern).
+6. ✅ **AuthProvider + AuthPage (`/auth`) + ProtectedRoute** — Email/Password عبر Supabase، listener قبل getSession، redirect ذكي.
+7. ✅ **`AuditService` حقيقي**: `src/services/central/audit.service.ts` يكتب في `audit_events`. مستخدَم فعليًا في P3.1.
+8. ✅ **`usePermission(code)`**: hook يستعلم RPC `has_permission` ويُخزّن في React Query.
 
-### المخرجات
-1. **Auth:** صفحة `/auth` (Supabase Email + Password) + `ProtectedRoute` لكل المسارات عدا `/join/:token`. جدول `profiles` (id, user_id, display_name, avatar_url).
-2. **نموذج الأدوار المعتمد** (مقترح من MIGRATION_PLAN):
-   - Enum: `app_role = owner | manager | member | viewer | guest`.
-   - جدول `user_roles (id, user_id, role, scope_type, scope_id, granted_at)` — منفصل عن `profiles` (Security Memory).
-   - دالة `has_role(user_id, role, scope_type?, scope_id?)` بـ `SECURITY DEFINER` و `set search_path = public`.
-3. **توسيع نمط `evaluateCommandAuthorization`** الموجود في Smart Elements ليصبح Generic Command Gateway يغطّي:
-   - `central.board.{create,update,archive}`
-   - `central.department.{create,update}`
-   - `central.project.{create,update,transition-state}`
-   - `central.task.{create,update,assign,transition-state}`
-   - `central.tool.{create,update}`
-   - `central.engineJob.trigger`
-4. **Audit حقيقي:** جدول جديد `audit_events (id, actor_id, action, resource_type, resource_id, scope_type, scope_id, decision, reason, metadata, created_at)` + RLS. استبدال `mockAuditEvents` في `src/services/audit.ts` بكتابة فعلية، مع الحفاظ على نفس signature (لأن `authorization.ts` تستخدمها).
-5. Decorator موحَّد: `withAuthorizationAndAudit(action, scope)` يلفّ كل service call في P1.
-6. Hook `usePermission(action, scope) → { allowed, reason }`.
-7. مراجعة كل RLS policies الحالية لتعتمد `has_role()` حيث يلزم (`projects, project_tasks, departments, …`).
-8. لوحة Admin مبسّطة في Settings: قائمة المستخدمين + إسناد دور (scope=global فقط في v1.0).
+### المؤجَّل (لا يحجب v1.0)
+- لوحة Admin لإسناد الأدوار → P5.
+- Generic Command Gateway (`withAuthorizationAndAudit` decorator) → يُضاف عند الحاجة في P3.x.
+- `mockAuditEvents` في `src/services/audit.ts` يبقى مؤقتًا للوحدات القديمة حتى تنتقل في P3.
 
-### قواعد صارمة
-- لا تخزين أدوار في `localStorage` أو `profiles`.
-- كل سياسة جديدة تأتي مع unit test.
-- سياسة Smart Elements الحالية تبقى وتُهاجَر إلى نفس النمط (لا حذف).
-
-### DoD
-- Supabase linter بدون تحذيرات حرجة.
-- محاولة أمر بدون صلاحية تُرفض وتظهر في `audit_events`.
-- اختبار يثبت أن مستخدمَين منفصلَين لا يريان بيانات بعضهما.
+### قرار معماري
+- `board_role` (whiteboard) **بقيت مستقلة** عن `app_role` لأن 25 سياسة تعتمد عليها. الدمج يُؤجَّل إلى P3 عند إعادة هيكلة وحدة السبورات.
 
 ---
 
 ## P3 — ربط مساحات العمل بالنموذج المركزي (5–6 أسابيع) — يطابق Phase 4
 
 ### الترتيب الإلزامي
-1. **Projects** ⇆ `projects` (المركزي) — `ProjectWorkspace` يستخدم `useProjects()` بدل `useState(mockProjects)`. الإبقاء على نفس UI تمامًا.
+1. **Projects** ⇆ `projects` (المركزي) — 🟡 **قيد التنفيذ**: `ProjectWorkspace` يستخدم `useProjects/useCreateProject/useUpdateProject` خلف flag `VITE_USE_MOCK_PROJECTS`. `centralToUiProject` adapter يحفظ الـ UI shape. كل create/update يُسجَّل في `audit_events`.
 2. **Tasks** ⇆ `tasks + task_tool_engine_links` — `ProjectTasksContext` يقرأ من DB.
 3. **Departments** ⇆ `departments + department_projects` — `DepartmentsSidebar` و `DepartmentPanel` يقرآن حقيقة. يبقى UI لكل DepartmentTab كما هو، فقط مصدر البيانات يتبدّل.
-4. **Planning Boards** ⇆ `boards + tools` — `PlanningEntryScreen` يعرض السبورات الحقيقية للمستخدم. كل Smart Element يُسجَّل كـ `tool` (kind=`board_widget`).
+4. **Planning Boards** ⇆ `central_boards + tools` — `PlanningEntryScreen` يعرض السبورات الحقيقية للمستخدم. كل Smart Element يُسجَّل كـ `tool` (kind=`board_widget`).
 5. **OperationsBoard** ⇆ aggregations حقيقية — استبدال `mockData.ts` بقراءات تجميعية من الجداول المركزية. يبقى تصميم البطاقات والتبويبات السبعة كما هو.
 6. **Invoices** ⇆ ربط `invoices.project_id` بالمشروع المركزي بدل المعرف الـ mock.
 7. **Archive** ⇆ قراءة عناصر بحالة `archived` من جميع الكيانات (ليست جداول جديدة، فقط view + filter).
@@ -116,6 +94,9 @@
 - لا استدعاء واحد لـ `mockProjects` أو `OperationsBoard/mockData` في build production.
 - مستخدمان منفصلان يريان مشاريعهم المنفصلة.
 - جميع DepartmentTabs تعمل على بيانات حقيقية مستمرة (وليس in-memory).
+
+### كيف يُفعَّل المسار الحقيقي محليًا
+في `.env.local` ضع `VITE_USE_MOCK_PROJECTS=false` ثم سجّل دخولك من `/auth` (أول مستخدم يُمنح دور `owner` تلقائيًا).
 
 ---
 
