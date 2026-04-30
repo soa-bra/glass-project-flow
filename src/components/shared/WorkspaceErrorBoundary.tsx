@@ -4,6 +4,7 @@
  */
 import React from "react";
 import { AlertTriangle, RotateCcw } from "lucide-react";
+import { Telemetry } from "@/infra/telemetry";
 
 interface State { hasError: boolean; error: Error | null; }
 
@@ -18,8 +19,10 @@ export class WorkspaceErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // Lightweight reporter — replace with Sentry transport when available.
-    console.error("[WorkspaceErrorBoundary]", this.props.workspaceName, error, info.componentStack);
+    Telemetry.reportError(error, {
+      workspace: this.props.workspaceName,
+      componentStack: info.componentStack,
+    });
   }
 
   reset = () => this.setState({ hasError: false, error: null });
