@@ -53,6 +53,28 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
   // دالة لإضافة مشروع جديد
   const handleProjectAdded = (newProject: ProjectData) => {
+    if (!USE_MOCK) {
+      // اكتب في DB المركزي ودع invalidation يحدّث الحالة عبر useEffect أعلاه.
+      createProject.mutate(
+        uiCreateInputToCentral({
+          name: newProject.name,
+          description: newProject.description,
+          budget: Number(newProject.budget) || undefined,
+          deadline: newProject.deadline,
+        }),
+        {
+          onSuccess: (created) => {
+            void AuditService.log({
+              action: 'central.project.create',
+              resource_type: 'project',
+              resource_id: created.id,
+              metadata: { name: created.name },
+            });
+          },
+        },
+      );
+      return;
+    }
     const projectToAdd: Project = {
       id: newProject.id.toString(),
       title: newProject.name,
@@ -73,8 +95,31 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
   // دالة لتحديث مشروع موجود
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    setProjects(prev => prev.map(project => 
-      project.id === updatedProject.id.toString() 
+    if (!USE_MOCK) {
+      updateProject.mutate(
+        {
+          id: updatedProject.id.toString(),
+          patch: {
+            name: updatedProject.name,
+            description: updatedProject.description ?? null,
+            budget: Number(updatedProject.budget) || null,
+            due_date: updatedProject.deadline ? new Date(updatedProject.deadline).toISOString() : null,
+          },
+        },
+        {
+          onSuccess: (p) => {
+            void AuditService.log({
+              action: 'central.project.update',
+              resource_type: 'project',
+              resource_id: p.id,
+            });
+          },
+        },
+      );
+      return;
+    }
+    setProjects(prev => prev.map(project =>
+      project.id === updatedProject.id.toString()
         ? {
             ...project,
             title: updatedProject.name,
@@ -89,6 +134,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         : project
     ));
   };
+
 
   // دالة تطبيق الفلترة
   const handleApplyFilter = (filters: ProjectFilterOptions) => {
