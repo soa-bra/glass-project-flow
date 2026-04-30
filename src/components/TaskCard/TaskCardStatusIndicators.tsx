@@ -3,6 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { EllipsisVertical, Check, Edit, Archive, Trash, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskData } from '@/types';
+import { taskCardSingleLineTextStyle, useTaskCardSizeTokens } from './taskCardSizeTokens';
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -33,6 +34,7 @@ const TaskCardStatusIndicators = ({
   onArchive,
   onDelete
 }: TaskCardStatusIndicatorsProps) => {
+  const tokens = useTaskCardSizeTokens();
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [open, setOpen] = useState(false);
@@ -40,13 +42,7 @@ const TaskCardStatusIndicators = ({
   const pillStyle = {
     backgroundColor: '#FFFFFF',
     border: '1px solid #DADCE0',
-    borderRadius: '15px',
-    padding: '0 8px',
-    fontSize: '10px',
-    fontWeight: 500,
-    color: '#858789',
-    fontFamily: 'IBM Plex Sans Arabic',
-    height: '24px'
+
   };
   const pillWidthByType = {
     status: { minWidth: '140px', maxWidth: '240px' },
@@ -115,17 +111,14 @@ const TaskCardStatusIndicators = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '20px',
-        height: '20px',
+        width: tokens.iconButtonSizePx,
+        height: tokens.iconButtonSizePx,
         borderRadius: '50%',
         padding: '0',
         border: isSelected ? 'none' : '1px solid #858789',
         backgroundColor: isSelected ? '#858789' : 'transparent',
         color: isSelected ? '#fff' : '#858789'
-      }}
-      className="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0 lg:justify-self-auto"
-      >
-            {isSelected ? <Check size={12} color="white" /> : null}
+
           </div> : <div className="relative" ref={menuRef}>
             <button
               onClick={(e) => {
@@ -137,8 +130,8 @@ const TaskCardStatusIndicators = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '20px',
-                height: '20px',
+                width: tokens.iconButtonSizePx,
+                height: tokens.iconButtonSizePx,
                 borderRadius: '50%',
                 padding: '0',
                 border: 'none',
@@ -150,7 +143,7 @@ const TaskCardStatusIndicators = ({
                 animate={{ rotate: open ? 90 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut", type: "spring", stiffness: 300, damping: 20 }}
               >
-                <EllipsisVertical size={12} color="#858789" />
+                <EllipsisVertical color="#858789" style={{ width: tokens.iconSizePx, height: tokens.iconSizePx }} />
               </motion.span>
             </button>
                 

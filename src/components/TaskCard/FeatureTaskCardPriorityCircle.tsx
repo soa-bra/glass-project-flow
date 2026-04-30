@@ -1,3 +1,5 @@
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
+
 interface FeatureTaskCardPriorityCircleProps {
   priority: string;
 }
@@ -5,6 +7,8 @@ interface FeatureTaskCardPriorityCircleProps {
 const FeatureTaskCardPriorityCircle = ({
   priority
 }: FeatureTaskCardPriorityCircleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   const getPriorityConfig = (priority: string) => {
     const configs = {
       'urgent-important': {
@@ -34,32 +38,6 @@ const FeatureTaskCardPriorityCircle = ({
 
   const config = getPriorityConfig(priority);
 
-  return (
-    <div
-      style={{
-        backgroundColor: config.bg
-      }}
-      className="w-11 h-11 sm:w-12 sm:h-12 lg:w-[52px] lg:h-[52px] rounded-full flex flex-col items-center justify-center shrink-0"
-    >
-      <span
-        style={{
-          fontWeight: 600,
-          color: '#000000',
-          lineHeight: 1,
-          fontFamily: 'IBM Plex Sans Arabic'
-        }}
-        className="text-[9px] sm:text-[10px]"
-      >
-        {config.line1}
-      </span>
-      <span
-        style={{
-          fontWeight: 400,
-          color: '#000000',
-          fontFamily: 'IBM Plex Sans Arabic'
-        }}
-        className="text-[8px] sm:text-[9px] mt-0.5"
-      >
         {config.line2}
       </span>
     </div>
