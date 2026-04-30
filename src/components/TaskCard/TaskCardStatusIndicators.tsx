@@ -107,18 +107,19 @@ const TaskCardStatusIndicators = ({
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
         {isSelectionMode ? <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: tokens.iconButtonSizePx,
-        height: tokens.iconButtonSizePx,
-        borderRadius: '50%',
-        padding: '0',
-        border: isSelected ? 'none' : '1px solid #858789',
-        backgroundColor: isSelected ? '#858789' : 'transparent',
-        color: isSelected ? '#fff' : '#858789'
-
+          ...pillStyle,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: tokens.iconButtonSizePx,
+          height: tokens.iconButtonSizePx,
+          borderRadius: '50%',
+          padding: '0',
+          border: isSelected ? 'none' : '1px solid #858789',
+          backgroundColor: isSelected ? '#858789' : 'transparent',
+          color: isSelected ? '#fff' : '#858789'
+        }}>
+            {isSelected ? <Check size={16} /> : null}
           </div> : <div className="relative" ref={menuRef}>
             <button
               onClick={(e) => {
