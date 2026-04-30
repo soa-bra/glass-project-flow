@@ -220,5 +220,11 @@ P0 ─▶ P1 ─▶ P2 ─▶ P3 ─▶ P4 ─▶ P5 ─▶ P6
 
 ## نقطة البدء الفورية بعد الموافقة
 
-P0 — Step 1: إصلاح أخطاء البناء الثلاثة (`emitter.ts`, `BaseTaskCardLayout.tsx`, `TaskCardFooterSimple.tsx`) وإضافة الـ Feature Flags. بدون موافقتك على الأدوار (السؤال 4) لن نبدأ P2.
+✅ **P0 مكتمل.** الخطوة التالية تتطلب موافقتك على القرارات المعلَّقة (خصوصًا السؤال 4 — مجموعة الأدوار) قبل بدء P1 رسميًا.
+
+**المقترح للبدء فورًا في P1 بمجرد موافقتك:**
+1. توليد types من Supabase (`bunx supabase gen types`).
+2. إنشاء طبقة `src/types/central/*` مع Zod schemas.
+3. إنشاء أول service: `src/services/central/projects.service.ts` + hook `useProjects()`.
+4. seed سكربت أولي.
 
