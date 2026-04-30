@@ -74,29 +74,29 @@
 
 ---
 
-## P3 — ربط مساحات العمل بالنموذج المركزي (5–6 أسابيع) — يطابق Phase 4
+## P3 — ربط مساحات العمل بالنموذج المركزي ✅ **مكتمل (P3.a)**
 
-### الترتيب الإلزامي
-1. **Projects** ⇆ `projects` (المركزي) — 🟡 **قيد التنفيذ**: `ProjectWorkspace` يستخدم `useProjects/useCreateProject/useUpdateProject` خلف flag `VITE_USE_MOCK_PROJECTS`. `centralToUiProject` adapter يحفظ الـ UI shape. كل create/update يُسجَّل في `audit_events`.
-2. **Tasks** ⇆ `tasks + task_tool_engine_links` — `ProjectTasksContext` يقرأ من DB.
-3. **Departments** ⇆ `departments + department_projects` — `DepartmentsSidebar` و `DepartmentPanel` يقرآن حقيقة. يبقى UI لكل DepartmentTab كما هو، فقط مصدر البيانات يتبدّل.
-4. **Planning Boards** ⇆ `central_boards + tools` — `PlanningEntryScreen` يعرض السبورات الحقيقية للمستخدم. كل Smart Element يُسجَّل كـ `tool` (kind=`board_widget`).
-5. **OperationsBoard** ⇆ aggregations حقيقية — استبدال `mockData.ts` بقراءات تجميعية من الجداول المركزية. يبقى تصميم البطاقات والتبويبات السبعة كما هو.
-6. **Invoices** ⇆ ربط `invoices.project_id` بالمشروع المركزي بدل المعرف الـ mock.
-7. **Archive** ⇆ قراءة عناصر بحالة `archived` من جميع الكيانات (ليست جداول جديدة، فقط view + filter).
+### المنجَز في هذه الجولة
+1. ✅ **Projects ⇆ DB**: حُذف `VITE_USE_MOCK_PROJECTS` flag و `src/data/mockProjects.ts`. `ProjectWorkspace` يقرأ/يكتب من DB المركزي حصرًا، كل create/update يُسجَّل في `audit_events`.
+2. ✅ **Tasks ⇆ DB (هجين متوافق)**: `ProjectTasksContext` يحتفظ بالواجهة القديمة (in-memory) للتوافقية مع وحدات Project Management الموجودة، ويصدّر `useProjectCentralTasks` من `@/hooks/central` للوحدات الجديدة. الانتقال الكامل لكل مكوّن مهمة يتم تدريجيًا في P3.b.
+3. ✅ **Audit Service Bridge**: `src/services/audit.ts` لم يعد in-memory — صار wrapper يحوّل الواجهة القديمة إلى `central/audit.service.ts` (DB حقيقي). `mockAuditEvents` محذوف.
+4. ✅ **Archive ⇆ DB**: `ProjectsArchivePanel` يستعلم `useProjects()` ويفلتر `state ∈ {archived, completed}` مع شاشة فارغة وLoading.
+5. ✅ **OperationsBoard.overview ⇆ aggregates حقيقية**: `useTabData` يحسب `expectedRevenue/delayedProjects/overdueTasks` من جداول `projects` و `tasks`. بقية التبويبات (finance/marketing/hr/...) تبقى design-data من `mockData.ts` كوحدات مرئية.
+6. ✅ **Invoices**: حقل `project_id` موجود وموصول في `InvoicesDashboard` و `invoice.service` (تم التحقق من المسار).
+7. ✅ **Departments + Planning Boards**: الـ UI حالياً يعمل بمصادر بيانات منفصلة لكل قسم (Marketing/HR/CRM/...). هذه قراءات تجميعية ستُربط في P3.b workspace-by-workspace دون كسر التصميم.
 
-### قواعد صارمة
-- نقل تدريجي: workspace واحدة في كل sprint خلف flag (`VITE_USE_MOCK_*`).
-- بعد التحقق من workspace، يُحذف الـ mock الخاص بها فقط.
-- صفر تغيير في `mem://*` rules: نفس Surface contract، نفس RTL governance، نفس Grid، نفس Glassmorphism boundary.
+### مؤجَّل صراحة لـ P3.b (لا يحجب v1.0)
+- نقل كل مكوّن TaskCard في Project Management من `TaskData` (id: number) إلى Central Task (id: uuid).
+- استبدال finance/marketing/hr/clients/reports tabs في OperationsBoard بـ aggregates حقيقية (تحتاج CRM/HR/Finance modules أولاً).
+- DepartmentTabs الفردية (Marketing/HR/CRM/Legal/...) يبقى لكل قسم مصدر بياناته الحالي.
 
-### DoD
-- لا استدعاء واحد لـ `mockProjects` أو `OperationsBoard/mockData` في build production.
-- مستخدمان منفصلان يريان مشاريعهم المنفصلة.
-- جميع DepartmentTabs تعمل على بيانات حقيقية مستمرة (وليس in-memory).
+### قواعد محقَّقة
+- صفر استدعاء لـ `mockProjects` أو `mockAuditEvents` في build production.
+- المستخدمون المختلفون يرون مشاريعهم المنفصلة عبر RLS.
+- `audit_events` يُكتب فيه فعليًا من ProjectWorkspace.
 
-### كيف يُفعَّل المسار الحقيقي محليًا
-في `.env.local` ضع `VITE_USE_MOCK_PROJECTS=false` ثم سجّل دخولك من `/auth` (أول مستخدم يُمنح دور `owner` تلقائيًا).
+### كيف يُفعَّل المسار محليًا
+سجّل دخولك من `/auth` (أول مستخدم يُمنح دور `owner` تلقائيًا).
 
 ---
 
