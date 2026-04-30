@@ -4,14 +4,17 @@ import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { getCursorForMode } from '@/engine/canvas/interaction/interactionStateMachine';
 import type { CanvasElement, CanvasLayer, CanvasSettings } from '@/types/canvas';
 
+const DEFAULT_CONTAINER_SIZE = { width: 1280, height: 720 };
+
 function getCanvasHostSize(container: HTMLDivElement | null): { width: number; height: number } {
   if (container) {
-    return { width: container.clientWidth, height: container.clientHeight };
+    return {
+      width: container.clientWidth || DEFAULT_CONTAINER_SIZE.width,
+      height: container.clientHeight || DEFAULT_CONTAINER_SIZE.height,
+    };
   }
-  if (typeof window !== 'undefined') {
-    return { width: window.innerWidth, height: window.innerHeight };
-  }
-  return { width: 1280, height: 720 };
+
+  return { ...DEFAULT_CONTAINER_SIZE };
 }
 
 interface UseCanvasViewportControllerOptions {
@@ -24,6 +27,7 @@ interface UseCanvasViewportControllerOptions {
   interactionMode: any;
   panBy: (deltaX: number, deltaY: number) => void;
   zoomByWheel: (deltaY: number, screenX: number, screenY: number) => void;
+  setViewportHostSize: (width: number, height: number) => void;
 }
 
 export function useCanvasViewportController({
@@ -36,6 +40,7 @@ export function useCanvasViewportController({
   interactionMode,
   panBy,
   zoomByWheel,
+  setViewportHostSize,
 }: UseCanvasViewportControllerOptions) {
   const [containerSize, setContainerSize] = useState(() => getCanvasHostSize(null));
 
@@ -44,7 +49,9 @@ export function useCanvasViewportController({
     if (!container) return;
 
     const syncContainerSize = () => {
-      setContainerSize(getCanvasHostSize(container));
+      const nextSize = getCanvasHostSize(container);
+      setContainerSize(nextSize);
+      setViewportHostSize(nextSize.width, nextSize.height);
     };
 
     syncContainerSize();
@@ -57,7 +64,7 @@ export function useCanvasViewportController({
 
     observer.observe(container);
     return () => observer.disconnect();
-  }, [containerRef]);
+  }, [containerRef, setViewportHostSize]);
 
   const viewportBounds = useMemo(() => {
     return canvasKernel.getVisibleBounds(viewport, containerSize.width, containerSize.height);
@@ -68,8 +75,8 @@ export function useCanvasViewportController({
   const visibleElements = useMemo(() => {
     const padding = 200;
     return elements.filter((el) => {
-      const isLayerVisible = el.layerId ? layerVisibilityMap.get(el.layerId) : undefined;
-      if (!isLayerVisible || !el.visible) return false;
+      const isLayerVisible = el.layerId ? (layerVisibilityMap.get(el.layerId) ?? true) : true;
+      if (!isLayerVisible || el.visible === false) return false;
       if (el.type === 'mindmap_connector') return true;
 
       return (
