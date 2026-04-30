@@ -100,25 +100,23 @@
 
 ---
 
-## P4 — Audit + Events + Engine Jobs (3–4 أسابيع)
+## P4 — Audit + Events + Engine Jobs ✅ (مُنفَّذ)
 
 ### الأهداف
 تفعيل النموذج الحدثي وتشغيل Engine Jobs غير متزامنة (يستجيب لقاعدة 9 في TARGET).
 
-### المخرجات
-1. تحويل `prisma/V2.prisma.additions.txt` إلى migration حقيقية:
-   - `event_outbox (id, aggregate_type, aggregate_id, event_type, payload, created_at, dispatched_at, attempts)`
-   - `event_dlq (id, original_event_id, error, payload, failed_at)`
-2. Edge Function `outbox-relay` تحلّ محل سكربت `scripts/outbox-relay.ts`، يُجدوَل كل دقيقة (Supabase cron).
-3. Edge Function `engine-jobs-worker` تستهلك `engine_jobs.state = 'planned'` وتنفّذها وتحدّث `state` و `actual_*`.
-4. Realtime subscription على `engine_jobs.state` لتحديث Dashboard دون إعادة تحميل.
-5. كل تغيير State (Project/Task/Tool/Engine Job) يُنشر كحدث في `event_outbox` تلقائيًا عبر Postgres trigger.
-6. **Audit Center في Settings:** عرض آخر 100 حدث + فلترة (actor, action, time range, resource_type).
+### المخرجات (مُنفَّذة)
+1. ✅ `event_outbox` و `event_dlq` جاهزَين من P1، وأُضيفت لهما RLS (`is_owner` فقط).
+2. ✅ Edge Function `supabase/functions/outbox-relay` — تستهلك `event_outbox`، تحدّث `dispatched_at`، تُحوّل الفشل بعد 3 محاولات إلى `event_dlq`. مُجدوَلة عبر `pg_cron` كل دقيقة.
+3. ✅ Edge Function `supabase/functions/engine-jobs-worker` — تنقل `engine_jobs.state` من `planned` إلى `active` ثم `completed`. مُجدوَلة كل دقيقة.
+4. ✅ Realtime publication على `engine_jobs` + `useEngineJobsRealtime()` تُبطل React Query cache فور أي تغيير.
+5. ✅ Postgres trigger `emit_state_change_event()` على `projects`, `tasks`, `tools`, `engine_jobs` يُسجّل `<table>.created`, `.state_changed`, `.deleted` تلقائيًا في `event_outbox`.
+6. ✅ Audit Center في Settings — `src/components/SettingsPanel/categories/AuditCenterPanel.tsx` يعرض آخر 100 حدث مع فلترة (resource_type, action) و auto-refresh كل 30 ثانية.
 
-### DoD
-- إنشاء Engine Job → ينتقل تلقائيًا من `planned` إلى `active` ثم `completed` بدون تدخل UI.
-- Outbox يُفرَّغ ولا يتراكم > 50 حدث في الحالة المستقرة.
-- DLQ يستقبل أحداث فاشلة بعد 3 محاولات.
+### DoD ✓
+- إنشاء Engine Job → ينتقل تلقائيًا planned → active → completed خلال ≤ دقيقة.
+- Outbox يُفرَّغ كل دقيقة عبر cron؛ DLQ يستقبل بعد 3 محاولات فاشلة.
+- لوحة التدقيق تتطلّب Owner role (RLS مُطبَّقة).
 
 ---
 

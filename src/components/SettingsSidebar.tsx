@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users } from 'lucide-react';
+import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SettingsSidebarProps {
@@ -72,6 +72,13 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       icon: Users,
       route: '/settings/users-roles',
       access: 'role == System Admin'
+    },
+    {
+      key: 'audit',
+      label: 'مركز التدقيق',
+      icon: ScrollText,
+      route: '/settings/audit',
+      access: 'role == Owner'
     }
   ];
   
