@@ -1,19 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
-import type { CanvasBoard } from '@/types/planning';
+import type { CanvasBoard, CanvasBoardStateSnapshot } from '@/types/planning';
 
 export type BoardSaveStatus = 'clean' | 'dirty' | 'saving' | 'saved' | 'error';
-
-interface PersistedBoardSavePayload {
-  fingerprint: string;
-  savedAt: string;
-  snapshot: {
-    elements: unknown[];
-    layers: unknown[];
-    viewport: { zoom: number; pan: { x: number; y: number } };
-  };
-}
 
 interface UseBoardSaveStateReturn {
   status: BoardSaveStatus;
@@ -24,10 +14,6 @@ interface UseBoardSaveStateReturn {
 }
 
 const CLEANUP_DELAY_MS = 1600;
-
-function getBoardSaveStorageKey(boardId: string): string {
-  return `planning-board-save:${boardId}`;
-}
 
 function normalizeDate(value: string | Date | undefined | null): Date | null {
   if (!value) return null;
@@ -40,7 +26,9 @@ function buildBoardFingerprint(input: {
   boardName: string;
   elements: unknown[];
   layers: unknown[];
+  selectedElementIds: string[];
   viewport: { zoom: number; pan: { x: number; y: number } };
+  activeLayerId: string | null;
 }): string {
   return JSON.stringify(input);
 }
@@ -74,7 +62,9 @@ export function formatBoardSaveStatusLabel(status: BoardSaveStatus, lastSavedAt:
 export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateReturn {
   const elements = useCanvasStore((state) => state.elements);
   const layers = useCanvasStore((state) => state.layers);
+  const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
   const viewport = useCanvasStore((state) => state.viewport);
+  const activeLayerId = useCanvasStore((state) => state.activeLayerId);
   const saveBoard = usePlanningStore((state) => state.saveBoard);
 
   const [status, setStatus] = useState<BoardSaveStatus>('clean');
@@ -90,9 +80,11 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
       boardName: board.name,
       elements,
       layers,
+      selectedElementIds,
       viewport,
+      activeLayerId,
     });
-  }, [board, elements, layers, viewport]);
+  }, [activeLayerId, board, elements, layers, selectedElementIds, viewport]);
 
   useEffect(() => {
     if (!board) {
@@ -102,29 +94,21 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
       return;
     }
 
-    const fallbackSavedAt = normalizeDate(board.lastModified);
-    let nextFingerprint = fingerprint;
-    let nextSavedAt = fallbackSavedAt;
+    const savedSnapshot = board.canvasState;
+    const savedAt = normalizeDate(savedSnapshot?.savedAt || board.lastModified);
+    const savedFingerprint = buildBoardFingerprint({
+      boardId: board.id,
+      boardName: board.name,
+      elements: savedSnapshot?.elements ?? [],
+      layers: savedSnapshot?.layers ?? [],
+      selectedElementIds: savedSnapshot?.selectedElementIds ?? [],
+      viewport: savedSnapshot?.viewport ?? { zoom: 1, pan: { x: 0, y: 0 } },
+      activeLayerId: savedSnapshot?.activeLayerId ?? null,
+    });
 
-    try {
-      const raw = window.localStorage.getItem(getBoardSaveStorageKey(board.id));
-      if (raw) {
-        const parsed = JSON.parse(raw) as PersistedBoardSavePayload;
-        if (typeof parsed.fingerprint === 'string') {
-          nextFingerprint = parsed.fingerprint;
-        }
-        if (parsed.savedAt) {
-          nextSavedAt = normalizeDate(parsed.savedAt) || fallbackSavedAt;
-        }
-      }
-    } catch {
-      nextFingerprint = fingerprint;
-      nextSavedAt = fallbackSavedAt;
-    }
-
-    lastSavedFingerprintRef.current = nextFingerprint;
-    setLastSavedAt(nextSavedAt);
-    setStatus(fingerprint === nextFingerprint ? 'clean' : 'dirty');
+    lastSavedFingerprintRef.current = savedSnapshot ? savedFingerprint : fingerprint;
+    setLastSavedAt(savedAt);
+    setStatus(fingerprint === lastSavedFingerprintRef.current ? 'clean' : 'dirty');
   }, [board?.id]);
 
   useEffect(() => {
@@ -149,18 +133,16 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
 
     try {
       const savedAt = new Date();
-      const payload: PersistedBoardSavePayload = {
-        fingerprint,
+      const canvasState: CanvasBoardStateSnapshot = {
+        elements,
+        layers,
+        selectedElementIds,
+        viewport,
+        activeLayerId,
         savedAt: savedAt.toISOString(),
-        snapshot: {
-          elements,
-          layers,
-          viewport,
-        },
       };
 
-      window.localStorage.setItem(getBoardSaveStorageKey(board.id), JSON.stringify(payload));
-      saveBoard(board.id, savedAt);
+      saveBoard(board.id, savedAt, canvasState);
 
       lastSavedFingerprintRef.current = fingerprint;
       setLastSavedAt(savedAt);
@@ -181,7 +163,7 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
       setStatus('error');
       return false;
     }
-  }, [board, elements, fingerprint, layers, saveBoard, viewport]);
+  }, [activeLayerId, board, elements, fingerprint, layers, saveBoard, selectedElementIds, viewport]);
 
   const isDirty = !!board && fingerprint !== lastSavedFingerprintRef.current;
 
