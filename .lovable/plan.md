@@ -52,41 +52,35 @@
 
 ---
 
-## P2 — Auth + RBAC موحَّد + Audit حقيقي (3–4 أسابيع) 🟡 **الأساس DB مكتمل، Auth UI متبقّي**
+## P2 — Auth + RBAC موحَّد + Audit حقيقي (3–4 أسابيع) ✅ **الجوهر مكتمل**
 
-### المنجَز في هذه الجولة
+### المنجَز
 1. ✅ **`profiles`** + trigger `handle_new_user()` ينشئ profile + يُسند الدور تلقائيًا (`owner` لأول مستخدم، `team_member` لاحقًا).
-2. ✅ **`app_role` (18 دور مؤسسي)** كاملًا حسب project knowledge: owner, ciso, dpo, infra_admin, finance_admin, department_manager, project_manager, release_manager, qa_lead, sre, brand_manager, dam_curator, hr_analyst, finance_auditor, ai_analyst, content_reviewer, legal_archivist, help_desk_agent, team_member, guest, service_account.
-3. ✅ **`user_roles`** مع `scope_type` (global/department/project/board) + `scope_id` + `expires_at` (لدعم JIT لاحقًا).
-4. ✅ **`permissions` + `role_permissions`** + seed لأهم الصلاحيات (central.project.*, central.task.*, audit.read.all, rbac.manage).
-5. ✅ **دوال SECURITY DEFINER** بـ `search_path` مُثبَّت: `has_role(uid, role, scope_type?, scope_id?)`, `is_owner(uid)`, `has_permission(uid, code)` — `EXECUTE` محصور على `authenticated`.
-6. ✅ **`audit_events`** بجميع الحقول (actor, action, resource_type, resource_id, scope, decision, reason, metadata) + RLS (المستخدم يرى أحداثه، Owner يرى الكل).
-7. ✅ **`event_outbox` + `event_dlq`** جاهزَين لمعالجة P4 (Outbox Pattern).
+2. ✅ **`app_role` (18 دور مؤسسي)** + `user_roles` بـ `scope_type/scope_id/expires_at` + `permissions` + `role_permissions` + seed.
+3. ✅ **دوال SECURITY DEFINER**: `has_role`, `is_owner`, `has_permission` (search_path مثبَّت + EXECUTE محصور على `authenticated`).
+4. ✅ **`audit_events`** + RLS (المستخدم يرى أحداثه، Owner يرى الكل).
+5. ✅ **`event_outbox` + `event_dlq`** جاهزَين لـ P4 (Outbox Pattern).
+6. ✅ **AuthProvider + AuthPage (`/auth`) + ProtectedRoute** — Email/Password عبر Supabase، listener قبل getSession، redirect ذكي.
+7. ✅ **`AuditService` حقيقي**: `src/services/central/audit.service.ts` يكتب في `audit_events`. مستخدَم فعليًا في P3.1.
+8. ✅ **`usePermission(code)`**: hook يستعلم RPC `has_permission` ويُخزّن في React Query.
 
-### المتبقّي في P2
-1. ⏭️ صفحة `/auth` (Supabase Email + Password) + `ProtectedRoute`.
-2. ⏭️ خدمة `auditService` حقيقية تكتب في `audit_events` (استبدال `mockAuditEvents` في `src/services/audit.ts` مع الحفاظ على signature).
-3. ⏭️ Decorator `withAuthorizationAndAudit(action, scope)` يلفّ كل service call في P1.
-4. ⏭️ Hook `usePermission(action, scope) → { allowed, reason }`.
-5. ⏭️ لوحة Admin مبسّطة في Settings: قائمة المستخدمين + إسناد دور.
-6. ⏭️ توسيع `evaluateCommandAuthorization` ليصبح Generic Command Gateway.
+### المؤجَّل (لا يحجب v1.0)
+- لوحة Admin لإسناد الأدوار → P5.
+- Generic Command Gateway (`withAuthorizationAndAudit` decorator) → يُضاف عند الحاجة في P3.x.
+- `mockAuditEvents` في `src/services/audit.ts` يبقى مؤقتًا للوحدات القديمة حتى تنتقل في P3.
 
-### قرار معماري مهم
-- `board_role` الخاصة بالسبورات (whiteboard collaboration) **بقيت مستقلة** عن `app_role` لأن 25 سياسة وعملية تعتمد عليها مباشرة. الدمج يُؤجَّل إلى P3 عند إعادة هيكلة وحدة السبورات. `has_role()` قادرة على قراءة كليهما عند الحاجة.
-
-### DoD المتبقّي
-- محاولة أمر بدون صلاحية تُرفض وتظهر في `audit_events`.
-- اختبار يثبت أن مستخدمَين منفصلَين لا يريان بيانات بعضهما.
+### قرار معماري
+- `board_role` (whiteboard) **بقيت مستقلة** عن `app_role` لأن 25 سياسة تعتمد عليها. الدمج يُؤجَّل إلى P3 عند إعادة هيكلة وحدة السبورات.
 
 ---
 
 ## P3 — ربط مساحات العمل بالنموذج المركزي (5–6 أسابيع) — يطابق Phase 4
 
 ### الترتيب الإلزامي
-1. **Projects** ⇆ `projects` (المركزي) — `ProjectWorkspace` يستخدم `useProjects()` بدل `useState(mockProjects)`. الإبقاء على نفس UI تمامًا.
+1. **Projects** ⇆ `projects` (المركزي) — 🟡 **قيد التنفيذ**: `ProjectWorkspace` يستخدم `useProjects/useCreateProject/useUpdateProject` خلف flag `VITE_USE_MOCK_PROJECTS`. `centralToUiProject` adapter يحفظ الـ UI shape. كل create/update يُسجَّل في `audit_events`.
 2. **Tasks** ⇆ `tasks + task_tool_engine_links` — `ProjectTasksContext` يقرأ من DB.
 3. **Departments** ⇆ `departments + department_projects` — `DepartmentsSidebar` و `DepartmentPanel` يقرآن حقيقة. يبقى UI لكل DepartmentTab كما هو، فقط مصدر البيانات يتبدّل.
-4. **Planning Boards** ⇆ `boards + tools` — `PlanningEntryScreen` يعرض السبورات الحقيقية للمستخدم. كل Smart Element يُسجَّل كـ `tool` (kind=`board_widget`).
+4. **Planning Boards** ⇆ `central_boards + tools` — `PlanningEntryScreen` يعرض السبورات الحقيقية للمستخدم. كل Smart Element يُسجَّل كـ `tool` (kind=`board_widget`).
 5. **OperationsBoard** ⇆ aggregations حقيقية — استبدال `mockData.ts` بقراءات تجميعية من الجداول المركزية. يبقى تصميم البطاقات والتبويبات السبعة كما هو.
 6. **Invoices** ⇆ ربط `invoices.project_id` بالمشروع المركزي بدل المعرف الـ mock.
 7. **Archive** ⇆ قراءة عناصر بحالة `archived` من جميع الكيانات (ليست جداول جديدة، فقط view + filter).
@@ -100,6 +94,9 @@
 - لا استدعاء واحد لـ `mockProjects` أو `OperationsBoard/mockData` في build production.
 - مستخدمان منفصلان يريان مشاريعهم المنفصلة.
 - جميع DepartmentTabs تعمل على بيانات حقيقية مستمرة (وليس in-memory).
+
+### كيف يُفعَّل المسار الحقيقي محليًا
+في `.env.local` ضع `VITE_USE_MOCK_PROJECTS=false` ثم سجّل دخولك من `/auth` (أول مستخدم يُمنح دور `owner` تلقائيًا).
 
 ---
 
