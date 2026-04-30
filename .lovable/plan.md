@@ -17,27 +17,21 @@
 
 ---
 
-## P0 — تثبيت قاعدة الانطلاق (أسبوعان)
+## P0 — تثبيت قاعدة الانطلاق (أسبوعان) ✅ **مكتمل**
 
-الوضع الراهن بعد إصلاح metrics shim مستقر، لكن قبل البناء على النموذج المركزي يجب إغلاق الديون التشغيلية.
+### المخرجات (الحالة الفعلية)
+1. ✅ **أخطاء البناء**: تم إصلاح `metrics shim` (`src/infra/metrics.ts`) واستعادة `TaskCardStatusIndicators.tsx` و `TaskCardFooterSimple.tsx`. typecheck نظيف.
+2. ✅ **Feature Flags**: `.env.example` يحتوي:
+   - `VITE_USE_MOCK_PROJECTS`, `VITE_USE_MOCK_OPS`, `VITE_USE_MOCK_AUDIT`, `VITE_USE_MOCK_DEPARTMENTS`
+3. ✅ **CI**: `.github/workflows/pr-checks.yml` ينفّذ lint + typecheck + test (npm ci + frozen lockfile) كخطوات حاجبة. لا حاجة لتعديل إضافي.
+4. ✅ **Supabase linter**: من 43 إلى 36 تحذير. كل التحذيرات الفعلية القابلة للحل عبر SQL تم إصلاحها (search_path على 3 دوال + REVOKE EXECUTE من anon على 4 SECURITY DEFINER + إعادة كل الـ RLS policies إلى `TO authenticated` + تقييد `storage.objects` لـ board-assets). التفاصيل في `docs/SUPABASE_LINTER_NOTES.md`.
+5. ✅ **جرد Mock**: `docs/MOCK_INVENTORY.md` (16 موقع، مع المرحلة المستهدفة).
 
-### المخرجات
-1. إصلاح أخطاء البناء المتبقية في:
-   - `src/shared/events/emitter.ts`
-   - `src/components/TaskCard/BaseTaskCardLayout.tsx`
-   - `src/components/TaskCard/TaskCardFooterSimple.tsx` (يفتقد `tokens` import + JSX root، ظاهر في القراءة).
-2. Feature Flags في `.env.example` + توثيق:
-   - `VITE_USE_MOCK_PROJECTS`
-   - `VITE_USE_MOCK_AUDIT`
-   - `VITE_USE_MOCK_OPS`
-3. تشديد CI في `.github/workflows/pr-checks.yml`: typecheck + lint + vitest run + Supabase linter blocking.
-4. إغلاق ملاحظات `supabase--linter` الحرجة (إن وُجدت) قبل المضي.
-5. جرد نهائي للـ Mock في ملف واحد `docs/MOCK_INVENTORY.md` (المسار + سطر الاستدعاء + المرحلة المستهدفة للاستبدال).
-
-### Definition of Done
-- Build أخضر، CI يحجب أي PR كاسر.
-- لا أخطاء `process is not defined` ولا warnings حرجة في console.
-- جميع flags لها قيمة افتراضية واضحة.
+### بنود متبقية تتطلب إجراء يدويًا من Owner (ليست Code):
+- تفعيل **Leaked Password Protection** في Supabase Auth Providers.
+- ترقية **Postgres** لتطبيق security patches.
+- (اختياري) نقل extension `pg_trgm` خارج schema `public`.
+هذه البنود مذكورة في `docs/SUPABASE_LINTER_NOTES.md` ومجدولة كـ blocking قبل P6 (الإطلاق).
 
 ---
 
