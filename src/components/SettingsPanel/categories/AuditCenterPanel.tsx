@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AuditService } from "@/services/central/audit.service";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { BaseBadge } from "@/components/ui/BaseBadge";
 import { Loader2, Shield } from "lucide-react";
 import { format } from "date-fns";
 
