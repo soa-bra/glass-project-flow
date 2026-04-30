@@ -200,3 +200,27 @@ create index idx_dependencies_to on public.dependencies(to_entity_type, to_entit
 
 create index idx_project_cards_project on public.project_cards(linked_project_id);
 create index idx_task_cards_task on public.task_cards(linked_task_id);
+
+-- Protect central model tables behind RLS (default deny until explicit policies are added)
+alter table public.boards enable row level security;
+alter table public.boards force row level security;
+alter table public.departments enable row level security;
+alter table public.departments force row level security;
+alter table public.projects enable row level security;
+alter table public.projects force row level security;
+alter table public.department_projects enable row level security;
+alter table public.department_projects force row level security;
+alter table public.tasks enable row level security;
+alter table public.tasks force row level security;
+alter table public.tools enable row level security;
+alter table public.tools force row level security;
+alter table public.engine_jobs enable row level security;
+alter table public.engine_jobs force row level security;
+alter table public.task_tool_engine_links enable row level security;
+alter table public.task_tool_engine_links force row level security;
+alter table public.project_cards enable row level security;
+alter table public.project_cards force row level security;
+alter table public.task_cards enable row level security;
+alter table public.task_cards force row level security;
+alter table public.dependencies enable row level security;
+alter table public.dependencies force row level security;
