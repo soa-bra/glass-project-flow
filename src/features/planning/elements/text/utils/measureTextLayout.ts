@@ -23,6 +23,14 @@ const stripHtmlToText = (html: string): string => {
 };
 
 export const measureTextLayout = ({ element, htmlContent }: MeasureTextLayoutInput): MeasuredTextLayout => {
+  const manualSize = element.data?.manualSize === true || element.data?.autoSize === false;
+  if (manualSize) {
+    return {
+      width: Math.max(1, element.size?.width || FALLBACK_LAYOUT.width),
+      height: Math.max(1, element.size?.height || FALLBACK_LAYOUT.height),
+    };
+  }
+
   if (typeof document === 'undefined') {
     return {
       width: element.size?.width || FALLBACK_LAYOUT.width,
