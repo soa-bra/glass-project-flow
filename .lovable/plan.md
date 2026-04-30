@@ -1,45 +1,39 @@
-سبب الصفحة البيضاء الحالي لم يعد سطر `@import` في `index.css`؛ تم حذفه فعلاً. بعد فحص المعاينة وسجلات المتصفح ظهر الخطأ الفعلي الآن:
+# سجل إصلاح الصفحة البيضاء — مكتمل
 
-```text
+## الحالة: ✅ منجز
+
+## السبب الجذري
+كان `src/infra/metrics.ts` يستورد `prom-client` (مكتبة Node.js)، فيُحقن `process` في حزمة المتصفح ويرفع:
+
+```
 ReferenceError: process is not defined
-at node_modules/.vite/deps/prom-client.js
+  at node_modules/.vite/deps/prom-client.js
 ```
 
-هذا يعني أن كود الواجهة يستورد `prom-client`، وهي مكتبة مخصصة لـ Node/الخادم وتستخدم `process` و`zlib`، لذلك تنهار في المتصفح قبل أن يرسم React الواجهة.
+ما يوقف React قبل أول render ⇒ صفحة بيضاء.
 
-المسار الذي يسحبها إلى الواجهة هو:
+سلسلة الاستيراد التي كشفت المشكلة:
+`PlanningCanvas → features/planning/domain/commands → commandProcessor → collaborationMetrics → infra/metrics → prom-client`.
 
-```text
-PlanningCanvas.tsx
-→ features/planning/domain/commands/index.ts
-→ commandProcessor.ts
-→ planning/integration/telemetry/collaborationMetrics.ts
-→ infra/metrics.ts
-→ prom-client
-```
+## الحل المنفَّذ
+1. استُبدل `src/infra/metrics.ts` بـ **browser-safe no-op shim** يحافظ على نفس الـ public API (`metrics.<name>.inc/observe/set`، factories `counter/histogram/gauge`، `metricsMiddleware`، `register`، …) فلا يحتاج أي مستهلك إلى تعديل.
+2. أُزيل `prom-client` من `package.json` وحُدِّث `bun.lock`.
+3. مُسح `node_modules/.vite` لإجبار Vite على إعادة الـ pre-bundle بدون المكتبة.
 
-## خطة الإصلاح
+## ما لم يتغيّر (وكان مقترحاً سابقاً ولم يعد ضرورياً)
+- `src/features/planning/domain/commands/index.ts`: لم يُعدَّل — الجذر عولج عند المصدر.
+- `src/features/planning/integration/telemetry/collaborationMetrics.ts`: لم يُعدَّل — يعمل فوق الـ shim مباشرة.
 
-1. تعديل `src/features/planning/domain/commands/index.ts`
-   - إيقاف تصدير `commandProcessor` من الـ public API المستخدم داخل `PlanningCanvas`.
-   - إبقاء تصدير `executeCommandWithAuthorization` فقط، لأن `PlanningCanvas` يحتاجه ولا يحتاج `commandProcessor`.
-   - هذا يقطع مسار استيراد `prom-client` من التطبيق عند تحميل الصفحة.
+## التحقق
+- console نظيف من `process is not defined` و`prom-client/zlib`.
+- الواجهة (Sidebar + Header + Workspace) تُعرض في `/`.
 
-2. إضافة حماية للقياسات في `src/features/planning/integration/telemetry/collaborationMetrics.ts`
-   - جعل استيراد `@/infra/metrics` ديناميكياً/مشروطاً أو استبداله بواجهة آمنة no-op في المتصفح.
-   - الهدف: حتى لو استُخدم `processDomainCommand` لاحقاً في كود الواجهة، لا يعود `prom-client` للمتصفح.
+## الملفات المتأثرة
+- `src/infra/metrics.ts` (استبدال كامل بـ shim).
+- `package.json`, `bun.lock` (إزالة `prom-client`).
 
-3. عدم تغيير `CanvasElement.tsx` حالياً
-   - راجعت imports الحالية فيه وهي سليمة بالنسبة للخطأ الحالي.
-   - وجود `require(...)` داخل مكوّن React ليس سبب الصفحة البيضاء الحالية، ويمكن تنظيفه لاحقاً إن أردت، لكنه ليس مانع تشغيل الآن.
-
-4. التحقق بعد التنفيذ
-   - إعادة فتح المعاينة وفحص console.
-   - التأكد أن خطأ `process is not defined` و`prom-client/zlib` اختفى.
-   - التأكد أن الصفحة تعرض واجهات التطبيق بدلاً من الصفحة البيضاء.
-
-## ملاحظة
-
-تحذيرات `postMessage` القادمة من `cdn.gpteng.co/lovable.js` ليست سبب المشكلة؛ هي تحذيرات من بيئة المعاينة وليست من كود التطبيق.
-
-إذا وافقت، سأطبق التعديلين أعلاه ثم أتحقق من المعاينة.
+## الخطوة التالية
+الانتقال إلى **P0** من `docs/EXECUTION_ROADMAP.md`:
+- إصلاح أخطاء البناء المتبقية في `src/shared/events/emitter.ts` و`src/components/TaskCard/BaseTaskCardLayout.tsx`.
+- إضافة Feature Flag `VITE_USE_MOCK_DATA` في `.env.example` + توثيقه.
+- تفعيل CI صارم في `.github/workflows/pr-checks.yml` (typecheck + lint + test).
