@@ -46,9 +46,10 @@ export class EventEmitter {
 
   async emit(input: EmitEventInput): Promise<string> {
     const startTime = Date.now();
-    
-    try {
+    const dedupKey = input.idempotencyKey ?? input.dedupKey;
 
+    try {
+      const validated = validateEventInput({
         version: input.version,
         state: input.state,
         audit: input.audit,
@@ -60,8 +61,9 @@ export class EventEmitter {
         source: input.source,
       });
 
-      if (!validated.ok) {
-        throw new Error(`Event validation failed: ${validated.errors.join('; ')}`);
+      if (validated.ok !== true) {
+        const failure = validated as { ok: false; errors: string[] };
+        throw new Error(`Event validation failed: ${failure.errors.join('; ')}`);
       }
 
       const validatedEvent = validated.data;
