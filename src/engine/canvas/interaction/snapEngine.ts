@@ -101,12 +101,21 @@ const DEFAULT_SNAP_CONFIG: SnapConfig = {
 class SnapEngineImpl {
   private _config: SnapConfig = { ...DEFAULT_SNAP_CONFIG };
   private _targets: ElementSnapTarget[] = [];
+  private _guides: SnapLine[] = [];
+  private _listeners = new Set<() => void>();
+
+  private notify(): void {
+    for (const listener of this._listeners) {
+      listener();
+    }
+  }
 
   /**
    * تحديث إعدادات المحاذاة
    */
   updateConfig(config: Partial<SnapConfig>): void {
     this._config = { ...this._config, ...config };
+    this.notify();
   }
 
   /**
@@ -133,6 +142,23 @@ class SnapEngineImpl {
         centerX: el.position.x + el.size.width / 2,
         centerY: el.position.y + el.size.height / 2
       }));
+    this.notify();
+  }
+
+  get guides(): SnapLine[] {
+    return [...this._guides];
+  }
+
+  subscribe(listener: () => void): () => void {
+    this._listeners.add(listener);
+    return () => {
+      this._listeners.delete(listener);
+    };
+  }
+
+  clearGuides(): void {
+    this._guides = [];
+    this.notify();
   }
 
   // ===========================================================================
@@ -188,6 +214,9 @@ class SnapEngineImpl {
         }
       }
     }
+
+    this._guides = guides;
+    this.notify();
 
     return {
       snappedPoint: { x: snappedX, y: snappedY },
@@ -310,6 +339,9 @@ class SnapEngineImpl {
       didSnapY = true;
       guides.push(...this.createGuidesForCandidate(bestY, 'horizontal', bounds, snappedX, snappedY));
     }
+
+    this._guides = guides;
+    this.notify();
 
     return {
       snappedPoint: { x: snappedX, y: snappedY },

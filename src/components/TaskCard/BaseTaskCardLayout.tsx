@@ -33,7 +33,8 @@ const BaseTaskCardLayout = ({
       width: '100%',
       backgroundColor,
       borderRadius: '32px',
-      padding: '12px',
+      paddingBlock: '12px',
+      paddingInline: 'clamp(10px, 2vw, 14px)',
       direction: 'rtl',
       fontFamily: 'IBM Plex Sans Arabic',
       opacity,
@@ -46,14 +47,17 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-      className={`font-arabic min-h-[120px] h-auto overflow-hidden grid grid-cols-1 grid-rows-[minmax(72px,_68%)_minmax(36px,_32%)] sm:grid-rows-[minmax(76px,_66%)_minmax(40px,_34%)] lg:grid-rows-[minmax(80px,_64%)_minmax(44px,_36%)] gap-2 ${className}`}
+
       style={getCardStyle()}
-      data-task-card-id={id}
+      data-task-id={id}
+      data-selected={isSelected || undefined}
     >
-      <div className="min-h-0 overflow-hidden">{headerSection}</div>
-      <div className="min-h-0 overflow-hidden">{footerSection}</div>
+      {headerSection}
+      {footerSection}
       {extraSections.length > 0 ? (
-        <div className="min-h-0 overflow-hidden">{extraSections}</div>
+        <div className="mt-2 flex flex-col gap-2">
+          {extraSections}
+        </div>
       ) : null}
     </div>
   );

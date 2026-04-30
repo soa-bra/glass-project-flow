@@ -17,7 +17,7 @@ export interface CollaboratorPresence {
   lastSeen: number;
 }
 
-export type CollaborationEventType = 
+export type CollaborationEventType =
   | 'element_created'
   | 'element_updated'
   | 'element_deleted'
@@ -35,12 +35,135 @@ export interface CollaborationEvent {
   payload: Record<string, unknown>;
   timestamp: number;
   version: number;
+  entityVersion?: number;
+  baseVersion?: number;
+}
+
+export type CollaborationEntityType = 'task' | 'decision' | 'dependency' | 'element' | 'unknown';
+export type ConflictOutcome = 'apply_remote' | 'keep_local';
+
+export interface ConflictResolutionLog {
+  id: string;
+  timestamp: number;
+  entityType: CollaborationEntityType;
+  entityId: string;
+  localVersion: number;
+  incomingVersion: number;
+  incomingBaseVersion: number;
+  rule: string;
+  outcome: ConflictOutcome;
+  reason: string;
 }
 
 const COLLABORATOR_COLORS = [
   '#3DBE8B', '#3DA8F5', '#F6C445', '#E5564D',
   '#9B59B6', '#E67E22', '#1ABC9C', '#E91E63',
 ];
+
+function normalizeEntityType(value: unknown): CollaborationEntityType {
+  return value === 'task' || value === 'decision' || value === 'dependency' || value === 'element'
+    ? value
+    : 'unknown';
+}
+
+function getEntityMetadata(event: CollaborationEvent): { entityType: CollaborationEntityType; entityId: string | null } {
+  const entityType = normalizeEntityType(event.payload.entityType);
+  const entityId =
+    (typeof event.payload.entityId === 'string' && event.payload.entityId) ||
+    (typeof event.payload.elementId === 'string' && event.payload.elementId) ||
+    null;
+
+  return { entityType, entityId };
+}
+
+export function resolveConflict(event: CollaborationEvent, localVersion: number): ConflictResolutionLog {
+  const { entityType, entityId } = getEntityMetadata(event);
+  const incomingBaseVersion = typeof event.baseVersion === 'number' ? event.baseVersion : 0;
+  const incomingVersion = event.entityVersion ?? event.version;
+
+  if (entityType === 'task') {
+    const isStale = incomingBaseVersion < localVersion;
+    return {
+      id: `${event.timestamp}-${event.odId}-${event.type}`,
+      timestamp: Date.now(),
+      entityType,
+      entityId: entityId || 'unknown',
+      localVersion,
+      incomingVersion,
+      incomingBaseVersion,
+      rule: 'task:optimistic-deterministic-lww',
+      outcome: isStale ? 'keep_local' : 'apply_remote',
+      reason: isStale
+        ? 'Task update rejected because optimistic version check failed (stale base version).'
+        : 'Task update accepted via deterministic last-write-wins after version check.',
+    };
+  }
+
+  if (entityType === 'decision') {
+    const isStale = incomingBaseVersion < localVersion;
+    return {
+      id: `${event.timestamp}-${event.odId}-${event.type}`,
+      timestamp: Date.now(),
+      entityType,
+      entityId: entityId || 'unknown',
+      localVersion,
+      incomingVersion,
+      incomingBaseVersion,
+      rule: 'decision:strict-version-guard',
+      outcome: isStale ? 'keep_local' : 'apply_remote',
+      reason: isStale
+        ? 'Decision update rejected to preserve deterministic local decision state.'
+        : 'Decision update accepted because optimistic base version matches local state.',
+    };
+  }
+
+  if (entityType === 'dependency') {
+    return {
+      id: `${event.timestamp}-${event.odId}-${event.type}`,
+      timestamp: Date.now(),
+      entityType,
+      entityId: entityId || 'unknown',
+      localVersion,
+      incomingVersion,
+      incomingBaseVersion,
+      rule: 'dependency:remote-authoritative',
+      outcome: 'apply_remote',
+      reason: incomingBaseVersion === localVersion
+        ? 'Dependency update accepted with matching base version.'
+        : 'Dependency conflict resolved deterministically to remote-authoritative outcome.',
+    };
+  }
+
+  if (entityType === 'element') {
+    return {
+      id: `${event.timestamp}-${event.odId}-${event.type}`,
+      timestamp: Date.now(),
+      entityType,
+      entityId: entityId || 'unknown',
+      localVersion,
+      incomingVersion,
+      incomingBaseVersion,
+      rule: 'element:remote-authoritative',
+      outcome: 'apply_remote',
+      reason: incomingBaseVersion === localVersion
+        ? 'Element update accepted with matching base version.'
+        : 'Element conflict resolved deterministically to remote-authoritative outcome.',
+    };
+  }
+
+  return {
+    id: `${event.timestamp}-${event.odId}-${event.type}`,
+    timestamp: Date.now(),
+    entityType,
+    entityId: entityId || 'unknown',
+    localVersion,
+    incomingVersion,
+    incomingBaseVersion,
+    rule: 'unknown:keep-local',
+    outcome: 'keep_local',
+    reason: 'Unknown entity type uses deterministic keep-local fallback.',
+  };
+}
 
 export class CollaborationEngine {
   private channel: RealtimeChannel | null = null;
@@ -51,12 +174,13 @@ export class CollaborationEngine {
   private collaborators: Map<string, CollaboratorPresence> = new Map();
   private elementLocks: Map<string, string> = new Map();
   private eventVersion: number = 0;
-  
+  private entityVersions: Map<string, number> = new Map();
+
   private onCollaboratorsChange?: (collaborators: CollaboratorPresence[]) => void;
   private onRemoteCursorMove?: (odId: string, cursor: { x: number; y: number }) => void;
   private onRemoteElementChange?: (event: CollaborationEvent) => void;
   private onLockChange?: (elementId: string, lockedBy: string | null) => void;
-  private onConflict?: (event: CollaborationEvent, localVersion: number) => void;
+  private onConflict?: (event: CollaborationEvent, localVersion: number, resolution: ConflictResolutionLog) => void;
 
   initialize(config: {
     odId: string;
@@ -65,12 +189,12 @@ export class CollaborationEngine {
     onRemoteCursorMove?: (odId: string, cursor: { x: number; y: number }) => void;
     onRemoteElementChange?: (event: CollaborationEvent) => void;
     onLockChange?: (elementId: string, lockedBy: string | null) => void;
-    onConflict?: (event: CollaborationEvent, localVersion: number) => void;
+    onConflict?: (event: CollaborationEvent, localVersion: number, resolution: ConflictResolutionLog) => void;
   }) {
     this.odId = config.odId;
     this.userName = config.userName || 'مستخدم';
     this.userColor = this.assignColor(config.odId);
-    
+
     this.onCollaboratorsChange = config.onCollaboratorsChange;
     this.onRemoteCursorMove = config.onRemoteCursorMove;
     this.onRemoteElementChange = config.onRemoteElementChange;
@@ -88,15 +212,15 @@ export class CollaborationEngine {
 
     this.channel
       .on('presence', { event: 'sync' }, () => this.handlePresenceSync())
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => 
+      .on('presence', { event: 'join' }, ({ key, newPresences }) =>
         this.handlePresenceJoin(key, newPresences))
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => 
+      .on('presence', { event: 'leave' }, ({ key, leftPresences }) =>
         this.handlePresenceLeave(key, leftPresences))
-      .on('broadcast', { event: 'element_change' }, ({ payload }) => 
+      .on('broadcast', { event: 'element_change' }, ({ payload }) =>
         this.handleRemoteElementChange(payload as CollaborationEvent))
-      .on('broadcast', { event: 'cursor_move' }, ({ payload }) => 
+      .on('broadcast', { event: 'cursor_move' }, ({ payload }) =>
         this.handleRemoteCursorMove(payload as { odId: string; cursor: { x: number; y: number } }))
-      .on('broadcast', { event: 'lock_change' }, ({ payload }) => 
+      .on('broadcast', { event: 'lock_change' }, ({ payload }) =>
         this.handleLockChange(payload as { elementId: string; odId: string | null }));
 
     await this.channel.subscribe(async (status) => {
@@ -117,6 +241,7 @@ export class CollaborationEngine {
     this.boardId = null;
     this.collaborators.clear();
     this.elementLocks.clear();
+    this.entityVersions.clear();
   }
 
   private async trackPresence(): Promise<void> {
@@ -152,6 +277,18 @@ export class CollaborationEngine {
   async broadcastElementChange(type: CollaborationEventType, payload: Record<string, unknown>): Promise<void> {
     if (!this.channel || !this.odId || !this.boardId) return;
     this.eventVersion++;
+
+    const entityType = normalizeEntityType(payload.entityType);
+    const entityId =
+      (typeof payload.entityId === 'string' && payload.entityId) ||
+      (typeof payload.elementId === 'string' && payload.elementId) ||
+      null;
+    const entityKey = entityId ? `${entityType}:${entityId}` : null;
+    const baseVersion = entityKey ? (this.entityVersions.get(entityKey) ?? 0) : 0;
+    const entityVersion = baseVersion + 1;
+
+    if (entityKey) this.entityVersions.set(entityKey, entityVersion);
+
     await this.channel.send({
       type: 'broadcast',
       event: 'element_change',
@@ -162,6 +299,8 @@ export class CollaborationEngine {
         payload,
         timestamp: Date.now(),
         version: this.eventVersion,
+        baseVersion,
+        entityVersion,
       },
     });
   }
@@ -242,10 +381,24 @@ export class CollaborationEngine {
 
   private handleRemoteElementChange(event: CollaborationEvent): void {
     if (event.odId === this.odId) return;
-    if (event.version <= this.eventVersion) {
-      this.onConflict?.(event, this.eventVersion);
-      return;
+
+    const { entityType, entityId } = getEntityMetadata(event);
+    const entityKey = entityId ? `${entityType}:${entityId}` : null;
+    const localVersion = entityKey ? (this.entityVersions.get(entityKey) ?? 0) : this.eventVersion;
+    const incomingBaseVersion = typeof event.baseVersion === 'number' ? event.baseVersion : 0;
+    const hasVersionConflict = incomingBaseVersion !== localVersion;
+
+    if (hasVersionConflict || event.version <= this.eventVersion) {
+      const resolution = resolveConflict(event, localVersion);
+      this.onConflict?.(event, localVersion, resolution);
+      if (resolution.outcome === 'keep_local') return;
     }
+
+    if (entityKey) {
+      const nextVersion = typeof event.entityVersion === 'number' ? event.entityVersion : localVersion + 1;
+      this.entityVersions.set(entityKey, Math.max(localVersion, nextVersion));
+    }
+
     this.eventVersion = Math.max(this.eventVersion, event.version);
     this.onRemoteElementChange?.(event);
   }

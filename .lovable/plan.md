@@ -1,20 +1,39 @@
+# سجل إصلاح الصفحة البيضاء — مكتمل
 
+## الحالة: ✅ منجز
 
-# Fix: Task Details Box Scroll Not Working
+## السبب الجذري
+كان `src/infra/metrics.ts` يستورد `prom-client` (مكتبة Node.js)، فيُحقن `process` في حزمة المتصفح ويرفع:
 
-## Problem
-Same root cause as the project board task list: the parent container chain has no concrete height constraint, so `h-full` on the ScrollArea resolves to "auto" (infinite), and the list grows to fit all items instead of scrolling.
+```
+ReferenceError: process is not defined
+  at node_modules/.vite/deps/prom-client.js
+```
 
-The parent `TaskManagementTab` uses `overflow-auto` on the outer wrapper (line 35), which lets the entire page scroll instead of the task list column scrolling internally.
+ما يوقف React قبل أول render ⇒ صفحة بيضاء.
 
-## Fix
+سلسلة الاستيراد التي كشفت المشكلة:
+`PlanningCanvas → features/planning/domain/commands → commandProcessor → collaborationMetrics → infra/metrics → prom-client`.
 
-### `TaskDetailsBox.tsx` — Add viewport-relative max-height to the task list column
+## الحل المنفَّذ
+1. استُبدل `src/infra/metrics.ts` بـ **browser-safe no-op shim** يحافظ على نفس الـ public API (`metrics.<name>.inc/observe/set`، factories `counter/histogram/gauge`، `metricsMiddleware`، `register`، …) فلا يحتاج أي مستهلك إلى تعديل.
+2. أُزيل `prom-client` من `package.json` وحُدِّث `bun.lock`.
+3. مُسح `node_modules/.vite` لإجبار Vite على إعادة الـ pre-bundle بدون المكتبة.
 
-**Line 46**: Change `<div className="w-1/3 min-w-0">` to `<div className="w-1/3 min-w-0 max-h-[60vh]">`.
+## ما لم يتغيّر (وكان مقترحاً سابقاً ولم يعد ضرورياً)
+- `src/features/planning/domain/commands/index.ts`: لم يُعدَّل — الجذر عولج عند المصدر.
+- `src/features/planning/integration/telemetry/collaborationMetrics.ts`: لم يُعدَّل — يعمل فوق الـ shim مباشرة.
 
-This gives the task list column a concrete height cap, enabling the ScrollArea inside to activate its scroll behavior while the header stays fixed at the top.
+## التحقق
+- console نظيف من `process is not defined` و`prom-client/zlib`.
+- الواجهة (Sidebar + Header + Workspace) تُعرض في `/`.
 
-### Files Changed
-1. **`src/components/ProjectManagement/TaskManagement/TaskDetailsBox.tsx`** — Add `max-h-[60vh]` to the task list column wrapper (line 46)
+## الملفات المتأثرة
+- `src/infra/metrics.ts` (استبدال كامل بـ shim).
+- `package.json`, `bun.lock` (إزالة `prom-client`).
 
+## الخطوة التالية
+الانتقال إلى **P0** من `docs/EXECUTION_ROADMAP.md`:
+- إصلاح أخطاء البناء المتبقية في `src/shared/events/emitter.ts` و`src/components/TaskCard/BaseTaskCardLayout.tsx`.
+- إضافة Feature Flag `VITE_USE_MOCK_DATA` في `.env.example` + توثيقه.
+- تفعيل CI صارم في `.github/workflows/pr-checks.yml` (typecheck + lint + test).
