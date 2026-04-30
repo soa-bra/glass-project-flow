@@ -9,7 +9,7 @@ const FeatureTaskCardTitle = ({
   title,
   description
 }: FeatureTaskCardTitleProps) => {
-
+=
         {description}
       </p>
     </div>
