@@ -46,9 +46,10 @@ export class EventEmitter {
 
   async emit(input: EmitEventInput): Promise<string> {
     const startTime = Date.now();
-    
-    try {
+    const dedupKey = input.idempotencyKey ?? input.dedupKey;
 
+    try {
+      const validated = validateEventInput({
         version: input.version,
         state: input.state,
         audit: input.audit,
