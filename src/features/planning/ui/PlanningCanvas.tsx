@@ -12,6 +12,7 @@ import { SmartCommandBar, useSmartCommandBar } from '@/features/planning/element
 import { createTypedSmartElement } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
 import { executeCommandWithAuthorization } from '@/features/planning/domain/commands';
 import { useCollaborationStore } from '@/stores/collaborationStore';
+import { useBoardCanvasLifecycle } from '@/features/planning/hooks/useBoardCanvasLifecycle';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -28,6 +29,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
   const isHost = useCollaborationStore((state) => state.isHost);
   const participants = useCollaborationStore((state) => state.participants);
+
+  useBoardCanvasLifecycle(board);
 
   useEffect(() => {
     const host = canvasHostRef.current;
