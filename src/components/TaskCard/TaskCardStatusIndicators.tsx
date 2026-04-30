@@ -46,12 +46,12 @@ const TaskCardStatusIndicators = ({
   };
   const pillWidthByType = {
     status: { minWidth: '140px', maxWidth: '240px' },
-    date: { minWidth: '120px', maxWidth: '180px' },
-    assignee: { minWidth: '130px', maxWidth: '210px' },
-    members: { minWidth: '110px', maxWidth: '150px' }
+    date: { minWidth: '128px', maxWidth: '176px' },
+    assignee: { minWidth: '140px', maxWidth: '220px' },
+    members: { minWidth: '112px', maxWidth: '152px' }
   } as const;
-  const pillTextClassName = "block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap";
-  const basePillClassName = "min-w-0 flex items-center w-full overflow-hidden";
+  const pillTextClassName = "block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight";
+  const basePillClassName = "min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full";
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     // تعديل المهمة
@@ -71,8 +71,8 @@ const TaskCardStatusIndicators = ({
     e.stopPropagation();
   };
   return <>
-      <div className="mt-2 grid w-full grid-cols-[minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(110px,1fr)_minmax(120px,1fr)_minmax(90px,0.9fr)_auto] lg:grid-rows-1">
-        <div className="row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1">
+      <div className="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1">
+        <div className="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1">
           <div
             style={{
               ...pillStyle,
