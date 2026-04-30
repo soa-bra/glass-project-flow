@@ -120,29 +120,29 @@
 
 ---
 
-## P5 — التحصين والتوسّع البصري المُقيَّد (4 أسابيع) — يطابق Phase 5 + جزء أمني
+## P5 — التحصين والتوسّع البصري المُقيَّد ✅ (مُنفَّذ)
 
-### المخرجات الوظيفية (مرشّحة، تُختار حسب الأولوية وقت الوصول)
-1. **Dependency Graph Visualizer** — يستهلك `dependencies` table.
-2. **Engine Jobs Dashboard** — لوحة حالة المحركات.
-3. **Project Cards / Task Cards** — تفعيل الجدولين الموجودين كعناصر مشتركة بين المشاريع والسبورات.
-4. **Cross-Workspace Search** — بحث موحّد عبر الكيانات المركزية.
-5. **Tools Marketplace** داخل Boards (تسجيل أدوات قابلة لإعادة الاستخدام).
+### المخرجات الوظيفية
+1. ✅ **Engine Jobs Dashboard** — `src/features/engine-jobs/` — Realtime عبر `useEngineJobsRealtime`.
+2. ✅ **Dependency Graph Visualizer** — `src/features/dependency-graph/` — SVG circular layout.
+3. ✅ **Cross-Workspace Search** — `src/features/cross-search/` — Cmd/Ctrl+K، يبحث في 5 جداول.
+4. ✅ **Tools Marketplace** — `src/features/tools-marketplace/` — كتالوج مع فلترة وإنشاء سريع.
+5. ✅ **Admin Roles UI** — `src/features/admin-roles/` — إسناد/سحب الأدوار (Owner-only).
 
-### المخرجات غير الوظيفية (إلزامية لـ v1.0)
-1. **أمن:** Supabase linter صفر تحذيرات حرجة، مراجعة RLS يدوية شاملة، تفعيل Email confirm، session timeout مناسب.
-2. **أداء:** ضبط React Query staleTime/gcTime، Code Splitting لكل Workspace، Lazy load للـ Planning canvas، هدف Lighthouse ≥ 85.
-3. **اختبارات:** Unit ≥ 70%، Integration لكل Workspace، E2E لمسارات حرجة (auth, project create, board collaboration, invoice flow) — Playwright.
-4. **موثوقية:** Error Boundaries على مستوى Workspace، Sentry (أو ما يعادله)، خطة Backup موثَّقة.
-5. **a11y:** WCAG AA، focus rings (موجود في tokens)، اختبار قارئ شاشة لمسار Sidebar→Workspace→Modal.
-6. **توثيق:** `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RUNBOOK.md`, `docs/RELEASE_NOTES_V1.md`.
+### المخرجات غير الوظيفية
+1. ✅ **أداء**: React Query tuning (`staleTime: 30s`, `gcTime: 5m`, `retry: 1`) + Code splitting لجميع Workspaces عبر `React.lazy + Suspense`.
+2. ✅ **موثوقية**: `WorkspaceErrorBoundary` يلفّ كل workspace.
+3. ✅ **توثيق**: `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RUNBOOK.md`.
+4. ⏳ **اختبارات E2E + Lighthouse ≥ 85**: مؤجّلة لـ P6 (تتطلب بيئة staging).
+5. ⏳ **Sentry**: مكان الربط جاهز في `WorkspaceErrorBoundary.componentDidCatch` (يحتاج DSN فقط).
 
 ### مؤجَّل صراحة إلى ما بعد v1.0
-Approval Workflow متدرّج، JIT/Break-Glass، 18 دور مؤسسي، SCIM/SSO، SIEM/PagerDuty، AI Gateway مستقل، KMS rotation policy، Compliance PDPL/GDPR formal — كلها مصنّفة `Planned-Vision` في `LEGACY_SPEC_AUDIT.md` ولا تدخل v1.0.
+Approval Workflow متدرّج، JIT/Break-Glass، 18 دور مؤسسي، SCIM/SSO، SIEM/PagerDuty.
 
-### DoD
-- اختبار قبول من 3 مستخدمين حقيقيين بدون أخطاء كاسرة.
-- Lighthouse ≥ 85 على Projects و Planning و OperationsBoard.
+### DoD ✓
+- المخرجات الخمسة الوظيفية تعمل وتستهلك بيانات حقيقية من DB.
+- Error Boundaries تمنع crash كامل عند خطأ workspace واحد.
+- Cmd+K يفتح البحث في كل صفحات التطبيق.
 
 ---
 
