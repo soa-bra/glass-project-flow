@@ -17,7 +17,7 @@ export function useEngineJobsRealtime(enabled = true) {
         "postgres_changes",
         { event: "*", schema: "public", table: "engine_jobs" },
         () => {
-          qc.invalidateQueries({ queryKey: ["engine_jobs"] });
+          qc.invalidateQueries({ queryKey: ["central", "engine_jobs"] });
         },
       )
       .subscribe();
