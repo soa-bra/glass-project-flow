@@ -98,7 +98,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   }
 
   if (element.type === 'visual_connector') {
-    const VisualConnector = require('./VisualConnector').default;
+    const VisualConnector = require('@/features/planning/elements/diagram/VisualConnector').default;
     return <VisualConnector element={element} isSelected={isSelected} onSelect={onSelect} />;
   }
 
