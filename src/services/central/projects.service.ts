@@ -34,9 +34,10 @@ export async function createProject(input: ProjectCreateInput): Promise<Project>
   const parsed = projectCreateSchema.parse(input);
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) throw new Error("Not authenticated");
+  const payload = { ...parsed, owner_id: auth.user.id } as never;
   const { data, error } = await supabase
     .from("projects")
-    .insert([{ ...parsed, owner_id: auth.user.id, metadata: parsed.metadata as never }])
+    .insert(payload)
     .select("*")
     .single();
   if (error) throw error;
@@ -50,7 +51,7 @@ export async function updateProject(
   const parsed = projectUpdateSchema.parse(patch);
   const { data, error } = await supabase
     .from("projects")
-    .update({ ...parsed, metadata: parsed.metadata as never })
+    .update(parsed as never)
     .eq("id", id)
     .select("*")
     .single();
