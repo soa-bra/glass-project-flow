@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+/**
+ * NOTE (P1): The legacy `project_phases` table was dropped during the central
+ * model migration. This hook now reads from the central `projects` table and
+ * exposes an empty `phases` array — the timeline UI keeps working but only
+ * shows project start/end markers until a real phases concept lands in P3.
+ */
 export interface ProjectWithPhases {
   id: string;
   name: string;
