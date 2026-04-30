@@ -9,7 +9,7 @@ import StrokesLayer from '@/features/planning/canvas/gestures/StrokesLayer';
 import PenInputLayer from '@/features/planning/canvas/gestures/PenInputLayer';
 import FrameInputLayer from '@/features/planning/canvas/gestures/FrameInputLayer';
 import { BoundingBox } from '@/features/planning/canvas/selection/BoundingBox';
-import { SnapGuides } from '@/features/planning/canvas/transforms/SnapGuides';
+import { SnapGuides } from '@/features/planning/canvas';
 import { useToolInteraction } from '@/hooks/useToolInteraction';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
