@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText } from 'lucide-react';
+import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText, Cpu, Network, Wrench, Crown } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SettingsSidebarProps {
