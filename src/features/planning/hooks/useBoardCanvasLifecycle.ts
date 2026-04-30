@@ -9,8 +9,6 @@ function clone<T>(value: T): T {
 
 export function useBoardCanvasLifecycle(board: CanvasBoard | null): void {
   useEffect(() => {
-    const canvasStore = useCanvasStore.getState();
-
     if (!board) {
       useCanvasStore.setState({
         elements: [],
@@ -18,24 +16,32 @@ export function useBoardCanvasLifecycle(board: CanvasBoard | null): void {
         selectedElementIds: [],
         viewport: { zoom: 1, pan: { x: 0, y: 0 } },
         activeLayerId: DEFAULT_LAYER.id,
+        editingTextId: null,
         history: { past: [], future: [] },
-      });
+      } as any);
       return;
     }
 
     const snapshot = board.canvasState;
+    const elements = snapshot?.elements ? clone(snapshot.elements) : [];
+    const layers = snapshot?.layers?.length ? clone(snapshot.layers) : [{ ...DEFAULT_LAYER, elements: [] }];
+    const layerIds = new Set(layers.map((layer) => layer.id));
+    const elementIds = new Set(elements.map((element) => element.id));
+    const activeLayerId = snapshot?.activeLayerId && layerIds.has(snapshot.activeLayerId)
+      ? snapshot.activeLayerId
+      : layers[0]?.id ?? DEFAULT_LAYER.id;
 
     useCanvasStore.setState({
-      elements: snapshot?.elements ? clone(snapshot.elements) : [],
-      layers: snapshot?.layers?.length ? clone(snapshot.layers) : [{ ...DEFAULT_LAYER, elements: [] }],
-      selectedElementIds: snapshot?.selectedElementIds ? clone(snapshot.selectedElementIds) : [],
+      elements,
+      layers,
+      selectedElementIds: snapshot?.selectedElementIds
+        ? clone(snapshot.selectedElementIds).filter((elementId: string) => elementIds.has(elementId))
+        : [],
       viewport: snapshot?.viewport ? clone(snapshot.viewport) : { zoom: 1, pan: { x: 0, y: 0 } },
-      activeLayerId: snapshot?.activeLayerId ?? DEFAULT_LAYER.id,
+      activeLayerId,
+      editingTextId: null,
       history: { past: [], future: [] },
-    });
-
-    canvasStore.stopEditingText?.();
-    canvasStore.clearSelection?.();
+    } as any);
   }, [board?.id]);
 }
 
