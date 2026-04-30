@@ -4,7 +4,6 @@ import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
-import { mockProjects } from '@/data/mockProjects';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import { Project } from '@/types/project';
@@ -14,8 +13,6 @@ import { ProjectSortOptions } from './custom/ProjectsSortDialog';
 import { useProjects, useCreateProject, useUpdateProject } from '@/hooks/central';
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService } from '@/services/central/audit.service';
-
-const USE_MOCK = import.meta.env.VITE_USE_MOCK_PROJECTS !== 'false';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -32,11 +29,11 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     [centralProjects],
   );
 
-  const [projects, setProjects] = useState<Project[]>(USE_MOCK ? mockProjects : []);
+  // Central DB هي المصدر الوحيد. الفلترة/الترتيب يطبقان على نسخة محلية تُعاد مزامنتها من DB.
+  const [projects, setProjects] = useState<Project[]>([]);
 
-  // عند الوضع الحقيقي، أعكس بيانات DB في الحالة المحلية للحفاظ على الفلترة/الترتيب الموجودَين.
   useEffect(() => {
-    if (!USE_MOCK) setProjects(centralUiProjects);
+    setProjects(centralUiProjects);
   }, [centralUiProjects]);
 
   const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'deadline', direction: 'asc' });
@@ -51,88 +48,50 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     closePanel,
   } = useProjectPanelAnimation();
 
-  // دالة لإضافة مشروع جديد
+  // إضافة مشروع: تُكتب مباشرة في DB المركزي، invalidation يُحدّث القائمة.
   const handleProjectAdded = (newProject: ProjectData) => {
-    if (!USE_MOCK) {
-      // اكتب في DB المركزي ودع invalidation يحدّث الحالة عبر useEffect أعلاه.
-      createProject.mutate(
-        uiCreateInputToCentral({
-          name: newProject.name,
-          description: newProject.description,
-          budget: Number(newProject.budget) || undefined,
-          deadline: newProject.deadline,
-        }),
-        {
-          onSuccess: (created) => {
-            void AuditService.log({
-              action: 'central.project.create',
-              resource_type: 'project',
-              resource_id: created.id,
-              metadata: { name: created.name },
-            });
-          },
+    createProject.mutate(
+      uiCreateInputToCentral({
+        name: newProject.name,
+        description: newProject.description,
+        budget: Number(newProject.budget) || undefined,
+        deadline: newProject.deadline,
+      }),
+      {
+        onSuccess: (created) => {
+          void AuditService.log({
+            action: 'central.project.create',
+            resource_type: 'project',
+            resource_id: created.id,
+            metadata: { name: created.name },
+          });
         },
-      );
-      return;
-    }
-    const projectToAdd: Project = {
-      id: newProject.id.toString(),
-      title: newProject.name,
-      description: newProject.description,
-      owner: newProject.owner,
-      value: newProject.budget.toString(),
-      daysLeft: Math.ceil((new Date(newProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-      tasksCount: newProject.tasksCount,
-      status: newProject.status,
-      date: new Date().toLocaleDateString('ar-SA'),
-      isOverBudget: false,
-      hasOverdueTasks: false,
-      team: newProject.team.map(name => ({ name })),
-      progress: 0,
-    };
-    setProjects(prev => [projectToAdd, ...prev]);
+      },
+    );
   };
 
-  // دالة لتحديث مشروع موجود
+  // تحديث مشروع
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    if (!USE_MOCK) {
-      updateProject.mutate(
-        {
-          id: updatedProject.id.toString(),
-          patch: {
-            name: updatedProject.name,
-            description: updatedProject.description ?? null,
-            budget: Number(updatedProject.budget) || null,
-            due_date: updatedProject.deadline ? new Date(updatedProject.deadline).toISOString() : null,
-          },
+    updateProject.mutate(
+      {
+        id: updatedProject.id.toString(),
+        patch: {
+          name: updatedProject.name,
+          description: updatedProject.description ?? null,
+          budget: Number(updatedProject.budget) || null,
+          due_date: updatedProject.deadline ? new Date(updatedProject.deadline).toISOString() : null,
         },
-        {
-          onSuccess: (p) => {
-            void AuditService.log({
-              action: 'central.project.update',
-              resource_type: 'project',
-              resource_id: p.id,
-            });
-          },
+      },
+      {
+        onSuccess: (p) => {
+          void AuditService.log({
+            action: 'central.project.update',
+            resource_type: 'project',
+            resource_id: p.id,
+          });
         },
-      );
-      return;
-    }
-    setProjects(prev => prev.map(project =>
-      project.id === updatedProject.id.toString()
-        ? {
-            ...project,
-            title: updatedProject.name,
-            description: updatedProject.description,
-            owner: updatedProject.owner,
-            value: updatedProject.budget.toString(),
-            daysLeft: Math.ceil((new Date(updatedProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-            tasksCount: updatedProject.tasksCount,
-            status: updatedProject.status,
-            team: updatedProject.team.map(name => ({ name })),
-          }
-        : project
-    ));
+      },
+    );
   };
 
 
