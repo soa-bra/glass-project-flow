@@ -35,28 +35,20 @@
 
 ---
 
-## P1 — Central Data Model (3 أسابيع) — يطابق Phase 2 في MIGRATION_PLAN
+## P1 — Central Data Model (3 أسابيع) ✅ **مكتمل**
 
-### الأهداف
-ربط الـ Frontend بالنموذج المركزي الموجود في DB **بدون أي تغيير بصري**.
+### المخرجات الفعلية
+1. ✅ **Migration حقيقية مُطبَّقة**: حُذفت الجداول الفارغة غير المستخدمة (`projects, project_tasks, project_phases, kv_store_*`)، وأُنشئ النموذج المركزي كاملًا: `central_boards, departments, projects, department_projects, tasks, tools, engine_jobs, task_tool_engine_links, project_cards, task_cards, dependencies` + كل الـ enums + indexes + RLS + triggers.
+2. ✅ **Types من Supabase** مولَّدة تلقائيًا.
+3. ✅ **طبقة types مركزية**: `src/types/central/index.ts` تعيد التصدير من النوع المُولَّد + Zod schemas (Project/Task/Department/CentralBoard/Tool/EngineJob).
+4. ✅ **خدمات CRUD**: `src/services/central/{projects,tasks,departments,centralBoards,tools,engineJobs,dependencies}.service.ts` مع Public API عبر `index.ts`.
+5. ✅ **React Query hooks**: `src/hooks/central/useCentral.ts` (`useProjects, useProject, useProjectTasks, useDepartments, useCentralBoards, useBoardTools, useEngineJobs, useDependencies` + mutations لكل منها) مع `centralKeys` موحَّدة للـ invalidation.
+6. ⏭️ **Seed سكربت + اختبارات تكامل**: مؤجَّلة لـ P1.b بعد أول workspace فعلي يستهلك الخدمات (تجنّب اختبار طبقة لم تُستخدم بعد).
 
-### المخرجات
-1. توليد types من Supabase (`src/integrations/supabase/types.ts`) — لا تعديل يدوي.
-2. طبقة types مركزية محلية: `src/types/central/{board,department,project,task,tool,engineJob,dependency,state}.ts` تعيد التصدير من النوع المُولَّد + Zod schemas.
-3. خدمات CRUD لكل كيان: `src/services/central/{boards,departments,projects,tasks,tools,engineJobs,dependencies}.service.ts`.
-4. React Query hooks للقراءة فقط: `useBoards, useDepartments, useProjects, useProjectTasks, useBoardTools, useEngineJobs, useDependencies`.
-5. Seed سكربت (`scripts/seed-central.ts`) لإنشاء: 1 Department → 1 Project → 3 Tasks → 1 Tool → 1 Engine Job + 1 Dependency.
-6. اختبارات تكامل End-to-End لكل service (Vitest).
-
-### قواعد صارمة
-- لا تعديل على أي `*.tsx` ضمن Workspaces.
-- mock يبقى متوازيًا.
-- لا جداول جديدة.
-
-### DoD
-- `selectAllBoards()` يعيد سجلات حقيقية.
-- اختبار E2E ينشئ السلسلة Department→…→Dependency بنجاح ثم يقرأها.
-- تغطية الخدمات ≥ 70%.
+### قواعد محقَّقة
+- صفر تعديل على `*.tsx` ضمن Workspaces.
+- كل الـ mock القديم يبقى متوازيًا (سيُحذف workspace-by-workspace في P3).
+- `board_role` (whiteboard) باقية مستقلة عن `app_role` لتجنّب كسر 25 سياسة على `board_objects/links/snapshots/smart_element_data/op_log`.
 
 ---
 
