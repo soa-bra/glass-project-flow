@@ -131,18 +131,22 @@
 
 ### المخرجات غير الوظيفية
 1. ✅ **أداء**: React Query tuning (`staleTime: 30s`, `gcTime: 5m`, `retry: 1`) + Code splitting لجميع Workspaces عبر `React.lazy + Suspense`.
-2. ✅ **موثوقية**: `WorkspaceErrorBoundary` يلفّ كل workspace.
-3. ✅ **توثيق**: `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RUNBOOK.md`.
-4. ⏳ **اختبارات E2E + Lighthouse ≥ 85**: مؤجّلة لـ P6 (تتطلب بيئة staging).
-5. ⏳ **Sentry**: مكان الربط جاهز في `WorkspaceErrorBoundary.componentDidCatch` (يحتاج DSN فقط).
+2. ✅ **موثوقية**: `WorkspaceErrorBoundary` يلفّ كل workspace، يستدعي `Telemetry.reportError`.
+3. ✅ **توثيق**: `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RUNBOOK.md`, `docs/CENTRAL_SERVICES.md`, `docs/RBAC.md`, `docs/AUDIT.md`, `docs/EVENTS_AND_ENGINE_JOBS.md`.
+4. ✅ **Sentry hook**: `src/infra/telemetry.ts` مع `init()` + `reportError()` (no-op حتى ضبط `VITE_SENTRY_DSN`). مُستدعَى في `main.tsx` و `WorkspaceErrorBoundary`.
+5. ✅ **Command Gateway**: `src/services/central/withAuthorizationAndAudit.ts` يلفّ commands الحساسة بـ `has_permission` + audit log.
+6. ✅ **Seed script**: `scripts/seed-central.ts` (owner + department + project + tasks + tool + engine job).
+7. ✅ **Central Task adapter**: `src/shared/adapters/centralTaskAdapter.ts` (`toUnifiedTask` / `fromUnifiedTaskPatch`) — جسر بين Central Task (uuid) و `UnifiedTask` القديم لتدريج الترحيل دون كسر 22 ملف TaskCard.
+8. ⏳ **اختبارات E2E + Lighthouse ≥ 85**: مؤجّلة لـ P6 (تتطلب بيئة staging).
 
 ### مؤجَّل صراحة إلى ما بعد v1.0
-Approval Workflow متدرّج، JIT/Break-Glass، 18 دور مؤسسي، SCIM/SSO، SIEM/PagerDuty.
+Approval Workflow متدرّج، JIT/Break-Glass، 18 دور مؤسسي مفعَّل، SCIM/SSO، SIEM/PagerDuty، نقل كل TaskCard من `TaskData` إلى Central Task (يتم تدريجيًا عبر adapter).
 
 ### DoD ✓
 - المخرجات الخمسة الوظيفية تعمل وتستهلك بيانات حقيقية من DB.
-- Error Boundaries تمنع crash كامل عند خطأ workspace واحد.
+- Error Boundaries تمنع crash كامل عند خطأ workspace واحد، وتُبلغ عبر Telemetry hook.
 - Cmd+K يفتح البحث في كل صفحات التطبيق.
+- Command Gateway قابل للاستخدام لأي خدمة جديدة.
 
 ---
 
