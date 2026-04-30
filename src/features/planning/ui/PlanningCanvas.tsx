@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
@@ -21,36 +21,14 @@ interface PlanningCanvasProps {
 const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const setCurrentBoard = usePlanningStore((state) => state.setCurrentBoard);
   const activeTool = useCanvasStore((state) => state.activeTool);
-  const setViewportHostSize = useCanvasStore((state) => state.setViewportHostSize);
   const addElement = useCanvasStore((state) => state.addElement);
   const viewport = useCanvasStore((state) => state.viewport);
-  const canvasHostRef = useRef<HTMLDivElement>(null);
   const commandBar = useSmartCommandBar();
   const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
   const isHost = useCollaborationStore((state) => state.isHost);
   const participants = useCollaborationStore((state) => state.participants);
 
   useBoardCanvasLifecycle(board);
-
-  useEffect(() => {
-    const host = canvasHostRef.current;
-    if (!host) return;
-
-    const syncSize = () => {
-      setViewportHostSize(host.clientWidth, host.clientHeight);
-    };
-
-    syncSize();
-
-    if (typeof ResizeObserver === 'undefined') return;
-
-    const observer = new ResizeObserver(() => {
-      syncSize();
-    });
-
-    observer.observe(host);
-    return () => observer.disconnect();
-  }, [setViewportHostSize]);
 
   const handleElementsGenerated = useCallback(
     (elements: any[]) => {
@@ -92,7 +70,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   return (
     <div className="h-full flex flex-col bg-white">
       <CanvasToolbar board={board} onBack={() => setCurrentBoard(null)} onOpenAI={commandBar.open} />
-      <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden relative">
         <div data-board-frame="true" className="flex-1 relative overflow-hidden">
           <InfiniteCanvas boardId={board.id} />
           <div id="planning-floating-overlay" data-floating-overlay="true" className="absolute inset-0 pointer-events-none" />
