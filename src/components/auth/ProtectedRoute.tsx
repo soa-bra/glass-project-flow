@@ -10,14 +10,27 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-// ⚠️ تعطيل مؤقّت للمصادقة أثناء التطوير — يجب إعادة التفعيل قبل الإطلاق.
-const AUTH_DISABLED_FOR_DEV = true;
+/**
+ * تعطيل المصادقة مسموح فقط عبر متغيّر بيئة صريح ضمن وضع التطوير.
+ * - الافتراضي: المصادقة مفعَّلة (الإنتاج وأي بيئة بدون المتغيّر).
+ * - للتعطيل المؤقّت محليًا فقط: ضع `VITE_DISABLE_AUTH=true` في `.env.local`.
+ * - شرط `import.meta.env.DEV` يضمن استحالة التعطيل في build إنتاجي.
+ */
+const AUTH_DISABLED =
+  import.meta.env.DEV && import.meta.env.VITE_DISABLE_AUTH === "true";
+
+if (AUTH_DISABLED) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[ProtectedRoute] ⚠️ AUTH DISABLED via VITE_DISABLE_AUTH=true — dev only. Never enable in production.",
+  );
+}
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (AUTH_DISABLED_FOR_DEV) {
+  if (AUTH_DISABLED) {
     return <>{children}</>;
   }
 
