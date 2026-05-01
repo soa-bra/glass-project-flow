@@ -120,6 +120,21 @@ export const InvoicesTab: React.FC = () => {
       </Reveal>
 
       <BaseBox title="جدول الفواتير">
+        {isLoading && (
+          <p className={cn(TYPOGRAPHY.BODY, TYPOGRAPHY.ARABIC_FONT, 'text-gray-500 py-6 text-center')}>
+            جاري تحميل الفواتير...
+          </p>
+        )}
+        {error && (
+          <p className={cn(TYPOGRAPHY.BODY, TYPOGRAPHY.ARABIC_FONT, 'text-red-600 py-6 text-center')}>
+            تعذّر تحميل الفواتير: {error instanceof Error ? error.message : 'خطأ غير معروف'}
+          </p>
+        )}
+        {!isLoading && !error && invoices.length === 0 && (
+          <p className={cn(TYPOGRAPHY.BODY, TYPOGRAPHY.ARABIC_FONT, 'text-gray-500 py-6 text-center')}>
+            لا توجد فواتير حتى الآن. أنشئ أول فاتورة من الزر أعلاه.
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-4">
           {invoices.map(invoice => (
             <Reveal key={invoice.id} delay={0.1}>
