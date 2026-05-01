@@ -12,7 +12,18 @@ import NotFound from "./pages/NotFound";
 import JoinBoardPage from "./pages/JoinBoardPage";
 import AuthPage from "./pages/AuthPage";
 
-const queryClient = new QueryClient();
+// P5 — React Query tuning: balance freshness vs unneeded refetches.
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      gcTime: 5 * 60_000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+    mutations: { retry: 0 },
+  },
+});
 
 function App() {
   return (

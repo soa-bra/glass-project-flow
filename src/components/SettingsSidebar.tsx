@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText } from 'lucide-react';
+import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText, Cpu, Network, Wrench, Crown } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SettingsSidebarProps {
@@ -78,6 +78,34 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       label: 'مركز التدقيق',
       icon: ScrollText,
       route: '/settings/audit',
+      access: 'role == Owner'
+    },
+    {
+      key: 'engine-jobs',
+      label: 'لوحة المحركات',
+      icon: Cpu,
+      route: '/settings/engine-jobs',
+      access: 'role >= System Admin'
+    },
+    {
+      key: 'dependency-graph',
+      label: 'خريطة التبعيات',
+      icon: Network,
+      route: '/settings/dependency-graph',
+      access: 'all'
+    },
+    {
+      key: 'tools-marketplace',
+      label: 'سوق الأدوات',
+      icon: Wrench,
+      route: '/settings/tools-marketplace',
+      access: 'all'
+    },
+    {
+      key: 'admin-roles',
+      label: 'إدارة الأدوار',
+      icon: Crown,
+      route: '/settings/admin-roles',
       access: 'role == Owner'
     }
   ];

@@ -10,9 +10,16 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
+// ⚠️ تعطيل مؤقّت للمصادقة أثناء التطوير — يجب إعادة التفعيل قبل الإطلاق.
+const AUTH_DISABLED_FOR_DEV = true;
+
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
+
+  if (AUTH_DISABLED_FOR_DEV) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (

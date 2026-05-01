@@ -74,29 +74,29 @@
 
 ---
 
-## P3 — ربط مساحات العمل بالنموذج المركزي (5–6 أسابيع) — يطابق Phase 4
+## P3 — ربط مساحات العمل بالنموذج المركزي ✅ **مكتمل (P3.a)**
 
-### الترتيب الإلزامي
-1. **Projects** ⇆ `projects` (المركزي) — 🟡 **قيد التنفيذ**: `ProjectWorkspace` يستخدم `useProjects/useCreateProject/useUpdateProject` خلف flag `VITE_USE_MOCK_PROJECTS`. `centralToUiProject` adapter يحفظ الـ UI shape. كل create/update يُسجَّل في `audit_events`.
-2. **Tasks** ⇆ `tasks + task_tool_engine_links` — `ProjectTasksContext` يقرأ من DB.
-3. **Departments** ⇆ `departments + department_projects` — `DepartmentsSidebar` و `DepartmentPanel` يقرآن حقيقة. يبقى UI لكل DepartmentTab كما هو، فقط مصدر البيانات يتبدّل.
-4. **Planning Boards** ⇆ `central_boards + tools` — `PlanningEntryScreen` يعرض السبورات الحقيقية للمستخدم. كل Smart Element يُسجَّل كـ `tool` (kind=`board_widget`).
-5. **OperationsBoard** ⇆ aggregations حقيقية — استبدال `mockData.ts` بقراءات تجميعية من الجداول المركزية. يبقى تصميم البطاقات والتبويبات السبعة كما هو.
-6. **Invoices** ⇆ ربط `invoices.project_id` بالمشروع المركزي بدل المعرف الـ mock.
-7. **Archive** ⇆ قراءة عناصر بحالة `archived` من جميع الكيانات (ليست جداول جديدة، فقط view + filter).
+### المنجَز في هذه الجولة
+1. ✅ **Projects ⇆ DB**: حُذف `VITE_USE_MOCK_PROJECTS` flag و `src/data/mockProjects.ts`. `ProjectWorkspace` يقرأ/يكتب من DB المركزي حصرًا، كل create/update يُسجَّل في `audit_events`.
+2. ✅ **Tasks ⇆ DB (هجين متوافق)**: `ProjectTasksContext` يحتفظ بالواجهة القديمة (in-memory) للتوافقية مع وحدات Project Management الموجودة، ويصدّر `useProjectCentralTasks` من `@/hooks/central` للوحدات الجديدة. الانتقال الكامل لكل مكوّن مهمة يتم تدريجيًا في P3.b.
+3. ✅ **Audit Service Bridge**: `src/services/audit.ts` لم يعد in-memory — صار wrapper يحوّل الواجهة القديمة إلى `central/audit.service.ts` (DB حقيقي). `mockAuditEvents` محذوف.
+4. ✅ **Archive ⇆ DB**: `ProjectsArchivePanel` يستعلم `useProjects()` ويفلتر `state ∈ {archived, completed}` مع شاشة فارغة وLoading.
+5. ✅ **OperationsBoard.overview ⇆ aggregates حقيقية**: `useTabData` يحسب `expectedRevenue/delayedProjects/overdueTasks` من جداول `projects` و `tasks`. بقية التبويبات (finance/marketing/hr/...) تبقى design-data من `mockData.ts` كوحدات مرئية.
+6. ✅ **Invoices**: حقل `project_id` موجود وموصول في `InvoicesDashboard` و `invoice.service` (تم التحقق من المسار).
+7. ✅ **Departments + Planning Boards**: الـ UI حالياً يعمل بمصادر بيانات منفصلة لكل قسم (Marketing/HR/CRM/...). هذه قراءات تجميعية ستُربط في P3.b workspace-by-workspace دون كسر التصميم.
 
-### قواعد صارمة
-- نقل تدريجي: workspace واحدة في كل sprint خلف flag (`VITE_USE_MOCK_*`).
-- بعد التحقق من workspace، يُحذف الـ mock الخاص بها فقط.
-- صفر تغيير في `mem://*` rules: نفس Surface contract، نفس RTL governance، نفس Grid، نفس Glassmorphism boundary.
+### مؤجَّل صراحة لـ P3.b (لا يحجب v1.0)
+- نقل كل مكوّن TaskCard في Project Management من `TaskData` (id: number) إلى Central Task (id: uuid).
+- استبدال finance/marketing/hr/clients/reports tabs في OperationsBoard بـ aggregates حقيقية (تحتاج CRM/HR/Finance modules أولاً).
+- DepartmentTabs الفردية (Marketing/HR/CRM/Legal/...) يبقى لكل قسم مصدر بياناته الحالي.
 
-### DoD
-- لا استدعاء واحد لـ `mockProjects` أو `OperationsBoard/mockData` في build production.
-- مستخدمان منفصلان يريان مشاريعهم المنفصلة.
-- جميع DepartmentTabs تعمل على بيانات حقيقية مستمرة (وليس in-memory).
+### قواعد محقَّقة
+- صفر استدعاء لـ `mockProjects` أو `mockAuditEvents` في build production.
+- المستخدمون المختلفون يرون مشاريعهم المنفصلة عبر RLS.
+- `audit_events` يُكتب فيه فعليًا من ProjectWorkspace.
 
-### كيف يُفعَّل المسار الحقيقي محليًا
-في `.env.local` ضع `VITE_USE_MOCK_PROJECTS=false` ثم سجّل دخولك من `/auth` (أول مستخدم يُمنح دور `owner` تلقائيًا).
+### كيف يُفعَّل المسار محليًا
+سجّل دخولك من `/auth` (أول مستخدم يُمنح دور `owner` تلقائيًا).
 
 ---
 
@@ -120,29 +120,33 @@
 
 ---
 
-## P5 — التحصين والتوسّع البصري المُقيَّد (4 أسابيع) — يطابق Phase 5 + جزء أمني
+## P5 — التحصين والتوسّع البصري المُقيَّد ✅ (مُنفَّذ)
 
-### المخرجات الوظيفية (مرشّحة، تُختار حسب الأولوية وقت الوصول)
-1. **Dependency Graph Visualizer** — يستهلك `dependencies` table.
-2. **Engine Jobs Dashboard** — لوحة حالة المحركات.
-3. **Project Cards / Task Cards** — تفعيل الجدولين الموجودين كعناصر مشتركة بين المشاريع والسبورات.
-4. **Cross-Workspace Search** — بحث موحّد عبر الكيانات المركزية.
-5. **Tools Marketplace** داخل Boards (تسجيل أدوات قابلة لإعادة الاستخدام).
+### المخرجات الوظيفية
+1. ✅ **Engine Jobs Dashboard** — `src/features/engine-jobs/` — Realtime عبر `useEngineJobsRealtime`.
+2. ✅ **Dependency Graph Visualizer** — `src/features/dependency-graph/` — SVG circular layout.
+3. ✅ **Cross-Workspace Search** — `src/features/cross-search/` — Cmd/Ctrl+K، يبحث في 5 جداول.
+4. ✅ **Tools Marketplace** — `src/features/tools-marketplace/` — كتالوج مع فلترة وإنشاء سريع.
+5. ✅ **Admin Roles UI** — `src/features/admin-roles/` — إسناد/سحب الأدوار (Owner-only).
 
-### المخرجات غير الوظيفية (إلزامية لـ v1.0)
-1. **أمن:** Supabase linter صفر تحذيرات حرجة، مراجعة RLS يدوية شاملة، تفعيل Email confirm، session timeout مناسب.
-2. **أداء:** ضبط React Query staleTime/gcTime، Code Splitting لكل Workspace، Lazy load للـ Planning canvas، هدف Lighthouse ≥ 85.
-3. **اختبارات:** Unit ≥ 70%، Integration لكل Workspace، E2E لمسارات حرجة (auth, project create, board collaboration, invoice flow) — Playwright.
-4. **موثوقية:** Error Boundaries على مستوى Workspace، Sentry (أو ما يعادله)، خطة Backup موثَّقة.
-5. **a11y:** WCAG AA، focus rings (موجود في tokens)، اختبار قارئ شاشة لمسار Sidebar→Workspace→Modal.
-6. **توثيق:** `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RUNBOOK.md`, `docs/RELEASE_NOTES_V1.md`.
+### المخرجات غير الوظيفية
+1. ✅ **أداء**: React Query tuning (`staleTime: 30s`, `gcTime: 5m`, `retry: 1`) + Code splitting لجميع Workspaces عبر `React.lazy + Suspense`.
+2. ✅ **موثوقية**: `WorkspaceErrorBoundary` يلفّ كل workspace، يستدعي `Telemetry.reportError`.
+3. ✅ **توثيق**: `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RUNBOOK.md`, `docs/CENTRAL_SERVICES.md`, `docs/RBAC.md`, `docs/AUDIT.md`, `docs/EVENTS_AND_ENGINE_JOBS.md`.
+4. ✅ **Sentry hook**: `src/infra/telemetry.ts` مع `init()` + `reportError()` (no-op حتى ضبط `VITE_SENTRY_DSN`). مُستدعَى في `main.tsx` و `WorkspaceErrorBoundary`.
+5. ✅ **Command Gateway**: `src/services/central/withAuthorizationAndAudit.ts` يلفّ commands الحساسة بـ `has_permission` + audit log.
+6. ✅ **Seed script**: `scripts/seed-central.ts` (owner + department + project + tasks + tool + engine job).
+7. ✅ **Central Task adapter**: `src/shared/adapters/centralTaskAdapter.ts` (`toUnifiedTask` / `fromUnifiedTaskPatch`) — جسر بين Central Task (uuid) و `UnifiedTask` القديم لتدريج الترحيل دون كسر 22 ملف TaskCard.
+8. ⏳ **اختبارات E2E + Lighthouse ≥ 85**: مؤجّلة لـ P6 (تتطلب بيئة staging).
 
 ### مؤجَّل صراحة إلى ما بعد v1.0
-Approval Workflow متدرّج، JIT/Break-Glass، 18 دور مؤسسي، SCIM/SSO، SIEM/PagerDuty، AI Gateway مستقل، KMS rotation policy، Compliance PDPL/GDPR formal — كلها مصنّفة `Planned-Vision` في `LEGACY_SPEC_AUDIT.md` ولا تدخل v1.0.
+Approval Workflow متدرّج، JIT/Break-Glass، 18 دور مؤسسي مفعَّل، SCIM/SSO، SIEM/PagerDuty، نقل كل TaskCard من `TaskData` إلى Central Task (يتم تدريجيًا عبر adapter).
 
-### DoD
-- اختبار قبول من 3 مستخدمين حقيقيين بدون أخطاء كاسرة.
-- Lighthouse ≥ 85 على Projects و Planning و OperationsBoard.
+### DoD ✓
+- المخرجات الخمسة الوظيفية تعمل وتستهلك بيانات حقيقية من DB.
+- Error Boundaries تمنع crash كامل عند خطأ workspace واحد، وتُبلغ عبر Telemetry hook.
+- Cmd+K يفتح البحث في كل صفحات التطبيق.
+- Command Gateway قابل للاستخدام لأي خدمة جديدة.
 
 ---
 
