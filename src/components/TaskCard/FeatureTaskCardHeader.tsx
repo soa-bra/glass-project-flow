@@ -16,8 +16,8 @@ const FeatureTaskCardHeader = ({
   priority
 }: FeatureTaskCardHeaderProps) => {
   return (
-    <div className="min-h-[96px] w-full overflow-hidden" dir="rtl">
-      <div className="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2">
+    <div className="min-h-[96px] w-full overflow-hidden pt-1" dir="rtl">
+      <div className="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-center gap-2">
         <div className="min-w-0 flex justify-center">
           <FeatureTaskCardDaysCircle daysLeft={daysLeft} />
         </div>
