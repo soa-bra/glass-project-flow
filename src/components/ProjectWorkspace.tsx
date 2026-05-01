@@ -13,6 +13,7 @@ import { ProjectSortOptions } from './custom/ProjectsSortDialog';
 import { useProjects, useCreateProject, useUpdateProject } from '@/hooks/central';
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService } from '@/services/central/audit.service';
+import { toast } from 'sonner';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -59,11 +60,22 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       }),
       {
         onSuccess: (created) => {
+          toast.success(`تم إنشاء المشروع: ${created.name}`);
           void AuditService.log({
             action: 'central.project.create',
             resource_type: 'project',
             resource_id: created.id,
             metadata: { name: created.name },
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[ProjectWorkspace] AuditService.log(create) failed:', err);
+          });
+        },
+        onError: (err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] createProject failed:', err);
+          toast.error('تعذّر إنشاء المشروع', {
+            description: err instanceof Error ? err.message : 'خطأ غير معروف',
           });
         },
       },
@@ -84,10 +96,21 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       },
       {
         onSuccess: (p) => {
+          toast.success('تم حفظ تعديلات المشروع');
           void AuditService.log({
             action: 'central.project.update',
             resource_type: 'project',
             resource_id: p.id,
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[ProjectWorkspace] AuditService.log(update) failed:', err);
+          });
+        },
+        onError: (err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] updateProject failed:', err);
+          toast.error('تعذّر حفظ تعديلات المشروع', {
+            description: err instanceof Error ? err.message : 'خطأ غير معروف',
           });
         },
       },
