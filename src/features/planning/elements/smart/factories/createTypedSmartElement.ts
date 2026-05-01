@@ -5,11 +5,12 @@ import {
   parseSmartElementData,
 } from '@/types/smart-elements';
 
-interface GeneratedAIElement {
+export interface GeneratedAIElement {
+  id?: string;
   type: string;
   title: string;
   description?: string;
-  data: Record<string, any>;
+  data?: Record<string, unknown>;
   position?: { x: number; y: number };
   connections?: Array<{
     targetIndex: number;
@@ -22,7 +23,11 @@ interface CreateTypedSmartElementOptions {
   element: GeneratedAIElement;
   index: number;
   viewport: { zoom: number; pan: { x: number; y: number } };
+  viewportHostSize?: { width: number; height: number };
 }
+
+const DEFAULT_VIEWPORT_HOST_SIZE = { width: 1280, height: 720 } as const;
+const SMART_ELEMENT_STAGGER = { x: 48, y: 48 } as const;
 
 const SMART_ELEMENT_SIZE_MAP: Record<SmartElementType, { width: number; height: number }> = {
   thinking_board: { width: 420, height: 300 },
@@ -47,27 +52,45 @@ const SMART_ELEMENT_SIZE_MAP: Record<SmartElementType, { width: number; height: 
 const SMART_TYPE_ALIASES: Record<string, SmartElementType> = {
   thinking: 'thinking_board',
   thinking_board: 'thinking_board',
+  think_board: 'thinking_board',
+  board: 'thinking_board',
   kanban: 'kanban',
   kanban_board: 'kanban',
   voting: 'voting',
+  vote: 'voting',
+  poll: 'voting',
   brainstorm: 'brainstorming',
   brainstorming: 'brainstorming',
   timeline: 'timeline',
+  time_line: 'timeline',
   gantt: 'gantt',
+  gantt_chart: 'gantt',
   matrix: 'decisions_matrix',
+  decision_matrix: 'decisions_matrix',
   decisions_matrix: 'decisions_matrix',
   mindmap: 'mind_map',
   mind_map: 'mind_map',
   smart_mindmap: 'mind_map',
+  visual: 'visual_diagram',
+  diagram: 'visual_diagram',
   visual_diagram: 'visual_diagram',
+  project: 'project_card',
   project_card: 'project_card',
+  task: 'task_card',
   task_card: 'task_card',
+  finance: 'finance_card',
   finance_card: 'finance_card',
+  csr: 'csr_card',
   csr_card: 'csr_card',
+  crm: 'crm_card',
   crm_card: 'crm_card',
+  sheet: 'interactive_sheet',
   interactive_sheet: 'interactive_sheet',
   smart_text_doc: 'smart_text_doc',
+  smart_doc: 'smart_text_doc',
+  doc: 'smart_text_doc',
   root_connector: 'root_connector',
+  connector: 'root_connector',
 };
 
 export function isTypedSmartCanvasElementType(type: string): type is SmartElementType {
@@ -79,10 +102,47 @@ export function normalizeSmartElementType(type: string): SmartElementType {
   return SMART_TYPE_ALIASES[normalized] || 'thinking_board';
 }
 
+function normalizeViewportHostSize(hostSize: { width: number; height: number } | undefined): { width: number; height: number } {
+  return {
+    width: hostSize && hostSize.width > 0 ? hostSize.width : DEFAULT_VIEWPORT_HOST_SIZE.width,
+    height: hostSize && hostSize.height > 0 ? hostSize.height : DEFAULT_VIEWPORT_HOST_SIZE.height,
+  };
+}
+
+function getViewportCenterWorldPosition(
+  viewport: { zoom: number; pan: { x: number; y: number } },
+  viewportHostSize: { width: number; height: number } | undefined,
+): { x: number; y: number } {
+  const hostSize = normalizeViewportHostSize(viewportHostSize);
+
+  return {
+    x: (hostSize.width / 2 - viewport.pan.x) / viewport.zoom,
+    y: (hostSize.height / 2 - viewport.pan.y) / viewport.zoom,
+  };
+}
+
+function getElementWorldPosition({
+  element,
+  index,
+  viewport,
+  viewportHostSize,
+}: CreateTypedSmartElementOptions): { x: number; y: number } {
+  if (element.position) {
+    return element.position;
+  }
+
+  const viewportCenter = getViewportCenterWorldPosition(viewport, viewportHostSize);
+  return {
+    x: viewportCenter.x + SMART_ELEMENT_STAGGER.x * index,
+    y: viewportCenter.y + SMART_ELEMENT_STAGGER.y * index,
+  };
+}
+
 export function createTypedSmartElement({
   element,
   index,
   viewport,
+  viewportHostSize,
 }: CreateTypedSmartElementOptions): Omit<CanvasElement, 'id'> & { id?: string } {
   const smartType = normalizeSmartElementType(element.type);
   const parsedData = parseSmartElementData(smartType, {
@@ -92,15 +152,13 @@ export function createTypedSmartElement({
     description: element.description,
   });
   const size = SMART_ELEMENT_SIZE_MAP[smartType];
-  const basePosition = element.position || { x: 100 + index * 50, y: 100 + index * 50 };
+  const position = getElementWorldPosition({ element, index, viewport, viewportHostSize });
 
   return {
-    type: smartType,
+    ...(element.id ? { id: element.id } : {}),
+    type: 'smart',
     smartType,
-    position: {
-      x: basePosition.x - viewport.pan.x / viewport.zoom,
-      y: basePosition.y - viewport.pan.y / viewport.zoom,
-    },
+    position,
     size,
     content: element.title,
     style: {
@@ -109,12 +167,16 @@ export function createTypedSmartElement({
     data: {
       ...parsedData,
       smartType,
+      title: element.title,
+      description: element.description,
     },
     metadata: {
+      smartType,
       aiGenerated: true,
       source: 'smart-command-bar',
       description: element.description,
       connections: element.connections || [],
+      originalType: element.type,
     },
   };
 }
