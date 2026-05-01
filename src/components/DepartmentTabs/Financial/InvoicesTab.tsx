@@ -7,17 +7,19 @@ import { BaseBadge } from '@/components/ui/BaseBadge';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
-import { mockInvoices } from './data';
 import { formatCurrency, getStatusText } from './utils';
 import { ClientInfoBox, getClientData } from './ClientInfoBox';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
+import { useInvoices, useCreateInvoice, useUpdateInvoice } from '@/hooks/useInvoices';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
-  const [invoices, setInvoices] = useState(mockInvoices);
+  const { data: invoices = [], isLoading, error } = useInvoices();
+  const createInvoiceMutation = useCreateInvoice();
+  const updateInvoiceMutation = useUpdateInvoice();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
   const [viewingInvoice, setViewingInvoice] = useState<any>(null);
