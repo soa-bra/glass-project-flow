@@ -9,7 +9,7 @@ const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps)
 
   return (
     <div
-      className="shrink-0 rounded-full bg-[#F5F7FA] flex flex-col items-center justify-center text-center"
+      className="shrink-0 rounded-full bg-[#F5F7FA] border border-[#111111] flex flex-col items-center justify-center text-center"
       style={{ width: tokens.circleSizePx, height: tokens.circleSizePx }}
     >
       <span className="font-semibold text-[#0B0F12] leading-none" style={{ fontSize: tokens.daysNumberFontSizePx }}>

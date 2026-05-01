@@ -45,13 +45,13 @@ const TaskCardStatusIndicators = ({
 
   };
   const pillWidthByType = {
-    status: { minWidth: '140px', maxWidth: '240px' },
-    date: { minWidth: '128px', maxWidth: '176px' },
-    assignee: { minWidth: '140px', maxWidth: '220px' },
-    members: { minWidth: '112px', maxWidth: '152px' }
+    status: { minWidth: '0px' },
+    date: { minWidth: '0px' },
+    assignee: { minWidth: '0px' },
+    members: { minWidth: '0px' }
   } as const;
   const pillTextClassName = "block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight";
-  const basePillClassName = "min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full";
+  const basePillClassName = "min-w-0 flex h-[30px] items-center w-full overflow-hidden px-3 py-1 rounded-full";
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     // تعديل المهمة
@@ -78,23 +78,22 @@ const TaskCardStatusIndicators = ({
               ...pillStyle,
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
+              gap: '0px',
               ...pillWidthByType.status
             }}
             className={basePillClassName}
             title={status}
           >
             <div style={{
-              width: '8px',
-              height: '8px',
+              width: '10px',
+              height: '10px',
               borderRadius: '50%',
               backgroundColor: statusColor,
               flexShrink: 0
             }}></div>
-            <span className={pillTextClassName} dir="auto">{status}</span>
           </div>
 
-          <div style={{ ...pillStyle, ...pillWidthByType.date }} className={basePillClassName} title={date}>
+          <div style={{ ...pillStyle, ...pillWidthByType.date, border: '1px solid #111111' }} className={basePillClassName} title={date}>
             <span className={pillTextClassName} dir="auto">{date}</span>
           </div>
           <div style={{ ...pillStyle, ...pillWidthByType.assignee }} className={basePillClassName} title={assignee}>
