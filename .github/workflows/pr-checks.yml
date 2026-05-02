@@ -56,6 +56,9 @@ jobs:
           set -o pipefail
           npm run test 2>&1 | tee test-report.txt
 
+      - name: Recovery smoke gate (core paths)
+        run: node scripts/recovery/smoke-gate.mjs
+
       - name: Build baseline quality artifact
         if: always()
         run: |
