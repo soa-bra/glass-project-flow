@@ -5,13 +5,7 @@
 | # | الخطوة | الحالة | أدلة حالية | ملاحظة تنفيذية |
 |---|---|---|---|---|
 | 1 | تثبيت القرار المعماري الحالي | Done | `docs/recovery/step-01-architectural-decision-record.md` | أُغلق بناءً على اعتماد توجيهي مباشر من صاحب الطلب بتاريخ 2026-05-01. |
-| 2 | تعريف نطاق التطبيق النشط | In Progress | `docs/recovery/step-02-active-scope-baseline.md` | تم إنشاء baseline نطاق نشط؛ بانتظار مراجعة واعتماد تقني لإغلاق الخطوة. |
-| 3 | بناء DoD Matrix كاملة | Drifted | لا يوجد ملف DoD Matrix تشغيلي مستقل | شرط تأسيسي غير مثبت كـ artifact قابل للتدقيق.
-| 4 | توثيق Source of Truth Matrix | Not Started | لا يوجد ملف مصفوفة رسمي | معلق على إغلاق 1-3 فعليًا.
-| 5 | توثيق Active Architecture Baseline | Not Started | توجد وثائق معمارية عامة غير baseline معتمد | يتطلب 1-2 ووضوح مصادر الحقيقة.
-| 6 | عزل legacy code رسميًا | In Progress | ADR وحيد للفواتير: `docs/adr/ADR-001-active-invoice-path.md` | لا توجد سياسة عامة مانعة للاستيراد legacy على مستوى المشروع.
-| 7 | تثبيت معايير التطوير الجديدة | Not Started | لا توجد policy recovery موحدة إلزامية | يعتمد على 4-6.
-| 8 | تنفيذ Runtime Verification حقيقي | Not Started | لا يوجد تقرير تحقق runtime مخصص لخطوات الاستعادة | يعتمد على 4/5/10/11.
+
 | 9 | تثبيت Quality Gates دائمة | In Progress | `.github/workflows/pr-checks.yml` موجود | يلزم ربط صريح ببوابة مسارات auth/project/task/invoice/department.
 | 10 | توثيق Baseline Schema رسمي | Not Started | migrations موجودة فقط | لا يوجد snapshot baseline معتمد ومجمّد.
 | 11 | توثيق صلاحيات النظام | In Progress | `docs/RBAC.md`, `docs/SECURITY.md` | لا توجد matrix دور/عملية رسمية مرتبطة مباشرة بـRLS + behavior.
