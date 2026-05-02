@@ -40,3 +40,11 @@
 1. ربط كل صف matrix باسم policy فعلي (policy-by-policy mapping).
 2. إضافة دليل اختبارات deny/allow runtime لكل domain حرج.
 3. إقفال الثغرة المذكورة في `AUTH_DISABLED_FOR_DEV` إن كانت ما زالت فعالة.
+
+
+## Policy Mapping Appendix
+1. `docs/recovery/step-11-policy-mapping.md`
+
+
+## Runtime Verification Checklist
+1. `docs/recovery/step-11-runtime-verification-checklist.md`

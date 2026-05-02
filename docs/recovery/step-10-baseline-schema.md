@@ -59,3 +59,11 @@
 1. استخراج snapshot DDL موحد من بيئة DB الفعلية (وليس migrations فقط).
 2. مطابقة snapshot الفعلي مع baseline أعلاه وتوثيق أي انحراف.
 3. إعلان نسخة baseline نهائية (v1-recovery).
+
+
+## Generated Inventory Artifact
+1. `docs/recovery/step-10-schema-inventory.tsv` (استخراج CREATE TABLE/TYPE من migration baseline).
+
+
+## Live DB Validation Checklist
+1. `docs/recovery/step-10-db-snapshot-checklist.md`
