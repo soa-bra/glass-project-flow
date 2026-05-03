@@ -69,6 +69,9 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           }).catch((err) => {
             // eslint-disable-next-line no-console
             console.error('[ProjectWorkspace] AuditService.log(create) failed:', err);
+            toast.error('تم إنشاء المشروع لكن فشل تسجيل حدث التدقيق', {
+              description: err instanceof Error ? err.message : 'خطأ غير معروف أثناء تسجيل Audit Event',
+            });
           });
         },
         onError: (err) => {
