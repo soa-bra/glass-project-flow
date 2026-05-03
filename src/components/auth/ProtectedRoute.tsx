@@ -14,8 +14,10 @@ interface ProtectedRouteProps {
  * تعطيل المصادقة مسموح فقط عبر متغيّر بيئة صريح ضمن وضع التطوير.
  * - الافتراضي: المصادقة مفعَّلة (الإنتاج وأي بيئة بدون المتغيّر).
  * - للتعطيل المؤقّت محليًا فقط: ضع `VITE_DISABLE_AUTH=true` في `.env.local`.
+ * - شرط `import.meta.env.DEV` يضمن استحالة التعطيل في build إنتاجي.
  */
-const AUTH_DISABLED = import.meta.env.VITE_DISABLE_AUTH === "true";
+const AUTH_DISABLED =
+  import.meta.env.DEV && import.meta.env.VITE_DISABLE_AUTH === "true";
 
 if (AUTH_DISABLED) {
   // eslint-disable-next-line no-console
