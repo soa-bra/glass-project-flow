@@ -67,7 +67,3 @@
 
 ## Live DB Validation Checklist
 1. `docs/recovery/step-10-db-snapshot-checklist.md`
-
-
-## Freeze Manifest
-1. `docs/recovery/step-10-baseline-freeze-manifest.json`

@@ -48,8 +48,3 @@
 
 ## Runtime Verification Checklist
 1. `docs/recovery/step-11-runtime-verification-checklist.md`
-
-
-## Runtime Probes Asset
-1. `scripts/recovery/permissions-probes.sql`
-2. `docs/recovery/step-11-runtime-evidence-template.md`
