@@ -1,9 +1,7 @@
 [STEP 08 - DEPARTMENT SHELL READ CHECK]
-Status: Pending runtime execution
-Required fields:
-- Timestamp (UTC)
-- Actor/Role
-- Query context
-- Expected result
-- Actual result
-- Verdict (PASS/FAIL)
+Timestamp (UTC): 2026-05-04T18:11:17Z
+Actor/Role: team_member (test account planned)
+Query context: /rest/v1/departments select id,name limit 1 from active path runtime.
+Expected result: Department shell read should return permitted rows for authorized user.
+Actual result: Runtime request could not reach Supabase endpoint. Command output: curl -sS ... => curl: (56) CONNECT tunnel failed, response 403
+Verdict: FAIL

@@ -1,11 +1,9 @@
 [STEP 08 - INVOICE CREATE/READ/UPDATE CHECK]
-Status: Pending runtime execution
-Required fields:
-- Timestamp (UTC)
-- Actor/Role
-- Create payload
-- Update payload
-- Read verification scope
-- Expected result
-- Actual result
-- Verdict (PASS/FAIL)
+Timestamp (UTC): 2026-05-04T18:11:17Z
+Actor/Role: owner (test account planned)
+Create payload: {"invoice_number":"S8-INV-001","status":"draft","total_amount":1000} (not executed due connectivity failure)
+Update payload: {"status":"sent"} (not executed due connectivity failure)
+Read verification scope: /rest/v1/invoices select id,status,total_amount limit 1
+Expected result: Invoice create/update/read should succeed for authorized actor.
+Actual result: Runtime request could not reach Supabase endpoint. Command output: curl -sS ... => curl: (56) CONNECT tunnel failed, response 403
+Verdict: FAIL
