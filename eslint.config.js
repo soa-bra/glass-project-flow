@@ -19,7 +19,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": ["error", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
@@ -157,7 +157,15 @@ export default tseslint.config(
           patterns: [
             {
               group: ["**/components/Planning/**", "@/components/Planning/**"],
-              message: "⚠️ مسار قديم! استخدم @/features/planning/ بدلاً من @/components/Planning/",
+              message: "❌ مسار قديم محظور: استخدم @/features/planning/ بدلاً من @/components/Planning/",
+            },
+            {
+              group: ["**/modules/invoice/invoice.service", "@/modules/invoice/invoice.service", "**/lib/prisma", "@/lib/prisma"],
+              message: "❌ مسار invoice legacy/shadow ORM محظور في التطوير الجديد. استخدم services/invoices + Supabase active path.",
+            },
+            {
+              group: ["**/components/Financial/InvoicesDashboard", "@/components/Financial/InvoicesDashboard"],
+              message: "❌ InvoicesDashboard legacy path محظور. استخدم واجهات المسار النشط المعتمدة فقط.",
             },
           ],
         },
