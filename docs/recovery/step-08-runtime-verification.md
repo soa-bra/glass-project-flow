@@ -18,14 +18,6 @@
 | Invoice create/read/update | manual/runtime | `docs/recovery/evidence/step08-invoice-cru-check.txt` | Pending |
 | Department shell read | manual/runtime | `docs/recovery/evidence/step08-department-shell-read-check.txt` | Pending |
 
-
-## Prepared Evidence Files
-1. `docs/recovery/evidence/step08-login-check.txt`
-2. `docs/recovery/evidence/step08-project-cr-check.txt`
-3. `docs/recovery/evidence/step08-task-cru-check.txt`
-4. `docs/recovery/evidence/step08-invoice-cru-check.txt`
-5. `docs/recovery/evidence/step08-department-shell-read-check.txt`
-
 ## Run Procedure
 1. Execute each workflow in a controlled runtime environment against the active path.
 2. Record timestamp, actor role, input payload, and observed response.

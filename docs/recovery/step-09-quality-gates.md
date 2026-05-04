@@ -26,8 +26,3 @@
 
 ## Closure Record
 تم تفعيل Quality Gates الدائمة وإغلاق الخطوة 9.
-
-
-## Evidence Governance Addendum (2026-05-04)
-1. راجع سياسة أدلة الاختبارات: `docs/recovery/step-09-testing-evidence-policy.md`.
-2. لا يُسمح بأي claim نجاح بدون evidence قابل للتدقيق.

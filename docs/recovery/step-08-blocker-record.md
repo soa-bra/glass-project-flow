@@ -26,7 +26,3 @@
 ## Next Step After Unblock
 1. تحديث `docs/recovery/step-08-runtime-verification.md` بنتائج Pass/Fail النهائية.
 2. تحويل Step 8 إلى Done في `docs/recovery/execution_status_table.md`.
-
-
-## Handoff Artifact
-1. `docs/recovery/step-08-runtime-handoff-checklist.md`
