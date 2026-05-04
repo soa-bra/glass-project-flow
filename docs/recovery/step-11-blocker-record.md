@@ -27,9 +27,3 @@
 
 ## Ready-to-execute Runbook
 1. `docs/recovery/step-11-final-runbook-for-closure.md`
-
-
-## Resolution Update (2026-05-03)
-- تم استلام أدلة runtime owner/team_member/unauthorized وتوثيقها في docs/recovery/evidence/.
-- تم تعبئة step-11-runtime-evidence-template.md بحكم PASS لجميع الحالات المطلوبة.
-- الحالة الحالية: Closed.
