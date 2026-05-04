@@ -1,0 +1,9 @@
+[STEP 08 - DEPARTMENT SHELL READ CHECK]
+Status: Pending runtime execution
+Required fields:
+- Timestamp (UTC)
+- Actor/Role
+- Query context
+- Expected result
+- Actual result
+- Verdict (PASS/FAIL)

@@ -1,0 +1,11 @@
+[STEP 08 - INVOICE CREATE/READ/UPDATE CHECK]
+Status: Pending runtime execution
+Required fields:
+- Timestamp (UTC)
+- Actor/Role
+- Create payload
+- Update payload
+- Read verification scope
+- Expected result
+- Actual result
+- Verdict (PASS/FAIL)
