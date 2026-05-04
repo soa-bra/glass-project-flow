@@ -1,0 +1,12 @@
+{
+  "version": "v1-recovery-draft",
+  "generated_at": "2026-05-02",
+  "baseline_migration": "supabase/migrations/20260430160310_91fd3b59-915f-463d-8e01-63b1c31b6330.sql",
+  "followup_migrations": [
+    "supabase/migrations/20260430220416_782696df-3eed-4fbe-b20c-dd0131c92d8f.sql",
+    "supabase/migrations/20260428120000_add_ai_command_traces.sql",
+    "supabase/migrations/20260501054326_b1ba49b7-0941-49f3-b5f6-cd00b47117e2.sql"
+  ],
+  "active_tables_count": 19,
+  "status": "draft_freeze_pending_live_db_validation"
+}

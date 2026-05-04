@@ -1,0 +1,9 @@
+[STEP 08 - LOGIN CHECK]
+Status: Pending runtime execution
+Required fields:
+- Timestamp (UTC)
+- Actor/Role
+- Input scenario
+- Expected result
+- Actual result
+- Verdict (PASS/FAIL)
