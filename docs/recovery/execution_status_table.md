@@ -11,7 +11,7 @@
 | 5 | توثيق Active Architecture Baseline | Done | `docs/recovery/step-05-active-architecture-baseline.md` | أُغلقت بعد توثيق baseline الطبقات وحدود التدفق المعتمد. |
 | 6 | عزل legacy code رسميًا | Done | `docs/recovery/step-06-legacy-isolation.md`, `eslint.config.js`, `src/index.ts` | تم عزل legacy عبر policy مانعة + تنظيف root barrel من exports legacy. |
 | 7 | تثبيت معايير التطوير الجديدة | Done | `docs/recovery/step-07-development-standards-policy.md`, `.github/pull_request_template.md` | أُغلقت بعد اعتماد policy + PR compliance gate إلزامي. |
-| 8 | تنفيذ Runtime Verification حقيقي | Not Started | تبعياته (10 و11) مكتملة | جاهز للبدء وفق خطة التحقق runtime. |
+| 8 | تنفيذ Runtime Verification حقيقي | In Progress | `docs/recovery/step-08-runtime-verification.md` | بدأ التنفيذ مع مصفوفة تحقق وأدلة تشغيل مطلوبة لكل workflow أساسي. |
 | 9 | تثبيت Quality Gates دائمة | Done | `.github/workflows/pr-checks.yml`, `scripts/recovery/smoke-gate.mjs`, `docs/recovery/step-09-quality-gates.md` | تم تفعيل lint/typecheck/test/smoke كـ merge gates دائمة. |
 | 10 | توثيق Baseline Schema رسمي | Done | `docs/recovery/step-10-baseline-schema.md`, `docs/recovery/step-10-comparison-report.md`, `docs/recovery/step-10-schema-inventory.tsv` | أُغلقت بعد توثيق المقارنة واعتماد baseline مع توثيق القيود التشغيلية. |
 | 11 | توثيق صلاحيات النظام | Done | `docs/recovery/step-11-permissions-matrix.md`, `docs/recovery/step-11-runtime-evidence-template.md` | أُغلقت بعد توثيق inventory الحي + أدلة runtime للأدوار الثلاثة. |
