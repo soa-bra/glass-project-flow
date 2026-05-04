@@ -1,9 +1,7 @@
 [STEP 08 - LOGIN CHECK]
-Status: Pending runtime execution
-Required fields:
-- Timestamp (UTC)
-- Actor/Role
-- Input scenario
-- Expected result
-- Actual result
-- Verdict (PASS/FAIL)
+Timestamp (UTC): 2026-05-04T18:11:17Z
+Actor/Role: owner (test account planned)
+Input scenario: Attempted runtime login via Supabase Auth password grant from CLI.
+Expected result: Valid test credentials should return access token and authenticated user context.
+Actual result: Network egress to Supabase blocked in this execution environment. Command output: curl -sS ... => curl: (56) CONNECT tunnel failed, response 403
+Verdict: FAIL

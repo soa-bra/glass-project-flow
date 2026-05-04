@@ -1,11 +1,9 @@
 [STEP 08 - TASK CREATE/READ/UPDATE CHECK]
-Status: Pending runtime execution
-Required fields:
-- Timestamp (UTC)
-- Actor/Role
-- Create payload
-- Update payload
-- Read verification scope
-- Expected result
-- Actual result
-- Verdict (PASS/FAIL)
+Timestamp (UTC): 2026-05-04T18:11:17Z
+Actor/Role: team_member (test account planned)
+Create payload: {"title":"Step08 Task","status":"todo"} (not executed due connectivity failure)
+Update payload: {"status":"in_progress"} (not executed due connectivity failure)
+Read verification scope: /rest/v1/tasks select id,title,status limit 1
+Expected result: Task create/update/read should succeed within role permissions.
+Actual result: Runtime request could not reach Supabase endpoint. Command output: curl -sS ... => curl: (56) CONNECT tunnel failed, response 403
+Verdict: FAIL
