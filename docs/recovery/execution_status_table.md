@@ -1,6 +1,6 @@
 # Execution Status Table (Recovery Program)
 
-تاريخ التحديث: 2026-05-01
+تاريخ التحديث: 2026-05-04
 
 | # | الخطوة | الحالة | أدلة حالية | ملاحظة تنفيذية |
 |---|---|---|---|---|
@@ -11,7 +11,7 @@
 | 5 | توثيق Active Architecture Baseline | Done | `docs/recovery/step-05-active-architecture-baseline.md` | أُغلقت بعد توثيق baseline الطبقات وحدود التدفق المعتمد. |
 | 6 | عزل legacy code رسميًا | Done | `docs/recovery/step-06-legacy-isolation.md`, `eslint.config.js`, `src/index.ts` | تم عزل legacy عبر policy مانعة + تنظيف root barrel من exports legacy. |
 | 7 | تثبيت معايير التطوير الجديدة | Done | `docs/recovery/step-07-development-standards-policy.md`, `.github/pull_request_template.md` | أُغلقت بعد اعتماد policy + PR compliance gate إلزامي. |
-| 8 | تنفيذ Runtime Verification حقيقي | Not Started | لا يوجد تقرير تحقق runtime مخصص لخطوات الاستعادة | يعتمد على 4/5/10/11.
+| 8 | تنفيذ Runtime Verification حقيقي | In Progress (Blocked) | `docs/recovery/step-08-runtime-verification.md`, `docs/recovery/evidence/step08-*.txt` | تم تنفيذ checklist وتوثيق 5/5 بنتيجة FAIL بسبب عائق اتصال runtime (`curl: (56) CONNECT tunnel failed, response 403`). |
 | 9 | تثبيت Quality Gates دائمة | Done | `.github/workflows/pr-checks.yml`, `scripts/recovery/smoke-gate.mjs`, `docs/recovery/step-09-quality-gates.md` | تم تفعيل lint/typecheck/test/smoke كـ merge gates دائمة. |
 | 10 | توثيق Baseline Schema رسمي | In Progress | `docs/recovery/step-10-baseline-schema.md`, `docs/recovery/step-10-schema-inventory.tsv`, `docs/recovery/step-10-db-snapshot-checklist.md` | تم تجهيز inventory + checklist التحقق الحي؛ المتبقي تنفيذ snapshot من DB الفعلية. |
 | 11 | توثيق صلاحيات النظام | In Progress | `docs/recovery/step-11-permissions-matrix.md`, `docs/recovery/step-11-policy-mapping.md`, `docs/recovery/step-11-runtime-verification-checklist.md` | تم إعداد matrix+policy mapping+runtime checklist؛ المتبقي أدلة deny/allow الفعلية. |
