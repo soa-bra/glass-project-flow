@@ -2,7 +2,9 @@ import React from 'react';
 import { icons } from 'lucide-react';
 import type { ArrowData, ArrowPoint } from '@/types/arrow-connections';
 
-interface ShapeRendererProps {
+export type ShapeRendererContext = 'shared' | 'diagram';
+
+interface ShapeRendererBaseProps {
   shapeType: string;
   width: number;
   height: number;
@@ -15,6 +17,10 @@ interface ShapeRendererProps {
   stickyText?: string;
   arrowData?: ArrowData; // بيانات السهم المتقدمة
 }
+
+export type ShapeRendererProps =
+  | (ShapeRendererBaseProps & { context?: 'shared' })
+  | (ShapeRendererBaseProps & { context: 'diagram' });
 
 /**
  * رسم رأس السهم بشكل V
@@ -47,6 +53,7 @@ const calculateAngle = (from: ArrowPoint, to: ArrowPoint): number => {
  * مكون لرسم الأشكال الهندسية المختلفة باستخدام SVG
  */
 export const ShapeRenderer: React.FC<ShapeRendererProps> = ({
+  context: _context = 'shared',
   shapeType,
   width,
   height,
