@@ -1,24 +1,26 @@
-# Batch A Closure (Mini-batch #1) — 2026-05-05
+# Batch A Closure — 2026-05-05
 
-## Scope executed
-Deleted 3 low-risk files from the Batch A queue after static reference check.
+## ملخص الإغلاق
 
-## Removed files
-1. `src/components/OperationsBoard/shared/LoadingCard.tsx`
-2. `src/components/OperationsBoard/shared/ErrorCard.tsx`
-3. `src/components/OperationsBoard/Clients/AddClientButton.tsx`
+- عدد الملفات المحذوفة: **3**
+- عدد الملفات المؤجلة: **0**
+- عدد الملفات في allowlist: **8**
+- العدد المتبقي من قائمة الـ 95: **84**
 
-## Validation
-- Static string/import search found no in-repo references before deletion.
-- `npm run -s typecheck` passed after deletion.
+## تفاصيل الحساب
 
-## Batch A progress
-- Initial candidate baseline: 95
-- Removed in mini-batch #1: 3
-- Remaining candidates (raw baseline view): 92
+اعتمادًا على baseline الأصلي `95` مرشّحًا:
 
-## Next mini-batch suggestion
-Continue with OperationsBoard leaf widgets in the same queue:
-- `ActiveClientsList.tsx`
-- `OverBudgetAlert.tsx`
-- `ProjectBudgetChart.tsx`
+- baseline: `95`
+- المحذوف: `3`
+- المؤجل: `0`
+- allowlist: `8`
+- المتبقي للمراجعة/المعالجة: `95 - 3 - 0 - 8 = 84`
+
+## إعادة فحص import-graph
+
+تمت إعادة تشغيل فحص import-graph وتحديث ملف المرشحين:
+
+- `docs/reports/zero-reference-candidates-2026-05-05.md`
+
+> ملاحظة: نتيجة إعادة الفحص الحالية تعتمد على نفس المنهج heuristic لربط `@/` و relative imports وقد تنتج baseline مختلفًا عن تقرير الـ95 الأصلي.

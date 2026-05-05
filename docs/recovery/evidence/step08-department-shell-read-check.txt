@@ -1,0 +1,7 @@
+[STEP 08 - DEPARTMENT SHELL READ CHECK]
+Timestamp (UTC): 2026-05-05T01:24:28Z
+Actor/Role: team_member
+Query context: authenticated team_member create/read on own department shell row in the active path.
+Expected result: Authorized scope should return the department shell row successfully.
+Actual result: Create succeeded with id=83ba3f3c-6a16-400a-b620-1852bfed7d25, code=STEP08-DEPT-0119, owner_id=ed8f11cd-af10-4e3a-8961-95ce79f75641. Read-back by the same authenticated team_member returned the same row successfully. Probe department was deleted after verification.
+Verdict: PASS

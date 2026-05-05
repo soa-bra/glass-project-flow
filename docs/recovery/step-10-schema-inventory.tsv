@@ -1,0 +1,31 @@
+line	kind	statement
+23	type	CREATE TYPE public.central_state AS ENUM (
+26	type	CREATE TYPE public.central_priority AS ENUM ('low','medium','high','critical');
+27	type	CREATE TYPE public.central_complexity AS ENUM ('trivial','simple','moderate','complex','critical');
+28	type	CREATE TYPE public.central_dependency_type AS ENUM ('execution','data','technical','operational','time');
+29	type	CREATE TYPE public.central_entity_type AS ENUM ('central_board','department','project','task','tool','engine_job','project_card','task_card');
+30	type	CREATE TYPE public.department_project_role AS ENUM ('owner','supervisor');
+31	type	CREATE TYPE public.tool_kind AS ENUM ('board_widget','dashboard_panel','workflow_tool','analysis_tool','integration_tool');
+32	type	CREATE TYPE public.engine_job_kind AS ENUM ('automation','data_processing','orchestration','sync','analytics','validation');
+33	type	CREATE TYPE public.task_tool_engine_relation_type AS ENUM ('produces','binds','executes');
+39	table	CREATE TABLE public.central_boards (
+52	table	CREATE TABLE public.departments (
+65	table	CREATE TABLE public.projects (
+81	table	CREATE TABLE public.department_projects (
+90	table	CREATE TABLE public.tasks (
+117	table	CREATE TABLE public.tools (
+132	table	CREATE TABLE public.engine_jobs (
+147	table	CREATE TABLE public.task_tool_engine_links (
+158	table	CREATE TABLE public.project_cards (
+174	table	CREATE TABLE public.task_cards (
+191	table	CREATE TABLE public.dependencies (
+220	table	CREATE TABLE public.profiles (
+235	type	CREATE TYPE public.app_role AS ENUM (
+259	type	CREATE TYPE public.role_scope_type AS ENUM ('global','department','project','board');
+261	table	CREATE TABLE public.user_roles (
+277	table	CREATE TABLE public.permissions (
+284	table	CREATE TABLE public.role_permissions (
+402	type	CREATE TYPE public.audit_decision AS ENUM ('allowed','denied','error');
+404	table	CREATE TABLE public.audit_events (
+426	table	CREATE TABLE public.event_outbox (
+440	table	CREATE TABLE public.event_dlq (
