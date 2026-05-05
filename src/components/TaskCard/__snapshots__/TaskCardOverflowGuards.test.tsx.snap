@@ -1,0 +1,911 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Task card overflow guards > matches visual layout snapshot at 320px (اعتماد لقطات) 1`] = `
+<DocumentFragment>
+  <div
+    class=""
+    data-task-id="task-snapshot-320"
+    style="width: 100%; background-color: rgb(248, 249, 250); border-radius: 32px; min-height: 120px; padding-block: 12px; direction: rtl; font-family: "IBM Plex Sans Arabic"; opacity: 1; overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s ease-in-out;"
+  >
+    <div
+      class="min-h-[96px] w-full overflow-hidden"
+      dir="rtl"
+    >
+      <div
+        class="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2"
+      >
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full bg-[#F5F7FA] flex flex-col items-center justify-center text-center"
+            style="width: 48px; height: 48px;"
+          >
+            <span
+              class="font-semibold text-[#0B0F12] leading-none"
+              style="font-size: 13px;"
+            >
+              7
+            </span>
+            <span
+              class="text-[#0B0F12]/70 leading-none mt-0.5"
+              style="font-size: 9px;"
+            >
+              يوم
+            </span>
+          </div>
+        </div>
+        <div
+          class="min-w-0 overflow-hidden"
+        >
+          <div
+            class="min-w-0 overflow-hidden"
+          >
+            <h3
+              class="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+              style="font-size: 13px; overflow-wrap: anywhere; word-break: break-word;"
+              title="عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً "
+            >
+              عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً 
+            </h3>
+            <p
+              class="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
+              style="font-size: 10px; overflow-wrap: anywhere; word-break: break-word;"
+            >
+              وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً 
+            </p>
+          </div>
+        </div>
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full flex flex-col items-center justify-center text-center px-1"
+            style="width: 48px; height: 48px; background-color: rgb(241, 181, 185);"
+          >
+            <span
+              class="font-medium leading-none"
+              style="font-size: 9px;"
+            >
+              عاجل
+            </span>
+            <span
+              class="leading-none mt-0.5"
+              style="font-size: 7px;"
+            >
+              مهم
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1"
+    >
+      <div
+        class="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1"
+      >
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); display: flex; align-items: center; gap: 4px; min-width: 140px; max-width: 240px;"
+          title="قيد التنفيذ مع نص طويل للغاية للغاية"
+        >
+          <div
+            style="width: 8px; height: 8px; border-radius: 50%; background-color: rgb(0, 170, 102); flex-shrink: 0;"
+          />
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            قيد التنفيذ مع نص طويل للغاية للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 128px; max-width: 176px;"
+          title="2026-04-28 - موعد طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            2026-04-28 - موعد طويل
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 140px; max-width: 220px;"
+          title="عضو فريق باسم طويل للغاية"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            عضو فريق باسم طويل للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 112px; max-width: 152px;"
+          title="+12 أعضاء فريق بمسمى طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            +12 أعضاء فريق بمسمى طويل
+          </span>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <button
+          class="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
+          style="background-color: rgb(255, 255, 255); border: medium; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; padding: 0px; cursor: pointer;"
+        >
+          <span>
+            <svg
+              class="lucide lucide-ellipsis-vertical"
+              fill="none"
+              height="24"
+              stroke="#858789"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              style="width: 10px; height: 10px;"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Task card overflow guards > matches visual layout snapshot at 360px (اعتماد لقطات) 1`] = `
+<DocumentFragment>
+  <div
+    class=""
+    data-task-id="task-snapshot-360"
+    style="width: 100%; background-color: rgb(248, 249, 250); border-radius: 32px; min-height: 120px; padding-block: 12px; direction: rtl; font-family: "IBM Plex Sans Arabic"; opacity: 1; overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s ease-in-out;"
+  >
+    <div
+      class="min-h-[96px] w-full overflow-hidden"
+      dir="rtl"
+    >
+      <div
+        class="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2"
+      >
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full bg-[#F5F7FA] flex flex-col items-center justify-center text-center"
+            style="width: 48px; height: 48px;"
+          >
+            <span
+              class="font-semibold text-[#0B0F12] leading-none"
+              style="font-size: 13px;"
+            >
+              7
+            </span>
+            <span
+              class="text-[#0B0F12]/70 leading-none mt-0.5"
+              style="font-size: 9px;"
+            >
+              يوم
+            </span>
+          </div>
+        </div>
+        <div
+          class="min-w-0 overflow-hidden"
+        >
+          <div
+            class="min-w-0 overflow-hidden"
+          >
+            <h3
+              class="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+              style="font-size: 13px; overflow-wrap: anywhere; word-break: break-word;"
+              title="عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً "
+            >
+              عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً 
+            </h3>
+            <p
+              class="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
+              style="font-size: 10px; overflow-wrap: anywhere; word-break: break-word;"
+            >
+              وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً 
+            </p>
+          </div>
+        </div>
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full flex flex-col items-center justify-center text-center px-1"
+            style="width: 48px; height: 48px; background-color: rgb(241, 181, 185);"
+          >
+            <span
+              class="font-medium leading-none"
+              style="font-size: 9px;"
+            >
+              عاجل
+            </span>
+            <span
+              class="leading-none mt-0.5"
+              style="font-size: 7px;"
+            >
+              مهم
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1"
+    >
+      <div
+        class="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1"
+      >
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); display: flex; align-items: center; gap: 4px; min-width: 140px; max-width: 240px;"
+          title="قيد التنفيذ مع نص طويل للغاية للغاية"
+        >
+          <div
+            style="width: 8px; height: 8px; border-radius: 50%; background-color: rgb(0, 170, 102); flex-shrink: 0;"
+          />
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            قيد التنفيذ مع نص طويل للغاية للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 128px; max-width: 176px;"
+          title="2026-04-28 - موعد طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            2026-04-28 - موعد طويل
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 140px; max-width: 220px;"
+          title="عضو فريق باسم طويل للغاية"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            عضو فريق باسم طويل للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 112px; max-width: 152px;"
+          title="+12 أعضاء فريق بمسمى طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            +12 أعضاء فريق بمسمى طويل
+          </span>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <button
+          class="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
+          style="background-color: rgb(255, 255, 255); border: medium; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; padding: 0px; cursor: pointer;"
+        >
+          <span>
+            <svg
+              class="lucide lucide-ellipsis-vertical"
+              fill="none"
+              height="24"
+              stroke="#858789"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              style="width: 10px; height: 10px;"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Task card overflow guards > matches visual layout snapshot at 390px (اعتماد لقطات) 1`] = `
+<DocumentFragment>
+  <div
+    class=""
+    data-task-id="task-snapshot-390"
+    style="width: 100%; background-color: rgb(248, 249, 250); border-radius: 32px; min-height: 120px; padding-block: 12px; direction: rtl; font-family: "IBM Plex Sans Arabic"; opacity: 1; overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s ease-in-out;"
+  >
+    <div
+      class="min-h-[96px] w-full overflow-hidden"
+      dir="rtl"
+    >
+      <div
+        class="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2"
+      >
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full bg-[#F5F7FA] flex flex-col items-center justify-center text-center"
+            style="width: 48px; height: 48px;"
+          >
+            <span
+              class="font-semibold text-[#0B0F12] leading-none"
+              style="font-size: 13px;"
+            >
+              7
+            </span>
+            <span
+              class="text-[#0B0F12]/70 leading-none mt-0.5"
+              style="font-size: 9px;"
+            >
+              يوم
+            </span>
+          </div>
+        </div>
+        <div
+          class="min-w-0 overflow-hidden"
+        >
+          <div
+            class="min-w-0 overflow-hidden"
+          >
+            <h3
+              class="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+              style="font-size: 13px; overflow-wrap: anywhere; word-break: break-word;"
+              title="عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً "
+            >
+              عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً 
+            </h3>
+            <p
+              class="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
+              style="font-size: 10px; overflow-wrap: anywhere; word-break: break-word;"
+            >
+              وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً 
+            </p>
+          </div>
+        </div>
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full flex flex-col items-center justify-center text-center px-1"
+            style="width: 48px; height: 48px; background-color: rgb(241, 181, 185);"
+          >
+            <span
+              class="font-medium leading-none"
+              style="font-size: 9px;"
+            >
+              عاجل
+            </span>
+            <span
+              class="leading-none mt-0.5"
+              style="font-size: 7px;"
+            >
+              مهم
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1"
+    >
+      <div
+        class="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1"
+      >
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); display: flex; align-items: center; gap: 4px; min-width: 140px; max-width: 240px;"
+          title="قيد التنفيذ مع نص طويل للغاية للغاية"
+        >
+          <div
+            style="width: 8px; height: 8px; border-radius: 50%; background-color: rgb(0, 170, 102); flex-shrink: 0;"
+          />
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            قيد التنفيذ مع نص طويل للغاية للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 128px; max-width: 176px;"
+          title="2026-04-28 - موعد طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            2026-04-28 - موعد طويل
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 140px; max-width: 220px;"
+          title="عضو فريق باسم طويل للغاية"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            عضو فريق باسم طويل للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 112px; max-width: 152px;"
+          title="+12 أعضاء فريق بمسمى طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            +12 أعضاء فريق بمسمى طويل
+          </span>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <button
+          class="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
+          style="background-color: rgb(255, 255, 255); border: medium; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; padding: 0px; cursor: pointer;"
+        >
+          <span>
+            <svg
+              class="lucide lucide-ellipsis-vertical"
+              fill="none"
+              height="24"
+              stroke="#858789"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              style="width: 10px; height: 10px;"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Task card overflow guards > matches visual layout snapshot at 430px (اعتماد لقطات) 1`] = `
+<DocumentFragment>
+  <div
+    class=""
+    data-task-id="task-snapshot-430"
+    style="width: 100%; background-color: rgb(248, 249, 250); border-radius: 32px; min-height: 120px; padding-block: 12px; direction: rtl; font-family: "IBM Plex Sans Arabic"; opacity: 1; overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s ease-in-out;"
+  >
+    <div
+      class="min-h-[96px] w-full overflow-hidden"
+      dir="rtl"
+    >
+      <div
+        class="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2"
+      >
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full bg-[#F5F7FA] flex flex-col items-center justify-center text-center"
+            style="width: 48px; height: 48px;"
+          >
+            <span
+              class="font-semibold text-[#0B0F12] leading-none"
+              style="font-size: 13px;"
+            >
+              7
+            </span>
+            <span
+              class="text-[#0B0F12]/70 leading-none mt-0.5"
+              style="font-size: 9px;"
+            >
+              يوم
+            </span>
+          </div>
+        </div>
+        <div
+          class="min-w-0 overflow-hidden"
+        >
+          <div
+            class="min-w-0 overflow-hidden"
+          >
+            <h3
+              class="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+              style="font-size: 13px; overflow-wrap: anywhere; word-break: break-word;"
+              title="عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً "
+            >
+              عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً 
+            </h3>
+            <p
+              class="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
+              style="font-size: 10px; overflow-wrap: anywhere; word-break: break-word;"
+            >
+              وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً 
+            </p>
+          </div>
+        </div>
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full flex flex-col items-center justify-center text-center px-1"
+            style="width: 48px; height: 48px; background-color: rgb(241, 181, 185);"
+          >
+            <span
+              class="font-medium leading-none"
+              style="font-size: 9px;"
+            >
+              عاجل
+            </span>
+            <span
+              class="leading-none mt-0.5"
+              style="font-size: 7px;"
+            >
+              مهم
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1"
+    >
+      <div
+        class="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1"
+      >
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); display: flex; align-items: center; gap: 4px; min-width: 140px; max-width: 240px;"
+          title="قيد التنفيذ مع نص طويل للغاية للغاية"
+        >
+          <div
+            style="width: 8px; height: 8px; border-radius: 50%; background-color: rgb(0, 170, 102); flex-shrink: 0;"
+          />
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            قيد التنفيذ مع نص طويل للغاية للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 128px; max-width: 176px;"
+          title="2026-04-28 - موعد طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            2026-04-28 - موعد طويل
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 140px; max-width: 220px;"
+          title="عضو فريق باسم طويل للغاية"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            عضو فريق باسم طويل للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 112px; max-width: 152px;"
+          title="+12 أعضاء فريق بمسمى طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            +12 أعضاء فريق بمسمى طويل
+          </span>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <button
+          class="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
+          style="background-color: rgb(255, 255, 255); border: medium; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; padding: 0px; cursor: pointer;"
+        >
+          <span>
+            <svg
+              class="lucide lucide-ellipsis-vertical"
+              fill="none"
+              height="24"
+              stroke="#858789"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              style="width: 10px; height: 10px;"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`Task card overflow guards > matches visual layout snapshot at 768px (اعتماد لقطات) 1`] = `
+<DocumentFragment>
+  <div
+    class=""
+    data-task-id="task-snapshot-768"
+    style="width: 100%; background-color: rgb(248, 249, 250); border-radius: 32px; min-height: 120px; padding-block: 12px; direction: rtl; font-family: "IBM Plex Sans Arabic"; opacity: 1; overflow-y: auto; overflow-x: hidden; transition: opacity 0.2s ease-in-out;"
+  >
+    <div
+      class="min-h-[96px] w-full overflow-hidden"
+      dir="rtl"
+    >
+      <div
+        class="grid w-full min-h-[96px] grid-cols-[minmax(44px,auto)_minmax(0,1fr)_minmax(44px,auto)] items-start gap-2"
+      >
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full bg-[#F5F7FA] flex flex-col items-center justify-center text-center"
+            style="width: 48px; height: 48px;"
+          >
+            <span
+              class="font-semibold text-[#0B0F12] leading-none"
+              style="font-size: 13px;"
+            >
+              7
+            </span>
+            <span
+              class="text-[#0B0F12]/70 leading-none mt-0.5"
+              style="font-size: 9px;"
+            >
+              يوم
+            </span>
+          </div>
+        </div>
+        <div
+          class="min-w-0 overflow-hidden"
+        >
+          <div
+            class="min-w-0 overflow-hidden"
+          >
+            <h3
+              class="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+              style="font-size: 13px; overflow-wrap: anywhere; word-break: break-word;"
+              title="عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً "
+            >
+              عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً عنوان طويل جداً 
+            </h3>
+            <p
+              class="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
+              style="font-size: 10px; overflow-wrap: anywhere; word-break: break-word;"
+            >
+              وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً وصف طويل جداً 
+            </p>
+          </div>
+        </div>
+        <div
+          class="min-w-0 flex justify-center"
+        >
+          <div
+            class="shrink-0 rounded-full flex flex-col items-center justify-center text-center px-1"
+            style="width: 48px; height: 48px; background-color: rgb(241, 181, 185);"
+          >
+            <span
+              class="font-medium leading-none"
+              style="font-size: 9px;"
+            >
+              عاجل
+            </span>
+            <span
+              class="leading-none mt-0.5"
+              style="font-size: 7px;"
+            >
+              مهم
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1"
+    >
+      <div
+        class="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1"
+      >
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); display: flex; align-items: center; gap: 4px; min-width: 140px; max-width: 240px;"
+          title="قيد التنفيذ مع نص طويل للغاية للغاية"
+        >
+          <div
+            style="width: 8px; height: 8px; border-radius: 50%; background-color: rgb(0, 170, 102); flex-shrink: 0;"
+          />
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            قيد التنفيذ مع نص طويل للغاية للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 128px; max-width: 176px;"
+          title="2026-04-28 - موعد طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            2026-04-28 - موعد طويل
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 140px; max-width: 220px;"
+          title="عضو فريق باسم طويل للغاية"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            عضو فريق باسم طويل للغاية
+          </span>
+        </div>
+        <div
+          class="min-w-0 flex items-center w-full overflow-hidden px-2 py-1 rounded-full"
+          style="background-color: rgb(255, 255, 255); min-width: 112px; max-width: 152px;"
+          title="+12 أعضاء فريق بمسمى طويل"
+        >
+          <span
+            class="block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight"
+            dir="auto"
+          >
+            +12 أعضاء فريق بمسمى طويل
+          </span>
+        </div>
+      </div>
+      <div
+        class="relative"
+      >
+        <button
+          class="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
+          style="background-color: rgb(255, 255, 255); border: medium; display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; padding: 0px; cursor: pointer;"
+        >
+          <span>
+            <svg
+              class="lucide lucide-ellipsis-vertical"
+              fill="none"
+              height="24"
+              stroke="#858789"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              style="width: 10px; height: 10px;"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="5"
+                r="1"
+              />
+              <circle
+                cx="12"
+                cy="19"
+                r="1"
+              />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
