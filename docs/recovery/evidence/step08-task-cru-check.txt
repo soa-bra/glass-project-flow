@@ -1,11 +1,9 @@
 [STEP 08 - TASK CREATE/READ/UPDATE CHECK]
-Status: Pending runtime execution
-Required fields:
-- Timestamp (UTC)
-- Actor/Role
-- Create payload
-- Update payload
-- Read verification scope
-- Expected result
-- Actual result
-- Verdict (PASS/FAIL)
+Timestamp (UTC): 2026-05-05T01:24:28Z
+Actor/Role: team_member
+Create payload: project={"id":"1159567b-d066-402d-aa1b-23a7da0216ef","name":"Step08 Team Member Project 2026-05-05T0119Z"}, task={"name":"Step08 Task 2026-05-05T0119Z","state":"draft","priority":"medium"}
+Update payload: {"state":"active"}
+Read verification scope: authenticated team_member read by returned task id.
+Expected result: Team member should be able to create a task inside an owned project, update it, then read the final state.
+Actual result: Parent project create succeeded. Task create succeeded with id=f1368415-e66c-4279-90f6-e9f8dfda8f31 and assignee_id=ed8f11cd-af10-4e3a-8961-95ce79f75641. Update to state=active succeeded. Final read returned the same task with state=active. Probe task and parent project were deleted after verification.
+Verdict: PASS

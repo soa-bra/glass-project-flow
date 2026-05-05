@@ -9,16 +9,16 @@
 
 | المكوّن الأساسي | Definition of Done (DoD) | الحالة الحالية | Source of Truth (مبدئي) | التبعيات | أولوية التنفيذ |
 |---|---|---|---|---|---|
-| Auth / Session | تسجيل دخول/جلسة مستقرة + حماية المسارات + عدم تسرب صلاحيات | Done | Supabase Auth + `ProtectedRoute` | 5, 8, 9, 11 | P0 |
-| Projects | Create/Read يعملان عبر service نشط بدون mocks | Done | `src/services/central/projects.service.ts` | 4, 5, 8, 9, 10 | P0 |
-| Tasks | Create/Read/Update عبر service موحّد + اتساق الحالة | Done | `src/services/central/tasks.service.ts` + hooks المهام | 4, 5, 8, 9, 10 | P0 |
-| Invoices | Create/Read/Update عبر active invoice path فقط | Done | `src/services/invoices/invoices.service.ts` + `src/api/invoices/invoices.ts` | 4, 5, 6, 8, 9, 10 | P0 |
-| Department shell read | قراءة بنية الأقسام من service مركزي | Done | `src/services/central/departments.service.ts` | 4, 5, 8, 9, 11 | P1 |
-| Authorization/Roles | صلاحيات دورية متسقة بين app + RLS | Done | RLS policies + role services | 10, 11, 8 | P0 |
-| Runtime Verification Pack | تقرير تحقق للمسارات الأساسية الخمسة | Done | Artifact الخطوة 8 | 4, 5, 10, 11 | P0 |
-| Quality Gates (CI) | typecheck + lint + smoke + merge blocking | Done | `.github/workflows/pr-checks.yml` | 6, 8, 9 | P0 |
-| Legacy Isolation | منع imports من legacy في المسارات النشطة | Done | lint/policy + ADR-001 | 5, 6, 9 | P0 |
-| Baseline Schema | snapshot schema مع جداول/علاقات in-use | Done | Artifact الخطوة 10 | 4, 10 | P0 |
+| Auth / Session | تسجيل دخول/جلسة مستقرة + حماية المسارات + عدم تسرب صلاحيات | Partial | Supabase Auth + `ProtectedRoute` | 5, 8, 9, 11 | P0 |
+| Projects | Create/Read يعملان عبر service نشط بدون mocks | Partial | `src/services/central/projects.service.ts` | 4, 5, 8, 9, 10 | P0 |
+| Tasks | Create/Read/Update عبر service موحّد + اتساق الحالة | Partial | `src/services/central/tasks.service.ts` + hooks المهام | 4, 5, 8, 9, 10 | P0 |
+| Invoices | Create/Read/Update عبر active invoice path فقط | Partial | `src/services/invoices/invoices.service.ts` + `src/api/invoices/invoices.ts` | 4, 5, 6, 8, 9, 10 | P0 |
+| Department shell read | قراءة بنية الأقسام من service مركزي | Partial | `src/services/central/departments.service.ts` | 4, 5, 8, 9, 11 | P1 |
+| Authorization/Roles | صلاحيات دورية متسقة بين app + RLS | Partial | RLS policies + role services | 10, 11, 8 | P0 |
+| Runtime Verification Pack | تقرير تحقق للمسارات الأساسية الخمسة | Not Started | Artifact الخطوة 8 | 4, 5, 10, 11 | P0 |
+| Quality Gates (CI) | typecheck + lint + smoke + merge blocking | In Progress | `.github/workflows/pr-checks.yml` | 6, 8, 9 | P0 |
+| Legacy Isolation | منع imports من legacy في المسارات النشطة | In Progress | lint/policy + ADR-001 | 5, 6, 9 | P0 |
+| Baseline Schema | snapshot schema مع جداول/علاقات in-use | Not Started | Artifact الخطوة 10 | 4, 10 | P0 |
 
 ## ملاحظات تصنيف الحالة
 1. **Done**: كل بنود DoD للمكوّن مغلقة مع دليل تحقق قابل للتدقيق.
@@ -43,7 +43,3 @@
 1. تم إنشاء DoD Matrix baseline داخل المشروع.
 2. تم ربطها بعناصر التنفيذ الحرجة ومخرجات الخطوات اللاحقة.
 3. أُغلقت الخطوة 3 كمرجع تشغيلي حاكم.
-
-
-## Step 12 Closure Update (2026-05-05)
-تم تحديث حالات المكونات إلى Done بعد إغلاق الأدلة المرتبطة في Step 8/9/10/11 وتوثيق تقرير Step 12.

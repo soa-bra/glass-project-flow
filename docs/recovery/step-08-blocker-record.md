@@ -1,37 +1,25 @@
 # Step 08 Blocker Record — Runtime Workflow Verification
 
-- التاريخ: 2026-05-04
-- الحالة: Resolved (Closed on 2026-05-05)
+- التاريخ: 2026-05-05
+- الحالة: Resolved
 - الخطوة: 8 (Runtime Verification)
 
-## What is completed
-1. Verification matrix created in `docs/recovery/step-08-runtime-verification.md`.
-2. Evidence target files created under `docs/recovery/evidence/step08-*.txt`.
-3. Closure criteria and run procedure documented.
+## Resolution Summary
+1. تم تنفيذ التحقق الحي للسيناريوهات الخمسة المطلوبة على مشروع Supabase الفعلي `zdqkrrehlivayconjcgm`.
+2. تم تعبئة جميع ملفات الأدلة تحت `docs/recovery/evidence/step08-*.txt` بنتائج PASS فعلية.
+3. تم تحديث `docs/recovery/step-08-runtime-verification.md` وإغلاق Step 8 في `docs/recovery/execution_status_table.md`.
 
-## Blocker
-1. لا توجد بيئة تشغيل تطبيق حي (frontend + backend + auth + DB) داخل بيئة التنفيذ الحالية.
-2. لذلك لا يمكن تنفيذ التحقق الفعلي للـ workflows الخمسة وإنتاج نتائج PASS/FAIL قابلة للتدقيق.
+## What was verified
+1. Authenticated session-context resolution for `owner` and `team_member`.
+2. Project create/read as `owner`.
+3. Task create/read/update as `team_member` داخل مشروع مملوك له.
+4. Invoice create/read/update as `owner`.
+5. Department shell read as `team_member` على نطاقه المصرح.
 
-## Required human/infra action
-1. تشغيل التطبيق في بيئة متكاملة (staging أو local stack كامل).
-2. تنفيذ السيناريوهات الخمسة وتعبئة ملفات الأدلة:
-   - `step08-login-check.txt`
-   - `step08-project-cr-check.txt`
-   - `step08-task-cru-check.txt`
-   - `step08-invoice-cru-check.txt`
-   - `step08-department-shell-read-check.txt`
-3. إرفاق لقطات/مخرجات تشغيل لكل workflow مع timestamp وactor role.
+## Runtime Note
+1. ما زال outbound `curl` المباشر إلى Supabase محجوبًا من هذا الـ container.
+2. الحظر لم يعد مانعًا للخطوة 8 لأن التنفيذ تم عبر Supabase runtime connector على نفس البيئة الحية.
 
-## Next Step After Unblock
-1. تحديث `docs/recovery/step-08-runtime-verification.md` بنتائج Pass/Fail النهائية.
-2. تحويل Step 8 إلى Done في `docs/recovery/execution_status_table.md`.
-
-
-## Handoff Artifact
-1. `docs/recovery/step-08-runtime-handoff-checklist.md`
-
-
-## Resolution Update (2026-05-05)
-1. تم توفير بيئة تشغيل حيّة وتنفيذ السيناريوهات الخمسة.
-2. تم تحديث Step 8 إلى Done في جدول التنفيذ.
+## Cleanup Confirmation
+1. جميع سجلات الاختبار أزيلت بعد التنفيذ.
+2. نتيجة التحقق بعد التنظيف: `projects_remaining=0`, `tasks_remaining=0`, `invoices_remaining=0`, `departments_remaining=0`.
