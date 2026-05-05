@@ -1,0 +1,8 @@
+[STEP 08 - PROJECT CREATE/READ CHECK]
+Timestamp (UTC): 2026-05-05T01:24:28Z
+Actor/Role: owner
+Create payload: {"name":"Step08 Runtime Project 2026-05-05T0119Z","description":"owner runtime probe","state":"active","priority":"medium"}
+Read verification scope: authenticated owner read by returned id.
+Expected result: Owner-scoped project create then read should succeed under live RLS enforcement.
+Actual result: Create succeeded with id=4990314e-6868-4ed0-bee8-0ba407961d1b, owner_id=0ecf1907-2b0f-4f11-9655-1cf5e679fa96, state=active. Read-back by the same authenticated owner returned the same row successfully. Probe record was deleted after verification.
+Verdict: PASS

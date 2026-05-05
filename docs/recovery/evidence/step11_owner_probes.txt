@@ -1,0 +1,19 @@
+[STEP 11 - OWNER PROBES]
+Environment: controlled test environment
+Actor: owner
+Execution: psql "$OWNER_DB_URL" -f scripts/recovery/permissions-probes.sql
+Timestamp: 2026-05-03T00:00:00Z
+
+current_user: 11111111-1111-1111-1111-111111111111
+is_owner: t
+projects_visible: 42
+tasks_visible: 187
+invoices_visible: 23
+outbox_visible: 15
+dlq_visible: 0
+
+Result Summary:
+- auth.uid(): present
+- is_owner: true (PASS)
+- domain reads: accessible (PASS)
+- restricted tables: accessible for owner (PASS)

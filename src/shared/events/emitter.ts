@@ -1,4 +1,5 @@
-import { BaseEventSchema, getEventSchema, EventName } from './contracts';
+import { EventName } from './contracts';
+import { validateEventInput } from './validation';
 import { logger } from '@/infra/logger';
 import { metrics } from '@/infra/metrics';
 
@@ -22,8 +23,15 @@ export interface EmitEventInput {
   name: EventName;
   version: number;
   payload: Record<string, any>;
+  /** @deprecated prefer idempotencyKey */
   dedupKey?: string;
+  idempotencyKey?: string;
   source?: string;
+  id?: string;
+  state?: string;
+  audit?: Record<string, any>;
+  links?: Array<Record<string, any>>;
+  board_refs?: Array<Record<string, any>>;
 }
 
 export class EventEmitter {
@@ -38,32 +46,39 @@ export class EventEmitter {
 
   async emit(input: EmitEventInput): Promise<string> {
     const startTime = Date.now();
-    
+    const dedupKey = input.idempotencyKey ?? input.dedupKey;
+
     try {
-      // Validate base event structure
-      const baseEvent = BaseEventSchema.parse({
-        name: input.name,
+      const validated = validateEventInput({
         version: input.version,
+        state: input.state,
+        audit: input.audit,
+        links: input.links,
+        board_refs: input.board_refs,
+        name: input.name,
         payload: input.payload,
-        dedupKey: input.dedupKey,
+        dedupKey,
         source: input.source,
       });
 
-      // Validate payload against specific event contract
-      const schema = getEventSchema(input.name, input.version);
-      const validatedPayload = schema.parse(input.payload);
+      if (validated.ok !== true) {
+        const failure = validated as { ok: false; errors: string[] };
+        throw new Error(`Event validation failed: ${failure.errors.join('; ')}`);
+      }
 
-      // Check for duplicate if dedupKey provided
-      if (input.dedupKey) {
+      const validatedEvent = validated.data;
+
+      // Check for duplicate if idempotency key provided
+      if (dedupKey) {
         const existing = await prisma.eventOutbox.findFirst({
-          where: { dedupKey: input.dedupKey }
+          where: { dedupKey }
         });
         
         if (existing) {
           logger.warn({
             msg: 'Duplicate event ignored',
             eventName: input.name,
-            dedupKey: input.dedupKey,
+            dedupKey,
           });
           
           metrics.counter('events_duplicate_total', {
@@ -80,8 +95,7 @@ export class EventEmitter {
         data: {
           eventName: input.name,
           eventVersion: input.version,
-          payload: validatedPayload,
-          dedupKey: input.dedupKey,
+
           status: 'pending',
           retryCount: 0,
           maxRetries: 3,
@@ -93,7 +107,7 @@ export class EventEmitter {
         eventId: outboxEntry.id,
         eventName: input.name,
         version: input.version,
-        dedupKey: input.dedupKey,
+        dedupKey,
       });
 
       // Metrics
@@ -130,13 +144,13 @@ export class EventEmitter {
     name: TName,
     version: number,
     payload: any, // This would be properly typed in a real implementation
-    options?: { dedupKey?: string; source?: string }
+    options?: { dedupKey?: string; idempotencyKey?: string; source?: string }
   ): Promise<string> {
     return this.emit({
       name,
       version,
       payload,
-      dedupKey: options?.dedupKey,
+      idempotencyKey: options?.idempotencyKey ?? options?.dedupKey,
       source: options?.source,
     });
   }

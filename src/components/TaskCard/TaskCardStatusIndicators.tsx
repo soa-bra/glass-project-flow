@@ -3,6 +3,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { EllipsisVertical, Check, Edit, Archive, Trash, X, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaskData } from '@/types';
+import { taskCardSingleLineTextStyle, useTaskCardSizeTokens } from './taskCardSizeTokens';
 interface TaskCardStatusIndicatorsProps {
   status: string;
   statusColor: string;
@@ -33,6 +34,7 @@ const TaskCardStatusIndicators = ({
   onArchive,
   onDelete
 }: TaskCardStatusIndicatorsProps) => {
+  const tokens = useTaskCardSizeTokens();
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [open, setOpen] = useState(false);
@@ -40,17 +42,16 @@ const TaskCardStatusIndicators = ({
   const pillStyle = {
     backgroundColor: '#FFFFFF',
     border: '1px solid #DADCE0',
-    borderRadius: '15px',
-    padding: '0 8px',
-    fontSize: '10px',
-    fontWeight: 500,
-    color: '#858789',
-    fontFamily: 'IBM Plex Sans Arabic',
-    height: '24px',
-    minWidth: 0
+
   };
-  const pillTextClassName = "block min-w-0 overflow-hidden text-ellipsis whitespace-nowrap";
-  const basePillClassName = "min-w-0 flex items-center w-full";
+  const pillWidthByType = {
+    status: { minWidth: '0px' },
+    date: { minWidth: '0px' },
+    assignee: { minWidth: '0px' },
+    members: { minWidth: '0px' }
+  } as const;
+  const pillTextClassName = "block min-w-0 w-full overflow-hidden text-ellipsis whitespace-nowrap leading-tight";
+  const basePillClassName = "min-w-0 flex h-[30px] items-center w-full overflow-hidden px-3 py-1 rounded-full";
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     // تعديل المهمة
@@ -70,57 +71,54 @@ const TaskCardStatusIndicators = ({
     e.stopPropagation();
   };
   return <>
-      <div className="mt-2 w-full lg:grid lg:grid-cols-[minmax(140px,1.35fr)_minmax(110px,1fr)_minmax(120px,1fr)_minmax(90px,0.9fr)_auto] lg:items-stretch lg:gap-1.5">
-        <div className="grid min-w-0 grid-cols-2 items-stretch gap-1.5 lg:col-span-4 lg:grid-cols-subgrid">
+      <div className="mt-2 grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] grid-rows-2 items-stretch gap-1.5 lg:grid-cols-[minmax(140px,1.35fr)_minmax(112px,0.95fr)_minmax(128px,1fr)_minmax(140px,1.2fr)_auto] lg:grid-rows-1">
+        <div className="col-span-2 row-span-2 grid min-w-0 grid-cols-2 grid-rows-2 items-stretch gap-1.5 lg:col-span-4 lg:row-span-1 lg:grid-cols-subgrid lg:grid-rows-1">
           <div
             style={{
               ...pillStyle,
               display: 'flex',
               alignItems: 'center',
-              gap: '4px',
-              maxWidth: '240px'
+              gap: '0px',
+              ...pillWidthByType.status
             }}
             className={basePillClassName}
             title={status}
           >
             <div style={{
-              width: '8px',
-              height: '8px',
+              width: '10px',
+              height: '10px',
               borderRadius: '50%',
               backgroundColor: statusColor,
               flexShrink: 0
             }}></div>
-            <span className={pillTextClassName} dir="auto">{status}</span>
           </div>
 
-          <div style={{ ...pillStyle, maxWidth: '180px' }} className={basePillClassName} title={date}>
+          <div style={{ ...pillStyle, ...pillWidthByType.date, border: '1px solid #111111' }} className={basePillClassName} title={date}>
             <span className={pillTextClassName} dir="auto">{date}</span>
           </div>
-          <div style={{ ...pillStyle, maxWidth: '210px' }} className={basePillClassName} title={assignee}>
+          <div style={{ ...pillStyle, ...pillWidthByType.assignee }} className={basePillClassName} title={assignee}>
             <span className={pillTextClassName} dir="auto">{assignee}</span>
           </div>
-          <div style={{ ...pillStyle, maxWidth: '150px' }} className={basePillClassName} title={members}>
+          <div style={{ ...pillStyle, ...pillWidthByType.members }} className={basePillClassName} title={members}>
             <span className={pillTextClassName} dir="auto">{members}</span>
           </div>
         </div>
         
         {/* أيقونة التحديد أو قائمة النقاط الثلاث */}
         {isSelectionMode ? <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '20px',
-        height: '20px',
-        borderRadius: '50%',
-        padding: '0',
-        border: isSelected ? 'none' : '1px solid #858789',
-        backgroundColor: isSelected ? '#858789' : 'transparent',
-        color: isSelected ? '#fff' : '#858789'
-      }}
-      className="mt-1 justify-self-end lg:mt-0 lg:justify-self-auto"
-      >
-            {isSelected ? <Check size={12} color="white" /> : null}
+          ...pillStyle,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: tokens.iconButtonSizePx,
+          height: tokens.iconButtonSizePx,
+          borderRadius: '50%',
+          padding: '0',
+          border: isSelected ? 'none' : '1px solid #858789',
+          backgroundColor: isSelected ? '#858789' : 'transparent',
+          color: isSelected ? '#fff' : '#858789'
+        }}>
+            {isSelected ? <Check size={16} /> : null}
           </div> : <div className="relative" ref={menuRef}>
             <button
               onClick={(e) => {
@@ -132,20 +130,20 @@ const TaskCardStatusIndicators = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '20px',
-                height: '20px',
+                width: tokens.iconButtonSizePx,
+                height: tokens.iconButtonSizePx,
                 borderRadius: '50%',
                 padding: '0',
                 border: 'none',
                 cursor: 'pointer'
               }}
-              className="mt-1 justify-self-end lg:mt-0"
+              className="row-span-2 self-center justify-self-end lg:row-span-1 lg:mt-0"
             >
               <motion.span
                 animate={{ rotate: open ? 90 : 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut", type: "spring", stiffness: 300, damping: 20 }}
               >
-                <EllipsisVertical size={12} color="#858789" />
+                <EllipsisVertical color="#858789" style={{ width: tokens.iconSizePx, height: tokens.iconSizePx }} />
               </motion.span>
             </button>
                 
