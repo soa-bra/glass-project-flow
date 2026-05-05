@@ -1,9 +1,9 @@
 [STEP 08 - INVOICE CREATE/READ/UPDATE CHECK]
-Timestamp (UTC): 2026-05-04T18:11:17Z
-Actor/Role: owner (test account planned)
-Create payload: {"invoice_number":"S8-INV-001","status":"draft","total_amount":1000} (not executed due connectivity failure)
-Update payload: {"status":"sent"} (not executed due connectivity failure)
-Read verification scope: /rest/v1/invoices select id,status,total_amount limit 1
-Expected result: Invoice create/update/read should succeed for authorized actor.
-Actual result: Runtime request could not reach Supabase endpoint. Command output: curl -sS ... => curl: (56) CONNECT tunnel failed, response 403
-Verdict: FAIL
+Timestamp (UTC): 2026-05-05T01:24:28Z
+Actor/Role: owner
+Create payload: {"invoice_number":"S8-INV-20260505-0119","client_name":"Step08 Client","service_type":"consulting","status":"draft","total_amount":1150}
+Update payload: {"status":"pending","notes":"updated during runtime probe"}
+Read verification scope: authenticated owner read by returned invoice id.
+Expected result: Owner-scoped invoice create/update/read should succeed under live RLS enforcement.
+Actual result: Create succeeded with id=510dabaa-9e67-4b8d-9367-77b2737e3b62, invoice_number=S8-INV-20260505-0119, status=draft. Update to status=pending succeeded. Final read returned the same invoice with status=pending and total_amount=1150.00. Probe invoice was deleted after verification.
+Verdict: PASS
