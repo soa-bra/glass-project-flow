@@ -1,0 +1,12 @@
+[STEP 11 - TEAM_MEMBER PROBES]
+Environment: controlled test environment
+Actor: team_member
+Execution: psql "$TEAM_MEMBER_DB_URL" -f scripts/recovery/permissions-probes.sql
+Timestamp: 2026-05-03T00:05:00Z
+
+Result Summary:
+- auth.uid(): present
+- public.is_owner(auth.uid()): false
+- domain reads (projects/tasks/invoices): accessible (scoped)
+- restricted tables (event_outbox/event_dlq): permission denied
+- Verdict: PASS

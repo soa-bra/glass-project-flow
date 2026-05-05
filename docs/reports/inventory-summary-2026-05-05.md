@@ -25,3 +25,17 @@
    - `snapEngine` (math vs interaction)
    - `ShapeRenderer` (diagram vs shared)
 4. إعادة الفحص بعد كل batch مع مقارنة عدد المرشحين قبل/بعد.
+
+## Cleanup batch log — 2026-05-05 (Batch 1)
+- Deleted files (3):
+  - `src/hooks/performance/useCanvasPerformance.ts`
+  - `src/hooks/performance/useMemoizedStyles.ts`
+  - `src/hooks/performance/usePerformanceOptimization.ts`
+- Post-delete check: `npm run -s typecheck` ✅ passed.
+- Deferred files in this batch: **0**.
+- Moved to allowlist in this batch: **0**.
+
+### Batch 1 summary
+- عدد الملفات المحذوفة: **3**
+- عدد الملفات المؤجلة: **0**
+- عدد الملفات المنقولة للـ allowlist: **0**

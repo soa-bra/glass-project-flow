@@ -44,6 +44,25 @@ import type { SmartElementType } from "@/types/smart-elements";
 import type { CanvasElement } from "@/types/canvas";
 import type { TextFormatCommand } from "@/features/planning/elements/text/TextFormattingController";
 
+const DEFAULT_VIEWPORT_HOST_SIZE = { width: 1280, height: 720 };
+
+function getViewportCenterWorldPosition(
+  viewport: { zoom: number; pan: { x: number; y: number } },
+  viewportHostSize: { width: number; height: number } | undefined,
+): { x: number; y: number } {
+  const hostWidth = viewportHostSize && viewportHostSize.width > 0
+    ? viewportHostSize.width
+    : DEFAULT_VIEWPORT_HOST_SIZE.width;
+  const hostHeight = viewportHostSize && viewportHostSize.height > 0
+    ? viewportHostSize.height
+    : DEFAULT_VIEWPORT_HOST_SIZE.height;
+
+  return {
+    x: (hostWidth / 2 - viewport.pan.x) / viewport.zoom,
+    y: (hostHeight / 2 - viewport.pan.y) / viewport.zoom,
+  };
+}
+
 export const FloatingBar: React.FC = () => {
   const {
     elements,
@@ -51,6 +70,7 @@ export const FloatingBar: React.FC = () => {
     clipboard,
     layers,
     viewport,
+    viewportHostSize,
     updateElement,
     deleteElement,
     addElement,
@@ -147,8 +167,8 @@ export const FloatingBar: React.FC = () => {
   }, [selectedElementIds]);
 
   const handleAddText = useCallback(() => {
-    addNewText({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  }, []);
+    addNewText(getViewportCenterWorldPosition(viewport, viewportHostSize));
+  }, [viewport, viewportHostSize]);
 
   const handleHorizontalAlign = useCallback((align: "right" | "center" | "left") => {
     layoutOps.alignHorizontally(align);
