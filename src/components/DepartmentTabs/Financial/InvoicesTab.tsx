@@ -7,17 +7,19 @@ import { BaseBadge } from '@/components/ui/BaseBadge';
 import { buildTitleClasses, COLORS, TYPOGRAPHY, SPACING } from '@/components/shared/design-system/constants';
 import { Reveal } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
-import { mockInvoices } from './data';
 import { formatCurrency, getStatusText } from './utils';
 import { ClientInfoBox, getClientData } from './ClientInfoBox';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
+import { useInvoices, useCreateInvoice, useUpdateInvoice } from '@/hooks/useInvoices';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
-  const [invoices, setInvoices] = useState(mockInvoices);
+  const { data: invoices = [], isLoading, error } = useInvoices();
+  const createInvoiceMutation = useCreateInvoice();
+  const updateInvoiceMutation = useUpdateInvoice();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
   const [viewingInvoice, setViewingInvoice] = useState<any>(null);
@@ -36,38 +38,41 @@ export const InvoicesTab: React.FC = () => {
     { name: 'notes', label: 'ملاحظات', type: 'textarea', placeholder: 'ملاحظات إضافية...' },
   ];
 
-  const handleCreateInvoice = (data: Record<string, string>) => {
-    const newInvoice = {
-      id: `INV-${Date.now().toString().slice(-4)}`,
-      client: data.client,
-      projectId: `PRJ-${Date.now().toString().slice(-3)}`,
-      projectName: data.projectName,
-      totalAmount: Number(data.totalAmount),
-      paymentAmount: Number(data.paymentAmount),
-      paymentNumber: 1,
-      totalPayments: 1,
-      paymentPercentage: (Number(data.paymentAmount) / Number(data.totalAmount)) * 100,
-      dueDate: data.dueDate,
-      status: data.status as any,
-    };
-    setInvoices(prev => [newInvoice, ...prev]);
-  };
-
-  const handleEditInvoice = (data: Record<string, string>) => {
-    if (!editingInvoice) return;
-    setInvoices(prev => prev.map(inv => 
-      inv.id === editingInvoice.id ? {
-        ...inv,
+  const handleCreateInvoice = async (data: Record<string, string>) => {
+    try {
+      await createInvoiceMutation.mutateAsync({
         client: data.client,
         projectName: data.projectName,
         totalAmount: Number(data.totalAmount),
         paymentAmount: Number(data.paymentAmount),
         dueDate: data.dueDate,
-        status: data.status as any,
-        paymentPercentage: (Number(data.paymentAmount) / Number(data.totalAmount)) * 100,
-      } : inv
-    ));
-    setEditingInvoice(null);
+        status: data.status,
+        notes: data.notes,
+      });
+    } catch {
+      // toast already shown by hook onError
+    }
+  };
+
+  const handleEditInvoice = async (data: Record<string, string>) => {
+    if (!editingInvoice) return;
+    try {
+      await updateInvoiceMutation.mutateAsync({
+        id: editingInvoice.id,
+        input: {
+          client: data.client,
+          projectName: data.projectName,
+          totalAmount: Number(data.totalAmount),
+          paymentAmount: Number(data.paymentAmount),
+          dueDate: data.dueDate,
+          status: data.status,
+          notes: data.notes,
+        },
+      });
+      setEditingInvoice(null);
+    } catch {
+      // toast already shown by hook onError
+    }
   };
 
   const handleDownloadInvoice = (invoice: any) => {
@@ -115,6 +120,21 @@ export const InvoicesTab: React.FC = () => {
       </Reveal>
 
       <BaseBox title="جدول الفواتير">
+        {isLoading && (
+          <p className={cn(TYPOGRAPHY.BODY, TYPOGRAPHY.ARABIC_FONT, 'text-gray-500 py-6 text-center')}>
+            جاري تحميل الفواتير...
+          </p>
+        )}
+        {error && (
+          <p className={cn(TYPOGRAPHY.BODY, TYPOGRAPHY.ARABIC_FONT, 'text-red-600 py-6 text-center')}>
+            تعذّر تحميل الفواتير: {error instanceof Error ? error.message : 'خطأ غير معروف'}
+          </p>
+        )}
+        {!isLoading && !error && invoices.length === 0 && (
+          <p className={cn(TYPOGRAPHY.BODY, TYPOGRAPHY.ARABIC_FONT, 'text-gray-500 py-6 text-center')}>
+            لا توجد فواتير حتى الآن. أنشئ أول فاتورة من الزر أعلاه.
+          </p>
+        )}
         <div className="grid grid-cols-2 gap-4">
           {invoices.map(invoice => (
             <Reveal key={invoice.id} delay={0.1}>
