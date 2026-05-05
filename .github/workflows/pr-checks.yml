@@ -11,10 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-and-test:
-    name: Lint and Test
+  quality-gate:
+    name: Quality Gate (npm)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -24,17 +24,87 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Install dependencies
+      - name: Enforce npm lockfile policy
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+          set -euo pipefail
+          [ -f package-lock.json ] || { echo "package-lock.json is required for npm policy."; exit 1; }
+          [ ! -f bun.lock ] || { echo "bun.lock is not allowed when npm is the official manager."; exit 1; }
+          [ ! -f bun.lockb ] || { echo "bun.lockb is not allowed when npm is the official manager."; exit 1; }
 
-      - name: Run lint
-        run: npm run lint
+      - name: Install dependencies (frozen lockfile)
+        run: npm ci
 
-      - name: Run tests
-        run: npm run test
+      - name: Verify lockfile is up-to-date
+        run: |
+          set -euo pipefail
+          cp package-lock.json /tmp/package-lock.before.json
+          npm install --package-lock-only --ignore-scripts
+          diff -u /tmp/package-lock.before.json package-lock.json
+
+      - name: Lint
+        run: npm run lint -- --format json --output-file lint-report.json
+
+      - name: Typecheck
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee typecheck-report.txt
+
+      - name: Test
+        run: |
+          set -o pipefail
+          npm run test 2>&1 | tee test-report.txt
+
+      - name: Recovery smoke gate (core paths)
+        run: node scripts/recovery/smoke-gate.mjs
+
+      - name: Build baseline quality artifact
+        if: always()
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          const lint = fs.existsSync('lint-report.json')
+            ? JSON.parse(fs.readFileSync('lint-report.json', 'utf8'))
+            : [];
+
+          let lintErrors = 0;
+          let lintWarnings = 0;
+          for (const file of lint) {
+            lintErrors += file.errorCount || 0;
+            lintWarnings += file.warningCount || 0;
+          }
+
+          const typecheckText = fs.existsSync('typecheck-report.txt')
+            ? fs.readFileSync('typecheck-report.txt', 'utf8')
+            : '';
+          const typeErrors = (typecheckText.match(/error TS\d+:/g) || []).length;
+
+          const testText = fs.existsSync('test-report.txt')
+            ? fs.readFileSync('test-report.txt', 'utf8')
+            : '';
+          const failedMatch = testText.match(/(\d+) failed/i);
+          const passedMatch = testText.match(/(\d+) passed/i);
+
+          const baseline = {
+            packageManager: 'npm',
+            generatedAt: new Date().toISOString(),
+            lint: { errors: lintErrors, warnings: lintWarnings },
+            typecheck: { errors: typeErrors },
+            test: {
+              failed: failedMatch ? Number(failedMatch[1]) : 0,
+              passed: passedMatch ? Number(passedMatch[1]) : 0
+            }
+          };
+
+          fs.mkdirSync('artifacts', { recursive: true });
+          fs.writeFileSync('artifacts/quality-baseline.json', JSON.stringify(baseline, null, 2));
+          NODE
+
+      - name: Upload baseline artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-baseline
+          path: artifacts/quality-baseline.json

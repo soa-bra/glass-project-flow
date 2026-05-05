@@ -1,3 +1,5 @@
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
+
 interface FeatureTaskCardTitleProps {
   title: string;
   description: string;
@@ -7,35 +9,28 @@ const FeatureTaskCardTitle = ({
   title,
   description
 }: FeatureTaskCardTitleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   return (
-    <div className="w-full min-w-0 overflow-hidden px-[clamp(0.125rem,0.4vw,0.25rem)] text-right">
-      <h4
-        style={{
-          fontWeight: 700,
-          color: '#000000',
-          lineHeight: 1.2,
-          fontFamily: 'IBM Plex Sans Arabic'
-        }}
-        className="my-0 min-w-0 max-w-full overflow-hidden text-[13px] leading-tight sm:text-sm lg:text-base line-clamp-2 [overflow-wrap:anywhere] [word-break:break-word]"
+    <div className="min-w-0 overflow-hidden">
+      <h3
         title={title}
-        dir="auto"
-        lang="ar"
+        className="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+        style={{
+          fontSize: tokens.titleFontSizePx,
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word'
+        }}
       >
         {title}
-      </h4>
-
+      </h3>
       <p
+        className="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
         style={{
-          fontWeight: 400,
-          color: '#858789',
-          marginBottom: '0px',
-          lineHeight: 1.2,
-          fontFamily: 'IBM Plex Sans Arabic'
+          fontSize: tokens.descriptionFontSizePx,
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word'
         }}
-        className="mt-1 min-w-0 max-w-full overflow-hidden text-[10px] font-normal leading-tight text-gray-600 sm:text-[11px] lg:text-xs line-clamp-2 [overflow-wrap:anywhere] [word-break:break-word]"
-        title={description}
-        dir="auto"
-        lang="ar"
       >
         {description}
       </p>
