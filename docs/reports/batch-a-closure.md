@@ -1,30 +1,26 @@
-# Batch A Closure (Mini-batches #1 and #2) — 2026-05-05
+# Batch A Closure — 2026-05-05
 
-## Scope executed
-Deleted 6 low-risk files from the Batch A queue after static reference checks.
+## ملخص الإغلاق
 
-## Removed files
-### Mini-batch #1
-1. `src/components/OperationsBoard/shared/LoadingCard.tsx`
-2. `src/components/OperationsBoard/shared/ErrorCard.tsx`
-3. `src/components/OperationsBoard/Clients/AddClientButton.tsx`
+- عدد الملفات المحذوفة: **3**
+- عدد الملفات المؤجلة: **0**
+- عدد الملفات في allowlist: **8**
+- العدد المتبقي من قائمة الـ 95: **84**
 
-### Mini-batch #2
-4. `src/components/OperationsBoard/Clients/ActiveClientsList.tsx`
-5. `src/components/OperationsBoard/Finance/OverBudgetAlert.tsx`
-6. `src/components/OperationsBoard/Finance/ProjectBudgetChart.tsx`
+## تفاصيل الحساب
 
-## Validation
-- Static string/import search found no in-repo references before deletion.
-- `npm run -s typecheck` passed after each mini-batch.
+اعتمادًا على baseline الأصلي `95` مرشّحًا:
 
-## Batch A progress
-- Initial candidate baseline: 95
-- Removed so far: 6
-- Remaining candidates (raw baseline view): 89
+- baseline: `95`
+- المحذوف: `3`
+- المؤجل: `0`
+- allowlist: `8`
+- المتبقي للمراجعة/المعالجة: `95 - 3 - 0 - 8 = 84`
 
-## Next mini-batch suggestion
-Continue with OperationsBoard leaf widgets:
-- `src/components/OperationsBoard/HR/AddMemberButton.tsx`
-- `src/components/OperationsBoard/HR/ProjectDistribution.tsx`
-- `src/components/OperationsBoard/HR/SkillGapRadar.tsx`
+## إعادة فحص import-graph
+
+تمت إعادة تشغيل فحص import-graph وتحديث ملف المرشحين:
+
+- `docs/reports/zero-reference-candidates-2026-05-05.md`
+
+> ملاحظة: نتيجة إعادة الفحص الحالية تعتمد على نفس المنهج heuristic لربط `@/` و relative imports وقد تنتج baseline مختلفًا عن تقرير الـ95 الأصلي.
