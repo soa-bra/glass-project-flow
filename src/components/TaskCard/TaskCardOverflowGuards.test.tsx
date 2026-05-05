@@ -74,6 +74,33 @@ describe('Task card overflow guards', () => {
       expect(title.className).toContain('line-clamp-2');
     });
 
+
+
+    it(`matches visual layout snapshot at ${viewport}px (اعتماد لقطات)`, () => {
+      setViewportWidth(viewport);
+
+      const { asFragment } = render(
+        <BaseTaskCardLayout id={`task-snapshot-${viewport}`}>
+          <FeatureTaskCardHeader
+            daysLeft={7}
+            title={'عنوان طويل جداً '.repeat(6)}
+            description={'وصف طويل جداً '.repeat(8)}
+            priority="urgent-important"
+          />
+          <TaskCardStatusIndicators
+            status={'قيد التنفيذ مع نص طويل للغاية للغاية'}
+            statusColor="#00aa66"
+            date={'2026-04-28 - موعد طويل'}
+            assignee={'عضو فريق باسم طويل للغاية'}
+            members={'+12 أعضاء فريق بمسمى طويل'}
+            taskId={`snapshot-${viewport}`}
+          />
+        </BaseTaskCardLayout>,
+      );
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
     it(`clips bottom pills safely at ${viewport}px (قص pills في الأسفل)`, () => {
       setViewportWidth(viewport);
 

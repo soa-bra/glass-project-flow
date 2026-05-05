@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_events: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          decision: Database["public"]["Enums"]["audit_decision"]
+          id: string
+          metadata: Json | null
+          reason: string | null
+          resource_id: string | null
+          resource_type: string
+          scope_id: string | null
+          scope_type: Database["public"]["Enums"]["role_scope_type"] | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          decision: Database["public"]["Enums"]["audit_decision"]
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          resource_id?: string | null
+          resource_type: string
+          scope_id?: string | null
+          scope_type?: Database["public"]["Enums"]["role_scope_type"] | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          decision?: Database["public"]["Enums"]["audit_decision"]
+          id?: string
+          metadata?: Json | null
+          reason?: string | null
+          resource_id?: string | null
+          resource_type?: string
+          scope_id?: string | null
+          scope_type?: Database["public"]["Enums"]["role_scope_type"] | null
+        }
+        Relationships: []
+      }
       board_invite_links: {
         Row: {
           board_id: string
@@ -236,6 +278,291 @@ export type Database = {
         }
         Relationships: []
       }
+      central_boards: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      department_projects: {
+        Row: {
+          created_at: string
+          department_id: string
+          id: string
+          project_id: string
+          role: Database["public"]["Enums"]["department_project_role"]
+        }
+        Insert: {
+          created_at?: string
+          department_id: string
+          id?: string
+          project_id: string
+          role: Database["public"]["Enums"]["department_project_role"]
+        }
+        Update: {
+          created_at?: string
+          department_id?: string
+          id?: string
+          project_id?: string
+          role?: Database["public"]["Enums"]["department_project_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "department_projects_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "department_projects_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      departments: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      dependencies: {
+        Row: {
+          created_at: string
+          dependency_type: Database["public"]["Enums"]["central_dependency_type"]
+          description: string | null
+          from_entity_id: string
+          from_entity_type: Database["public"]["Enums"]["central_entity_type"]
+          id: string
+          metadata: Json | null
+          to_entity_id: string
+          to_entity_type: Database["public"]["Enums"]["central_entity_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dependency_type: Database["public"]["Enums"]["central_dependency_type"]
+          description?: string | null
+          from_entity_id: string
+          from_entity_type: Database["public"]["Enums"]["central_entity_type"]
+          id?: string
+          metadata?: Json | null
+          to_entity_id: string
+          to_entity_type: Database["public"]["Enums"]["central_entity_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dependency_type?: Database["public"]["Enums"]["central_dependency_type"]
+          description?: string | null
+          from_entity_id?: string
+          from_entity_type?: Database["public"]["Enums"]["central_entity_type"]
+          id?: string
+          metadata?: Json | null
+          to_entity_id?: string
+          to_entity_type?: Database["public"]["Enums"]["central_entity_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      engine_jobs: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database["public"]["Enums"]["engine_job_kind"]
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          produced_by_task_id: string | null
+          state: Database["public"]["Enums"]["central_state"]
+          triggered_by_tool_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["engine_job_kind"]
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          produced_by_task_id?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          triggered_by_tool_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["engine_job_kind"]
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          produced_by_task_id?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          triggered_by_tool_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "engine_jobs_produced_by_task_id_fkey"
+            columns: ["produced_by_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "engine_jobs_triggered_by_tool_id_fkey"
+            columns: ["triggered_by_tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_dlq: {
+        Row: {
+          aggregate_id: string
+          aggregate_type: string
+          error: string
+          event_type: string
+          failed_at: string
+          id: string
+          original_event_id: string | null
+          payload: Json
+        }
+        Insert: {
+          aggregate_id: string
+          aggregate_type: string
+          error: string
+          event_type: string
+          failed_at?: string
+          id?: string
+          original_event_id?: string | null
+          payload: Json
+        }
+        Update: {
+          aggregate_id?: string
+          aggregate_type?: string
+          error?: string
+          event_type?: string
+          failed_at?: string
+          id?: string
+          original_event_id?: string | null
+          payload?: Json
+        }
+        Relationships: []
+      }
+      event_outbox: {
+        Row: {
+          aggregate_id: string
+          aggregate_type: string
+          attempts: number
+          created_at: string
+          dispatched_at: string | null
+          event_type: string
+          id: string
+          last_error: string | null
+          payload: Json
+        }
+        Insert: {
+          aggregate_id: string
+          aggregate_type: string
+          attempts?: number
+          created_at?: string
+          dispatched_at?: string | null
+          event_type: string
+          id?: string
+          last_error?: string | null
+          payload: Json
+        }
+        Update: {
+          aggregate_id?: string
+          aggregate_type?: string
+          attempts?: number
+          created_at?: string
+          dispatched_at?: string | null
+          event_type?: string
+          id?: string
+          last_error?: string | null
+          payload?: Json
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           created_at: string | null
@@ -347,6 +674,7 @@ export type Database = {
           id: string
           invoice_number: string
           issue_date: string
+          metadata: Json
           notes: string | null
           owner_id: string
           paid_date: string | null
@@ -373,6 +701,7 @@ export type Database = {
           id?: string
           invoice_number: string
           issue_date?: string
+          metadata?: Json
           notes?: string | null
           owner_id: string
           paid_date?: string | null
@@ -399,6 +728,7 @@ export type Database = {
           id?: string
           invoice_number?: string
           issue_date?: string
+          metadata?: Json
           notes?: string | null
           owner_id?: string
           paid_date?: string | null
@@ -414,81 +744,6 @@ export type Database = {
           total_amount?: number
           total_payments?: number | null
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      kv_store_06871a1a: {
-        Row: {
-          key: string
-          value: Json
-        }
-        Insert: {
-          key: string
-          value: Json
-        }
-        Update: {
-          key?: string
-          value?: Json
-        }
-        Relationships: []
-      }
-      kv_store_4c8546af: {
-        Row: {
-          key: string
-          value: Json
-        }
-        Insert: {
-          key: string
-          value: Json
-        }
-        Update: {
-          key?: string
-          value?: Json
-        }
-        Relationships: []
-      }
-      kv_store_7c857198: {
-        Row: {
-          key: string
-          value: Json
-        }
-        Insert: {
-          key: string
-          value: Json
-        }
-        Update: {
-          key?: string
-          value?: Json
-        }
-        Relationships: []
-      }
-      kv_store_7e6493e3: {
-        Row: {
-          key: string
-          value: Json
-        }
-        Insert: {
-          key: string
-          value: Json
-        }
-        Update: {
-          key?: string
-          value?: Json
-        }
-        Relationships: []
-      }
-      kv_store_8cde9397: {
-        Row: {
-          key: string
-          value: Json
-        }
-        Insert: {
-          key: string
-          value: Json
-        }
-        Update: {
-          key?: string
-          value?: Json
         }
         Relationships: []
       }
@@ -588,151 +843,111 @@ export type Database = {
           },
         ]
       }
-      project_phases: {
+      permissions: {
         Row: {
-          created_at: string | null
-          description: string | null
-          end_date: string | null
-          id: string
-          name: string
-          order_index: number
-          project_id: string
-          start_date: string | null
-          status: Database["public"]["Enums"]["project_status"] | null
-          updated_at: string | null
+          code: string
+          created_at: string
+          description: string
+          module: string
         }
         Insert: {
-          created_at?: string | null
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          name: string
-          order_index: number
-          project_id: string
-          start_date?: string | null
-          status?: Database["public"]["Enums"]["project_status"] | null
-          updated_at?: string | null
+          code: string
+          created_at?: string
+          description: string
+          module: string
         }
         Update: {
-          created_at?: string | null
-          description?: string | null
-          end_date?: string | null
-          id?: string
-          name?: string
-          order_index?: number
-          project_id?: string
-          start_date?: string | null
-          status?: Database["public"]["Enums"]["project_status"] | null
-          updated_at?: string | null
+          code?: string
+          created_at?: string
+          description?: string
+          module?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "project_phases_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "finance_dashboard_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "project_phases_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_cards_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_phases_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      project_tasks: {
+      profiles: {
         Row: {
-          actual_hours: number | null
-          assigned_to: string | null
-          board_id: string | null
-          created_at: string | null
-          created_by: string
-          description: string | null
-          due_date: string | null
-          estimated_hours: number | null
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
           id: string
-          phase_id: string | null
-          priority: Database["public"]["Enums"]["task_priority"] | null
-          project_id: string
-          status: Database["public"]["Enums"]["task_status"] | null
-          title: string
-          updated_at: string | null
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          actual_hours?: number | null
-          assigned_to?: string | null
-          board_id?: string | null
-          created_at?: string | null
-          created_by: string
-          description?: string | null
-          due_date?: string | null
-          estimated_hours?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
           id?: string
-          phase_id?: string | null
-          priority?: Database["public"]["Enums"]["task_priority"] | null
-          project_id: string
-          status?: Database["public"]["Enums"]["task_status"] | null
-          title: string
-          updated_at?: string | null
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          actual_hours?: number | null
-          assigned_to?: string | null
-          board_id?: string | null
-          created_at?: string | null
-          created_by?: string
-          description?: string | null
-          due_date?: string | null
-          estimated_hours?: number | null
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
           id?: string
-          phase_id?: string | null
-          priority?: Database["public"]["Enums"]["task_priority"] | null
-          project_id?: string
-          status?: Database["public"]["Enums"]["task_status"] | null
-          title?: string
-          updated_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      project_cards: {
+        Row: {
+          central_board_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          linked_project_id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          projection: string
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+          visible_metrics: string[]
+        }
+        Insert: {
+          central_board_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          linked_project_id: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          projection?: string
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+          visible_metrics?: string[]
+        }
+        Update: {
+          central_board_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          linked_project_id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          projection?: string
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+          visible_metrics?: string[]
         }
         Relationships: [
           {
-            foreignKeyName: "project_tasks_board_id_fkey"
-            columns: ["board_id"]
+            foreignKeyName: "project_cards_central_board_id_fkey"
+            columns: ["central_board_id"]
             isOneToOne: false
-            referencedRelation: "boards"
+            referencedRelation: "central_boards"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "project_tasks_phase_id_fkey"
-            columns: ["phase_id"]
-            isOneToOne: false
-            referencedRelation: "project_phases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "finance_dashboard_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "project_tasks_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_cards_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "project_tasks_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "project_cards_linked_project_id_fkey"
+            columns: ["linked_project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
@@ -742,44 +957,73 @@ export type Database = {
       projects: {
         Row: {
           budget: number | null
-          created_at: string | null
+          created_at: string
           description: string | null
-          end_date: string | null
+          due_date: string | null
           id: string
+          metadata: Json | null
           name: string
           owner_id: string
-          settings: Json | null
+          priority: Database["public"]["Enums"]["central_priority"]
           start_date: string | null
-          status: Database["public"]["Enums"]["project_status"] | null
-          updated_at: string | null
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
         }
         Insert: {
           budget?: number | null
-          created_at?: string | null
+          created_at?: string
           description?: string | null
-          end_date?: string | null
+          due_date?: string | null
           id?: string
+          metadata?: Json | null
           name: string
           owner_id: string
-          settings?: Json | null
+          priority?: Database["public"]["Enums"]["central_priority"]
           start_date?: string | null
-          status?: Database["public"]["Enums"]["project_status"] | null
-          updated_at?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
         }
         Update: {
           budget?: number | null
-          created_at?: string | null
+          created_at?: string
           description?: string | null
-          end_date?: string | null
+          due_date?: string | null
           id?: string
+          metadata?: Json | null
           name?: string
           owner_id?: string
-          settings?: Json | null
+          priority?: Database["public"]["Enums"]["central_priority"]
           start_date?: string | null
-          status?: Database["public"]["Enums"]["project_status"] | null
-          updated_at?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
         }
         Relationships: []
+      }
+      role_permissions: {
+        Row: {
+          created_at: string
+          permission_code: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          created_at?: string
+          permission_code: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          created_at?: string
+          permission_code?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_code_fkey"
+            columns: ["permission_code"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       smart_element_data: {
         Row: {
@@ -860,6 +1104,205 @@ export type Database = {
           },
         ]
       }
+      task_cards: {
+        Row: {
+          central_board_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          linked_project_id: string
+          linked_task_id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          projection: string
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+          visible_metrics: string[]
+        }
+        Insert: {
+          central_board_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          linked_project_id: string
+          linked_task_id: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          projection?: string
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+          visible_metrics?: string[]
+        }
+        Update: {
+          central_board_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          linked_project_id?: string
+          linked_task_id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          projection?: string
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+          visible_metrics?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_cards_central_board_id_fkey"
+            columns: ["central_board_id"]
+            isOneToOne: false
+            referencedRelation: "central_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_cards_linked_project_id_fkey"
+            columns: ["linked_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_cards_linked_task_id_fkey"
+            columns: ["linked_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_tool_engine_links: {
+        Row: {
+          created_at: string
+          engine_job_id: string
+          id: string
+          relation_type: Database["public"]["Enums"]["task_tool_engine_relation_type"]
+          task_id: string
+          tool_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          engine_job_id: string
+          id?: string
+          relation_type: Database["public"]["Enums"]["task_tool_engine_relation_type"]
+          task_id: string
+          tool_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          engine_job_id?: string
+          id?: string
+          relation_type?: Database["public"]["Enums"]["task_tool_engine_relation_type"]
+          task_id?: string
+          tool_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_tool_engine_links_engine_job_id_fkey"
+            columns: ["engine_job_id"]
+            isOneToOne: false
+            referencedRelation: "engine_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_tool_engine_links_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_tool_engine_links_tool_id_fkey"
+            columns: ["tool_id"]
+            isOneToOne: false
+            referencedRelation: "tools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          actual_cost: number | null
+          actual_duration: number | null
+          assignee_id: string | null
+          complexity: Database["public"]["Enums"]["central_complexity"]
+          created_at: string
+          description: string | null
+          due_date: string | null
+          estimated_cost: number
+          estimated_duration: number
+          id: string
+          linked_project_id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          required_team_size: number
+          start_date: string | null
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+        }
+        Insert: {
+          actual_cost?: number | null
+          actual_duration?: number | null
+          assignee_id?: string | null
+          complexity?: Database["public"]["Enums"]["central_complexity"]
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_cost?: number
+          estimated_duration?: number
+          id?: string
+          linked_project_id: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          required_team_size?: number
+          start_date?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Update: {
+          actual_cost?: number | null
+          actual_duration?: number | null
+          assignee_id?: string | null
+          complexity?: Database["public"]["Enums"]["central_complexity"]
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          estimated_cost?: number
+          estimated_duration?: number
+          id?: string
+          linked_project_id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          required_team_size?: number
+          start_date?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_linked_project_id_fkey"
+            columns: ["linked_project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       telemetry_events: {
         Row: {
           board_id: string | null
@@ -905,107 +1348,104 @@ export type Database = {
             referencedRelation: "boards"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      tools: {
+        Row: {
+          central_board_id: string
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database["public"]["Enums"]["tool_kind"]
+          metadata: Json | null
+          name: string
+          owner_id: string
+          priority: Database["public"]["Enums"]["central_priority"]
+          produced_by_task_id: string | null
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+        }
+        Insert: {
+          central_board_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["tool_kind"]
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          produced_by_task_id?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Update: {
+          central_board_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["tool_kind"]
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          priority?: Database["public"]["Enums"]["central_priority"]
+          produced_by_task_id?: string | null
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "telemetry_events_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "tools_central_board_id_fkey"
+            columns: ["central_board_id"]
             isOneToOne: false
-            referencedRelation: "finance_dashboard_view"
-            referencedColumns: ["project_id"]
-          },
-          {
-            foreignKeyName: "telemetry_events_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "project_cards_view"
+            referencedRelation: "central_boards"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "telemetry_events_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "tools_produced_by_task_id_fkey"
+            columns: ["produced_by_task_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
         ]
       }
+      user_roles: {
+        Row: {
+          expires_at: string | null
+          granted_at: string
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          scope_id: string | null
+          scope_type: Database["public"]["Enums"]["role_scope_type"]
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          scope_id?: string | null
+          scope_type?: Database["public"]["Enums"]["role_scope_type"]
+          user_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          scope_id?: string | null
+          scope_type?: Database["public"]["Enums"]["role_scope_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      crm_activities_view: {
-        Row: {
-          activity_status: string | null
-          activity_title: string | null
-          assigned_to: string | null
-          client_id: string | null
-          created_at: string | null
-          description: string | null
-          due_date: string | null
-          id: string | null
-          priority: Database["public"]["Enums"]["task_priority"] | null
-          priority_score: number | null
-          project_name: string | null
-          status: Database["public"]["Enums"]["task_status"] | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
-      csr_requests_view: {
-        Row: {
-          agent_id: string | null
-          customer_id: string | null
-          hours_open: number | null
-          id: string | null
-          is_overdue: boolean | null
-          last_updated: string | null
-          priority: Database["public"]["Enums"]["task_priority"] | null
-          project_context: string | null
-          request_date: string | null
-          request_details: string | null
-          request_title: string | null
-          resolution_due: string | null
-          severity_level: string | null
-          status: Database["public"]["Enums"]["task_status"] | null
-        }
-        Relationships: []
-      }
-      finance_dashboard_view: {
-        Row: {
-          avg_task_hours: number | null
-          budget: number | null
-          budget_used_percentage: number | null
-          end_date: string | null
-          estimated_cost: number | null
-          project_id: string | null
-          project_name: string | null
-          remaining_budget: number | null
-          spent_amount: number | null
-          start_date: string | null
-          status: Database["public"]["Enums"]["project_status"] | null
-          total_tasks: number | null
-        }
-        Relationships: []
-      }
-      project_cards_view: {
-        Row: {
-          actual_hours: number | null
-          budget: number | null
-          completed_phases: number | null
-          completed_tasks: number | null
-          completion_percentage: number | null
-          created_at: string | null
-          description: string | null
-          end_date: string | null
-          estimated_hours: number | null
-          id: string | null
-          name: string | null
-          owner_id: string | null
-          start_date: string | null
-          status: Database["public"]["Enums"]["project_status"] | null
-          total_phases: number | null
-          total_tasks: number | null
-          updated_at: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_user_board_role: {
@@ -1027,6 +1467,20 @@ export type Database = {
         Args: { user_id?: string; widget_type: string }
         Returns: Json
       }
+      has_permission: {
+        Args: { _permission_code: string; _user_id: string }
+        Returns: boolean
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _scope_id?: string
+          _scope_type?: Database["public"]["Enums"]["role_scope_type"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_owner: { Args: { _user_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       user_has_board_role: {
@@ -1048,6 +1502,29 @@ export type Database = {
       }
     }
     Enums: {
+      app_role:
+        | "owner"
+        | "ciso"
+        | "dpo"
+        | "infra_admin"
+        | "finance_admin"
+        | "department_manager"
+        | "project_manager"
+        | "release_manager"
+        | "qa_lead"
+        | "sre"
+        | "brand_manager"
+        | "dam_curator"
+        | "hr_analyst"
+        | "finance_auditor"
+        | "ai_analyst"
+        | "content_reviewer"
+        | "legal_archivist"
+        | "help_desk_agent"
+        | "team_member"
+        | "guest"
+        | "service_account"
+      audit_decision: "allowed" | "denied" | "error"
       board_object_type:
         | "text"
         | "sticky_note"
@@ -1058,6 +1535,46 @@ export type Database = {
         | "template"
         | "smart"
       board_role: "host" | "editor" | "viewer"
+      central_complexity:
+        | "trivial"
+        | "simple"
+        | "moderate"
+        | "complex"
+        | "critical"
+      central_dependency_type:
+        | "execution"
+        | "data"
+        | "technical"
+        | "operational"
+        | "time"
+      central_entity_type:
+        | "central_board"
+        | "department"
+        | "project"
+        | "task"
+        | "tool"
+        | "engine_job"
+        | "project_card"
+        | "task_card"
+      central_priority: "low" | "medium" | "high" | "critical"
+      central_state:
+        | "draft"
+        | "planned"
+        | "active"
+        | "blocked"
+        | "paused"
+        | "completed"
+        | "cancelled"
+        | "archived"
+        | "failed"
+      department_project_role: "owner" | "supervisor"
+      engine_job_kind:
+        | "automation"
+        | "data_processing"
+        | "orchestration"
+        | "sync"
+        | "analytics"
+        | "validation"
       invoice_status: "draft" | "pending" | "paid" | "overdue"
       operation_type: "create" | "update" | "delete" | "move" | "resize"
       project_status:
@@ -1066,6 +1583,7 @@ export type Database = {
         | "on_hold"
         | "completed"
         | "cancelled"
+      role_scope_type: "global" | "department" | "project" | "board"
       service_type:
         | "brand_strategy"
         | "visual_identity"
@@ -1077,6 +1595,13 @@ export type Database = {
         | "other"
       task_priority: "low" | "medium" | "high" | "urgent"
       task_status: "todo" | "in_progress" | "review" | "completed"
+      task_tool_engine_relation_type: "produces" | "binds" | "executes"
+      tool_kind:
+        | "board_widget"
+        | "dashboard_panel"
+        | "workflow_tool"
+        | "analysis_tool"
+        | "integration_tool"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1204,6 +1729,30 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: [
+        "owner",
+        "ciso",
+        "dpo",
+        "infra_admin",
+        "finance_admin",
+        "department_manager",
+        "project_manager",
+        "release_manager",
+        "qa_lead",
+        "sre",
+        "brand_manager",
+        "dam_curator",
+        "hr_analyst",
+        "finance_auditor",
+        "ai_analyst",
+        "content_reviewer",
+        "legal_archivist",
+        "help_desk_agent",
+        "team_member",
+        "guest",
+        "service_account",
+      ],
+      audit_decision: ["allowed", "denied", "error"],
       board_object_type: [
         "text",
         "sticky_note",
@@ -1215,6 +1764,51 @@ export const Constants = {
         "smart",
       ],
       board_role: ["host", "editor", "viewer"],
+      central_complexity: [
+        "trivial",
+        "simple",
+        "moderate",
+        "complex",
+        "critical",
+      ],
+      central_dependency_type: [
+        "execution",
+        "data",
+        "technical",
+        "operational",
+        "time",
+      ],
+      central_entity_type: [
+        "central_board",
+        "department",
+        "project",
+        "task",
+        "tool",
+        "engine_job",
+        "project_card",
+        "task_card",
+      ],
+      central_priority: ["low", "medium", "high", "critical"],
+      central_state: [
+        "draft",
+        "planned",
+        "active",
+        "blocked",
+        "paused",
+        "completed",
+        "cancelled",
+        "archived",
+        "failed",
+      ],
+      department_project_role: ["owner", "supervisor"],
+      engine_job_kind: [
+        "automation",
+        "data_processing",
+        "orchestration",
+        "sync",
+        "analytics",
+        "validation",
+      ],
       invoice_status: ["draft", "pending", "paid", "overdue"],
       operation_type: ["create", "update", "delete", "move", "resize"],
       project_status: [
@@ -1224,6 +1818,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      role_scope_type: ["global", "department", "project", "board"],
       service_type: [
         "brand_strategy",
         "visual_identity",
@@ -1236,6 +1831,14 @@ export const Constants = {
       ],
       task_priority: ["low", "medium", "high", "urgent"],
       task_status: ["todo", "in_progress", "review", "completed"],
+      task_tool_engine_relation_type: ["produces", "binds", "executes"],
+      tool_kind: [
+        "board_widget",
+        "dashboard_panel",
+        "workflow_tool",
+        "analysis_tool",
+        "integration_tool",
+      ],
     },
   },
 } as const

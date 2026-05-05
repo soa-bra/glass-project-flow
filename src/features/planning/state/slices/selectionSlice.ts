@@ -15,6 +15,7 @@ type CanvasStoreState = SelectionSlice & {
   elements: CanvasElement[];
   layers: LayerInfo[];
   viewport: { zoom: number; pan: { x: number; y: number } };
+  viewportHostSize: { width: number; height: number };
   activeLayerId: string | null;
   deleteElements: (elementIds: string[]) => void;
   history: {
@@ -42,7 +43,7 @@ let consecutivePasteCount = 0;
 const PASTE_OFFSET_BASE = 20;
 const PASTE_OFFSET_INCREMENT = 15;
 const OVERLAP_DETECTION_THRESHOLD = 5;
-const DEFAULT_CANVAS_SIZE = { width: 1280, height: 720 };
+const DEFAULT_VIEWPORT_HOST_SIZE = { width: 1280, height: 720 };
 
 function deepCloneElement(element: CanvasElement): CanvasElement {
   try {
@@ -52,29 +53,18 @@ function deepCloneElement(element: CanvasElement): CanvasElement {
   }
 }
 
-function getCanvasHostSize(): { width: number; height: number } {
-  if (typeof document !== 'undefined') {
-    const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement | null;
-    if (container) {
-      return {
-        width: container.clientWidth || DEFAULT_CANVAS_SIZE.width,
-        height: container.clientHeight || DEFAULT_CANVAS_SIZE.height,
-      };
-    }
-  }
-
-  if (typeof window !== 'undefined') {
-    return {
-      width: window.innerWidth || DEFAULT_CANVAS_SIZE.width,
-      height: window.innerHeight || DEFAULT_CANVAS_SIZE.height,
-    };
-  }
-
-  return { ...DEFAULT_CANVAS_SIZE };
+function normalizeViewportHostSize(hostSize: { width: number; height: number } | undefined): { width: number; height: number } {
+  return {
+    width: hostSize && hostSize.width > 0 ? hostSize.width : DEFAULT_VIEWPORT_HOST_SIZE.width,
+    height: hostSize && hostSize.height > 0 ? hostSize.height : DEFAULT_VIEWPORT_HOST_SIZE.height,
+  };
 }
 
-function getViewportCenter(viewport: { zoom: number; pan: { x: number; y: number } }): { x: number; y: number } {
-  const hostSize = getCanvasHostSize();
+function getViewportCenter(
+  viewport: { zoom: number; pan: { x: number; y: number } },
+  viewportHostSize: { width: number; height: number } | undefined,
+): { x: number; y: number } {
+  const hostSize = normalizeViewportHostSize(viewportHostSize);
   const screenCenterX = hostSize.width / 2;
   const screenCenterY = hostSize.height / 2;
 
@@ -372,6 +362,7 @@ export const createSelectionSlice: StateCreator<
     if (clipboard.length === 0) return;
 
     const viewport = get().viewport;
+    const viewportHostSize = get().viewportHostSize;
     const existingElements = get().elements;
     const clipboardCenter = getElementsCenter(clipboard);
     const clipboardBounds = getElementsBounds(clipboard);
@@ -382,7 +373,7 @@ export const createSelectionSlice: StateCreator<
       basePosition = position;
       consecutivePasteCount = 0;
     } else {
-      const viewportCenter = getViewportCenter(viewport);
+      const viewportCenter = getViewportCenter(viewport, viewportHostSize);
 
       if (
         lastPastePosition &&

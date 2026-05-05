@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 interface TaskCardFooterSimpleProps {
   status: string;
   statusColor: string;
@@ -10,54 +9,38 @@ interface TaskCardFooterSimpleProps {
   isSelected?: boolean;
 }
 
-const TaskCardFooterSimple = ({
+const pillStyle: React.CSSProperties = {
+  backgroundColor: '#FFFFFF',
+  border: '1px solid #DADCE0',
+  borderRadius: '9999px',
+  padding: '4px 12px',
+  fontSize: '12px',
+  fontFamily: 'IBM Plex Sans Arabic',
+  color: '#0B0F12',
+  whiteSpace: 'nowrap',
+};
+
+const TaskCardFooterSimple: React.FC<TaskCardFooterSimpleProps> = ({
   status,
   statusColor,
   date,
   assignee,
-  members
-}: TaskCardFooterSimpleProps) => {
-
-  const pillStyle = {
-    backgroundColor: '#F7FFFF',
-    borderRadius: tokens.pillRadiusPx,
-    padding: `${tokens.pillPaddingBlockPx} ${tokens.pillPaddingInlinePx}`,
-    fontSize: tokens.pillFontSizePx,
-    fontWeight: 500,
-    color: '#858789',
-    fontFamily: 'IBM Plex Sans Arabic',
-
-  };
-  const pillTextClassName = "block min-w-0 overflow-hidden text-ellipsis whitespace-nowrap";
-  const basePillClassName = "min-w-0 flex items-center w-full";
-
+  members,
+}) => {
   return (
-
-      <div style={{
-        ...pillStyle,
-        display: 'flex',
-        alignItems: 'center',
-        gap: '4px',
-        maxWidth: '240px'
-      }} className={basePillClassName} title={status}>
-        <div style={{
-          width: tokens.statusDotSizePx,
-          height: tokens.statusDotSizePx,
-          borderRadius: '50%',
-          backgroundColor: statusColor,
-          flexShrink: 0
-        }}></div>
-        <span className={pillTextClassName} dir="auto">{status}</span>
+    <div
+      className="flex items-center justify-between gap-2 mt-3 px-1"
+      style={{ direction: 'rtl' }}
+    >
+      <div className="flex items-center gap-2 flex-wrap">
+        <span style={{ ...pillStyle, backgroundColor: statusColor, color: '#FFFFFF' }}>
+          {status}
+        </span>
+        <span style={pillStyle}>{date}</span>
       </div>
-
-      <div style={{ ...pillStyle, maxWidth: '180px' }} className={basePillClassName} title={date}>
-        <span className={pillTextClassName} dir="auto">{date}</span>
-      </div>
-      <div style={{ ...pillStyle, maxWidth: '210px' }} className={basePillClassName} title={assignee}>
-        <span className={pillTextClassName} dir="auto">{assignee}</span>
-      </div>
-      <div style={{ ...pillStyle, maxWidth: '150px' }} className={basePillClassName} title={members}>
-        <span className={pillTextClassName} dir="auto">{members}</span>
+      <div className="flex items-center gap-2 flex-wrap">
+        <span style={pillStyle}>{assignee}</span>
+        <span style={pillStyle}>{members}</span>
       </div>
     </div>
   );
