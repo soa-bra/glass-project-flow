@@ -19,7 +19,7 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": ["error", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
@@ -127,6 +127,20 @@ export default tseslint.config(
               message:
                 "❌ Canvas layer لا يمكنها استيراد من integration مباشرة. استخدم state/ أو hooks/adapters.",
             },
+            {
+              group: [
+                "@/features/planning/canvas/transforms/SnapGuides",
+                "@/features/planning/canvas/transforms/SnapGuides.tsx",
+                "@/features/planning/canvas/layers/SnapGuides",
+                "@/features/planning/canvas/layers/SnapGuides.tsx",
+                "**/canvas/transforms/SnapGuides",
+                "**/canvas/transforms/SnapGuides.tsx",
+                "**/canvas/layers/SnapGuides",
+                "**/canvas/layers/SnapGuides.tsx"
+              ],
+              message:
+                "❌ SnapGuides يجب استيراده فقط عبر نقطة الدخول الموحدة: @/features/planning/canvas.",
+            },
           ],
         },
       ],
@@ -143,7 +157,15 @@ export default tseslint.config(
           patterns: [
             {
               group: ["**/components/Planning/**", "@/components/Planning/**"],
-              message: "⚠️ مسار قديم! استخدم @/features/planning/ بدلاً من @/components/Planning/",
+              message: "❌ مسار قديم محظور: استخدم @/features/planning/ بدلاً من @/components/Planning/",
+            },
+            {
+              group: ["**/modules/invoice/invoice.service", "@/modules/invoice/invoice.service", "**/lib/prisma", "@/lib/prisma"],
+              message: "❌ مسار invoice legacy/shadow ORM محظور في التطوير الجديد. استخدم services/invoices + Supabase active path.",
+            },
+            {
+              group: ["**/components/Financial/InvoicesDashboard", "@/components/Financial/InvoicesDashboard"],
+              message: "❌ InvoicesDashboard legacy path محظور. استخدم واجهات المسار النشط المعتمدة فقط.",
             },
           ],
         },

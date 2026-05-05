@@ -1,20 +1,44 @@
+## السبب
+`ProtectedRoute` يدعم الفلاغ بالفعل، لكن:
+1. `VITE_DISABLE_AUTH` **غير موجود** في `.env` → الفلاغ يبقى false → الحراسة فعّالة.
+2. حتى لو فُعّل، الزيارة المباشرة لـ `/auth` ستظل تعرض نموذج الدخول لأن `AuthPage` لا يحترم الفلاغ.
 
+## التغييرات
 
-# Fix: Task Details Box Scroll Not Working
+### 1) `.env` — إضافة سطر
+```
+VITE_DISABLE_AUTH=true
+```
 
-## Problem
-Same root cause as the project board task list: the parent container chain has no concrete height constraint, so `h-full` on the ScrollArea resolves to "auto" (infinite), and the list grows to fit all items instead of scrolling.
+### 2) `.env.example` — توثيق
+قسم جديد:
+```
+# تعطيل المصادقة محليًا (DEV فقط). احذف قبل التسليم.
+VITE_DISABLE_AUTH="false"
+```
 
-The parent `TaskManagementTab` uses `overflow-auto` on the outer wrapper (line 35), which lets the entire page scroll instead of the task list column scrolling internally.
+### 3) `src/pages/AuthPage.tsx`
+في أعلى الكومبوننت، قبل أي شيء:
+```tsx
+const AUTH_DISABLED =
+  import.meta.env.DEV && import.meta.env.VITE_DISABLE_AUTH === "true";
+if (AUTH_DISABLED) return <Navigate to="/" replace />;
+```
+بهذا، `/auth` تُحوِّل فورًا إلى `/` ولا يظهر النموذج.
 
-## Fix
+### 4) ملف توثيق `docs/recovery/step-17-temporary-auth-disable.md` (جديد)
+- السبب، النطاق، التفعيل/التعطيل بسطر واحد.
+- **قائمة ما قبل التسليم**: حذف السطر من `.env`، إعادة تشغيل، التحقق من إعادة التحويل إلى `/auth`.
+- ضمان `import.meta.env.DEV` يمنع الإنتاج.
 
-### `TaskDetailsBox.tsx` — Add viewport-relative max-height to the task list column
+### 5) `docs/RBAC.md`
+استبدال فقرة "تعطيل مؤقت" الحالية بإشارة دقيقة إلى `VITE_DISABLE_AUTH` ورابط الخطوة 17.
 
-**Line 46**: Change `<div className="w-1/3 min-w-0">` to `<div className="w-1/3 min-w-0 max-h-[60vh]">`.
+## ما لن يُمَس
+`AuthContext`, `useAuth`, `usePermission`, `App.tsx`, نموذج الدخول/التسجيل، جداول/سياسات Supabase — كل شيء يبقى جاهزًا لإعادة التفعيل بحذف سطر واحد.
 
-This gives the task list column a concrete height cap, enabling the ScrollArea inside to activate its scroll behavior while the header stays fixed at the top.
-
-### Files Changed
-1. **`src/components/ProjectManagement/TaskManagement/TaskDetailsBox.tsx`** — Add `max-h-[60vh]` to the task list column wrapper (line 46)
-
+## الأثر بعد التنفيذ
+- أي مسار محمي يدخل مباشرة بدون تسجيل.
+- `/auth` يُحوِّل فورًا إلى `/`.
+- `useAuth().user === null` — استدعاءات تعتمد على `auth.uid()` ستفشل بـ RLS (متوقّع وموثَّق).
+- العودة للوضع الإنتاجي = حذف `VITE_DISABLE_AUTH` من `.env`.
