@@ -1,22 +1,22 @@
 # Zero-reference allowlist — 2026-05-05
 
-مراجعة أولية لعناصر `zero-reference-candidates-2026-05-05.md` مع التركيز على: dynamic import، route lazy loading، و string-based registry.
+مراجعة `zero-reference-candidates-2026-05-05.md` مع معيار صارم: **يدخل allowlist فقط ما لديه دليل تقني مباشر على الاستخدام غير المرئي في static import graph** (مثل dynamic import/worker bootstrap/registry registration).
 
 ## Allowlist (احتفاظ مبرّر)
 
-- `src/hooks/useFileUpload.ts` — يستخدم Web Worker عبر `new URL('../workers/fileProcessor.worker.ts', import.meta.url)` (ربط ديناميكي وقت البناء/التشغيل).
-- `src/workers/fileProcessor.worker.ts` — مستهدف مباشرة من dynamic worker bootstrap داخل `useFileUpload.ts`.
-- `src/shared/events/handlers/project-handlers.ts` — يضيف handlers عبر `handlerRegistry.register({...})` ضمن registry-based wiring.
-- `src/shared/events/handlers/cultural-handlers.ts` — يعتمد تسجيل handlers بالنمط نفسه (string/event-name keyed registration).
-- `src/shared/events/handlers/hr-handlers.ts` — تسجيل handlers في global registry بدل استدعاء مرجعي مباشر.
-- `src/shared/events/handlers/webhook-handlers.ts` — ربط webhook handlers يتم عبر registry registration وليس imports استهلاكية واضحة.
-- `src/lib/api/smart-elements.ts` — مرتبط دومينيًا بـ smart element registry/element-type mapping المحتمل الاعتماد عليه كسجل string-based.
-- `src/features/planning/integration/persistence/entityBindingRegistry.test.ts` — يغطي سلوك binding registry (string keys مثل `entity:task-*`) ويؤكد سلامة المسار غير المباشر.
+- `src/hooks/useFileUpload.ts` — ينشئ Web Worker عبر `new URL('../workers/fileProcessor.worker.ts', import.meta.url)`؛ هذا مسار تحميل ديناميكي وقت البناء/التشغيل لا يظهر كمرجع استهلاكي تقليدي.
+- `src/workers/fileProcessor.worker.ts` — هو target مباشر لمسار worker الديناميكي القادم من `useFileUpload.ts`.
+- `src/shared/events/handlers/project-handlers.ts` — يربط handlers عبر `handlerRegistry.register(...)` (registry wiring بدلاً من direct call graph).
+- `src/shared/events/handlers/cultural-handlers.ts` — يحتوي `handlerRegistry.register(...)` لنمط event-name keyed registration.
+- `src/shared/events/handlers/hr-handlers.ts` — تسجيل handlers يتم عبر registry (`handlerRegistry.register(...)`) وليس عبر import استدعائي مباشر.
+- `src/shared/events/handlers/webhook-handlers.ts` — يعتمد wiring عبر `handlerRegistry.register(...)` لربط webhook handlers بشكل غير مباشر.
 
-## ready-for-delete-review
+## Defer (غير مؤكّد — لا حذف)
 
-جميع العناصر المتبقية من تقرير المرشّحات (غير المذكورة في قسم allowlist أعلاه) لا يظهر لها — في هذه المراجعة الأولية — ارتباط واضح بـ dynamic import أو route lazy loading أو string-based registry، وتُوسم كالتالي:
+العناصر التالية **تبقى defer** لأنها لا تملك حتى الآن دليلًا تقنيًا قاطعًا ضمن هذا المرور بأنها مرتبطة بـ dynamic import/registry wiring، وبالتالي لا تُنقل للـ allowlist ولا تُحذف:
 
-- `ready-for-delete-review`: كل عنصر في `docs/reports/zero-reference-candidates-2026-05-05.md` باستثناء عناصر allowlist الثمانية أعلاه.
+- `src/lib/api/smart-elements.ts`
+- `src/features/planning/integration/persistence/entityBindingRegistry.test.ts`
+- جميع العناصر المتبقية من `docs/reports/zero-reference-candidates-2026-05-05.md` التي لم تُذكر في allowlist أعلاه.
 
-> ملاحظة: لا يوجد حذف في هذه المرحلة حسب الطلب؛ هذه فقط قائمة سماح أولية + وسم مراجعة للحذف.
+> ملاحظة تنفيذية: لا يوجد حذف في هذه المرحلة؛ التصنيف هنا بين `allowlist` و `defer` فقط.
