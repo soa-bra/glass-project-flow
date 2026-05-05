@@ -26,19 +26,16 @@
    - `ShapeRenderer` (diagram vs shared)
 4. إعادة الفحص بعد كل batch مع مقارنة عدد المرشحين قبل/بعد.
 
-## Batch A removals
-- Removed 10 unused UI leaf files from `OperationsBoard` after two-step verification:
-  1) no direct import/path reference via `rg`.
-  2) no indirect name-based usage in registry/config strings (basename search) via `rg`.
-- Deleted files:
-  - `src/components/OperationsBoard/Clients/ActiveClientsList.tsx`
-  - `src/components/OperationsBoard/Clients/AddClientButton.tsx`
-  - `src/components/OperationsBoard/Finance/OverBudgetAlert.tsx`
-  - `src/components/OperationsBoard/Finance/ProjectBudgetChart.tsx`
-  - `src/components/OperationsBoard/HR/AddMemberButton.tsx`
-  - `src/components/OperationsBoard/HR/ProjectDistribution.tsx`
-  - `src/components/OperationsBoard/HR/TeamFillProgress.tsx`
-  - `src/components/OperationsBoard/Projects/ProjectProgressSummary.tsx`
-  - `src/components/OperationsBoard/Reports/CustomReportForm.tsx`
-  - `src/components/OperationsBoard/Reports/TemplatesList.tsx`
-- Barrel/index updates: no `index.ts`/barrel exports referenced these files, so no export cleanup was required.
+## Cleanup batch log — 2026-05-05 (Batch 1)
+- Deleted files (3):
+  - `src/hooks/performance/useCanvasPerformance.ts`
+  - `src/hooks/performance/useMemoizedStyles.ts`
+  - `src/hooks/performance/usePerformanceOptimization.ts`
+- Post-delete check: `npm run -s typecheck` ✅ passed.
+- Deferred files in this batch: **0**.
+- Moved to allowlist in this batch: **0**.
+
+### Batch 1 summary
+- عدد الملفات المحذوفة: **3**
+- عدد الملفات المؤجلة: **0**
+- عدد الملفات المنقولة للـ allowlist: **0**
