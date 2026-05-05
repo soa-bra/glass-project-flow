@@ -13,7 +13,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
+const AUTH_DISABLED =
+  import.meta.env.DEV && import.meta.env.VITE_DISABLE_AUTH === "true";
+
 export default function AuthPage() {
+  if (AUTH_DISABLED) {
+    return <Navigate to="/" replace />;
+  }
   const { user, loading, signIn, signUp } = useAuth();
   const location = useLocation();
   const { toast } = useToast();

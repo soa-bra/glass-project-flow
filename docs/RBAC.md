@@ -52,7 +52,7 @@ WITH CHECK ((owner_id = auth.uid()) OR is_owner(auth.uid()))
 
 ## ⚠️ تعطيل مؤقت أثناء التطوير
 
-`AUTH_DISABLED_FOR_DEV = true` في `src/components/auth/ProtectedRoute.tsx` يتجاوز الحماية. **يجب** إعادته إلى `false` قبل أي إطلاق.
+التعطيل يتم حصرًا عبر `VITE_DISABLE_AUTH=true` في `.env` (مع شرط `import.meta.env.DEV`، فلا يعمل في الإنتاج). راجع `docs/recovery/step-17-temporary-auth-disable.md` للتفاصيل وقائمة ما قبل التسليم.
 
 ## مؤجَّل لما بعد v1.0
 
