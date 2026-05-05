@@ -1,24 +1,42 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import ProjectPanel from '@/components/ProjectPanel';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
-import { mockProjects } from '@/data/mockProjects';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
+import { useProjects, useCreateProject, useUpdateProject } from '@/hooks/central';
+import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
+import { AuditService } from '@/services/central/audit.service';
+import { toast } from 'sonner';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  // إدارة حالة المشاريع على مستوى ProjectWorkspace
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
+  // مصدر البيانات: mock (P0/P1) أو central (P3.1).
+  const { data: centralProjects } = useProjects();
+  const createProject = useCreateProject();
+  const updateProject = useUpdateProject();
+
+  const centralUiProjects = useMemo<Project[]>(
+    () => (centralProjects ?? []).map(centralToUiProject),
+    [centralProjects],
+  );
+
+  // Central DB هي المصدر الوحيد. الفلترة/الترتيب يطبقان على نسخة محلية تُعاد مزامنتها من DB.
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    setProjects(centralUiProjects);
+  }, [centralUiProjects]);
+
   const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'deadline', direction: 'asc' });
 
   const {
@@ -31,44 +49,74 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     closePanel,
   } = useProjectPanelAnimation();
 
-  // دالة لإضافة مشروع جديد
+  // إضافة مشروع: تُكتب مباشرة في DB المركزي، invalidation يُحدّث القائمة.
   const handleProjectAdded = (newProject: ProjectData) => {
-    const projectToAdd: Project = {
-      id: newProject.id.toString(),
-      title: newProject.name,
-      description: newProject.description,
-      owner: newProject.owner,
-      value: newProject.budget.toString(),
-      daysLeft: Math.ceil((new Date(newProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-      tasksCount: newProject.tasksCount,
-      status: newProject.status,
-      date: new Date().toLocaleDateString('ar-SA'),
-      isOverBudget: false,
-      hasOverdueTasks: false,
-      team: newProject.team.map(name => ({ name })),
-      progress: 0,
-    };
-    setProjects(prev => [projectToAdd, ...prev]);
+    createProject.mutate(
+      uiCreateInputToCentral({
+        name: newProject.name,
+        description: newProject.description,
+        budget: Number(newProject.budget) || undefined,
+        deadline: newProject.deadline,
+      }),
+      {
+        onSuccess: (created) => {
+          toast.success(`تم إنشاء المشروع: ${created.name}`);
+          void AuditService.log({
+            action: 'central.project.create',
+            resource_type: 'project',
+            resource_id: created.id,
+            metadata: { name: created.name },
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[ProjectWorkspace] AuditService.log(create) failed:', err);
+          });
+        },
+        onError: (err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] createProject failed:', err);
+          toast.error('تعذّر إنشاء المشروع', {
+            description: err instanceof Error ? err.message : 'خطأ غير معروف',
+          });
+        },
+      },
+    );
   };
 
-  // دالة لتحديث مشروع موجود
+  // تحديث مشروع
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    setProjects(prev => prev.map(project => 
-      project.id === updatedProject.id.toString() 
-        ? {
-            ...project,
-            title: updatedProject.name,
-            description: updatedProject.description,
-            owner: updatedProject.owner,
-            value: updatedProject.budget.toString(),
-            daysLeft: Math.ceil((new Date(updatedProject.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
-            tasksCount: updatedProject.tasksCount,
-            status: updatedProject.status,
-            team: updatedProject.team.map(name => ({ name })),
-          }
-        : project
-    ));
+    updateProject.mutate(
+      {
+        id: updatedProject.id.toString(),
+        patch: {
+          name: updatedProject.name,
+          description: updatedProject.description ?? null,
+          budget: Number(updatedProject.budget) || null,
+          due_date: updatedProject.deadline ? new Date(updatedProject.deadline).toISOString() : null,
+        },
+      },
+      {
+        onSuccess: (p) => {
+          toast.success('تم حفظ تعديلات المشروع');
+          void AuditService.log({
+            action: 'central.project.update',
+            resource_type: 'project',
+            resource_id: p.id,
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[ProjectWorkspace] AuditService.log(update) failed:', err);
+          });
+        },
+        onError: (err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] updateProject failed:', err);
+          toast.error('تعذّر حفظ تعديلات المشروع', {
+            description: err instanceof Error ? err.message : 'خطأ غير معروف',
+          });
+        },
+      },
+    );
   };
+
 
   // دالة تطبيق الفلترة
   const handleApplyFilter = (filters: ProjectFilterOptions) => {
