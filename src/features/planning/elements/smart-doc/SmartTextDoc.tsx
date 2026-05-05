@@ -102,12 +102,10 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const handleContentChange = useCallback(() => {
     if (editorRef.current) {
-      const sanitizedContent = sanitizeHTML(editorRef.current.innerHTML);
-      setContent(sanitizedContent);
-      if (editorRef.current.innerHTML !== sanitizedContent) {
-        editorRef.current.innerHTML = sanitizedContent;
-      }
-      onUpdate({ content: sanitizedContent });
+      const newContent = sanitizeHTML(editorRef.current.innerHTML);
+      editorRef.current.innerHTML = newContent;
+      setContent(newContent);
+      onUpdate({ content: newContent });
     }
     detectCurrentFontSize();
   }, [onUpdate, detectCurrentFontSize]);

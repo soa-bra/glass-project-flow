@@ -11,7 +11,7 @@ const corsHeaders = {
 const SMART_ELEMENT_TYPES = [
   'thinking_board', 'kanban', 'voting', 'brainstorming',
   'timeline', 'decisions_matrix', 'gantt', 'interactive_sheet',
-  'mind_map', 'project_card', 'finance_card', 'csr_card', 'crm_card', 'root_connector'
+  'mind_map', 'project_card', 'task_card', 'finance_card', 'csr_card', 'crm_card', 'root_connector'
 ] as const;
 
 const VALID_ACTIONS = ['generate', 'analyze', 'transform'] as const;
@@ -323,6 +323,7 @@ const systemPrompt = `أنت مساعد ذكي متخصص في نظام سوبر
 
 ### البطاقات الذكية:
 - **project_card**: بطاقة مشروع
+- **task_card**: بطاقة مهمة
 - **finance_card**: بطاقة مالية
 - **csr_card**: بطاقة المسؤولية الاجتماعية
 - **crm_card**: بطاقة علاقات العملاء
@@ -700,7 +701,7 @@ function assessTransformationSensitivity(input: {
     reasons.push('Large-scale transformation (10+ elements)');
   }
 
-  if (input.targetType === 'finance_card' || input.targetType === 'crm_card') {
+  if (input.targetType === 'finance_card' || input.targetType === 'crm_card' || input.targetType === 'task_card') {
     score += 0.2;
     reasons.push(`Sensitive target type: ${input.targetType}`);
   }
