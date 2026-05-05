@@ -1,0 +1,10 @@
+[STEP 08 - PROJECT CREATE/READ CHECK]
+Status: Pending runtime execution
+Required fields:
+- Timestamp (UTC)
+- Actor/Role
+- Create payload
+- Read verification scope
+- Expected result
+- Actual result
+- Verdict (PASS/FAIL)
