@@ -161,3 +161,9 @@ No new hook files were deleted during Batch H because all four requested paths w
 ### Batch H Disposition
 
 All four requested performance hook paths are classified as `delete-approved`, but they required no filesystem deletion in this batch because the files and the `src/hooks/performance` barrel directory were already absent. No `src/hooks/index.ts` export removal was required.
+
+### Batch H Final Verification
+
+- Re-ran the performance-hook presence checks on 2026-05-07; `find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true` and `find src/hooks -path '*performance*' -maxdepth 4 -print 2>/dev/null || true` produced no hook-path output.
+- Re-ran the source/docs reference scans on 2026-05-07; remaining matches are historical cleanup documentation, `batch-a-delete-list.md` candidate rows, or the unrelated component-level `src/components/performance/PerformanceOptimizer.tsx` API exported through `src/components/ui/performance/index.ts`.
+- Re-ran `npm run -s typecheck` after the Batch H verification; it completed successfully.
