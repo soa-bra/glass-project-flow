@@ -67,6 +67,64 @@
   - حدود تعقيد/حجم للملفات الحرجة.
 - تعريف مسار واضح لأي مكون جديد (متى يكون shared vs domain-specific).
 
+
+### Quality gates مقترحة للـ CI
+
+> الهدف من هذه البوابات هو منع عودة dead exports، الدورات بين الملفات، ومسارات الاستيراد legacy بعد كل دفعة تنظيف. تُشغّل كبوابة غير مدمّرة أولًا (`continue-on-error: true`) لمدة دورة أو دورتين، ثم تتحول إلى blocking بعد تثبيت baseline.
+
+1. **Unused exports / files**
+   - الأداة المقترحة: `knip` لأنها تفحص exports والملفات غير المستخدمة مع دعم TypeScript/Vite.
+   - الأمر المحلي المقترح:
+     ```bash
+     npx knip --production --reporter compact
+     ```
+   - سياسة CI: يفشل الـ job عند ظهور exports جديدة غير مبررة، مع إبقاء allowlist موثقة للعناصر المحملة runtime مثل Web Workers أو registry wiring.
+
+2. **Circular imports**
+   - الأداة المقترحة: `madge` لفحص cycles في شجرة `src`.
+   - الأمر المحلي المقترح:
+     ```bash
+     npx madge --extensions ts,tsx --circular src
+     ```
+   - سياسة CI: أي دورة جديدة داخل `src` تعتبر blocking؛ الدورات القديمة توثق في baseline مستقل مع مالك وموعد إزالة.
+
+3. **Legacy import paths**
+   - الأداة المقترحة: قاعدة ESLint `no-restricted-imports` أو `eslint-plugin-boundaries` عند الحاجة لقواعد طبقية.
+   - أمر الفحص المحلي بعد إضافة القاعدة:
+     ```bash
+     npm run lint
+     ```
+   - سياسة CI: حظر الاستيراد من المسارات legacy أو aliases القديمة، مثل imports التي تتجاوز public entrypoints للـ feature أو تستورد من ملفات compatibility بعد انتهاء مهلة الترحيل.
+
+#### قالب job مقترح
+
+```yaml
+codebase-quality-gates:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - run: npm ci
+    - run: npm run typecheck
+    - run: npm run lint
+    - run: npx knip --production --reporter compact
+    - run: npx madge --extensions ts,tsx --circular src
+```
+
+#### طريقة التشغيل قبل فتح PR
+
+```bash
+npm run typecheck
+npm run lint
+npx knip --production --reporter compact
+npx madge --extensions ts,tsx --circular src
+```
+
+عند وجود false positive، لا يُضاف استثناء داخل الأداة مباشرة إلا بعد توثيق السبب في تقرير داخل `docs/reports/`، وخصوصًا للحالات غير المرئية في static graph مثل `new Worker(new URL(..., import.meta.url))`.
+
 ## معايير القبول (Definition of Done)
 - لا يوجد dead code مؤكد داخل النطاق المستهدف.
 - كل hook رئيسي موثق بسلوك واضح واختبار واحد على الأقل للحالات الحساسة.
