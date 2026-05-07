@@ -265,3 +265,44 @@ All four requested hooks remain `delete-approved`. No additional file deletion w
 ### Typecheck Cadence
 
 1. Post-audit: `npm run -s typecheck` — passed.
+
+## Batch K — Requested hook correctness review — 2026-05-07
+
+### Scope
+
+Reviewed the current implementations requested in this pass:
+
+- `src/hooks/useSnapEngine.ts`
+- `src/features/planning/canvas/controllers/useCanvasSelectionController.ts`
+- `src/features/planning/canvas/controllers/useCanvasViewportController.ts`
+- `src/features/planning/canvas/controllers/useCanvasRealtimeController.ts`
+- `src/hooks/performance/*`
+
+### Commands Applied
+
+```bash
+sed -n '1,240p' src/hooks/useSnapEngine.ts
+sed -n '1,240p' src/features/planning/canvas/controllers/useCanvasSelectionController.ts
+sed -n '1,280p' src/features/planning/canvas/controllers/useCanvasViewportController.ts
+sed -n '1,280p' src/features/planning/canvas/controllers/useCanvasRealtimeController.ts
+find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true
+rg -n "useSnapEngine|useCanvasSelectionController|useCanvasViewportController|useCanvasRealtimeController|snapPoint|snapBounds|refreshTargets|realtimeProps|selectionBoxData|handleWheel|getCursorStyle" src -g '!node_modules'
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build' || true
+npm run -s typecheck
+```
+
+### Findings and Actions
+
+| Hook/file | Dependency arrays | Cleanup functions | Stale closures | Stable returned references | Canonical imports | Action |
+|---|---|---|---|---|---|---|
+| `src/hooks/useSnapEngine.ts` | Store-setting effect and callbacks covered their reactive inputs. The destructured default `excludeIds = []` created a fresh array when callers omitted options, causing `refreshTargets`, `snapPoint`, and `snapBounds` identities to churn and the refresh effect to run more often than intended. | Snap-engine subscription returns its unsubscribe callback; no missing cleanup found. | No stale closure found after stabilizing the default excluded-id array. | Returned callbacks were memoized, but the returned object literal was recreated each render. | Uses path aliases and type-only imports appropriately. | Added a module-level default excluded-id array and memoized the returned API object. |
+| `src/features/planning/canvas/controllers/useCanvasSelectionController.ts` | Callback and memo dependencies include the relevant store actions, `viewport`, `boxSelectData`, and pointer conversion callbacks. | No owned timers/listeners/subscriptions; no cleanup required in this hook. | No stale closure found. `lastPanPositionRef` is intentionally mutable for pan deltas. | Individual callbacks were stable, but the returned controller object was recreated each render. | Imports are canonical for React hooks, `RefObject`, and canvas kernel. | Memoized the returned controller object. |
+| `src/features/planning/canvas/controllers/useCanvasViewportController.ts` | Effects, callbacks, and memos cover `containerRef`, viewport, layers, elements, settings, and action callbacks. | `ResizeObserver` disconnects on cleanup; wheel listener cleanup is correctly owned by the consumer effect in `InfiniteCanvas.tsx`. | No stale closure found in viewport calculations, wheel handling, or cursor selection. | Individual callbacks/memos were stable, but the returned object literal was recreated each render. | Imports are canonical for React hooks, `RefObject`, kernel, interaction state machine, and canvas types. | Memoized the returned viewport controller object. |
+| `src/features/planning/canvas/controllers/useCanvasRealtimeController.ts` | `handleSyncStatusChange` intentionally has no reactive inputs. Realtime prop creation now depends on board id, collaboration user fields, callback, and viewport. | No owned timers/listeners/subscriptions; cleanup is handled by `RealtimeSyncManager` and collaboration hooks. | No stale closure found. | Previously returned a fresh nested `realtimeProps` object every render; this is now stable unless one of its real inputs changes. | Imports are canonical; `useMemo` was added from React. | Memoized `realtimeProps` and the returned object. |
+| `src/hooks/performance/*` | Not applicable in the current tree because the directory is absent. | Not applicable. | Not applicable. | Not applicable. | No active imports or barrels exist. | No deletion required; remaining references are historical reports. |
+
+### Verification
+
+- `src/hooks/performance` produced no file output, confirming the requested performance hook directory is absent in the current tree.
+- Source usage scans found active consumers for the canvas controller hooks through `InfiniteCanvas.tsx`; no active source import was found for the absent performance hooks.
+- `npm run -s typecheck` passed after the hook changes.

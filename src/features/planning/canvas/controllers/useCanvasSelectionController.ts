@@ -109,7 +109,7 @@ export function useCanvasSelectionController({
     };
   }, [boxSelectData, containerRef, viewport]);
 
-  return {
+  return useMemo(() => ({
     lastPanPositionRef,
     beginPanning,
     updatePan,
@@ -117,7 +117,7 @@ export function useCanvasSelectionController({
     updateBoxSelectionFromClient,
     completeBoxSelection,
     selectionBoxData,
-  };
+  }), [beginBoxSelection, beginPanning, completeBoxSelection, selectionBoxData, updateBoxSelectionFromClient, updatePan]);
 }
 
 export default useCanvasSelectionController;

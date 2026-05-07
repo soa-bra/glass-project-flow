@@ -4,10 +4,12 @@
  * يوفر واجهة React للتفاعل مع Snap Engine
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { snapEngine, type SnapConfig, type SnapLine, type SnapResult } from '@/engine/canvas/interaction/snapEngine';
 import type { Point, Bounds } from '@/engine/canvas/kernel/canvasKernel';
+
+const DEFAULT_EXCLUDE_IDS: string[] = [];
 
 interface UseSnapEngineOptions {
   /** معرفات العناصر المستثناة من المحاذاة */
@@ -34,7 +36,7 @@ interface UseSnapEngineReturn {
 }
 
 export const useSnapEngine = (options: UseSnapEngineOptions = {}): UseSnapEngineReturn => {
-  const { excludeIds = [], enabled = true } = options;
+  const { excludeIds = DEFAULT_EXCLUDE_IDS, enabled = true } = options;
   
   const [guides, setGuides] = useState<SnapLine[]>([]);
   const [config, setConfig] = useState<SnapConfig>(() => snapEngine.config);
@@ -135,7 +137,7 @@ export const useSnapEngine = (options: UseSnapEngineOptions = {}): UseSnapEngine
     setGuides([]);
   }, []);
 
-  return {
+  return useMemo(() => ({
     guides,
     snapPoint,
     snapBounds,
@@ -143,7 +145,7 @@ export const useSnapEngine = (options: UseSnapEngineOptions = {}): UseSnapEngine
     clearGuides,
     refreshTargets,
     config
-  };
+  }), [clearGuides, config, guides, refreshTargets, snapBounds, snapPoint, updateConfig]);
 };
 
 export default useSnapEngine;

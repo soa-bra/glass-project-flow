@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 
 interface UseCanvasRealtimeControllerOptions {
@@ -13,16 +13,18 @@ export function useCanvasRealtimeController({ boardId, viewport }: UseCanvasReal
     console.log('Sync status:', status);
   }, []);
 
-  return {
-    realtimeProps: {
-      boardId,
-      userId: collaborationUser.id,
-      userName: collaborationUser.name,
-      enabled: true,
-      viewport,
-      onSyncStatusChange: handleSyncStatusChange,
-    },
-  };
+  const realtimeProps = useMemo(() => ({
+    boardId,
+    userId: collaborationUser.id,
+    userName: collaborationUser.name,
+    enabled: true,
+    viewport,
+    onSyncStatusChange: handleSyncStatusChange,
+  }), [boardId, collaborationUser.id, collaborationUser.name, handleSyncStatusChange, viewport]);
+
+  return useMemo(() => ({
+    realtimeProps,
+  }), [realtimeProps]);
 }
 
 export default useCanvasRealtimeController;
