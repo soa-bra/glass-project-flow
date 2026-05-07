@@ -68,33 +68,42 @@
 - تعريف مسار واضح لأي مكون جديد (متى يكون shared vs domain-specific).
 
 
-### Quality gates مقترحة للـ CI
+### Quality gates موثقة للـ CI والتنظيف الدوري
 
-> الهدف من هذه البوابات هو منع عودة dead exports، الدورات بين الملفات، ومسارات الاستيراد legacy بعد كل دفعة تنظيف. تُشغّل كبوابة غير مدمّرة أولًا (`continue-on-error: true`) لمدة دورة أو دورتين، ثم تتحول إلى blocking بعد تثبيت baseline.
+> الهدف من هذه البوابات هو منع عودة dead exports، الدورات بين الملفات، مسارات الاستيراد legacy، والملفات الحرجة عالية التعقيد بعد كل دفعة تنظيف. تُشغّل كبوابة غير مدمّرة أولًا (`continue-on-error: true`) لمدة دورة أو دورتين، ثم تتحول إلى blocking بعد تثبيت baseline موثق في `docs/reports/`.
 
-1. **Unused exports / files**
-   - الأداة المقترحة: `knip` لأنها تفحص exports والملفات غير المستخدمة مع دعم TypeScript/Vite.
-   - الأمر المحلي المقترح:
+1. **Unused exports / unused files**
+   - **الأداة المقترحة:** `knip` لأنها تفحص exports والملفات غير المستخدمة مع دعم TypeScript/Vite.
+   - **الأمر المحلي:**
      ```bash
      npx knip --production --reporter compact
      ```
-   - سياسة CI: يفشل الـ job عند ظهور exports جديدة غير مبررة، مع إبقاء allowlist موثقة للعناصر المحملة runtime مثل Web Workers أو registry wiring.
+   - **سياسة CI:** يفشل الـ job عند ظهور exports أو files جديدة غير مبررة. أي false positive لا يُستثنى إلا بعد توثيق السبب في `docs/reports/zero-reference-allowlist.md`، خصوصًا للحالات غير المرئية في static graph مثل Web Workers أو registry wiring.
 
 2. **Circular imports**
-   - الأداة المقترحة: `madge` لفحص cycles في شجرة `src`.
-   - الأمر المحلي المقترح:
+   - **الأداة المقترحة:** `madge` لفحص cycles في شجرة `src`.
+   - **الأمر المحلي:**
      ```bash
      npx madge --extensions ts,tsx --circular src
      ```
-   - سياسة CI: أي دورة جديدة داخل `src` تعتبر blocking؛ الدورات القديمة توثق في baseline مستقل مع مالك وموعد إزالة.
+   - **سياسة CI:** أي دورة جديدة داخل `src` تعتبر blocking. الدورات القديمة توثق في baseline مستقل مع مالك وموعد إزالة، ولا تُستخدم لتبرير دورات إضافية.
 
 3. **Legacy import paths**
-   - الأداة المقترحة: قاعدة ESLint `no-restricted-imports` أو `eslint-plugin-boundaries` عند الحاجة لقواعد طبقية.
-   - أمر الفحص المحلي بعد إضافة القاعدة:
+   - **الأداة المقترحة:** قاعدة ESLint `no-restricted-imports` للمسارات المحددة، أو `eslint-plugin-boundaries` عند الحاجة لقواعد طبقية بين features/engine/shared.
+   - **الأمر المحلي بعد إضافة/تحديث القاعدة:**
      ```bash
      npm run lint
      ```
-   - سياسة CI: حظر الاستيراد من المسارات legacy أو aliases القديمة، مثل imports التي تتجاوز public entrypoints للـ feature أو تستورد من ملفات compatibility بعد انتهاء مهلة الترحيل.
+   - **سياسة CI:** حظر الاستيراد من aliases أو compatibility paths القديمة، مثل imports التي تتجاوز public entrypoints للـ feature أو تستورد من ملفات migration/legacy بعد انتهاء مهلة الترحيل. أي استثناء يجب أن يحتوي تاريخ انتهاء وسببًا تقنيًا.
+
+4. **High-complexity critical files**
+   - **الأداة المقترحة:** ESLint rule `complexity` و/أو `max-lines` للملفات الحرجة، مع رفعها تدريجيًا إلى blocking بعد baseline. يمكن استخدام `npx eslint "src/**/*.{ts,tsx}" --max-warnings=0` عندما تُثبت القواعد في config.
+   - **النطاق الحرج المبدئي:** `src/hooks`, `src/stores`, `src/engine`, `src/features/planning`, وملفات worker/runtime entrypoints مثل `src/workers/fileProcessor.worker.ts`.
+   - **الأمر المحلي الحالي:**
+     ```bash
+     npm run lint
+     ```
+   - **سياسة CI:** أي زيادة جديدة في complexity أو حجم ملف حرج تحتاج refactor أو تقرير مبرر في `docs/reports/`. الهدف العملي: إبقاء الدوال الجديدة تحت حد complexity متفق عليه، وتقسيم الملفات الحرجة بدل إضافة منطق متشعب إليها.
 
 #### قالب job مقترح
 
@@ -123,7 +132,12 @@ npx knip --production --reporter compact
 npx madge --extensions ts,tsx --circular src
 ```
 
-عند وجود false positive، لا يُضاف استثناء داخل الأداة مباشرة إلا بعد توثيق السبب في تقرير داخل `docs/reports/`، وخصوصًا للحالات غير المرئية في static graph مثل `new Worker(new URL(..., import.meta.url))`.
+#### طريقة التعامل مع النتائج
+
+- **unused exports/files:** إذا كان الإدخال runtime-loaded أو registry-wired، أضفه إلى `docs/reports/zero-reference-allowlist.md` مع دليل bootstrap/registration وأمر تحقق. وإلا يُعامل كمرشح حذف أو دمج.
+- **circular imports:** اكسر الدورة بتقديم interface/shared type أو نقل dependency إلى طبقة أدنى؛ لا تضف barrel export جديدًا إذا كان سيخفي الدورة.
+- **legacy import paths:** استبدلها بـ public entrypoint أو alias حديث، ثم أضف restriction لمنع عودتها.
+- **high-complexity critical files:** استخرج pure helpers أو hooks أصغر، وأضف اختبارًا للنقاط الحساسة قبل refactor وبعده.
 
 ## معايير القبول (Definition of Done)
 - لا يوجد dead code مؤكد داخل النطاق المستهدف.

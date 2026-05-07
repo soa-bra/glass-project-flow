@@ -4,12 +4,22 @@
 
 ## Allowlist (احتفاظ مبرّر)
 
-- `src/hooks/useFileUpload.ts` — ينشئ Web Worker عبر `new URL('../workers/fileProcessor.worker.ts', import.meta.url)`؛ هذا مسار تحميل ديناميكي وقت البناء/التشغيل لا يظهر كمرجع استهلاكي تقليدي.
-- `src/workers/fileProcessor.worker.ts` — سبب الإبقاء: مستخدم runtime داخل `src/hooks/useFileUpload.ts` عبر `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url))`. يتم تحميله في hook رفع الملفات، ثم يستقبل مهام `PROCESS_FILE` و`CHUNK_FILE` ضمن flow معالجة/رفع الملفات؛ لذلك لا يُعامل كملف صفري المرجع قابل للحذف. آخر تحقق في 2026-05-07 أكد أن هذا هو ملف worker الوحيد الموجود حاليًا تحت `src/workers/`.
-- `src/shared/events/handlers/project-handlers.ts` — يربط handlers عبر `handlerRegistry.register(...)` (registry wiring بدلاً من direct call graph).
-- `src/shared/events/handlers/cultural-handlers.ts` — يحتوي `handlerRegistry.register(...)` لنمط event-name keyed registration.
-- `src/shared/events/handlers/hr-handlers.ts` — تسجيل handlers يتم عبر registry (`handlerRegistry.register(...)`) وليس عبر import استدعائي مباشر.
-- `src/shared/events/handlers/webhook-handlers.ts` — يعتمد wiring عبر `handlerRegistry.register(...)` لربط webhook handlers بشكل غير مباشر.
+> معيار الإضافة: كل إدخال أدناه يملك سببًا تقنيًا مباشرًا يفسّر لماذا قد يظهر كـ zero-reference في أدوات static graph رغم أنه مستخدم فعليًا أو مرتبط عبر wiring غير مباشر. لا تُقبل عبارات عامة مثل "قد يكون مستخدمًا" بدون نمط تحميل/تسجيل محدد.
+
+| الملف | نوع الاستخدام غير المرئي | السبب التقني للإبقاء | بوابة التحقق المقترنة |
+| --- | --- | --- | --- |
+| `src/hooks/useFileUpload.ts` | Runtime worker bootstrap | هذا hook هو نقطة إنشاء الـ Web Worker عبر `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url), { type: 'module' })`. بعض أدوات unused-file قد ترى أن علاقته بالـ worker ليست importًا تقليديًا، لكن Vite يحول هذا النمط إلى asset/chunk محمل وقت التشغيل. | `rg -n "new Worker|fileProcessor\.worker\.ts" src/hooks src/workers` ثم مراجعة نتائج `npx knip --production --reporter compact`. |
+| `src/workers/fileProcessor.worker.ts` | Runtime-loaded worker module | لا يُستورد هذا الملف بـ `import` مباشر لأنه entrypoint مستقل للـ Worker. يُحمّل من `src/hooks/useFileUpload.ts`، ويعالج رسائل `PROCESS_FILE` و`CHUNK_FILE` و`ANALYZE_IMAGE` و`EXTRACT_TEXT` خارج الخيط الرئيسي؛ لذلك يجب اعتباره dependency وقت تشغيل لا dead file. آخر تحقق في 2026-05-07 أكد أنه ملف الـ worker الوحيد الموجود تحت `src/workers/`. | `find src/workers -maxdepth 1 -type f -print | sort` و`rg -n "PROCESS_FILE|CHUNK_FILE|ANALYZE_IMAGE|EXTRACT_TEXT" src/hooks src/workers`. |
+| `src/shared/events/handlers/project-handlers.ts` | Registry registration | يربط project handlers عبر `handlerRegistry.register(...)`، أي إن الاستدعاء يحدث عبر event-name keyed registry وليس عبر direct call graph؛ أدوات unused exports قد لا تربط التسجيل بالاستهلاك. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events`. |
+| `src/shared/events/handlers/cultural-handlers.ts` | Registry registration | يحتوي cultural event handlers مسجلة بمفاتيح event داخل `handlerRegistry.register(...)`. هذا نمط plugin/registry wiring لا يظهر دائمًا كاستدعاء مباشر للـ exports. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events`. |
+| `src/shared/events/handlers/hr-handlers.ts` | Registry registration | يسجل HR handlers داخل registry مركزي، ثم يتم حلها حسب نوع الحدث وقت التشغيل؛ لذلك قد تظهر exports كغير مستخدمة إذا اعتمدت الأداة على static import/call graph فقط. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events`. |
+| `src/shared/events/handlers/webhook-handlers.ts` | Registry registration | webhook handlers مرتبطة عبر `handlerRegistry.register(...)` لمعالجة أحداث webhook بالاسم/النوع، وليس عبر import يستدعي function مباشرة؛ الإبقاء مشروط ببقاء التسجيل الفعلي. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events`. |
+
+### Runtime-loaded files
+
+الملفات المحملة runtime لا تُحذف لمجرد غياب direct import؛ يجب إثبات غياب bootstrap/URL/string reference أولًا. القائمة الحالية:
+
+- `src/workers/fileProcessor.worker.ts` — Worker module محمّل عبر `new URL('../workers/fileProcessor.worker.ts', import.meta.url)` من `src/hooks/useFileUpload.ts` لمعالجة الملفات والتقطيع وإنشاء thumbnails خارج main thread.
 
 ## Worker audit — export/import/snap/file-processing
 
