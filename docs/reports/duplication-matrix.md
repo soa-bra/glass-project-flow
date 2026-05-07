@@ -5,7 +5,6 @@
 | Area | Deprecated Compatibility Shim | Canonical Implementation | Classification | Action |
 |---|---|---|---|---|
 | Canvas Snap | `src/engine/canvas/math/snapEngine.ts` | `src/engine/canvas/interaction/snapEngine.ts` | deprecated compatibility shim | Update all old imports to the canonical path: `src/engine/canvas/interaction/snapEngine.ts`.<br>Delete shim files only after old references disappear. |
-| Shape Rendering | `src/features/planning/elements/diagram/ShapeRenderer.tsx` | `src/features/planning/elements/shared/ShapeRenderer.tsx` | deprecated compatibility shim | Update all old imports to the canonical path: `src/features/planning/elements/shared/ShapeRenderer.tsx`.<br>Delete shim files only after old references disappear. |
 | Expense UI | `src/components/ProjectPanel/ExpenseModal.tsx` | `src/components/custom/ExpenseModal.tsx` | UX drift + duplicated validation logic | Extract shared form model and keep context-specific wrappers |
 | Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx` | `src/components/custom/FileUploadModal.tsx` | Separate upload policies/errors | Centralize upload service + role-specific shells |
 
@@ -13,7 +12,7 @@
 
 | Area | Canonical Implementation | Resolution |
 |---|---|---|
-| Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel, and the compatibility shim was removed. |
+| Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel. The deprecated shim file is absent, and no source imports remain for the old diagram renderer path. |
 
 ## Medium-Risk Candidates
 
