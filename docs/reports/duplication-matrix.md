@@ -4,8 +4,8 @@
 
 | Area | Deprecated Compatibility Shim | Canonical Implementation | Classification | Action |
 |---|---|---|---|---|
-| Canvas Snap | `src/engine/canvas/math/snapEngine.ts` | `src/engine/canvas/interaction/snapEngine.ts` | deprecated compatibility shim | تحديث imports القديمة إلى canonical paths: `src/engine/canvas/interaction/snapEngine.ts`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
-| Shape Rendering | `src/features/planning/elements/diagram/ShapeRenderer.tsx` | `src/features/planning/elements/shared/ShapeRenderer.tsx` | deprecated compatibility shim | تحديث imports القديمة إلى canonical paths: `src/features/planning/elements/shared/ShapeRenderer.tsx`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
+| Canvas Snap | `src/engine/canvas/math/snapEngine.ts` | `src/engine/canvas/interaction/snapEngine.ts` | deprecated compatibility shim | تحديث الاستيرادات القديمة إلى canonical path: `src/engine/canvas/interaction/snapEngine.ts`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
+| Shape Rendering | `src/features/planning/elements/diagram/ShapeRenderer.tsx` | `src/features/planning/elements/shared/ShapeRenderer.tsx` | deprecated compatibility shim | تحديث الاستيرادات القديمة إلى canonical path: `src/features/planning/elements/shared/ShapeRenderer.tsx`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
 | Expense UI | `src/components/ProjectPanel/ExpenseModal.tsx` | `src/components/custom/ExpenseModal.tsx` | UX drift + duplicated validation logic | Extract shared form model and keep context-specific wrappers |
 | Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx` | `src/components/custom/FileUploadModal.tsx` | Separate upload policies/errors | Centralize upload service + role-specific shells |
 
