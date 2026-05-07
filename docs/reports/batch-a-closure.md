@@ -53,3 +53,33 @@
 - `rg -n "\\b(HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview|ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal)\\b" src/App.tsx src/pages src/components`
 - `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' "\\b(HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview|ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal)\\b" .`
 - `rg -n "@/components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)|\\./((AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent))|components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)" src`
+
+## Batch A.3 — Route/navigation audit for requested panels — 2026-05-07
+
+### نطاق الفحص
+
+تمت مراجعة نقاط الدخول والتوجيه المطلوبة صراحة:
+
+- `src/App.tsx`: يحتوي فقط على routes عامة لـ `/auth` و`/join/:token` و`/` المحمي وcatch-all، ولا توجد routes مباشرة للوحات Batch A أو dynamic route registry لهذه الأسماء.
+- `src/pages/*`: صفحات `Index` و`AuthPage` و`JoinBoardPage` و`NotFound` لا تستورد اللوحات المطلوبة ولا تنشئ routes لها.
+- `src/contexts/NavigationContext.tsx`: يدير `activeSection` و`selectedDepartment` و`selectedCustomer` فقط، ولا يحتوي registry ديناميكيًا لأسماء اللوحات.
+- navigation/route config داخل `src/components`: مسار الأقسام الحالي يربط `hr` بـ`HRDashboard`، ويربط `research` بـ`KMPADashboard`، بينما لا توجد أي imports أو string registry للأسماء المحذوفة.
+
+### نتيجة التصنيف المطلوبة
+
+| الملف | التصنيف | قرار التنفيذ | ملاحظات route/navigation |
+|---|---|---|---|
+| `src/components/HRLite/HRLiteMainPanel.tsx` | `delete-approved` | لا إجراء حذف جديد؛ الملف غير موجود بالفعل | مدخل الموارد البشرية النشط هو `src/components/DepartmentTabs/HR/HRDashboard.tsx` عبر `FeatureDepartmentPanel`، ولا توجد route أو registry تشير إلى `HRLiteMainPanel`. |
+| `src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx` | `delete-approved` | لا إجراء حذف جديد؛ الملف غير موجود بالفعل | مدخل المعرفة/البحث النشط هو `research` عبر `KMPADashboard`، ولا توجد route أو registry تشير إلى `KnowledgeBaseMainPanel`. |
+| `src/components/Surveys/SurveysMainPanel.tsx` | `delete-approved` | لا إجراء حذف جديد؛ الملف غير موجود بالفعل | لا توجد route أو section مستقل باسم surveys؛ الاستخدامات الحالية للاستبيانات تظهر كقوالب/إجراءات داخل CRM وKMPA، وليس كلوحة `SurveysMainPanel`. |
+| `src/components/kb/KnowledgeBaseOverview.tsx` | `delete-approved` | لا إجراء حذف جديد؛ الملف غير موجود بالفعل | لا توجد route أو registry تشير إلى `KnowledgeBaseOverview`؛ واجهة المعرفة الحالية مغطاة داخل `KMPADashboard` وArchive knowledge panel. |
+
+### مهام ربط route
+
+لم تُنشأ مهام ربط route جديدة؛ لم يظهر من الفحص أن أيًا من اللوحات الأربع مطلوبة لكنها غير مربوطة. الحالات النشطة لها بدائل مربوطة بالفعل (`HRDashboard` و`KMPADashboard` وArchive knowledge)، أو أنها ليست feature entry مستقلة في التوجيه الحالي.
+
+### أوامر التحقق الإضافية
+
+- `test ! -e src/components/HRLite/HRLiteMainPanel.tsx && test ! -e src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx && test ! -e src/components/Surveys/SurveysMainPanel.tsx && test ! -e src/components/kb/KnowledgeBaseOverview.tsx`
+- `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview" . -g '!node_modules' -g '!dist' -g '!build'`
+- `rg -n "hr|HR|knowledge|Knowledge|survey|Survey|استبيان|معرفة|departments|activeSection|selectedDepartment|route:" src/App.tsx src/pages src/contexts src/components -g '!node_modules'`
