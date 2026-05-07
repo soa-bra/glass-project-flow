@@ -202,3 +202,47 @@
 - `sed -n '1,220p' src/types/index.ts`
 - `find src/components/shared -maxdepth 3 -name 'index.ts*' -print -exec sed -n '1,160p' {} \;`
 - `npm run -s typecheck`
+
+## Batch A.8 — 2026-05-07 — additional zero-reference integration-spec cleanup
+
+### نطاق الدفعة
+
+تم اختيار دفعة إضافية من **12** ملفًا من `docs/reports/zero-reference-candidates-2026-05-05.md` بعد الاستبعاد المؤقت للفئات المطلوبة:
+
+- workers.
+- hooks.
+- route entry panels وملفات الدخول العامة مثل `src/main.tsx` و`src/index.ts`.
+- ملفات runtime loader والإعداد مثل setup/config/env والملفات المشار إليها بـ dynamic import.
+
+اقتصرت الدفعة على ملفات اختبار تكامل لا تمثل entry/runtime loader للتطبيق نفسه، ثم صُنفت يدويًا `delete-approved` بعد فحص الاستيراد المباشر، وسلاسل الاسم في config/registry، وملفات barrel القريبة.
+
+### نتيجة التصنيف والتنفيذ
+
+| الملف | التصنيف | قرار التنفيذ | فحص import مباشر | فحص string/config/registry | فحص barrel export |
+|---|---|---|---|---|---|
+| `src/__tests__/integration/canvas-acceptance.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/canvas-kernel.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/canvas-rendering.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/canvas-workflow.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد config/registry hits؛ توجد إشارة توثيقية فقط في `docs/README_TESTS.md`. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/clipboard-behavior.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/drag-drop-behavior.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/element-creation.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/export-import-integration.test.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/history-operations-integration.test.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/selection-behavior.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/store-integration.test.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+| `src/__tests__/integration/undo-redo-behavior.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار أو stem خارج الملف. | لا توجد hits للاسم خارج التقارير والملف. | لا يوجد `index.ts*` في مجلد الاختبارات القريب. |
+
+### أرقام Batch A.8
+
+- الملفات المحذوفة ضمن Batch A.8: **12**.
+- الملفات المؤجلة ضمن Batch A.8: **0**.
+- الملفات المحذوفة تراكمياً بعد Batch A.8: **35**.
+- العدد المتبقي من baseline الأصلي بعد احتساب الحذف والـ allowlist: **52** (`95 - 35 - 0 - 8 = 52`).
+
+### أوامر التحقق
+
+- `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' --glob '!batch-a-delete-list.md' --glob '!<candidate>' "(from ['\"][^'\"]*<stem>['\"]|import\(['\"][^'\"]*<stem>['\"]|export .*from ['\"][^'\"]*<stem>['\"])" .`
+- `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' --glob '!batch-a-delete-list.md' --glob '!<candidate>' "\b<stem>\b" .`
+- `find src/__tests__/integration -maxdepth 1 -name 'index.ts*' -print -exec sed -n '1,160p' {} \;`
+- `npm run -s typecheck`
