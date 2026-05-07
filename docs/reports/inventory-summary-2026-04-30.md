@@ -10,8 +10,7 @@
 3. **Potential functional duplicates** discovered by path/name overlap:
    - `src/components/ProjectPanel/ExpenseModal.tsx`
    - `src/components/custom/ExpenseModal.tsx`
-   - `src/features/planning/elements/diagram/ShapeRenderer.tsx`
-   - `src/features/planning/elements/shared/ShapeRenderer.tsx`
+   - `src/features/planning/elements/shared/ShapeRenderer.tsx` (canonical shape renderer; legacy diagram shim removed)
    - `src/engine/canvas/math/snapEngine.ts`
    - `src/engine/canvas/interaction/snapEngine.ts`
 4. **Validation pipeline partially blocked** in current environment:
