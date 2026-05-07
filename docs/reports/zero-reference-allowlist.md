@@ -15,12 +15,12 @@
 
 تم فحص المسارات التالية بحثًا عن `new Worker` و`new URL` وأسماء ملفات workers كسلاسل نصية، مع مراجعة استخدامات import/export/snap ورفع/معالجة الملفات:
 
-| Worker | النتيجة | القرار |
+| Worker | أدلة البحث (`new Worker` / `new URL` / string / flow) | التصنيف |
 | --- | --- | --- |
-| `src/workers/fileProcessor.worker.ts` | موجود، ويتم تحميله runtime عبر `src/hooks/useFileUpload.ts` باستخدام `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url), { type: 'module' })`. يستقبل رسائل `PROCESS_FILE` و`CHUNK_FILE` من flow رفع الملفات. | يبقى في allowlist بسبب تحميل runtime مباشر. |
-| `src/workers/exportWorker.ts` | غير موجود في الشجرة الحالية. ظهوره محصور في وثائق/أمثلة (`docs/PERFORMANCE_GUIDE.md` و`docs/EXPORT_IMPORT.md`) ومواصفة عامة، وليس كتحميل runtime من `src`. | لا يوجد ملف لنقله لقائمة حذف لاحقة؛ اعتباره مرجعًا توثيقيًا قديمًا فقط. |
-| `src/workers/importWorker.ts` | غير موجود في الشجرة الحالية، ولا يوجد تحميل runtime أو string reference له داخل `src`. | لا يوجد ملف لنقله لقائمة حذف لاحقة. |
-| `src/workers/snapWorker.ts` | غير موجود في الشجرة الحالية، ولا يوجد تحميل runtime أو string reference له داخل `src`. | لا يوجد ملف لنقله لقائمة حذف لاحقة. |
+| `src/workers/fileProcessor.worker.ts` | الملف موجود. يتم تحميله runtime من `src/hooks/useFileUpload.ts` عبر `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url), { type: 'module' })`، واسم الملف يظهر كسلسلة نصية في نفس bootstrap. flow رفع/معالجة الملفات يستدعيه برسائل `PROCESS_FILE` و`CHUNK_FILE`، والworker نفسه يعرّف أيضًا `ANALYZE_IMAGE` و`EXTRACT_TEXT`. | `allowlist-runtime-worker` |
+| `src/workers/exportWorker.ts` | الملف غير موجود في الشجرة الحالية. لا يوجد تحميل runtime من `src`. ظهرت references توثيقية فقط: مثال `new Worker(new URL('../workers/exportWorker.ts', import.meta.url))` في `docs/PERFORMANCE_GUIDE.md`، ومثال قديم `new Worker('/workers/exportWorker.js')` في `docs/EXPORT_IMPORT.md`، وذكر عام في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. لذلك لا يوجد ملف حالي لحذفه، ولا يُثبت البحث اعتماد flow runtime. | `defer-docs-only-reference` |
+| `src/workers/importWorker.ts` | الملف غير موجود في الشجرة الحالية. لا يوجد `new Worker` أو `new URL` أو string reference داخل `src` لهذا الاسم، ولا توجد أدلة على تحميله في import flow؛ الذكر المتبقي عام في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. | `defer-docs-only-reference` |
+| `src/workers/snapWorker.ts` | الملف غير موجود في الشجرة الحالية. لا يوجد `new Worker` أو `new URL` أو string reference داخل `src` لهذا الاسم، ولا توجد أدلة على تحميله في snap flow؛ الذكر المتبقي عام في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. | `defer-docs-only-reference` |
 
 ## Defer (غير مؤكّد — لا حذف)
 
