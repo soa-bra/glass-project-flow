@@ -103,3 +103,57 @@ Typecheck was run at baseline and after each deletion batch:
 4. After deleting the final 2 hooks/files: `npm run typecheck` — passed.
 
 Each typecheck printed the npm warning `Unknown env config "http-proxy"`, but `tsc --noEmit` completed successfully.
+
+## Batch H — Performance hooks revalidation — 2026-05-07
+
+### Scope
+
+Batch H revalidated the requested performance hook paths:
+
+- `src/hooks/performance/useCanvasOptimization.ts`
+- `src/hooks/performance/useCanvasPerformance.ts`
+- `src/hooks/performance/useMemoizedStyles.ts`
+- `src/hooks/performance/usePerformanceOptimization.ts`
+
+### Checks Applied
+
+Commands used for this batch:
+
+```bash
+find src/hooks -maxdepth 3 -type f | sort
+find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true
+find src/hooks -path '*performance*' -maxdepth 4 -print 2>/dev/null || true
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs batch-a-delete-list.md package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build'
+rg -n "CanvasPerformance|MemoizedStyles|PerformanceOptimization|CanvasOptimization|useStableCallback|useStableMemo|performance hook|performance/hooks|hooks/performance|PerformanceOptimizer" docs src/components src/hooks -g '!node_modules'
+npm run -s typecheck
+```
+
+### Export Review
+
+- `src/hooks/index.ts` still exports only `useAutosave` plus canvas/enhanced-canvas types; it does not export any `src/hooks/performance/*` hook.
+- No `src/hooks/performance` directory or nested barrel export exists in the current tree.
+- Current runtime performance helpers remain under `src/components/performance/PerformanceOptimizer.tsx` and are re-exported by `src/components/ui/performance/index.ts`; those component-level exports are outside this hook batch and were not changed.
+
+### Documentation Review
+
+The only current documentation references to the requested hook paths are historical cleanup records:
+
+- `docs/reports/inventory-summary-2026-05-05.md` records prior deletion of `useCanvasPerformance.ts`, `useMemoizedStyles.ts`, and `usePerformanceOptimization.ts` in Batch 1.
+- `batch-a-delete-list.md` contains the original heuristic candidate rows for all four requested hook paths, including stale allowlist labels for three hooks that are no longer present in the current tree.
+
+No active architecture, public API, or usage documentation was found that requires retaining any requested `src/hooks/performance/*` hook.
+
+### Classification Results
+
+| Hook/file | Current file present? | Barrel/public export? | Non-documentation usage? | Docs/public/API signal | Classification | Action |
+|---|---:|---:|---:|---|---|---|
+| `src/hooks/performance/useCanvasOptimization.ts` | No | No | No | Only historical candidate-row reference found | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/useCanvasPerformance.ts` | No | No | No | Historical deletion log only | `delete-approved` | Already deleted; no export removal needed |
+| `src/hooks/performance/useMemoizedStyles.ts` | No | No | No | Historical deletion log only | `delete-approved` | Already deleted; no export removal needed |
+| `src/hooks/performance/usePerformanceOptimization.ts` | No | No | No | Historical deletion log only | `delete-approved` | Already deleted; no export removal needed |
+
+### Typecheck Cadence
+
+No new hook files were deleted during Batch H because all four requested paths were already absent from the current tree. A post-revalidation typecheck was still run:
+
+1. Post-revalidation: `npm run -s typecheck` — passed.
