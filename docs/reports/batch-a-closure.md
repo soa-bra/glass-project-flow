@@ -79,3 +79,18 @@
 
 - `rg -n "@/components/ProjectPanel/(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|from ['\"]\./(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|import\(['\"].*(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)" src -g '*.ts' -g '*.tsx'`
 - `npm run typecheck`
+
+
+## Batch A.4 — 2026-05-07 — ShapeRenderer shim removal
+
+تمت إعادة فحص مسار `ShapeRenderer` القديم بعد تحويل مستهلكي canvas إلى barrel المشترك canonical:
+
+- `DrawingPreview` يستخدم الآن `@/features/planning/elements/shared`.
+- `CanvasElement` يستخدم الآن `@/features/planning/elements/shared`.
+- لم تعد هناك مراجع للمسار القديم داخل `src` أو `docs` بعد تحديث تقرير التكرار.
+- ملف shim القديم غير موجود/محذوف، بينما بقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
+
+### أوامر التحقق
+
+- `rg -n "diagram/ShapeRenderer" .`
+- `npm run -s typecheck`
