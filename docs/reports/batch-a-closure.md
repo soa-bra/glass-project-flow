@@ -89,14 +89,14 @@
 
 - `DrawingPreview` يستخدم الآن `@/features/planning/elements/shared`.
 - `CanvasElement` يستخدم الآن `@/features/planning/elements/shared`.
-- نتيجة البحث عن المسار القديم الكامل: لا توجد أي مراجع متبقية في المستودع بعد تحديث تقرير التكرار.
+- نتيجة البحث عن مسار shim القديم: لا توجد أي مراجع متبقية في المستودع بعد تنظيف إدخال تقرير التكرار القديم.
 - نتيجة حذف shim: ملف shim القديم غير موجود بالفعل، لذلك لا يوجد ملف إضافي لحذفه في هذه الجولة، وبقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
 
 ### أوامر التحقق
 
-- البحث الحرفي عن المسار القديم الكامل لم يُرجع نتائج.
-- تحقق وجود shim أكد أن الملف القديم غير موجود.
-- `npm run -s typecheck`
+- البحث الحرفي عن مسار renderer القديم لم يُرجع نتائج بعد تنظيف التقرير.
+- تحقق وجود ملف shim القديم أكد أنه غير موجود.
+- `npm run -s typecheck` نجح.
 
 ## Batch A.5 — 2026-05-07 — route/navigation audit for legacy panels
 
@@ -128,4 +128,30 @@
 - `for f in src/components/HRLite/HRLiteMainPanel.tsx src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx src/components/kb/KnowledgeBaseOverview.tsx src/components/Surveys/SurveysMainPanel.tsx; do if [ -e "$f" ]; then echo "exists $f"; else echo "absent $f"; fi; done`
 - `rg -n "\\b(HRLiteMainPanel|KnowledgeBaseMainPanel|KnowledgeBaseOverview|SurveysMainPanel)\\b" src/App.tsx src/pages src/contexts/NavigationContext.tsx src --glob '!components/HRLite/HRLiteMainPanel.tsx' --glob '!components/KnowledgeBase/KnowledgeBaseMainPanel.tsx' --glob '!components/kb/KnowledgeBaseOverview.tsx' --glob '!components/Surveys/SurveysMainPanel.tsx'`
 - `rg -n "path=|<Route|activeSection|selectedDepartment|departments|research|hr" src/App.tsx src/pages src/contexts/NavigationContext.tsx src/components/MainContent.tsx src/components/DepartmentsSidebar.tsx src/components/DepartmentPanel src/components/DepartmentTabs/KMPA src/components/DepartmentTabs/HR`
+- `npm run -s typecheck`
+
+## Batch A.6 — 2026-05-07 — requested route/navigation re-audit for legacy main panels
+
+أُعيد تنفيذ الفحص المطلوب للملفات الثلاثة المحددة فقط، مع مراجعة `src/App.tsx` و`src/pages/*` و`src/contexts/NavigationContext.tsx` وأقرب إعدادات route/navigation داخل `src` المرتبطة بتدفق الإدارات (`MainContent`, `DepartmentsSidebar`, `DepartmentsWorkspace`, `DepartmentPanel`, `FeatureDepartmentPanel`, و`BaseDepartmentPanel`).
+
+### نتيجة كل ملف
+
+| الملف | حالة الملف عند الفحص | التصنيف | قرار التنفيذ | نتيجة route/navigation |
+|---|---|---|---|---|
+| `src/components/HRLite/HRLiteMainPanel.tsx` | غير موجود بالفعل بعد حذف Batch A.2 | `delete-approved` | لا حذف إضافي | لا توجد مراجع للاسم في `src/App.tsx` أو `src/pages/*` أو `NavigationContext` أو إعدادات التنقل داخل `src`. مدخل الموارد البشرية الحالي مربوط عبر `/departments/:departmentId` ومفتاح `hr`، ويُعرض من خلال `FeatureDepartmentPanel` إلى `HRDashboard` في `DepartmentTabs/HR`. |
+| `src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx` | غير موجود بالفعل بعد حذف Batch A.2 | `delete-approved` | لا حذف إضافي | لا توجد مراجع للاسم في route/navigation. مدخل المعرفة الحالي مربوط بمفتاح `research` ضمن `DepartmentRoutePage` و`DepartmentsSidebar`، ويُعرض عبر `BaseDepartmentPanel` إلى `KMPADashboard` من `DepartmentTabs/KMPA`. |
+| `src/components/Surveys/SurveysMainPanel.tsx` | غير موجود بالفعل بعد حذف Batch A.2 | `delete-approved` | لا حذف إضافي | لا توجد مراجع للاسم داخل route/navigation أو imports داخل `src`، ولا يوجد route أو navigation item حالي يتطلب لوحة Surveys مستقلة. |
+
+### خلاصة الربط
+
+- لا توجد ملفات من القائمة تحتاج تصنيف `route-missing`: لا يوجد route أو navigation config حالي يشير إلى هذه اللوحات بالاسم أو يتوقع مساراتها القديمة.
+- لا توجد ملفات من القائمة تحتاج تصنيف `defer-feature-entry`: لم يظهر مدخل تنقل مستقبلي/معطّل لهذه اللوحات في النطاق المفحوص.
+- لم تُحذف ملفات في هذه الجولة لأن الملفات الثلاثة كانت محذوفة مسبقًا ومصنفة `delete-approved`.
+- لم يلزم ربط route جديد لأن البدائل المطلوبة حاليًا موجودة عبر مفاتيح الإدارات `hr` و`research`، ولا يوجد مدخل Surveys مستقل.
+
+### أوامر التحقق
+
+- `for f in src/components/HRLite/HRLiteMainPanel.tsx src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx src/components/Surveys/SurveysMainPanel.tsx; do if [ -e "$f" ]; then echo "exists $f"; else echo "absent $f"; fi; done`
+- `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel" src/App.tsx src/pages src/contexts/NavigationContext.tsx src || true`
+- `rg -n "path=|<Route|activeSection|selectedDepartment|departments|research|hr|survey|knowledge" src/App.tsx src/pages src/contexts/NavigationContext.tsx src/components/MainContent.tsx src/components/DepartmentsSidebar.tsx src/components/DepartmentsWorkspace.tsx src/components/DepartmentPanel src/components/DepartmentTabs/KMPA src/components/DepartmentTabs/HR`
 - `npm run -s typecheck`
