@@ -121,14 +121,14 @@ export function useCanvasViewportController({
     }
   }, [activeTool, interactionMode]);
 
-  return {
+  return useMemo(() => ({
     containerSize,
     viewportBounds,
     visibleElements,
     snapToGrid,
     handleWheel,
     getCursorStyle,
-  };
+  }), [containerSize, getCursorStyle, handleWheel, snapToGrid, viewportBounds, visibleElements]);
 }
 
 export default useCanvasViewportController;

@@ -138,7 +138,9 @@ src/__tests__/
 │   ├── canvasStore.test.ts              # اختبارات العمليات الأساسية
 │   └── canvasStore.performance.test.ts  # اختبارات الأداء
 └── integration/
-    └── canvas-workflow.test.tsx         # اختبارات التكامل الشاملة
+    ├── smart-elements-integration.test.ts      # اختبارات تكامل العناصر الذكية
+    ├── viewport-elements-integration.test.ts   # اختبارات تكامل عناصر viewport
+    └── zoom-pan-behavior.test.tsx              # اختبارات سلوك zoom/pan
 ```
 
 ## اختبارات المستقبل

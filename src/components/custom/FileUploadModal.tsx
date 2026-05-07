@@ -2,10 +2,15 @@ import React, { useState, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Upload, X, FileText, Image, Video, Archive, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { ProjectFile } from '@/data/projectFiles';
 import { useProjectFiles } from '@/hooks/useProjectFiles';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  formatFileSize,
+  getSharedProjectFileType,
+  PROJECT_FILE_UPLOAD_POLICY,
+  validateProjectFileUploadForm,
+  validateUploadFiles,
+} from '@/shared/fileUploadSchema';
 
 interface FileUploadModalProps {
   isOpen: boolean;
@@ -49,11 +54,12 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     const newFiles: UploadedFile[] = [];
     
     Array.from(files).forEach((file) => {
-      // التحقق من حجم الملف (مثلاً 50MB كحد أقصى)
-      if (file.size > 50 * 1024 * 1024) {
+      const validationError = validateUploadFiles([file], PROJECT_FILE_UPLOAD_POLICY);
+
+      if (validationError) {
         toast({
-          title: "حجم الملف كبير جداً",
-          description: `الملف ${file.name} يتجاوز الحد المسموح (50MB)`,
+          title: validationError.title,
+          description: validationError.description,
           variant: "destructive",
         });
         return;
@@ -113,14 +119,6 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     return <FileText className="w-6 h-6" />;
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
   const handleTaskToggle = (taskId: string) => {
     setSelectedTasks(prev => 
       prev.includes(taskId)
@@ -148,19 +146,18 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
   };
 
   const handleSave = () => {
-    if (uploadedFiles.length === 0) {
-      toast({
-        title: "لم يتم اختيار ملفات",
-        description: "يرجى اختيار ملف واحد على الأقل للرفع",
-        variant: "destructive",
-      });
-      return;
-    }
+    const validationError = validateProjectFileUploadForm({
+      fileCount: uploadedFiles.length,
+      fileTitle,
+      importance,
+      tags,
+      selectedTasks,
+    });
 
-    if (!fileTitle.trim()) {
+    if (validationError) {
       toast({
-        title: "عنوان الملف مطلوب",
-        description: "يرجى إدخال عنوان للملف",
+        title: validationError.title,
+        description: validationError.description,
         variant: "destructive",
       });
       return;
@@ -169,7 +166,7 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     // إنشاء ملفات جديدة باستخدام النظام المشترك
     const newFiles = uploadedFiles.map(uploadedFile => ({
       name: uploadedFile.file.name,
-      type: getFileType(uploadedFile.file.type),
+      type: getSharedProjectFileType(uploadedFile.file.type),
       size: formatFileSize(uploadedFile.file.size),
       uploadDate: new Date().toISOString().split('T')[0],
       classification: importance,
@@ -201,14 +198,6 @@ export const FileUploadModal: React.FC<FileUploadModalProps> = ({
     });
 
     onClose();
-  };
-
-  const getFileType = (mimeType: string): ProjectFile['type'] => {
-    if (mimeType.startsWith('image/')) return 'image';
-    if (mimeType.startsWith('video/')) return 'video';
-    if (mimeType.startsWith('audio/')) return 'audio';
-    if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar')) return 'archive';
-    return 'document';
   };
 
   const handleClose = () => {
