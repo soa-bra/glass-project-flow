@@ -13,7 +13,7 @@
 
 ## Worker audit — export/import/snap/file-processing
 
-تم فحص المسارات التالية بحثًا عن `new Worker` و`new URL` وأسماء ملفات workers كسلاسل نصية، مع مراجعة استخدامات import/export/snap ورفع/معالجة الملفات. أوامر التدقيق المستخدمة في هذا المرور:
+تم تحديث هذا التدقيق في 2026-05-07، وفُحصت المسارات التالية بحثًا عن `new Worker` و`new URL` وأسماء ملفات workers كسلاسل نصية، مع مراجعة استخدامات import/export/snap ورفع/معالجة الملفات. أوامر التدقيق المستخدمة في هذا المرور:
 
 - `rg --files src/workers docs` للتحقق من وجود ملفات workers ومراجعها التوثيقية.
 - `rg -n "new Worker|new URL" src docs` لحصر bootstrap runtime أو أمثلة التوثيق.

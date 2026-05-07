@@ -62,47 +62,35 @@
 - `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' "\\b(HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview|ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal)\\b" .`
 - `rg -n "@/components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)|\\./((AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent))|components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)" src`
 
-## Batch A.3 — 2026-05-07 — ProjectPanel modal revalidation
+### إعادة تحقق Batch A.2 — ProjectPanel modal/content cleanup — 2026-05-07
 
-استجابةً لفحص ملفات `ProjectPanel` المحددة، أُعيدت مقارنة المسارات الأربعة مع الاستخدامات الفعلية في `src/components/ProjectPanel/ProjectTabs.tsx`:
+استجابةً لفحص ملفات `ProjectPanel` المحددة، أُعيدت مقارنة المسارات الأربعة مع الاستخدامات الفعلية في `src/components/ProjectPanel/index.tsx` و`src/components/ProjectPanel/ProjectTabs.tsx` و`src/components/ProjectManagement/ProjectManagementBoard.tsx`، ثم أُعيد فحص أي import مباشر أو غير مباشر أو barrel export داخل `src/components/ProjectPanel`.
 
-| الملف المفحوص | direct import | barrel export | dynamic/string reference | القرار | سبب الاحتفاظ/الحذف |
-|---|---:|---:|---:|---|---|
-| `src/components/ProjectPanel/ExpenseModal.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ExpenseModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` لتجنب تكرار واجهة المصروفات ومنطقها. |
-| `src/components/ProjectPanel/ApprovalRequestModal.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ApprovalRequestModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` لتجنب تكرار واجهة طلب الاعتماد المالي. |
-| `src/components/ProjectPanel/AnalysisModal.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `ProjectTabs` يستخدم `src/components/custom/FinancialAnalysisModal.tsx` بدل نسخة `ProjectPanel`، لذلك حُذفت النسخة غير المستخدمة لتجنب تكرار Modal تحليل الميزانية. |
-| `src/components/ProjectPanel/ProjectPanelContent.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `src/components/ProjectPanel/index.tsx` يعرض `ProjectManagementBoard` مباشرة، ولا يوجد مسار حي يستدعي المحتوى القديم. |
+#### Removed
 
-ملاحظة: بقيت النسخ النشطة داخل `src/components/custom/*Modal.tsx` لأنها هي المستوردة فعليًا من `ProjectTabs.tsx`، ولم تكن هناك exports مرتبطة بالمسارات المحذوفة داخل `src/components/ProjectPanel/index.tsx`.
+| الملف | سبب الحذف لكل ملف |
+|---|---|
+| `src/components/ProjectPanel/ExpenseModal.tsx` | لا يوجد import مباشر للمسار ولا barrel export ولا dynamic/string reference. `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ExpenseModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` كـ legacy duplicate. |
+| `src/components/ProjectPanel/ApprovalRequestModal.tsx` | لا يوجد import مباشر للمسار ولا barrel export ولا dynamic/string reference. `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ApprovalRequestModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` كـ legacy duplicate. |
+| `src/components/ProjectPanel/AnalysisModal.tsx` | لا يوجد import مباشر للمسار ولا barrel export ولا dynamic/string reference. `ProjectTabs` يستخدم `src/components/custom/FinancialAnalysisModal.tsx` بدل نسخة `ProjectPanel`، لذلك حُذفت نسخة التحليل غير المستخدمة. |
+| `src/components/ProjectPanel/ProjectPanelContent.tsx` | لا يوجد import مباشر أو غير مباشر للمحتوى القديم. `src/components/ProjectPanel/index.tsx` يعرض `ProjectManagementBoard` مباشرة، و`ProjectManagementBoard` يستورد تبويباته من `ProjectTabs` فقط، لذلك حُذف المحتوى القديم غير المستخدم. |
 
-### أوامر التحقق الإضافية
+#### Deferred
 
 - `rg -n "@/components/ProjectPanel/(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|from ['\"]\./(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|import\(['\"].*(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)" src -g '*.ts' -g '*.tsx'`
 - `npm run typecheck`
 
-## Batch A.4 — 2026-05-07 — route/navigation revalidation for panel candidates
 
-استجابةً لإعادة فحص لوحات `HRLiteMainPanel` و`KnowledgeBaseMainPanel` و`SurveysMainPanel` و`KnowledgeBaseOverview`، أُعيدت مراجعة نقاط الربط التالية قبل اتخاذ القرار:
+## Batch A.4 — 2026-05-07 — ShapeRenderer shim removal
 
-- `src/App.tsx`: يحتوي فقط على مسارات `/auth` و`/join/:token` و`/` و`/departments` و`/departments/:departmentId` ثم catch-all؛ لا توجد routes منفصلة لهذه اللوحات.
-- `src/pages/*`: صفحة الأقسام `DepartmentRoutePage` تربط مفاتيح الأقسام الحية فقط (`financial`, `legal`, `marketing`, `hr`, `crm`, `social`, `training`, `research`, `brand`) مع `Index` عبر `NavigationContext`؛ لا توجد imports أو dynamic references لهذه اللوحات.
-- `src/contexts/NavigationContext.tsx`: الحالة تدعم `activeSection` و`selectedDepartment` و`selectedCustomer` فقط، و`navigateToCustomerDetails` يوجه إلى قسم `crm`؛ لا توجد entry points باسم HRLite أو KnowledgeBase أو Surveys.
-- navigation/config داخل `src`: لا توجد hits للأسماء الأربعة خارج تقارير الجرد/الإغلاق، ولا توجد route أو registry string تربط هذه اللوحات بواجهة المنتج.
+تمت إعادة فحص مسار `ShapeRenderer` القديم بعد تحويل مستهلكي canvas إلى barrel المشترك canonical:
 
-### نتيجة التصنيف بعد فحص route/navigation
+- `DrawingPreview` يستخدم الآن `@/features/planning/elements/shared`.
+- `CanvasElement` يستخدم الآن `@/features/planning/elements/shared`.
+- لم تعد هناك مراجع للمسار القديم داخل `src` أو `docs` بعد تحديث تقرير التكرار.
+- ملف shim القديم غير موجود/محذوف، بينما بقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
 
-| اللوحة/الملف | التصنيف | قرار التنفيذ | نتيجة فحص route/navigation |
-|---|---|---|---|
-| `src/components/HRLite/HRLiteMainPanel.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو department key يشير إليه؛ شاشة HR الحية تستخدم مسار القسم `/departments/hr` ومكوّنات `DepartmentTabs/HR`. |
-| `src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو string registry يطلبه؛ الموجود هو hook/service layer فقط بدون لوحة مربوطة. |
-| `src/components/Surveys/SurveysMainPanel.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو string registry يطلبه؛ الموجود هو hook/service layer فقط بدون لوحة مربوطة. |
-| `src/components/kb/KnowledgeBaseOverview.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو string registry يطلبه؛ لا توجد لوحة مطلوبة product-wise تحتاج ربطًا بدل الحذف. |
+### أوامر التحقق
 
-لم تظهر أي حالة `route-missing` أو `defer-feature-entry` في هذا الفحص؛ لذلك لم تتم إضافة routes أو navigation entries جديدة، ولم تكن هناك ملفات إضافية للحذف لأن ملفات `delete-approved` الأربعة كانت محذوفة بالفعل.
-
-### أوامر التحقق الخاصة بهذا الفحص
-
-- `find src -name '*HRLiteMainPanel*' -o -name '*KnowledgeBaseMainPanel*' -o -name '*SurveysMainPanel*' -o -name '*KnowledgeBaseOverview*'`
-- `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview" src`
-- `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview|route|routes|navigate|Navigation" src/App.tsx src/pages src/contexts/NavigationContext.tsx src`
+- `rg -n "diagram/ShapeRenderer" .`
 - `npm run -s typecheck`
