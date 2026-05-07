@@ -79,3 +79,30 @@
 
 - `rg -n "@/components/ProjectPanel/(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|from ['\"]\./(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|import\(['\"].*(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)" src -g '*.ts' -g '*.tsx'`
 - `npm run typecheck`
+
+## Batch A.4 — 2026-05-07 — route/navigation revalidation for panel candidates
+
+استجابةً لإعادة فحص لوحات `HRLiteMainPanel` و`KnowledgeBaseMainPanel` و`SurveysMainPanel` و`KnowledgeBaseOverview`، أُعيدت مراجعة نقاط الربط التالية قبل اتخاذ القرار:
+
+- `src/App.tsx`: يحتوي فقط على مسارات `/auth` و`/join/:token` و`/` و`/departments` و`/departments/:departmentId` ثم catch-all؛ لا توجد routes منفصلة لهذه اللوحات.
+- `src/pages/*`: صفحة الأقسام `DepartmentRoutePage` تربط مفاتيح الأقسام الحية فقط (`financial`, `legal`, `marketing`, `hr`, `crm`, `social`, `training`, `research`, `brand`) مع `Index` عبر `NavigationContext`؛ لا توجد imports أو dynamic references لهذه اللوحات.
+- `src/contexts/NavigationContext.tsx`: الحالة تدعم `activeSection` و`selectedDepartment` و`selectedCustomer` فقط، و`navigateToCustomerDetails` يوجه إلى قسم `crm`؛ لا توجد entry points باسم HRLite أو KnowledgeBase أو Surveys.
+- navigation/config داخل `src`: لا توجد hits للأسماء الأربعة خارج تقارير الجرد/الإغلاق، ولا توجد route أو registry string تربط هذه اللوحات بواجهة المنتج.
+
+### نتيجة التصنيف بعد فحص route/navigation
+
+| اللوحة/الملف | التصنيف | قرار التنفيذ | نتيجة فحص route/navigation |
+|---|---|---|---|
+| `src/components/HRLite/HRLiteMainPanel.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو department key يشير إليه؛ شاشة HR الحية تستخدم مسار القسم `/departments/hr` ومكوّنات `DepartmentTabs/HR`. |
+| `src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو string registry يطلبه؛ الموجود هو hook/service layer فقط بدون لوحة مربوطة. |
+| `src/components/Surveys/SurveysMainPanel.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو string registry يطلبه؛ الموجود هو hook/service layer فقط بدون لوحة مربوطة. |
+| `src/components/kb/KnowledgeBaseOverview.tsx` | `delete-approved` | محذوف سابقًا/مؤكد | غير موجود في `src` الآن، ولا يوجد route أو navigation entry أو string registry يطلبه؛ لا توجد لوحة مطلوبة product-wise تحتاج ربطًا بدل الحذف. |
+
+لم تظهر أي حالة `route-missing` أو `defer-feature-entry` في هذا الفحص؛ لذلك لم تتم إضافة routes أو navigation entries جديدة، ولم تكن هناك ملفات إضافية للحذف لأن ملفات `delete-approved` الأربعة كانت محذوفة بالفعل.
+
+### أوامر التحقق الخاصة بهذا الفحص
+
+- `find src -name '*HRLiteMainPanel*' -o -name '*KnowledgeBaseMainPanel*' -o -name '*SurveysMainPanel*' -o -name '*KnowledgeBaseOverview*'`
+- `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview" src`
+- `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview|route|routes|navigate|Navigation" src/App.tsx src/pages src/contexts/NavigationContext.tsx src`
+- `npm run -s typecheck`
