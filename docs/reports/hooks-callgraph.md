@@ -214,3 +214,54 @@ npm run -s typecheck
 ### Batch I Disposition
 
 All four requested hooks are classified as `delete-approved`. No filesystem deletion was needed in Batch I because the files and nested performance barrel are already absent from the current tree, and no `src/hooks/index.ts` export removal was required.
+
+## Batch J — Performance hook absence and historical-safety audit — 2026-05-07
+
+### Scope
+
+This pass re-checked the four requested hook paths:
+
+- `src/hooks/performance/useCanvasOptimization.ts`
+- `src/hooks/performance/useCanvasPerformance.ts`
+- `src/hooks/performance/useMemoizedStyles.ts`
+- `src/hooks/performance/usePerformanceOptimization.ts`
+
+### Checks Applied
+
+Commands used for this pass:
+
+```bash
+sed -n '1,220p' src/hooks/index.ts
+test -d src/hooks/performance && find src/hooks/performance -maxdepth 2 -type f -print || echo 'NO src/hooks/performance'
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs batch-a-delete-list.md package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build'
+git log --diff-filter=D --summary -- src/hooks/performance/useCanvasOptimization.ts src/hooks/performance/useCanvasPerformance.ts src/hooks/performance/useMemoizedStyles.ts src/hooks/performance/usePerformanceOptimization.ts
+git show 7dd7fdc^:src/hooks/performance/useCanvasOptimization.ts
+git show ae08641^:src/hooks/performance/useCanvasPerformance.ts
+git show ae08641^:src/hooks/performance/useMemoizedStyles.ts
+git show ae08641^:src/hooks/performance/usePerformanceOptimization.ts
+npm run -s typecheck
+```
+
+### Current-tree findings
+
+- The current tree has no `src/hooks/performance` directory, so none of the four requested hook implementation files can still be imported from the working tree.
+- `src/hooks/index.ts` exports only `useAutosave` plus canvas/enhanced-canvas types; it does not expose a performance-hook public API.
+- The only remaining current references to the requested hook names or paths are historical reports/candidate rows and this report. No active `src/**` runtime consumer was found.
+- Git history shows `useCanvasPerformance.ts`, `useMemoizedStyles.ts`, and `usePerformanceOptimization.ts` were deleted by `ae086411d26e0edbb0c498015ab3a35b52bc2a5f`; `useCanvasOptimization.ts` was deleted by `7dd7fdc23fae3caee950caa3b8831808361cb099`.
+
+### Hook-by-hook review
+
+| Hook/file | Current dependency-array review | Current cleanup review | Current stale-closure review | Current stable-reference review | Used/exported as public API? | Classification | Action |
+|---|---|---|---|---|---|---|---|
+| `src/hooks/performance/useCanvasOptimization.ts` | Not applicable in current tree because the file is absent. Historical code used empty dependency arrays for pure callbacks/memoized helpers and `[shouldUseVirtualization]` for chunk processing. | No current cleanup path needed. Historical `batchElementUpdates` canceled only a prior frame before scheduling a new one and had no unmount cleanup for the final pending animation frame. | No current closure risk because absent. Historical callbacks only closed over refs/constants except chunk processing, which depended on `shouldUseVirtualization`. | No current returned object. Historical returned functions were stable, but the returned object literal itself was recreated each render. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+| `src/hooks/performance/useCanvasPerformance.ts` | Not applicable in current tree because the file is absent. Historical dependencies were mostly complete: render tracking intentionally ran every render, `getVisibleElements` depended on `elements`, `getPerformanceMetrics` on `elements.length`, cache cleanup on `elements`, monitor interval on `[enabled]`. | No current cleanup path needed. Historical monitor cleaned its interval on disable/unmount. Historical cache cleanup was tied to `elements`; no special unmount cleanup was present for singleton metric/style caches. | No current closure risk because absent. Historical viewport and metrics callbacks captured current `elements` through dependency arrays. | No current returned object. Historical callbacks were stable according to their dependencies, but returned object literals were not memoized; `usePerformanceMonitor` returned a singleton metrics instance. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+| `src/hooks/performance/useMemoizedStyles.ts` | Not applicable in current tree because the file is absent. Historical memoized helpers used empty dependency arrays where calculations were pure and `[getElementTransform, getElementSize]` for `calculateElementStyle`. | No current cleanup path needed. Historical code allocated no timers/listeners/subscriptions, so cleanup was not required. | No current closure risk because absent. Historical closures only referenced stable helper functions or call arguments. | No current returned object. Historical helper functions/constants were stable, but each returned object literal from the hook was recreated each render. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+| `src/hooks/performance/usePerformanceOptimization.ts` | Not applicable in current tree because the file is absent. Historical `throttleOperation`, `batchOperations`, and `calculateElementStyle` used empty dependency arrays; `useOptimizedSelector` delegated to caller-provided deps; `useDebouncedCallback` used `[callback, delay, ...deps]`. | No current cleanup path needed. Historical main hook canceled a pending animation frame on unmount, but the debounced callback helper had no unmount timeout cleanup. | No current closure risk because absent. Historical debounced callback depended on `callback`, `delay`, and caller deps, but exposed the usual risk of incorrect caller-supplied deps. | No current returned object. Historical callbacks were stable by dependency arrays, but returned object literals were not memoized. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+
+### Disposition
+
+All four requested hooks remain `delete-approved`. No additional file deletion was performed in this pass because the implementations and `src/hooks/performance` directory are already absent, and no public export removal is necessary.
+
+### Typecheck Cadence
+
+1. Post-audit: `npm run -s typecheck` — passed.
