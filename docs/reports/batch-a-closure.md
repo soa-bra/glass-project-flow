@@ -97,3 +97,35 @@
 - البحث الحرفي عن المسار القديم الكامل لم يُرجع نتائج.
 - تحقق وجود shim أكد أن الملف القديم غير موجود.
 - `npm run -s typecheck`
+
+## Batch A.5 — 2026-05-07 — route/navigation audit for legacy panels
+
+استجابةً لفحص route/navigation المحدد، تمت مراجعة:
+
+- `src/App.tsx` للتحقق من routes العامة (`/`, `/departments`, `/departments/:departmentId`).
+- `src/pages/*` للتحقق من wrappers الخاصة بالمسارات، وخصوصًا `DepartmentRoutePage`.
+- `src/contexts/NavigationContext.tsx` للتحقق من مفاتيح التنقل الحالية (`activeSection`, `selectedDepartment`, `selectedCustomer`).
+- إعدادات/تدفقات التنقل داخل `src` المرتبطة بالإدارات: `MainContent`, `DepartmentsSidebar`, `DepartmentPanel`, وواجهات `DepartmentTabs`.
+
+### نتيجة التصنيف للملفات المطلوبة
+
+| الملف | حالة الملف الحالية | التصنيف | قرار التنفيذ | ملاحظات route/navigation |
+|---|---|---|---|---|
+| `src/components/HRLite/HRLiteMainPanel.tsx` | غير موجود بعد حذف Batch A.2 | `delete-approved` | لا تغيير إضافي | لم تظهر أي مراجع للاسم في `src/App.tsx` أو `src/pages/*` أو `NavigationContext` أو config داخل `src`. لوحة الموارد البشرية المطلوبة حاليًا مربوطة عبر مفتاح `hr` إلى `HRDashboard` ضمن `DepartmentTabs/HR`، لذلك لا يلزم إحياء لوحة `HRLite` القديمة. |
+| `src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx` | غير موجود بعد حذف Batch A.2 | `delete-approved` | لا تغيير إضافي | لم تظهر أي مراجع للاسم في route/navigation. مسار المعرفة الحالي يستخدم مفتاح الإدارة `research` ويعرض `KMPADashboard` من `DepartmentTabs/KMPA`، لذلك لا يلزم ربط اللوحة القديمة. |
+| `src/components/kb/KnowledgeBaseOverview.tsx` | غير موجود بعد حذف Batch A.2 | `delete-approved` | لا تغيير إضافي | لم تظهر أي مراجع للاسم في route/navigation أو imports داخل `src`. واجهة المعرفة الحالية مغطاة عبر `KMPADashboard` وتبويبات KMPA، وليس عبر overview القديم. |
+| `src/components/Surveys/SurveysMainPanel.tsx` | غير موجود بعد حذف Batch A.2 | `delete-approved` | لا تغيير إضافي | لم تظهر أي مراجع للاسم في route/navigation أو imports داخل `src`، ولا يوجد route أو nav item حالي يتوقع لوحة Surveys مستقلة. |
+
+### ملاحظات الربط الحالي
+
+- `src/App.tsx` يعرّف route الإدارات العام `/departments` وroute الإدارة المحددة `/departments/:departmentId` ولا يربط أيًا من اللوحات الأربع مباشرة.
+- `DepartmentRoutePage` يحصر مفاتيح الإدارات المسموحة ويتضمن `hr` و`research`، ثم يضبط `activeSection` إلى `departments` و`selectedDepartment` حسب route param.
+- `DepartmentsSidebar` يحتوي عنصرَي تنقل حاليين لـ `hr` و`research`، ولا يحتوي عنصرًا مستقلًا لـ `Surveys` أو `KnowledgeBaseMainPanel`.
+- `DepartmentPanel` يربط `hr` عبر `FeatureDepartmentPanel` إلى `HRDashboard`، ويربط `research` عبر `BaseDepartmentPanel` إلى `KMPADashboard`.
+
+### أوامر التحقق
+
+- `for f in src/components/HRLite/HRLiteMainPanel.tsx src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx src/components/kb/KnowledgeBaseOverview.tsx src/components/Surveys/SurveysMainPanel.tsx; do if [ -e "$f" ]; then echo "exists $f"; else echo "absent $f"; fi; done`
+- `rg -n "\\b(HRLiteMainPanel|KnowledgeBaseMainPanel|KnowledgeBaseOverview|SurveysMainPanel)\\b" src/App.tsx src/pages src/contexts/NavigationContext.tsx src --glob '!components/HRLite/HRLiteMainPanel.tsx' --glob '!components/KnowledgeBase/KnowledgeBaseMainPanel.tsx' --glob '!components/kb/KnowledgeBaseOverview.tsx' --glob '!components/Surveys/SurveysMainPanel.tsx'`
+- `rg -n "path=|<Route|activeSection|selectedDepartment|departments|research|hr" src/App.tsx src/pages src/contexts/NavigationContext.tsx src/components/MainContent.tsx src/components/DepartmentsSidebar.tsx src/components/DepartmentPanel src/components/DepartmentTabs/KMPA src/components/DepartmentTabs/HR`
+- `npm run -s typecheck`
