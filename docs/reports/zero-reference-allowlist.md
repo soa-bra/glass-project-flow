@@ -15,6 +15,7 @@
 
 تم تحديث هذا التدقيق في 2026-05-07، وفُحصت المسارات التالية بحثًا عن `new Worker` و`new URL` وأسماء ملفات workers كسلاسل نصية، مع مراجعة استخدامات import/export/snap ورفع/معالجة الملفات. أوامر التدقيق المستخدمة في هذا المرور:
 
+- `find src/workers -maxdepth 1 -type f -print | sort` للتحقق من ملفات workers الموجودة فعليًا؛ النتيجة الحالية تحتوي `src/workers/fileProcessor.worker.ts` فقط.
 - `rg --files src/workers docs` للتحقق من وجود ملفات workers ومراجعها التوثيقية.
 - `rg -n "new Worker|new URL" src docs` لحصر bootstrap runtime أو أمثلة التوثيق.
 - `rg -n "fileProcessor\.worker\.ts|exportWorker\.ts|exportWorker\.js|importWorker\.ts|importWorker\.js|snapWorker\.ts|snapWorker\.js" src docs` لحصر أسماء الملفات كسلاسل نصية.
