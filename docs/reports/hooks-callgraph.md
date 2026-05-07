@@ -154,6 +154,10 @@ No active architecture, public API, or usage documentation was found that requir
 
 ### Typecheck Cadence
 
-No new hook files were deleted during Batch H because all four requested paths were already absent from the current tree. A post-revalidation typecheck was still run:
+No new hook files were deleted during Batch H because all four requested paths were already absent from the current tree. A post-revalidation typecheck was still run after confirming the top-level and nested performance barrels were absent:
 
 1. Post-revalidation: `npm run -s typecheck` — passed.
+
+### Batch H Disposition
+
+All four requested performance hook paths are classified as `delete-approved`, but they required no filesystem deletion in this batch because the files and the `src/hooks/performance` barrel directory were already absent. No `src/hooks/index.ts` export removal was required.
