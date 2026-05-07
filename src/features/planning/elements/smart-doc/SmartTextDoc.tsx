@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { sanitizeHTML } from "@/utils/sanitize";
 
 interface SmartTextDocData {
   title: string;
@@ -94,14 +95,15 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   // Initialize content only once
   useEffect(() => {
     if (editorRef.current && !isInitialized.current && data.content) {
-      editorRef.current.innerHTML = data.content;
+      editorRef.current.innerHTML = sanitizeHTML(data.content);
       isInitialized.current = true;
     }
   }, [data.content]);
 
   const handleContentChange = useCallback(() => {
     if (editorRef.current) {
-      const newContent = editorRef.current.innerHTML;
+      const newContent = sanitizeHTML(editorRef.current.innerHTML);
+      editorRef.current.innerHTML = newContent;
       setContent(newContent);
       onUpdate({ content: newContent });
     }

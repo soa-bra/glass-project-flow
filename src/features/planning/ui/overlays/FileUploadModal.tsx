@@ -3,11 +3,12 @@ import { X, Upload, FileText, Image as ImageIcon, FileType } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useToast } from '@/hooks/use-toast';
+import { PLANNING_FILE_UPLOAD_POLICY, validateUploadFiles } from '@/shared/fileUploadSchema';
 
 const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<any>(null);
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; type: string; size: number } | null>(null);
   const { createBoard } = usePlanningStore();
   const { toast } = useToast();
 
@@ -38,22 +39,14 @@ const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   const handleFile = async (file: File) => {
-    // التحقق من نوع الملف
-    const allowedTypes = ['text/plain', 'application/pdf', 'image/png', 'image/jpeg'];
-    if (!allowedTypes.includes(file.type)) {
-      toast({
-        title: 'نوع ملف غير مدعوم',
-        description: 'الرجاء رفع ملف نصي أو PDF أو صورة',
-        variant: 'destructive',
-      });
-      return;
-    }
+    const validationError = validateUploadFiles([file], PLANNING_FILE_UPLOAD_POLICY);
 
-    // التحقق من حجم الملف (20MB max)
-    if (file.size > 20 * 1024 * 1024) {
+    if (validationError) {
       toast({
-        title: 'الملف كبير جداً',
-        description: 'الحد الأقصى لحجم الملف هو 20 ميجابايت',
+        title: validationError.title,
+        description: validationError.code === 'unsupported_type'
+          ? 'الرجاء رفع ملف نصي أو PDF أو صورة'
+          : validationError.description,
         variant: 'destructive',
       });
       return;

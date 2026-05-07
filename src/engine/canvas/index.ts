@@ -12,7 +12,7 @@ export * from './kernel';
 export * from './rendering';
 
 // Math - المحرك الرياضي
-export * from './math/snapEngine';
+export * from './interaction/snapEngine';
 
 // Spatial - الفضاء المكاني
 export * from './spatial';

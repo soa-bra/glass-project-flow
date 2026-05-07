@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  ReactNode,
+} from "react";
 
 interface NavigationState {
   activeSection: string;
@@ -14,34 +20,38 @@ interface NavigationContextType {
   navigateToCustomerDetails: (customerId: string) => void;
 }
 
-const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
+const NavigationContext = createContext<NavigationContextType | undefined>(
+  undefined,
+);
 
-export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const NavigationProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [navigationState, setNavigationState] = useState<NavigationState>({
-    activeSection: 'home',
+    activeSection: "home",
     selectedDepartment: null,
     selectedCustomer: null,
   });
 
-  const setActiveSection = (section: string) => {
-    setNavigationState(prev => ({ ...prev, activeSection: section }));
-  };
+  const setActiveSection = useCallback((section: string) => {
+    setNavigationState((prev) => ({ ...prev, activeSection: section }));
+  }, []);
 
-  const setSelectedDepartment = (department: string | null) => {
-    setNavigationState(prev => ({ ...prev, selectedDepartment: department }));
-  };
+  const setSelectedDepartment = useCallback((department: string | null) => {
+    setNavigationState((prev) => ({ ...prev, selectedDepartment: department }));
+  }, []);
 
-  const setSelectedCustomer = (customerId: string | null) => {
-    setNavigationState(prev => ({ ...prev, selectedCustomer: customerId }));
-  };
+  const setSelectedCustomer = useCallback((customerId: string | null) => {
+    setNavigationState((prev) => ({ ...prev, selectedCustomer: customerId }));
+  }, []);
 
-  const navigateToCustomerDetails = (customerId: string) => {
+  const navigateToCustomerDetails = useCallback((customerId: string) => {
     setNavigationState({
-      activeSection: 'departments',
-      selectedDepartment: 'crm',
+      activeSection: "departments",
+      selectedDepartment: "crm",
       selectedCustomer: customerId,
     });
-  };
+  }, []);
 
   return (
     <NavigationContext.Provider
@@ -61,7 +71,7 @@ export const NavigationProvider: React.FC<{ children: ReactNode }> = ({ children
 export const useNavigation = (): NavigationContextType => {
   const context = useContext(NavigationContext);
   if (context === undefined) {
-    throw new Error('useNavigation must be used within a NavigationProvider');
+    throw new Error("useNavigation must be used within a NavigationProvider");
   }
   return context;
 };

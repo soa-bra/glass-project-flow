@@ -110,6 +110,93 @@ const parseCellRef = (ref: string): { row: number; col: number } | null => {
   return { row: parseInt(match[2]) - 1, col: col - 1 };
 };
 
+const evaluateArithmeticExpression = (expression: string): number | null => {
+  const normalized = expression.replace(/\s+/g, '');
+  if (!normalized) return null;
+  if (!/^[\d+\-*/().]+$/.test(normalized)) return null;
+
+  const tokens = normalized.match(/\d*\.?\d+|[()+\-*/]/g);
+  if (!tokens) return null;
+
+  const values: number[] = [];
+  const operators: string[] = [];
+  const precedence: Record<string, number> = { '+': 1, '-': 1, '*': 2, '/': 2 };
+
+  const applyOperator = (): boolean => {
+    const operator = operators.pop();
+    const right = values.pop();
+    const left = values.pop();
+    if (!operator || right === undefined || left === undefined) return false;
+
+    switch (operator) {
+      case '+':
+        values.push(left + right);
+        break;
+      case '-':
+        values.push(left - right);
+        break;
+      case '*':
+        values.push(left * right);
+        break;
+      case '/':
+        if (right === 0) return false;
+        values.push(left / right);
+        break;
+      default:
+        return false;
+    }
+    return true;
+  };
+
+  let expectValue = true;
+  for (const token of tokens) {
+    if (/^\d*\.?\d+$/.test(token)) {
+      values.push(parseFloat(token));
+      expectValue = false;
+      continue;
+    }
+
+    if (token === '(') {
+      operators.push(token);
+      expectValue = true;
+      continue;
+    }
+
+    if (token === ')') {
+      while (operators.length && operators[operators.length - 1] !== '(') {
+        if (!applyOperator()) return null;
+      }
+      if (operators.pop() !== '(') return null;
+      expectValue = false;
+      continue;
+    }
+
+    if (expectValue && token === '-') {
+      values.push(0);
+    } else if (expectValue) {
+      return null;
+    }
+
+    while (
+      operators.length &&
+      operators[operators.length - 1] !== '(' &&
+      precedence[operators[operators.length - 1]] >= precedence[token]
+    ) {
+      if (!applyOperator()) return null;
+    }
+    operators.push(token);
+    expectValue = true;
+  }
+
+  if (expectValue) return null;
+  while (operators.length) {
+    if (operators[operators.length - 1] === '(') return null;
+    if (!applyOperator()) return null;
+  }
+
+  return values.length === 1 && Number.isFinite(values[0]) ? values[0] : null;
+};
+
 export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpdate }) => {
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
   const [editingCell, setEditingCell] = useState<string | null>(null);

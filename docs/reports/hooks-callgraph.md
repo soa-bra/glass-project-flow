@@ -1,26 +1,414 @@
-# Hooks & Call-Site Audit (Initial Pass)
+# Hooks & Call-Graph Audit — Zero-Reference Pass
 
-## Critical Hook Zones
-1. `src/hooks/*` (global/shared hooks)
-2. `src/features/planning/canvas/controllers/*` (input, viewport, selection)
-3. `src/features/planning/elements/text/hooks/*` (editor behavior/history)
-4. `src/hooks/performance/*` (memoization/perf-sensitive paths)
+Date: 2026-05-07
 
-## Initial Verification Checklist (to execute per hook)
-- `useEffect` dependencies complete and intentional.
-- no stale closures in callbacks passed to event listeners.
-- cleanup function exists for subscriptions/timers/workers.
-- stable return shape (avoid identity churn where consumers depend on memoization).
-- hook consumers import canonical hook (not legacy duplicate).
+## Scope
 
-## Priority Hook Paths
-- `src/hooks/useSnapEngine.ts` vs engine-level snap implementations.
+This pass reviewed every hook-related entry that appears in `docs/reports/zero-reference-candidates-2026-05-05.md` under `src/hooks/**`:
+
+- `src/hooks/canvas/useOptimizedCanvas.ts`
+- `src/hooks/index.ts`
+- `src/hooks/use-mobile.tsx`
+- `src/hooks/useAIAnalysis.ts`
+- `src/hooks/useApprovals.ts`
+- `src/hooks/useAudit.ts`
+- `src/hooks/useCanvasGraph.ts`
+- `src/hooks/useCanvasHelpers.ts`
+- `src/hooks/useCanvasKeyboardNav.ts`
+- `src/hooks/useCanvasStyles.ts`
+- `src/hooks/useFileUpload.ts`
+- `src/hooks/useGridGuide.ts`
+- `src/hooks/useHR.ts`
+- `src/hooks/useKanban.ts`
+- `src/hooks/usePermission.ts`
+- `src/hooks/useSnapEngine.ts`
+- `src/hooks/useTaskSelection.ts`
+
+## Checks Applied
+
+For each hook/file, the audit checked:
+
+1. Whether it is exported from the global barrel `src/hooks/index.ts`.
+2. Whether it has any consumer outside a barrel import graph, including direct imports and references under `src/**`.
+3. Whether project documentation or active API-surface documentation identifies it as public/architectural API.
+4. Whether the file has non-static runtime wiring that can be invisible to a simple static import graph.
+
+Commands used during the pass:
+
+```bash
+rg -n "from ['\"]@/hooks['\"]|from ['\"]src/hooks['\"]|from ['\"]\.*/hooks['\"]|from ['\"]@/hooks/index|src/hooks/index" src docs --glob '!node_modules'
+rg -n "useOptimizedCanvasState|useOptimizedSelection|useOptimizedCanvasInteractions|useOptimizedRender|useDebouncedCallback|useVirtualizedElements|useIsMobile|useAIAnalysis|useApprovals|useAudit|useCanvasGraph|useCanvasElementActions|useCanvasKeyboardNav|useCanvasStyles|useStylePresetClasses|useFileUpload|useGridGuide|useHR\b|useKanban|usePermission|useSnapEngine|useTaskSelection" src docs --glob '!docs/reports/zero-reference-candidates-2026-05-05.md' --glob '!node_modules'
+npm run typecheck
+```
+
+## Barrel Export Findings
+
+`src/hooks/index.ts` currently exports only:
+
+- `useAutosave` from `src/components/SettingsPanel/hooks/useAutosave.ts`.
+- Canvas-related types from `src/types/canvas.ts` and `src/types/enhanced-canvas.ts`.
+
+None of the deleted zero-reference hooks were exported from `src/hooks/index.ts`, so no deleted-hook barrel export needed removal. The `useAutosave` barrel export was retained because the hook itself is used directly in Settings panels and was not one of the zero-reference hook files under review.
+
+## Classification Results
+
+| Hook/file | Barrel export? | Non-barrel usage? | Docs/public/API signal | Classification | Action |
+|---|---:|---:|---|---|---|
+| `src/hooks/canvas/useOptimizedCanvas.ts` (`useOptimizedCanvasState`, `useOptimizedSelection`, `useOptimizedCanvasInteractions`, `useOptimizedRender`, `useDebouncedCallback`, `useVirtualizedElements`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/use-mobile.tsx` (`useIsMobile`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useAIAnalysis.ts` (`useAIAnalysis`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useApprovals.ts` (`useApprovals`) | No | No | Active public exports are service-level approvals APIs via `src/index.ts`, not this hook | `delete-approved` | Deleted |
+| `src/hooks/useAudit.ts` (`useAudit`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useCanvasGraph.ts` (`useCanvasGraph`) | No | No | File-local comments only; no external docs/API surface found | `delete-approved` | Deleted |
+| `src/hooks/useCanvasHelpers.ts` (`useCanvasElementActions`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useCanvasStyles.ts` (`useCanvasStyles`, `useStylePresetClasses`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useGridGuide.ts` (`useGridGuide`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useHR.ts` (`useHR`) | No | No | Superseded by used `useHRLite`; no public doc/API signal for `useHR` found | `delete-approved` | Deleted |
+| `src/hooks/useKanban.ts` (`useKanban`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/useTaskSelection.ts` (`useTaskSelection`) | No | No | No project doc/API reference found | `delete-approved` | Deleted |
+| `src/hooks/index.ts` | It is the barrel | No consumer of `@/hooks` barrel found | Public-style barrel containing active `useAutosave` export and canvas type exports | `keep-public-api` | Retained |
+| `src/hooks/useCanvasKeyboardNav.ts` (`useCanvasKeyboardNav`) | No | No | Listed in `docs/CANVAS_ARCHITECTURE.md` as the keyboard-navigation hook | `keep-public-api` | Retained |
+| `src/hooks/useFileUpload.ts` (`useFileUpload`) | No | No static consumer | Documented in `docs/CURRENT_SYSTEM_SPECIFICATION.md`; also allowlisted because it creates the file processor Worker through `new URL('../workers/fileProcessor.worker.ts', import.meta.url)` | `keep-public-api` | Retained |
+| `src/hooks/usePermission.ts` (`usePermission`) | No | No current source consumer | Documented as the RBAC permission hook in `docs/RBAC.md`, `docs/MIGRATION_PLAN.md`, and recovery docs | `keep-public-api` | Retained |
+| `src/hooks/useSnapEngine.ts` (`useSnapEngine`) | No | No current source consumer | Identified in this report's prior priority list as the React interface for Snap Engine review | `keep-public-api` | Retained |
+
+## Defer
+
+No reviewed hook was left in `defer` after this pass. Hooks with concrete documentation/API/runtime-wiring evidence were retained as `keep-public-api`; hooks with no barrel export, no non-barrel usage, and no project public/API signal were deleted as `delete-approved`.
+
+## Deleted Files
+
+Deleted `delete-approved` hooks only:
+
+- `src/hooks/canvas/useOptimizedCanvas.ts`
+- `src/hooks/use-mobile.tsx`
+- `src/hooks/useAIAnalysis.ts`
+- `src/hooks/useApprovals.ts`
+- `src/hooks/useAudit.ts`
+- `src/hooks/useCanvasGraph.ts`
+- `src/hooks/useCanvasHelpers.ts`
+- `src/hooks/useCanvasStyles.ts`
+- `src/hooks/useGridGuide.ts`
+- `src/hooks/useHR.ts`
+- `src/hooks/useKanban.ts`
+- `src/hooks/useTaskSelection.ts`
+
+## Typecheck Cadence
+
+Typecheck was run at baseline and after each deletion batch:
+
+1. Baseline before deletion: `npm run typecheck` — passed.
+2. After deleting 5 hooks/files: `npm run typecheck` — passed.
+3. After deleting 5 additional hooks/files: `npm run typecheck` — passed.
+4. After deleting the final 2 hooks/files: `npm run typecheck` — passed.
+
+Each typecheck printed the npm warning `Unknown env config "http-proxy"`, but `tsc --noEmit` completed successfully.
+
+## Batch H — Performance hooks revalidation — 2026-05-07
+
+### Scope
+
+Batch H revalidated the requested performance hook paths:
+
+- `src/hooks/performance/useCanvasOptimization.ts`
+- `src/hooks/performance/useCanvasPerformance.ts`
+- `src/hooks/performance/useMemoizedStyles.ts`
+- `src/hooks/performance/usePerformanceOptimization.ts`
+
+### Checks Applied
+
+Commands used for this batch:
+
+```bash
+find src/hooks -maxdepth 3 -type f | sort
+find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true
+find src/hooks -path '*performance*' -maxdepth 4 -print 2>/dev/null || true
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs batch-a-delete-list.md package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build'
+rg -n "CanvasPerformance|MemoizedStyles|PerformanceOptimization|CanvasOptimization|useStableCallback|useStableMemo|performance hook|performance/hooks|hooks/performance|PerformanceOptimizer" docs src/components src/hooks -g '!node_modules'
+npm run -s typecheck
+```
+
+### Export Review
+
+- `src/hooks/index.ts` still exports only `useAutosave` plus canvas/enhanced-canvas types; it does not export any `src/hooks/performance/*` hook.
+- No `src/hooks/performance` directory or nested barrel export exists in the current tree.
+- Current runtime performance helpers remain under `src/components/performance/PerformanceOptimizer.tsx` and are re-exported by `src/components/ui/performance/index.ts`; those component-level exports are outside this hook batch and were not changed.
+
+### Documentation Review
+
+The only current documentation references to the requested hook paths are historical cleanup records:
+
+- `docs/reports/inventory-summary-2026-05-05.md` records prior deletion of `useCanvasPerformance.ts`, `useMemoizedStyles.ts`, and `usePerformanceOptimization.ts` in Batch 1.
+- `batch-a-delete-list.md` contains the original heuristic candidate rows for all four requested hook paths, including stale allowlist labels for three hooks that are no longer present in the current tree.
+
+No active architecture, public API, or usage documentation was found that requires retaining any requested `src/hooks/performance/*` hook.
+
+### Classification Results
+
+| Hook/file | Current file present? | Barrel/public export? | Non-documentation usage? | Docs/public/API signal | Classification | Action |
+|---|---:|---:|---:|---|---|---|
+| `src/hooks/performance/useCanvasOptimization.ts` | No | No | No | Only historical candidate-row reference found | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/useCanvasPerformance.ts` | No | No | No | Historical deletion log only | `delete-approved` | Already deleted; no export removal needed |
+| `src/hooks/performance/useMemoizedStyles.ts` | No | No | No | Historical deletion log only | `delete-approved` | Already deleted; no export removal needed |
+| `src/hooks/performance/usePerformanceOptimization.ts` | No | No | No | Historical deletion log only | `delete-approved` | Already deleted; no export removal needed |
+
+### Typecheck Cadence
+
+No new hook files were deleted during Batch H because all four requested paths were already absent from the current tree. A post-revalidation typecheck was still run after confirming the top-level and nested performance barrels were absent:
+
+1. Post-revalidation: `npm run -s typecheck` — passed.
+
+### Batch H Disposition
+
+All four requested performance hook paths are classified as `delete-approved`, but they required no filesystem deletion in this batch because the files and the `src/hooks/performance` barrel directory were already absent. No `src/hooks/index.ts` export removal was required.
+
+### Batch H Final Verification
+
+- Re-ran the performance-hook presence checks on 2026-05-07; `find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true` and `find src/hooks -path '*performance*' -maxdepth 4 -print 2>/dev/null || true` produced no hook-path output.
+- Re-ran the source/docs reference scans on 2026-05-07; remaining matches are historical cleanup documentation, `batch-a-delete-list.md` candidate rows, or the unrelated component-level `src/components/performance/PerformanceOptimizer.tsx` API exported through `src/components/ui/performance/index.ts`.
+- Re-ran `npm run -s typecheck` after the Batch H verification; it completed successfully.
+
+## Batch I — Performance hook cleanup confirmation — 2026-05-07
+
+### Scope
+
+Batch I repeated the targeted review for these performance hook paths:
+
+- `src/hooks/performance/useCanvasOptimization.ts`
+- `src/hooks/performance/useCanvasPerformance.ts`
+- `src/hooks/performance/useMemoizedStyles.ts`
+- `src/hooks/performance/usePerformanceOptimization.ts`
+
+### Checks Applied
+
+Commands used for this confirmation:
+
+```bash
+sed -n '1,220p' src/hooks/index.ts
+if [ -f src/hooks/performance/index.ts ]; then sed -n '1,220p' src/hooks/performance/index.ts; else echo 'NO src/hooks/performance/index.ts'; fi
+test -d src/hooks/performance && find src/hooks/performance -maxdepth 2 -type f -print || true
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs batch-a-delete-list.md package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build'
+npm run -s typecheck
+```
+
+### Export and documentation review
+
+- `src/hooks/index.ts` exports `useAutosave` and canvas/enhanced-canvas types only; it has no export for any `src/hooks/performance/*` hook.
+- `src/hooks/performance/index.ts` is absent because the `src/hooks/performance` directory is absent.
+- The source tree contains no active performance-hook implementation files at the requested paths.
+- Remaining references are historical cleanup/report rows in `batch-a-delete-list.md`, `docs/reports/inventory-summary-2026-05-05.md`, and this call-graph report. No active source consumer, public barrel, or architecture/API document requires keeping the requested hooks.
+
+### Classification Results
+
+| Hook/file | Current file present? | Barrel/public export? | Non-documentation usage? | Classification | Action |
+|---|---:|---:|---:|---|---|
+| `src/hooks/performance/useCanvasOptimization.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/useCanvasPerformance.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/useMemoizedStyles.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/usePerformanceOptimization.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+
+### Typecheck Cadence
+
+1. Post-confirmation: `npm run -s typecheck` — passed.
+
+### Batch I Disposition
+
+All four requested hooks are classified as `delete-approved`. No filesystem deletion was needed in Batch I because the files and nested performance barrel are already absent from the current tree, and no `src/hooks/index.ts` export removal was required.
+
+## Batch J — Performance hook absence and historical-safety audit — 2026-05-07
+
+### Scope
+
+This pass re-checked the four requested hook paths:
+
+- `src/hooks/performance/useCanvasOptimization.ts`
+- `src/hooks/performance/useCanvasPerformance.ts`
+- `src/hooks/performance/useMemoizedStyles.ts`
+- `src/hooks/performance/usePerformanceOptimization.ts`
+
+### Checks Applied
+
+Commands used for this pass:
+
+```bash
+sed -n '1,220p' src/hooks/index.ts
+test -d src/hooks/performance && find src/hooks/performance -maxdepth 2 -type f -print || echo 'NO src/hooks/performance'
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs batch-a-delete-list.md package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build'
+git log --diff-filter=D --summary -- src/hooks/performance/useCanvasOptimization.ts src/hooks/performance/useCanvasPerformance.ts src/hooks/performance/useMemoizedStyles.ts src/hooks/performance/usePerformanceOptimization.ts
+git show 7dd7fdc^:src/hooks/performance/useCanvasOptimization.ts
+git show ae08641^:src/hooks/performance/useCanvasPerformance.ts
+git show ae08641^:src/hooks/performance/useMemoizedStyles.ts
+git show ae08641^:src/hooks/performance/usePerformanceOptimization.ts
+npm run -s typecheck
+```
+
+### Current-tree findings
+
+- The current tree has no `src/hooks/performance` directory, so none of the four requested hook implementation files can still be imported from the working tree.
+- `src/hooks/index.ts` exports only `useAutosave` plus canvas/enhanced-canvas types; it does not expose a performance-hook public API.
+- The only remaining current references to the requested hook names or paths are historical reports/candidate rows and this report. No active `src/**` runtime consumer was found.
+- Git history shows `useCanvasPerformance.ts`, `useMemoizedStyles.ts`, and `usePerformanceOptimization.ts` were deleted by `ae086411d26e0edbb0c498015ab3a35b52bc2a5f`; `useCanvasOptimization.ts` was deleted by `7dd7fdc23fae3caee950caa3b8831808361cb099`.
+
+### Hook-by-hook review
+
+| Hook/file | Current dependency-array review | Current cleanup review | Current stale-closure review | Current stable-reference review | Used/exported as public API? | Classification | Action |
+|---|---|---|---|---|---|---|---|
+| `src/hooks/performance/useCanvasOptimization.ts` | Not applicable in current tree because the file is absent. Historical code used empty dependency arrays for pure callbacks/memoized helpers and `[shouldUseVirtualization]` for chunk processing. | No current cleanup path needed. Historical `batchElementUpdates` canceled only a prior frame before scheduling a new one and had no unmount cleanup for the final pending animation frame. | No current closure risk because absent. Historical callbacks only closed over refs/constants except chunk processing, which depended on `shouldUseVirtualization`. | No current returned object. Historical returned functions were stable, but the returned object literal itself was recreated each render. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+| `src/hooks/performance/useCanvasPerformance.ts` | Not applicable in current tree because the file is absent. Historical dependencies were mostly complete: render tracking intentionally ran every render, `getVisibleElements` depended on `elements`, `getPerformanceMetrics` on `elements.length`, cache cleanup on `elements`, monitor interval on `[enabled]`. | No current cleanup path needed. Historical monitor cleaned its interval on disable/unmount. Historical cache cleanup was tied to `elements`; no special unmount cleanup was present for singleton metric/style caches. | No current closure risk because absent. Historical viewport and metrics callbacks captured current `elements` through dependency arrays. | No current returned object. Historical callbacks were stable according to their dependencies, but returned object literals were not memoized; `usePerformanceMonitor` returned a singleton metrics instance. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+| `src/hooks/performance/useMemoizedStyles.ts` | Not applicable in current tree because the file is absent. Historical memoized helpers used empty dependency arrays where calculations were pure and `[getElementTransform, getElementSize]` for `calculateElementStyle`. | No current cleanup path needed. Historical code allocated no timers/listeners/subscriptions, so cleanup was not required. | No current closure risk because absent. Historical closures only referenced stable helper functions or call arguments. | No current returned object. Historical helper functions/constants were stable, but each returned object literal from the hook was recreated each render. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+| `src/hooks/performance/usePerformanceOptimization.ts` | Not applicable in current tree because the file is absent. Historical `throttleOperation`, `batchOperations`, and `calculateElementStyle` used empty dependency arrays; `useOptimizedSelector` delegated to caller-provided deps; `useDebouncedCallback` used `[callback, delay, ...deps]`. | No current cleanup path needed. Historical main hook canceled a pending animation frame on unmount, but the debounced callback helper had no unmount timeout cleanup. | No current closure risk because absent. Historical debounced callback depended on `callback`, `delay`, and caller deps, but exposed the usual risk of incorrect caller-supplied deps. | No current returned object. Historical callbacks were stable by dependency arrays, but returned object literals were not memoized. | No active source consumer, no `src/hooks/index.ts` export, no nested performance barrel, and no active public/API documentation signal. | `delete-approved` | Already absent; no deletion needed. |
+
+### Disposition
+
+All four requested hooks remain `delete-approved`. No additional file deletion was performed in this pass because the implementations and `src/hooks/performance` directory are already absent, and no public export removal is necessary.
+
+### Typecheck Cadence
+
+1. Post-audit: `npm run -s typecheck` — passed.
+
+## Batch K — Requested hook correctness review — 2026-05-07
+
+### Scope
+
+Reviewed the current implementations requested in this pass:
+
+- `src/hooks/useSnapEngine.ts`
 - `src/features/planning/canvas/controllers/useCanvasSelectionController.ts`
 - `src/features/planning/canvas/controllers/useCanvasViewportController.ts`
 - `src/features/planning/canvas/controllers/useCanvasRealtimeController.ts`
-- `src/hooks/useCollaboration.ts` and `src/hooks/useWebRTCVoice.ts`
+- `src/hooks/performance/*`
 
-## Expected Deliverables in Deep Pass
-- Hook dependency defect list (file + line + fix type).
-- Call-site mismatch list (wrong hook imported, stale signature, legacy shim use).
-- Refactor PR batches grouped by subsystem (Canvas, Collaboration, DepartmentTabs).
+### Commands Applied
+
+```bash
+sed -n '1,240p' src/hooks/useSnapEngine.ts
+sed -n '1,240p' src/features/planning/canvas/controllers/useCanvasSelectionController.ts
+sed -n '1,280p' src/features/planning/canvas/controllers/useCanvasViewportController.ts
+sed -n '1,280p' src/features/planning/canvas/controllers/useCanvasRealtimeController.ts
+find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true
+rg -n "useSnapEngine|useCanvasSelectionController|useCanvasViewportController|useCanvasRealtimeController|snapPoint|snapBounds|refreshTargets|realtimeProps|selectionBoxData|handleWheel|getCursorStyle" src -g '!node_modules'
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build' || true
+npm run -s typecheck
+```
+
+### Findings and Actions
+
+| Hook/file | Dependency arrays | Cleanup functions | Stale closures | Stable returned references | Canonical imports | Action |
+|---|---|---|---|---|---|---|
+| `src/hooks/useSnapEngine.ts` | Store-setting effect and callbacks covered their reactive inputs. The destructured default `excludeIds = []` created a fresh array when callers omitted options, causing `refreshTargets`, `snapPoint`, and `snapBounds` identities to churn and the refresh effect to run more often than intended. | Snap-engine subscription returns its unsubscribe callback; no missing cleanup found. | No stale closure found after stabilizing the default excluded-id array. | Returned callbacks were memoized, but the returned object literal was recreated each render. | Uses path aliases and type-only imports appropriately. | Added a module-level default excluded-id array and memoized the returned API object. |
+| `src/features/planning/canvas/controllers/useCanvasSelectionController.ts` | Callback and memo dependencies include the relevant store actions, `viewport`, `boxSelectData`, and pointer conversion callbacks. | No owned timers/listeners/subscriptions; no cleanup required in this hook. | No stale closure found. `lastPanPositionRef` is intentionally mutable for pan deltas. | Individual callbacks were stable, but the returned controller object was recreated each render. | Imports are canonical for React hooks, `RefObject`, and canvas kernel. | Memoized the returned controller object. |
+| `src/features/planning/canvas/controllers/useCanvasViewportController.ts` | Effects, callbacks, and memos cover `containerRef`, viewport, layers, elements, settings, and action callbacks. | `ResizeObserver` disconnects on cleanup; wheel listener cleanup is correctly owned by the consumer effect in `InfiniteCanvas.tsx`. | No stale closure found in viewport calculations, wheel handling, or cursor selection. | Individual callbacks/memos were stable, but the returned object literal was recreated each render. | Imports are canonical for React hooks, `RefObject`, kernel, interaction state machine, and canvas types. | Memoized the returned viewport controller object. |
+| `src/features/planning/canvas/controllers/useCanvasRealtimeController.ts` | `handleSyncStatusChange` intentionally has no reactive inputs. Realtime prop creation now depends on board id, collaboration user fields, callback, and viewport. | No owned timers/listeners/subscriptions; cleanup is handled by `RealtimeSyncManager` and collaboration hooks. | No stale closure found. | Previously returned a fresh nested `realtimeProps` object every render; this is now stable unless one of its real inputs changes. | Imports are canonical; `useMemo` was added from React. | Memoized `realtimeProps` and the returned object. |
+| `src/hooks/performance/*` | Not applicable in the current tree because the directory is absent. | Not applicable. | Not applicable. | Not applicable. | No active imports or barrels exist. | No deletion required; remaining references are historical reports. |
+
+### Verification
+
+- `src/hooks/performance` produced no file output, confirming the requested performance hook directory is absent in the current tree.
+- Source usage scans found active consumers for the canvas controller hooks through `InfiniteCanvas.tsx`; no active source import was found for the absent performance hooks.
+- `npm run -s typecheck` passed after the hook changes.
+
+## Batch J — Hooks/types/utils public-API review — 2026-05-07
+
+### Scope
+
+Reviewed every current file under `src/hooks/*`, `src/types/*`, and `src/utils/*` using the static import/export scan and documentation path scan below. The review classifies files only into the requested statuses: `delete-approved`, `defer-public-api`, and `needs-owner-decision`.
+
+### Checks applied
+
+```bash
+python3 - <<'PY'
+# Scanned src import/export specifiers, @/ aliases, relative paths, and index resolution
+PY
+rg -n --fixed-strings "<candidate path>" docs src -g '!node_modules' -g '!dist' -g '!build'
+npm run -s typecheck
+```
+
+### Hooks classification
+
+| File | Barrel export? | Source/docs/examples/API signal | Classification | Action |
+|---|---:|---|---|---|
+| `src/hooks/central/index.ts` | Yes | Nested central-hooks barrel with source consumers | `defer-public-api` | Retained |
+| `src/hooks/central/useCentral.ts` | Yes | Exported by `src/hooks/central/index.ts`; referenced by recovery architecture docs | `defer-public-api` | Retained |
+| `src/hooks/central/useCrossWorkspaceSearch.ts` | Yes | Exported by `src/hooks/central/index.ts` | `defer-public-api` | Retained |
+| `src/hooks/central/useDependencies.ts` | Yes | Exported by `src/hooks/central/index.ts` | `defer-public-api` | Retained |
+| `src/hooks/central/useEngineJobsRealtime.ts` | Yes | Exported by `src/hooks/central/index.ts` | `defer-public-api` | Retained |
+| `src/hooks/index.ts` | Yes | Top-level hooks barrel | `defer-public-api` | Retained |
+| `src/hooks/use-toast.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useBoardInvites.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useCanvasKeyboardNav.ts` | No | No source import, but documented as the canvas keyboard-navigation hook | `defer-public-api` | Retained |
+| `src/hooks/useCanvasPaste.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useCollaboration.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useCollaborationUser.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useExportImport.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useFileUpload.ts` | No | Documented file-upload hook and runtime worker bootstrap | `defer-public-api` | Retained |
+| `src/hooks/useHRLite.ts` | No | Only historical zero-reference report entry; no active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/hooks/useHistoryManager.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useInvoices.ts` | No | Active source consumer and recovery architecture docs | `defer-public-api` | Retained |
+| `src/hooks/useKeyboardShortcuts.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useKnowledgeBase.ts` | No | Only historical zero-reference report entry; no active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/hooks/usePermission.ts` | No | RBAC public hook documented in roadmap/RBAC materials | `defer-public-api` | Retained |
+| `src/hooks/useProjectFiles.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useProjectPanelAnimation.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useProjectTasks.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useProjectsTimeline.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useSmartElementAI.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useSnapEngine.ts` | No | Public snap-engine React interface documented in this callgraph | `defer-public-api` | Retained |
+| `src/hooks/useSurveys.ts` | No | Only historical zero-reference report entry; no active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/hooks/useToolInteraction.ts` | No | Active source consumer and frame-tool cleanup docs | `defer-public-api` | Retained |
+| `src/hooks/useTouchGestures.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useUnifiedTasks.ts` | No | Active source consumers and recovery source-of-truth docs | `defer-public-api` | Retained |
+| `src/hooks/useWebRTCVoice.ts` | No | Active source consumer | `defer-public-api` | Retained |
+
+### Types classification
+
+| File | Barrel export? | Source/docs/examples/API signal | Classification | Action |
+|---|---:|---|---|---|
+| `src/types/approvals.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/arrow-connections.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/audit.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/types/canvas-ai-tools.ts` | Yes | Exported by `src/types/index.ts`; active type API | `defer-public-api` | Retained |
+| `src/types/canvas-elements.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/canvas-hooks.ts` | No | Compatibility re-export of planning hook types | `defer-public-api` | Retained |
+| `src/types/canvas.ts` | Yes | Exported by barrels and heavily consumed | `defer-public-api` | Retained |
+| `src/types/central/index.ts` | Yes | Central type barrel with active source consumers | `defer-public-api` | Retained |
+| `src/types/enhanced-canvas.ts` | Yes | Exported by hooks/utils barrels and documented by this callgraph | `defer-public-api` | Retained |
+| `src/types/index.ts` | Yes | Top-level types barrel | `defer-public-api` | Retained |
+| `src/types/kanban.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/types/mindmap-canvas.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/planning.ts` | No | Active source consumers and planning docs | `defer-public-api` | Retained |
+| `src/types/project.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/smart-elements.ts` | No | Active source consumers and smart-elements docs | `defer-public-api` | Retained |
+| `src/types/task.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/visual-diagram-canvas.ts` | No | Active source consumers | `defer-public-api` | Retained |
+
+### Utils classification
+
+| File | Barrel export? | Source/docs/examples/API signal | Classification | Action |
+|---|---:|---|---|---|
+| `src/utils/arrow-routing.ts` | Yes | Exported by `src/utils/index.ts`; active source consumers | `defer-public-api` | Retained |
+| `src/utils/canvasUtils.ts` | Yes | Exported by `src/utils/index.ts`; active source consumers | `defer-public-api` | Retained |
+| `src/utils/colorMapper.ts` | Yes | Exported by `src/utils/index.ts`; active source consumer | `defer-public-api` | Retained |
+| `src/utils/index.ts` | Yes | Top-level utils barrel | `defer-public-api` | Retained |
+| `src/utils/kanbanLegacyMigration.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/mindmap-layout.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/performanceMonitor.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/utils/performanceOptimizer.ts` | No | No source import, but `docs/PERFORMANCE_GUIDE.md` includes examples under this path | `needs-owner-decision` | Retained |
+| `src/utils/sanitize.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/secureStorage.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/utils/shapeRecognition.ts` | No | Active source consumer and legacy-spec docs | `defer-public-api` | Retained |
+| `src/utils/styleConverter.ts` | No | No active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/utils/textDirection.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/toolPanelHelpers.ts` | Yes | Exported by `src/utils/index.ts`; active source consumer | `defer-public-api` | Retained |
+| `src/utils/validation.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/visual-diagram-layout.ts` | No | Active source consumer | `defer-public-api` | Retained |
+
+### Deleted files in this batch
+
+- `src/hooks/useHRLite.ts`
+- `src/hooks/useKnowledgeBase.ts`
+- `src/hooks/useSurveys.ts`
+- `src/utils/styleConverter.ts`
+
+### Batch J disposition
+
+Deleted only files classified as `delete-approved` after they showed no barrel export, no active source import, no documentation/example usage beyond historical cleanup reports, and no public API signal. `src/utils/performanceOptimizer.ts` was retained as `needs-owner-decision` because the performance guide still presents examples under that exact path, even though the current source graph has no imports.
