@@ -77,17 +77,20 @@
 
 #### Deferred
 
-- لا توجد ملفات مؤجلة ضمن إعادة تحقق Batch A.2 الحالية؛ كل الملفات الأربعة كانت محذوفة سابقًا وبقيت بلا references أو exports مرتبطة.
+- `rg -n "@/components/ProjectPanel/(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|from ['\"]\./(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|import\(['\"].*(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)" src -g '*.ts' -g '*.tsx'`
+- `npm run typecheck`
 
-#### ملاحظات exports والنسخ النشطة
 
-- بقيت النسخ النشطة داخل `src/components/custom/*Modal.tsx` لأنها هي المستوردة فعليًا من `ProjectTabs.tsx`.
-- لا توجد exports مرتبطة بالمسارات المحذوفة داخل `src/components/ProjectPanel/index.tsx`؛ الملف يصدّر `ProjectPanel` الرئيسي فقط.
+## Batch A.4 — 2026-05-07 — ShapeRenderer shim removal
 
-#### أوامر التحقق الإضافية
+تمت إعادة فحص مسار `ShapeRenderer` القديم بعد تحويل مستهلكي canvas إلى barrel المشترك canonical:
 
-- `find src/components/ProjectPanel -maxdepth 2 -type f | sort`
-- `rg -n "export|from ['\"](\./|@/components/ProjectPanel)|ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal" src/components/ProjectPanel -g '*.ts' -g '*.tsx'`
-- `rg -n --glob '!docs/**' --glob '!node_modules/**' --glob '!dist/**' --glob '!build/**' "\\b(ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal)\\b|@/components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)|components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)|from ['\"]\\./(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)" .`
-- `rg -n "ProjectTabs|FinancialTab|ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectManagementBoard|from ['\"]@/components/ProjectPanel|from ['\"]\\.\\./ProjectPanel|from ['\"]\\./ProjectPanel" src/components/ProjectManagement src/components/ProjectPanel src/App.tsx src/pages -g '*.ts' -g '*.tsx'`
+- `DrawingPreview` يستخدم الآن `@/features/planning/elements/shared`.
+- `CanvasElement` يستخدم الآن `@/features/planning/elements/shared`.
+- لم تعد هناك مراجع للمسار القديم داخل `src` أو `docs` بعد تحديث تقرير التكرار.
+- ملف shim القديم غير موجود/محذوف، بينما بقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
+
+### أوامر التحقق
+
+- `rg -n "diagram/ShapeRenderer" .`
 - `npm run -s typecheck`
