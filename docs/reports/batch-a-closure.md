@@ -2,20 +2,20 @@
 
 ## ملخص الإغلاق
 
-- عدد الملفات المحذوفة: **11** (3 أولية + 8 ضمن Batch A.2)
+- عدد الملفات المحذوفة: **23** (3 أولية + 8 ضمن Batch A.2 + 12 ضمن Batch A.7)
 - عدد الملفات المؤجلة: **0**
 - عدد الملفات في allowlist: **8**
-- العدد المتبقي من قائمة الـ 95: **76**
+- العدد المتبقي من قائمة الـ 95: **64**
 
 ## تفاصيل الحساب
 
 اعتمادًا على baseline الأصلي `95` مرشّحًا:
 
 - baseline: `95`
-- المحذوف: `11`
+- المحذوف: `23`
 - المؤجل: `0`
 - allowlist: `8`
-- المتبقي للمراجعة/المعالجة: `95 - 11 - 0 - 8 = 76`
+- المتبقي للمراجعة/المعالجة: `95 - 23 - 0 - 8 = 64`
 
 ## إعادة فحص import-graph
 
@@ -154,4 +154,51 @@
 - `for f in src/components/HRLite/HRLiteMainPanel.tsx src/components/KnowledgeBase/KnowledgeBaseMainPanel.tsx src/components/Surveys/SurveysMainPanel.tsx; do if [ -e "$f" ]; then echo "exists $f"; else echo "absent $f"; fi; done`
 - `rg -n "HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel" src/App.tsx src/pages src/contexts/NavigationContext.tsx src || true`
 - `rg -n "path=|<Route|activeSection|selectedDepartment|departments|research|hr|survey|knowledge" src/App.tsx src/pages src/contexts/NavigationContext.tsx src/components/MainContent.tsx src/components/DepartmentsSidebar.tsx src/components/DepartmentsWorkspace.tsx src/components/DepartmentPanel src/components/DepartmentTabs/KMPA src/components/DepartmentTabs/HR`
+- `npm run -s typecheck`
+
+
+## Batch A.7 — 2026-05-07 — low-risk zero-reference cleanup
+
+### نطاق الدفعة
+
+تم اختيار دفعة جديدة من **12** ملفًا من `docs/reports/zero-reference-candidates-2026-05-05.md` بعد الاستبعاد المؤقت للفئات التالية حسب الطلب:
+
+- workers.
+- hooks الفعلية تحت `src/hooks`.
+- route/entry panels وملفات الدخول/barrel العامة.
+- الملفات المرتبطة بـ dynamic import أو runtime loader.
+
+اقتصرت الدفعة على ملفات مصنفة مسبقًا `delete-approved` في `batch-a-delete-list.md`، ثم أُعيد فحصها يدويًا قبل الحذف.
+
+### نتيجة التصنيف والتنفيذ
+
+| الملف | التصنيف | قرار التنفيذ | فحص import مباشر | فحص string/config/registry | فحص barrel export |
+|---|---|---|---|---|---|
+| `src/components/TaskCard/TaskCardOverflowGuards.test.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | لا يوجد export من index قريب. |
+| `src/components/shared/ImprovementsSummary.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | `src/components/shared/index.ts` لا يصدّره. |
+| `src/components/shared/design-system/canvas-positioning.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | لا يوجد export من index قريب. |
+| `src/components/shared/design-system/surface-tokens.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | لا يوجد export من index قريب. |
+| `src/features/planning/elements/text/FormatIndicator.tsx` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | لا يوجد export من index قريب. |
+| `src/types/canvas-component-props.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد registry/config hits؛ ظهرت مراجع توثيقية فقط في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. | `src/types/index.ts` لا يصدّره. |
+| `src/types/canvas-events.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد registry/config hits؛ ظهرت مراجع توثيقية فقط في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. | `src/types/index.ts` لا يصدّره. |
+| `src/utils/canvasCoordinates.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | `src/utils/index.ts` لا يصدّره. |
+| `src/utils/deprecation.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد registry/config hits؛ ظهرت مراجع توثيقية فقط في تقرير `snapengine-diff`. | `src/utils/index.ts` لا يصدّره. |
+| `src/utils/imageUtils.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | `src/utils/index.ts` لا يصدّره. |
+| `src/utils/mindmap-tree.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | `src/utils/index.ts` لا يصدّره. |
+| `src/utils/taskConstants.ts` | `delete-approved` | حُذف | لا توجد imports/exports مباشرة للمسار. | لا توجد hits للاسم خارج التقارير وملف المصدر. | `src/utils/index.ts` لا يصدّره. |
+
+### أرقام Batch A.7
+
+- الملفات المحذوفة ضمن Batch A.7: **12**.
+- الملفات المؤجلة ضمن Batch A.7: **0**.
+- الملفات المحذوفة تراكمياً بعد Batch A.7: **23**.
+- العدد المتبقي من baseline الأصلي بعد احتساب الحذف والـ allowlist: **64** (`95 - 23 - 0 - 8 = 64`).
+
+### أوامر التحقق
+
+- `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' --glob '!batch-a-delete-list.md' "(from ['\"][^'\"]*<stem>['\"]|import\(['\"][^'\"]*<stem>['\"]|export .*from ['\"][^'\"]*<stem>['\"])" .`
+- `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' --glob '!batch-a-delete-list.md' --glob "!<candidate>" "\b(<stem>|<component>)\b" .`
+- `sed -n '1,220p' src/utils/index.ts`
+- `sed -n '1,220p' src/types/index.ts`
+- `find src/components/shared -maxdepth 3 -name 'index.ts*' -print -exec sed -n '1,160p' {} \;`
 - `npm run -s typecheck`

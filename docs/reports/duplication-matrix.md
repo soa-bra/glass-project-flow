@@ -12,6 +12,7 @@
 
 | Area | Canonical Implementation | Resolution |
 |---|---|---|
+| Canvas Snap | `src/engine/canvas/interaction/snapEngine.ts` | Legacy snap engine imports were migrated to the interaction snap engine canonical path. The deprecated math shim file is absent, and no source imports remain for that old snap engine path. |
 | Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel. The deprecated diagram shim file is absent, and no source imports remain for that old renderer path. |
 | Project financial modals | `src/components/custom/ExpenseModal.tsx`, `src/components/custom/ApprovalRequestModal.tsx`, `src/components/custom/FinancialAnalysisModal.tsx` | `src/components/ProjectPanel/ExpenseModal.tsx`, `src/components/ProjectPanel/ApprovalRequestModal.tsx`, and `src/components/ProjectPanel/AnalysisModal.tsx` are absent and have no source imports, so the active project finance flow stays on the custom modal implementations used by `ProjectTabs`. No shared schema extraction is needed because there are no remaining parallel ProjectPanel wrappers or divergent modal behaviors in source. |
 
