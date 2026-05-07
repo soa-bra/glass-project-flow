@@ -167,3 +167,50 @@ All four requested performance hook paths are classified as `delete-approved`, b
 - Re-ran the performance-hook presence checks on 2026-05-07; `find src/hooks/performance -maxdepth 2 -type f -print 2>/dev/null || true` and `find src/hooks -path '*performance*' -maxdepth 4 -print 2>/dev/null || true` produced no hook-path output.
 - Re-ran the source/docs reference scans on 2026-05-07; remaining matches are historical cleanup documentation, `batch-a-delete-list.md` candidate rows, or the unrelated component-level `src/components/performance/PerformanceOptimizer.tsx` API exported through `src/components/ui/performance/index.ts`.
 - Re-ran `npm run -s typecheck` after the Batch H verification; it completed successfully.
+
+## Batch I — Performance hook cleanup confirmation — 2026-05-07
+
+### Scope
+
+Batch I repeated the targeted review for these performance hook paths:
+
+- `src/hooks/performance/useCanvasOptimization.ts`
+- `src/hooks/performance/useCanvasPerformance.ts`
+- `src/hooks/performance/useMemoizedStyles.ts`
+- `src/hooks/performance/usePerformanceOptimization.ts`
+
+### Checks Applied
+
+Commands used for this confirmation:
+
+```bash
+sed -n '1,220p' src/hooks/index.ts
+if [ -f src/hooks/performance/index.ts ]; then sed -n '1,220p' src/hooks/performance/index.ts; else echo 'NO src/hooks/performance/index.ts'; fi
+test -d src/hooks/performance && find src/hooks/performance -maxdepth 2 -type f -print || true
+rg -n "useCanvasOptimization|useCanvasPerformance|useMemoizedStyles|usePerformanceOptimization|src/hooks/performance|hooks/performance" src docs batch-a-delete-list.md package.json tsconfig.json -g '!node_modules' -g '!dist' -g '!build'
+npm run -s typecheck
+```
+
+### Export and documentation review
+
+- `src/hooks/index.ts` exports `useAutosave` and canvas/enhanced-canvas types only; it has no export for any `src/hooks/performance/*` hook.
+- `src/hooks/performance/index.ts` is absent because the `src/hooks/performance` directory is absent.
+- The source tree contains no active performance-hook implementation files at the requested paths.
+- Remaining references are historical cleanup/report rows in `batch-a-delete-list.md`, `docs/reports/inventory-summary-2026-05-05.md`, and this call-graph report. No active source consumer, public barrel, or architecture/API document requires keeping the requested hooks.
+
+### Classification Results
+
+| Hook/file | Current file present? | Barrel/public export? | Non-documentation usage? | Classification | Action |
+|---|---:|---:|---:|---|---|
+| `src/hooks/performance/useCanvasOptimization.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/useCanvasPerformance.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/useMemoizedStyles.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+| `src/hooks/performance/usePerformanceOptimization.ts` | No | No | No | `delete-approved` | Already absent; no export removal needed |
+
+### Typecheck Cadence
+
+1. Post-confirmation: `npm run -s typecheck` — passed.
+
+### Batch I Disposition
+
+All four requested hooks are classified as `delete-approved`. No filesystem deletion was needed in Batch I because the files and nested performance barrel are already absent from the current tree, and no `src/hooks/index.ts` export removal was required.
