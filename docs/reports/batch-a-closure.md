@@ -2,20 +2,20 @@
 
 ## ملخص الإغلاق
 
-- عدد الملفات المحذوفة: **23** (3 أولية + 8 ضمن Batch A.2 + 12 ضمن Batch A.7)
+- عدد الملفات المحذوفة: **36** (3 أولية + 8 ضمن Batch A.2 + 12 ضمن Batch A.8 + 12 hooks ضمن Batch H + 1 ضمن Batch A.9)
 - عدد الملفات المؤجلة: **0**
 - عدد الملفات في allowlist: **8**
-- العدد المتبقي من قائمة الـ 95: **64**
+- العدد المتبقي من قائمة الـ 95: **51**
 
 ## تفاصيل الحساب
 
 اعتمادًا على baseline الأصلي `95` مرشّحًا:
 
 - baseline: `95`
-- المحذوف: `23`
+- المحذوف: `36`
 - المؤجل: `0`
 - allowlist: `8`
-- المتبقي للمراجعة/المعالجة: `95 - 23 - 0 - 8 = 64`
+- المتبقي للمراجعة/المعالجة: `95 - 36 - 0 - 8 = 51`
 
 ## إعادة فحص import-graph
 
@@ -245,4 +245,37 @@
 - `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' --glob '!batch-a-delete-list.md' --glob '!<candidate>' "(from ['\"][^'\"]*<stem>['\"]|import\(['\"][^'\"]*<stem>['\"]|export .*from ['\"][^'\"]*<stem>['\"])" .`
 - `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' --glob '!batch-a-delete-list.md' --glob '!<candidate>' "\b<stem>\b" .`
 - `find src/__tests__/integration -maxdepth 1 -name 'index.ts*' -print -exec sed -n '1,160p' {} \;`
+- `npm run -s typecheck`
+
+
+## Batch A.9 — 2026-05-07 — zero-reference triage report and legacy invoice cleanup
+
+### نطاق الدفعة
+
+تم فتح `docs/reports/zero-reference-candidates-2026-05-05.md` وإنشاء تقرير triage شامل لكل المرشحين في:
+
+- `docs/reports/zero-reference-triage.md`
+
+استخدمت الدفعة `rg` لفحص اسم الملف، والمسار النسبي، وأسماء exports الظاهرة، وأي إشارات داخل docs/config/registry أو مداخل runtime. صُنفت الملفات ضمن الحالات المطلوبة فقط: `delete-approved`, `allowlist-runtime`, `defer-route-entry`, `defer-public-api`, و`needs-owner-decision`.
+
+### نتيجة التصنيف والتنفيذ
+
+| الملف | التصنيف | قرار التنفيذ | ملاحظات الفحص |
+|---|---|---|---|
+| `src/components/Financial/InvoicesDashboard.tsx` | `delete-approved` | حُذف | فحص `rg` أظهر أنه legacy path محظور في `eslint.config.js` وموثق كـ dead legacy في ADR، دون import نشط داخل `src`. |
+| بقية المرشحين | `allowlist-runtime` / `defer-route-entry` / `defer-public-api` / `delete-approved` للملفات المحذوفة سابقًا | لا حذف إضافي | التفاصيل الكاملة في `docs/reports/zero-reference-triage.md`. |
+
+### أرقام Batch A.9
+
+- الملفات المحذوفة ضمن Batch A.9: **1**.
+- الملفات المؤجلة/المحتفظ بها ضمن Batch A.9: **67** ملفًا قائمًا.
+- الملفات غير الموجودة مسبقًا والمصنفة كحذف منفذ سابقًا: **56**.
+- الملفات المحذوفة تراكمياً بعد Batch A.9: **36**.
+- العدد المتبقي من baseline الأصلي بعد احتساب الحذف والـ allowlist: **51** (`95 - 36 - 0 - 8 = 51`).
+
+### أوامر التحقق
+
+- `sed -n '1,160p' docs/reports/zero-reference-candidates-2026-05-05.md`
+- `rg -n --pcre2 -f /tmp/zero-ref-rg-patterns.txt --glob '!node_modules' --glob '!dist' --glob '!build' --glob '!docs/reports/**' .`
+- `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' "InvoicesDashboard|withAuthorizationAndAudit|useCanvasKeyboardNav|useFileUpload|usePermission|useSnapEngine|fileProcessor\.worker|ArchivePanel|DepartmentPanel" docs components.json package.json eslint.config.js src/App.tsx src/pages src/components src/hooks src/workers`
 - `npm run -s typecheck`
