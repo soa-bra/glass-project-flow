@@ -21,9 +21,9 @@ Generated from zero-reference candidates with automated usage checks.
 | `src/components/OperationsBoard/Reports/TemplatesList.tsx` | `allowlist` | string/config hits:6 |
 | `src/components/OperationsBoard/shared/ErrorCard.tsx` | `delete-approved` | no direct/indirect hits by rg heuristic |
 | `src/components/OperationsBoard/shared/LoadingCard.tsx` | `delete-approved` | no direct/indirect hits by rg heuristic |
-| `src/components/ProjectPanel/AnalysisModal.tsx` | `allowlist` | string/config hits:6 |
-| `src/components/ProjectPanel/ApprovalRequestModal.tsx` | `allowlist` | string/config hits:4 |
-| `src/components/ProjectPanel/ExpenseModal.tsx` | `allowlist` | direct refs:3; string/config hits:6 |
+| `src/components/ProjectPanel/AnalysisModal.tsx` | `delete-approved` | removed; no direct import, barrel export, or dynamic reference; active modal is `src/components/custom/FinancialAnalysisModal.tsx` |
+| `src/components/ProjectPanel/ApprovalRequestModal.tsx` | `delete-approved` | removed; no direct import, barrel export, or dynamic reference; active duplicate is `src/components/custom/ApprovalRequestModal.tsx` |
+| `src/components/ProjectPanel/ExpenseModal.tsx` | `delete-approved` | removed; no direct import, barrel export, or dynamic reference; active duplicate is `src/components/custom/ExpenseModal.tsx` |
 | `src/components/ProjectPanel/ProjectPanelContent.tsx` | `delete-approved` | no direct/indirect hits by rg heuristic |
 | `src/components/Surveys/SurveysMainPanel.tsx` | `delete-approved` | no direct/indirect hits by rg heuristic |
 | `src/components/TaskCard/TaskCardOverflowGuards.test.tsx` | `delete-approved` | no direct/indirect hits by rg heuristic |
