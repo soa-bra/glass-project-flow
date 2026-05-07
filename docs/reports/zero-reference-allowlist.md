@@ -33,14 +33,14 @@
 
 | Worker | أدلة البحث (`new Worker` / `new URL` / string / flow) | التصنيف |
 | --- | --- | --- |
-| `src/workers/fileProcessor.worker.ts` | الملف موجود. يتم تحميله runtime من `src/hooks/useFileUpload.ts` عبر `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url), { type: 'module' })`، واسم الملف يظهر كسلسلة نصية في نفس bootstrap. flow رفع/معالجة الملفات يستدعيه برسائل `PROCESS_FILE` و`CHUNK_FILE`، والworker نفسه يعرّف أيضًا `ANALYZE_IMAGE` و`EXTRACT_TEXT`. | `allowlist-runtime-worker` |
+| `src/workers/fileProcessor.worker.ts` | الملف موجود. يتم تحميله runtime من `src/hooks/useFileUpload.ts` عبر `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url), { type: 'module' })`، واسم الملف يظهر كسلسلة نصية في نفس bootstrap. flow رفع/معالجة الملفات يستدعيه برسائل `PROCESS_FILE` و`CHUNK_FILE`، والworker نفسه يعرّف أيضًا `ANALYZE_IMAGE` و`EXTRACT_TEXT`. | `allowlist-runtime` |
 | `src/workers/exportWorker.ts` | الملف غير موجود في الشجرة الحالية. لا يوجد تحميل runtime من `src`. ظهرت references توثيقية فقط: مثال `new Worker(new URL('../workers/exportWorker.ts', import.meta.url))` في `docs/PERFORMANCE_GUIDE.md`، ومثال قديم `new Worker('/workers/exportWorker.js')` في `docs/EXPORT_IMPORT.md`، وذكر عام في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. لذلك لا يوجد ملف حالي لحذفه، ولا يُثبت البحث اعتماد flow runtime. | `defer-docs-only-reference` |
 | `src/workers/importWorker.ts` | الملف غير موجود في الشجرة الحالية. لا يوجد `new Worker` أو `new URL` أو string reference داخل `src` لهذا الاسم، ولا توجد أدلة على تحميله في import flow؛ الذكر المتبقي عام في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. | `defer-docs-only-reference` |
 | `src/workers/snapWorker.ts` | الملف غير موجود في الشجرة الحالية. لا يوجد `new Worker` أو `new URL` أو string reference داخل `src` لهذا الاسم، ولا توجد أدلة على تحميله في snap flow؛ الذكر المتبقي عام في `docs/CURRENT_SYSTEM_SPECIFICATION.md`. | `defer-docs-only-reference` |
 
 ### نتيجة التصنيف التنفيذية
 
-- `allowlist-runtime-worker`: `src/workers/fileProcessor.worker.ts` فقط.
+- `allowlist-runtime`: `src/workers/fileProcessor.worker.ts` فقط.
 - `delete-approved`: لا شيء في هذا المرور؛ لم يتم تأكيد أي worker موجود بلا تحميل runtime أو اعتماد وظيفي موثق.
 - `defer-docs-only-reference`: `src/workers/exportWorker.ts`، و`src/workers/importWorker.ts`، و`src/workers/snapWorker.ts` بسبب غياب الملفات الحالية أو اقتصار الأدلة على مراجع docs فقط.
 
@@ -55,3 +55,16 @@
 - جميع العناصر المتبقية من `docs/reports/zero-reference-candidates-2026-05-05.md` التي لم تُذكر في allowlist أعلاه.
 
 > ملاحظة تنفيذية: لا يوجد حذف في هذه المرحلة؛ التصنيف هنا بين `allowlist` و`defer` فقط.
+
+## 2026-05-07 zero-reference triage additions
+
+أضيفت هذه الإدخالات من `docs/reports/zero-reference-triage-2026-05-07.md` فقط عندما كان سبب الاستبعاد runtime/dynamic/registry مباشرًا وليس مجرد public API أو test/tooling.
+
+| الملف | نوع الاستخدام غير المرئي | سبب الإبقاء | بوابة التحقق المقترنة |
+| --- | --- | --- | --- |
+| `src/hooks/useFileUpload.ts` | Worker bootstrap owner | ينشئ Web Worker عبر `new Worker(new URL('../workers/fileProcessor.worker.ts', import.meta.url), { type: 'module' })`، لذلك يبقى جزءًا من wiring runtime حتى إن لم يظهر كـ consumer عادي في static graph. | `rg -n "new Worker|fileProcessor\.worker\.ts" src/hooks src/workers` |
+| `src/workers/fileProcessor.worker.ts` | Runtime-loaded worker module | entrypoint مستقل للـ Worker ومحمل باسم الملف كسلسلة داخل `src/hooks/useFileUpload.ts`; لا يُتوقع أن يظهر كـ direct static import. | `rg -n "new Worker|new URL|fileProcessor\.worker\.ts" src/hooks src/workers` |
+| `src/shared/events/handlers/project-handlers.ts` | Registry side-effect | يسجل handlers عبر `handlerRegistry.register(...)` داخل module body؛ الاستهلاك يحدث عبر registry keyed events. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events` |
+| `src/shared/events/handlers/cultural-handlers.ts` | Registry side-effect | يسجل cultural handlers عبر `handlerRegistry.register(...)`، وهو wiring runtime/registry لا direct call. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events` |
+| `src/shared/events/handlers/hr-handlers.ts` | Registry side-effect | يسجل HR handlers في registry مركزي؛ يحلها runtime حسب نوع الحدث. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events` |
+| `src/shared/events/handlers/webhook-handlers.ts` | Registry side-effect | يسجل webhook handlers في registry مركزي بدل direct import/call graph. | `rg -n "handlerRegistry\.register" src/shared/events/handlers src/shared/events` |
