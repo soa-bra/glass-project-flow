@@ -87,10 +87,11 @@
 
 - `DrawingPreview` يستخدم الآن `@/features/planning/elements/shared`.
 - `CanvasElement` يستخدم الآن `@/features/planning/elements/shared`.
-- لم تعد هناك مراجع للمسار القديم داخل `src` أو `docs` بعد تحديث تقرير التكرار.
-- ملف shim القديم غير موجود/محذوف، بينما بقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
+- نتيجة البحث عن المسار القديم الكامل: لا توجد أي مراجع متبقية في المستودع بعد تحديث تقرير التكرار.
+- نتيجة حذف shim: ملف shim القديم غير موجود بالفعل، لذلك لا يوجد ملف إضافي لحذفه في هذه الجولة، وبقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
 
 ### أوامر التحقق
 
-- `rg -n "diagram/ShapeRenderer" .`
+- البحث الحرفي عن المسار القديم الكامل لم يُرجع نتائج.
+- تحقق وجود shim أكد أن الملف القديم غير موجود.
 - `npm run -s typecheck`
