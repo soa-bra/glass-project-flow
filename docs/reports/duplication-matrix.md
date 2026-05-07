@@ -13,6 +13,7 @@
 
 | Area | Canonical Implementation | Resolution |
 |---|---|---|
+| Canvas Snap | `src/engine/canvas/interaction/snapEngine.ts` | Legacy snap engine imports were migrated to the interaction snap engine canonical path. The deprecated math shim file is absent, and no source imports remain for that old snap engine path. |
 | Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel. The deprecated diagram shim file is absent, and no source imports remain for that old renderer path. |
 
 ## Medium-Risk Candidates
