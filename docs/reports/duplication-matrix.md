@@ -9,6 +9,12 @@
 | Expense UI | `src/components/ProjectPanel/ExpenseModal.tsx` | `src/components/custom/ExpenseModal.tsx` | UX drift + duplicated validation logic | Extract shared form model and keep context-specific wrappers |
 | Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx` | `src/components/custom/FileUploadModal.tsx` | Separate upload policies/errors | Centralize upload service + role-specific shells |
 
+## Resolved Items
+
+| Area | Canonical Implementation | Resolution |
+|---|---|---|
+| Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel, and the compatibility shim was removed. |
+
 ## Medium-Risk Candidates
 
 | Pattern | Examples | Action |
