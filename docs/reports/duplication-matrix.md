@@ -5,7 +5,7 @@
 | Area | Deprecated Compatibility Shim | Canonical Implementation | Classification | Action |
 |---|---|---|---|---|
 | Canvas Snap | `src/engine/canvas/math/snapEngine.ts` | `src/engine/canvas/interaction/snapEngine.ts` | deprecated compatibility shim | Update imports to canonical path: `src/engine/canvas/interaction/snapEngine.ts`.<br>Delete shim after all old imports disappear. |
-| Shape Rendering | `src/features/planning/elements/diagram/ShapeRenderer.tsx` | `src/features/planning/elements/shared/ShapeRenderer.tsx` | deprecated compatibility shim | Update imports to canonical path: `src/features/planning/elements/shared/ShapeRenderer.tsx`.<br>Delete shim after all old imports disappear. |
+| Shape Rendering | legacy diagram ShapeRenderer shim | `src/features/planning/elements/shared/ShapeRenderer.tsx` | removed compatibility shim | Imports now use the canonical shared barrel (`@/features/planning/elements/shared`), and the legacy shim file has been deleted after old imports disappeared. |
 | Expense UI | `src/components/ProjectPanel/ExpenseModal.tsx` | `src/components/custom/ExpenseModal.tsx` | UX drift + duplicated validation logic | Extract shared form model and keep context-specific wrappers |
 | Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx` | `src/components/custom/FileUploadModal.tsx` | Separate upload policies/errors | Centralize upload service + role-specific shells |
 
