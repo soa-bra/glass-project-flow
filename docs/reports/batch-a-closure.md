@@ -62,20 +62,35 @@
 - `rg -n --glob '!node_modules' --glob '!dist' --glob '!build' "\\b(HRLiteMainPanel|KnowledgeBaseMainPanel|SurveysMainPanel|KnowledgeBaseOverview|ProjectPanelContent|AnalysisModal|ApprovalRequestModal|ExpenseModal)\\b" .`
 - `rg -n "@/components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)|\\./((AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent))|components/ProjectPanel/(AnalysisModal|ApprovalRequestModal|ExpenseModal|ProjectPanelContent)" src`
 
-## Batch A.3 — 2026-05-07 — ProjectPanel modal revalidation
+### إعادة تحقق Batch A.2 — ProjectPanel modal/content cleanup — 2026-05-07
 
-استجابةً لفحص ملفات `ProjectPanel` المحددة، أُعيدت مقارنة المسارات الأربعة مع الاستخدامات الفعلية في `src/components/ProjectPanel/ProjectTabs.tsx`:
+استجابةً لفحص ملفات `ProjectPanel` المحددة، أُعيدت مقارنة المسارات الأربعة مع الاستخدامات الفعلية في `src/components/ProjectPanel/index.tsx` و`src/components/ProjectPanel/ProjectTabs.tsx` و`src/components/ProjectManagement/ProjectManagementBoard.tsx`، ثم أُعيد فحص أي import مباشر أو غير مباشر أو barrel export داخل `src/components/ProjectPanel`.
 
-| الملف المفحوص | direct import | barrel export | dynamic/string reference | القرار | سبب الاحتفاظ/الحذف |
-|---|---:|---:|---:|---|---|
-| `src/components/ProjectPanel/ExpenseModal.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ExpenseModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` لتجنب تكرار واجهة المصروفات ومنطقها. |
-| `src/components/ProjectPanel/ApprovalRequestModal.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ApprovalRequestModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` لتجنب تكرار واجهة طلب الاعتماد المالي. |
-| `src/components/ProjectPanel/AnalysisModal.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `ProjectTabs` يستخدم `src/components/custom/FinancialAnalysisModal.tsx` بدل نسخة `ProjectPanel`، لذلك حُذفت النسخة غير المستخدمة لتجنب تكرار Modal تحليل الميزانية. |
-| `src/components/ProjectPanel/ProjectPanelContent.tsx` | لا يوجد | لا يوجد | لا يوجد | محذوف سابقًا/مؤكد | `src/components/ProjectPanel/index.tsx` يعرض `ProjectManagementBoard` مباشرة، ولا يوجد مسار حي يستدعي المحتوى القديم. |
+#### Removed
 
-ملاحظة: بقيت النسخ النشطة داخل `src/components/custom/*Modal.tsx` لأنها هي المستوردة فعليًا من `ProjectTabs.tsx`، ولم تكن هناك exports مرتبطة بالمسارات المحذوفة داخل `src/components/ProjectPanel/index.tsx`.
+| الملف | سبب الحذف لكل ملف |
+|---|---|
+| `src/components/ProjectPanel/ExpenseModal.tsx` | لا يوجد import مباشر للمسار ولا barrel export ولا dynamic/string reference. `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ExpenseModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` كـ legacy duplicate. |
+| `src/components/ProjectPanel/ApprovalRequestModal.tsx` | لا يوجد import مباشر للمسار ولا barrel export ولا dynamic/string reference. `ProjectTabs` يستورد ويعرض النسخة المستخدمة فعليًا من `src/components/custom/ApprovalRequestModal.tsx`، لذلك حُذفت نسخة `ProjectPanel` كـ legacy duplicate. |
+| `src/components/ProjectPanel/AnalysisModal.tsx` | لا يوجد import مباشر للمسار ولا barrel export ولا dynamic/string reference. `ProjectTabs` يستخدم `src/components/custom/FinancialAnalysisModal.tsx` بدل نسخة `ProjectPanel`، لذلك حُذفت نسخة التحليل غير المستخدمة. |
+| `src/components/ProjectPanel/ProjectPanelContent.tsx` | لا يوجد import مباشر أو غير مباشر للمحتوى القديم. `src/components/ProjectPanel/index.tsx` يعرض `ProjectManagementBoard` مباشرة، و`ProjectManagementBoard` يستورد تبويباته من `ProjectTabs` فقط، لذلك حُذف المحتوى القديم غير المستخدم. |
 
-### أوامر التحقق الإضافية
+#### Deferred
 
 - `rg -n "@/components/ProjectPanel/(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|from ['\"]\./(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)|import\(['\"].*(ExpenseModal|ApprovalRequestModal|AnalysisModal|ProjectPanelContent)" src -g '*.ts' -g '*.tsx'`
 - `npm run typecheck`
+
+
+## Batch A.4 — 2026-05-07 — ShapeRenderer shim removal
+
+تمت إعادة فحص مسار `ShapeRenderer` القديم بعد تحويل مستهلكي canvas إلى barrel المشترك canonical:
+
+- `DrawingPreview` يستخدم الآن `@/features/planning/elements/shared`.
+- `CanvasElement` يستخدم الآن `@/features/planning/elements/shared`.
+- لم تعد هناك مراجع للمسار القديم داخل `src` أو `docs` بعد تحديث تقرير التكرار.
+- ملف shim القديم غير موجود/محذوف، بينما بقيت النواة canonical في `src/features/planning/elements/shared/ShapeRenderer.tsx`.
+
+### أوامر التحقق
+
+- `rg -n "diagram/ShapeRenderer" .`
+- `npm run -s typecheck`
