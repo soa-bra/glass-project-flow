@@ -6,7 +6,6 @@
 |---|---|---|---|---|
 | Canvas Snap | `src/engine/canvas/math/snapEngine.ts` | `src/engine/canvas/interaction/snapEngine.ts` | deprecated compatibility shim | تحديث الاستيرادات القديمة إلى canonical path: `src/engine/canvas/interaction/snapEngine.ts`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
 | Shape Rendering | `src/features/planning/elements/diagram/ShapeRenderer.tsx` | `src/features/planning/elements/shared/ShapeRenderer.tsx` | deprecated compatibility shim | تحديث الاستيرادات القديمة إلى canonical path: `src/features/planning/elements/shared/ShapeRenderer.tsx`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
-| Expense UI | `src/components/ProjectPanel/ExpenseModal.tsx` | `src/components/custom/ExpenseModal.tsx` | UX drift + duplicated validation logic | Extract shared form model and keep context-specific wrappers |
 | Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx` | `src/components/custom/FileUploadModal.tsx` | Separate upload policies/errors | Centralize upload service + role-specific shells |
 
 ## Resolved Items
@@ -14,6 +13,7 @@
 | Area | Canonical Implementation | Resolution |
 |---|---|---|
 | Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel. The deprecated diagram shim file is absent, and no source imports remain for that old renderer path. |
+| Project financial modals | `src/components/custom/ExpenseModal.tsx`, `src/components/custom/ApprovalRequestModal.tsx`, `src/components/custom/FinancialAnalysisModal.tsx` | `src/components/ProjectPanel/ExpenseModal.tsx`, `src/components/ProjectPanel/ApprovalRequestModal.tsx`, and `src/components/ProjectPanel/AnalysisModal.tsx` are absent and have no source imports, so the active project finance flow stays on the custom modal implementations used by `ProjectTabs`. No shared schema extraction is needed because there are no remaining parallel ProjectPanel wrappers or divergent modal behaviors in source. |
 
 ## Medium-Risk Candidates
 
