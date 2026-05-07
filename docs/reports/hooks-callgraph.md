@@ -306,3 +306,109 @@ npm run -s typecheck
 - `src/hooks/performance` produced no file output, confirming the requested performance hook directory is absent in the current tree.
 - Source usage scans found active consumers for the canvas controller hooks through `InfiniteCanvas.tsx`; no active source import was found for the absent performance hooks.
 - `npm run -s typecheck` passed after the hook changes.
+
+## Batch J — Hooks/types/utils public-API review — 2026-05-07
+
+### Scope
+
+Reviewed every current file under `src/hooks/*`, `src/types/*`, and `src/utils/*` using the static import/export scan and documentation path scan below. The review classifies files only into the requested statuses: `delete-approved`, `defer-public-api`, and `needs-owner-decision`.
+
+### Checks applied
+
+```bash
+python3 - <<'PY'
+# Scanned src import/export specifiers, @/ aliases, relative paths, and index resolution
+PY
+rg -n --fixed-strings "<candidate path>" docs src -g '!node_modules' -g '!dist' -g '!build'
+npm run -s typecheck
+```
+
+### Hooks classification
+
+| File | Barrel export? | Source/docs/examples/API signal | Classification | Action |
+|---|---:|---|---|---|
+| `src/hooks/central/index.ts` | Yes | Nested central-hooks barrel with source consumers | `defer-public-api` | Retained |
+| `src/hooks/central/useCentral.ts` | Yes | Exported by `src/hooks/central/index.ts`; referenced by recovery architecture docs | `defer-public-api` | Retained |
+| `src/hooks/central/useCrossWorkspaceSearch.ts` | Yes | Exported by `src/hooks/central/index.ts` | `defer-public-api` | Retained |
+| `src/hooks/central/useDependencies.ts` | Yes | Exported by `src/hooks/central/index.ts` | `defer-public-api` | Retained |
+| `src/hooks/central/useEngineJobsRealtime.ts` | Yes | Exported by `src/hooks/central/index.ts` | `defer-public-api` | Retained |
+| `src/hooks/index.ts` | Yes | Top-level hooks barrel | `defer-public-api` | Retained |
+| `src/hooks/use-toast.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useBoardInvites.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useCanvasKeyboardNav.ts` | No | No source import, but documented as the canvas keyboard-navigation hook | `defer-public-api` | Retained |
+| `src/hooks/useCanvasPaste.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useCollaboration.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useCollaborationUser.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useExportImport.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useFileUpload.ts` | No | Documented file-upload hook and runtime worker bootstrap | `defer-public-api` | Retained |
+| `src/hooks/useHRLite.ts` | No | Only historical zero-reference report entry; no active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/hooks/useHistoryManager.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useInvoices.ts` | No | Active source consumer and recovery architecture docs | `defer-public-api` | Retained |
+| `src/hooks/useKeyboardShortcuts.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useKnowledgeBase.ts` | No | Only historical zero-reference report entry; no active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/hooks/usePermission.ts` | No | RBAC public hook documented in roadmap/RBAC materials | `defer-public-api` | Retained |
+| `src/hooks/useProjectFiles.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useProjectPanelAnimation.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useProjectTasks.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useProjectsTimeline.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useSmartElementAI.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/hooks/useSnapEngine.ts` | No | Public snap-engine React interface documented in this callgraph | `defer-public-api` | Retained |
+| `src/hooks/useSurveys.ts` | No | Only historical zero-reference report entry; no active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/hooks/useToolInteraction.ts` | No | Active source consumer and frame-tool cleanup docs | `defer-public-api` | Retained |
+| `src/hooks/useTouchGestures.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/hooks/useUnifiedTasks.ts` | No | Active source consumers and recovery source-of-truth docs | `defer-public-api` | Retained |
+| `src/hooks/useWebRTCVoice.ts` | No | Active source consumer | `defer-public-api` | Retained |
+
+### Types classification
+
+| File | Barrel export? | Source/docs/examples/API signal | Classification | Action |
+|---|---:|---|---|---|
+| `src/types/approvals.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/arrow-connections.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/audit.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/types/canvas-ai-tools.ts` | Yes | Exported by `src/types/index.ts`; active type API | `defer-public-api` | Retained |
+| `src/types/canvas-elements.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/canvas-hooks.ts` | No | Compatibility re-export of planning hook types | `defer-public-api` | Retained |
+| `src/types/canvas.ts` | Yes | Exported by barrels and heavily consumed | `defer-public-api` | Retained |
+| `src/types/central/index.ts` | Yes | Central type barrel with active source consumers | `defer-public-api` | Retained |
+| `src/types/enhanced-canvas.ts` | Yes | Exported by hooks/utils barrels and documented by this callgraph | `defer-public-api` | Retained |
+| `src/types/index.ts` | Yes | Top-level types barrel | `defer-public-api` | Retained |
+| `src/types/kanban.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/types/mindmap-canvas.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/planning.ts` | No | Active source consumers and planning docs | `defer-public-api` | Retained |
+| `src/types/project.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/smart-elements.ts` | No | Active source consumers and smart-elements docs | `defer-public-api` | Retained |
+| `src/types/task.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/types/visual-diagram-canvas.ts` | No | Active source consumers | `defer-public-api` | Retained |
+
+### Utils classification
+
+| File | Barrel export? | Source/docs/examples/API signal | Classification | Action |
+|---|---:|---|---|---|
+| `src/utils/arrow-routing.ts` | Yes | Exported by `src/utils/index.ts`; active source consumers | `defer-public-api` | Retained |
+| `src/utils/canvasUtils.ts` | Yes | Exported by `src/utils/index.ts`; active source consumers | `defer-public-api` | Retained |
+| `src/utils/colorMapper.ts` | Yes | Exported by `src/utils/index.ts`; active source consumer | `defer-public-api` | Retained |
+| `src/utils/index.ts` | Yes | Top-level utils barrel | `defer-public-api` | Retained |
+| `src/utils/kanbanLegacyMigration.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/mindmap-layout.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/performanceMonitor.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/utils/performanceOptimizer.ts` | No | No source import, but `docs/PERFORMANCE_GUIDE.md` includes examples under this path | `needs-owner-decision` | Retained |
+| `src/utils/sanitize.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/secureStorage.ts` | No | Active source consumer | `defer-public-api` | Retained |
+| `src/utils/shapeRecognition.ts` | No | Active source consumer and legacy-spec docs | `defer-public-api` | Retained |
+| `src/utils/styleConverter.ts` | No | No active source/doc/example/API signal | `delete-approved` | Deleted |
+| `src/utils/textDirection.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/toolPanelHelpers.ts` | Yes | Exported by `src/utils/index.ts`; active source consumer | `defer-public-api` | Retained |
+| `src/utils/validation.ts` | No | Active source consumers | `defer-public-api` | Retained |
+| `src/utils/visual-diagram-layout.ts` | No | Active source consumer | `defer-public-api` | Retained |
+
+### Deleted files in this batch
+
+- `src/hooks/useHRLite.ts`
+- `src/hooks/useKnowledgeBase.ts`
+- `src/hooks/useSurveys.ts`
+- `src/utils/styleConverter.ts`
+
+### Batch J disposition
+
+Deleted only files classified as `delete-approved` after they showed no barrel export, no active source import, no documentation/example usage beyond historical cleanup reports, and no public API signal. `src/utils/performanceOptimizer.ts` was retained as `needs-owner-decision` because the performance guide still presents examples under that exact path, even though the current source graph has no imports.
