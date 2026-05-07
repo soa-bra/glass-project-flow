@@ -6,7 +6,6 @@
 |---|---|---|---|---|
 | Canvas Snap | `src/engine/canvas/math/snapEngine.ts` | `src/engine/canvas/interaction/snapEngine.ts` | deprecated compatibility shim | تحديث الاستيرادات القديمة إلى canonical path: `src/engine/canvas/interaction/snapEngine.ts`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
 | Shape Rendering | `src/features/planning/elements/diagram/ShapeRenderer.tsx` | `src/features/planning/elements/shared/ShapeRenderer.tsx` | deprecated compatibility shim | تحديث الاستيرادات القديمة إلى canonical path: `src/features/planning/elements/shared/ShapeRenderer.tsx`.<br>حذف shim بعد اختفاء كل المراجع القديمة. |
-| Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx` | `src/components/custom/FileUploadModal.tsx` | Separate upload policies/errors | Centralize upload service + role-specific shells |
 
 ## Resolved Items
 
@@ -14,7 +13,8 @@
 |---|---|---|
 | Canvas Snap | `src/engine/canvas/interaction/snapEngine.ts` | Legacy snap engine imports were migrated to the interaction snap engine canonical path. The deprecated math shim file is absent, and no source imports remain for that old snap engine path. |
 | Shape Rendering | `src/features/planning/elements/shared/ShapeRenderer.tsx` | Legacy diagram renderer imports were migrated to the shared element renderer barrel. The deprecated diagram shim file is absent, and no source imports remain for that old renderer path. |
-| Project financial modals | `src/components/custom/ExpenseModal.tsx`, `src/components/custom/ApprovalRequestModal.tsx`, `src/components/custom/FinancialAnalysisModal.tsx` | `src/components/ProjectPanel/ExpenseModal.tsx`, `src/components/ProjectPanel/ApprovalRequestModal.tsx`, and `src/components/ProjectPanel/AnalysisModal.tsx` are absent and have no source imports, so the active project finance flow stays on the custom modal implementations used by `ProjectTabs`. No shared schema extraction is needed because there are no remaining parallel ProjectPanel wrappers or divergent modal behaviors in source. |
+| Project financial modals | `src/components/custom/ExpenseModal.tsx`, `src/components/custom/ApprovalRequestModal.tsx`, `src/components/custom/FinancialAnalysisModal.tsx` | `src/components/ProjectPanel/ExpenseModal.tsx`, `src/components/ProjectPanel/ApprovalRequestModal.tsx`, and `src/components/ProjectPanel/AnalysisModal.tsx` are absent and have no source imports. The active project finance flow stays on the custom modal implementations imported by `src/components/ProjectPanel/ProjectTabs.tsx`, so no additional deletion or schema extraction is needed for those absent ProjectPanel copies. |
+| Upload UI | `src/features/planning/ui/overlays/FileUploadModal.tsx`, `src/components/custom/FileUploadModal.tsx`, `src/shared/fileUploadSchema.ts` | Both modal wrappers are active: planning imports the overlay directly from `src/features/planning/ui/overlays/FileUploadModal.tsx`, while project/template flows import `src/components/custom/FileUploadModal.tsx`. Shared upload policy schemas, file validation, project upload form validation, file-size formatting, and project file type mapping now live in `src/shared/fileUploadSchema.ts`; each wrapper keeps only its contextual shell and destination-specific save behavior. |
 
 ## Medium-Risk Candidates
 
