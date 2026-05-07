@@ -1,59 +1,139 @@
 # Zero-reference triage — 2026-05-07
 
-This triage applies the follow-up rule for zero-reference test files discovered by the 2026-05-07 import-graph scan.
+مصدر الإدخال: `docs/reports/zero-reference-candidates-2026-05-07.md`.
 
-## Test-file triage policy
+## Method
 
-- Every `*.test.ts` and `*.test.tsx` file is classified as `defer-test-or-tooling` in this report.
-- Test files must **not** be deleted from the import graph alone. Test runners discover these files by glob patterns, so a zero-reference result only means production code does not import the test file.
-- If test cleanup is requested later, create a separate cleanup batch named **Batch T**.
-- Batch T must inspect each test against the product file, slice, controller, service, store, or standalone behavioral harness it validates before any deletion decision.
+- فحصت لكل مرشح: import مباشر، export من barrel، اسم الملف/المكوّن كسلسلة نصية، dynamic import، route/config/registry usage، worker runtime loader، وهل هو test/tooling/public API.
+- استخدمت فحصًا محافظًا: أي دليل runtime/registry/route/test/tooling/public API يمنع إدخال الملف في قائمة الحذف النهائية.
+- لا تعني `delete-approved` حذف الملف في هذا التغيير؛ هذه الجولة تنتج تقارير وقائمة حذف نهائية فقط.
 
-## Batch T guardrail
+## Summary
 
-Batch T is reserved for any future test/tooling cleanup. Its minimum review checklist is:
+- `delete-approved`: **5**
+- `allowlist-runtime`: **6**
+- `defer-route-entry`: **1**
+- `defer-public-api`: **61**
+- `defer-test-or-tooling`: **41**
+- `needs-owner-decision`: **2**
 
-1. Identify the test subject or explain why the test is a standalone behavior/performance harness.
-2. Run or update the relevant test command for the file or suite.
-3. Confirm whether the covered production behavior still exists.
-4. Only then decide whether to keep, rewrite, merge, or delete the test.
+## Triage table
 
-## `*.test.ts` / `*.test.tsx` classifications
-
-| Test file | Classification | Subject to inspect before any future deletion |
-| --- | --- | --- |
-| `src/__tests__/SmartElements.test.tsx` | `defer-test-or-tooling` | Legacy smart-elements store behavior via `src/stores/canvasStore.ts` and related smart element flows. |
-| `src/__tests__/integration/smart-elements-integration.test.ts` | `defer-test-or-tooling` | Standalone smart-element registration, data refresh, and rendering integration harness. |
-| `src/__tests__/integration/viewport-elements-integration.test.ts` | `defer-test-or-tooling` | Standalone viewport/element coordinate transformation and visibility harness. |
-| `src/__tests__/integration/zoom-pan-behavior.test.tsx` | `defer-test-or-tooling` | Standalone zoom/pan behavior harness for camera math, touch support, bounds, and fit-to-content behavior. |
-| `src/__tests__/performance/drag-benchmark.test.ts` | `defer-test-or-tooling` | Canvas drag performance path using `src/stores/canvas.ts` and canvas element types. |
-| `src/__tests__/performance/export-benchmark.test.ts` | `defer-test-or-tooling` | Canvas export/import performance path using `src/engine/canvas/io/exportEngine.ts`, `src/engine/canvas/io/importEngine.ts`, and `src/stores/canvas.ts`. |
-| `src/__tests__/performance/peak-collaboration-load.test.ts` | `defer-test-or-tooling` | Collaboration-load telemetry and command-processing path using planning command processor, SLO targets, and collaboration metrics. |
-| `src/__tests__/performance/render-benchmark.test.ts` | `defer-test-or-tooling` | Canvas render performance path using `src/stores/canvas.ts` and canvas element types. |
-| `src/__tests__/stores/canvasStore.performance.test.ts` | `defer-test-or-tooling` | Legacy canvas store performance behavior via `src/stores/canvasStore.ts` and `src/utils/performanceMonitor.ts`. |
-| `src/__tests__/stores/canvasStore.test.ts` | `defer-test-or-tooling` | Legacy canvas store state and actions via `src/stores/canvasStore.ts`. |
-| `src/__tests__/stores/elementsSlice.test.ts` | `defer-test-or-tooling` | Legacy canvas elements slice behavior via `src/stores/canvas.ts`. |
-| `src/__tests__/stores/historySlice.test.ts` | `defer-test-or-tooling` | Legacy canvas history slice behavior via `src/stores/canvas.ts`. |
-| `src/__tests__/stores/selectionSlice.test.ts` | `defer-test-or-tooling` | Legacy canvas selection slice behavior via `src/stores/canvas.ts`. |
-| `src/__tests__/stores/viewportSlice.test.ts` | `defer-test-or-tooling` | Legacy canvas viewport slice behavior via `src/stores/canvas.ts`. |
-| `src/engine/canvas/collaboration/collaborationEngine.test.ts` | `defer-test-or-tooling` | Collaboration engine behavior via `src/engine/canvas/collaboration/collaborationEngine.ts`. |
-| `src/features/planning/canvas/controllers/useCanvasDropController.test.ts` | `defer-test-or-tooling` | Drop controller behavior via `src/features/planning/canvas/controllers/useCanvasDropController.ts`. |
-| `src/features/planning/canvas/controllers/useCanvasPointerTracking.test.ts` | `defer-test-or-tooling` | Pointer tracking controller behavior via `src/features/planning/canvas/controllers/useCanvasPointerTracking.ts`. |
-| `src/features/planning/canvas/controllers/useCanvasRealtimeController.test.ts` | `defer-test-or-tooling` | Realtime controller behavior via `src/features/planning/canvas/controllers/useCanvasRealtimeController.ts`. |
-| `src/features/planning/canvas/controllers/useCanvasSelectionController.test.ts` | `defer-test-or-tooling` | Selection controller behavior via `src/features/planning/canvas/controllers/useCanvasSelectionController.ts`. |
-| `src/features/planning/canvas/controllers/useCanvasViewportController.test.ts` | `defer-test-or-tooling` | Viewport controller behavior via `src/features/planning/canvas/controllers/useCanvasViewportController.ts`. |
-| `src/features/planning/canvas/controllers/useMindMapConnectionController.test.ts` | `defer-test-or-tooling` | Mind-map connection controller behavior via `src/features/planning/canvas/controllers/useMindMapConnectionController.ts`. |
-| `src/features/planning/canvas/viewport/InfiniteCanvas.test.tsx` | `defer-test-or-tooling` | Infinite canvas viewport behavior via `src/features/planning/canvas/viewport/InfiniteCanvas.tsx`. |
-| `src/features/planning/integration/persistence/entityBindingRegistry.test.ts` | `defer-test-or-tooling` | Entity binding registry behavior via `src/features/planning/integration/persistence/entityBindingRegistry.ts`. |
-| `src/features/planning/state/history/boardSnapshot.test.ts` | `defer-test-or-tooling` | Board snapshot behavior via `src/features/planning/state/history/boardSnapshot.ts`. |
-| `src/features/planning/state/slices/selectionSlice.test.ts` | `defer-test-or-tooling` | Planning selection slice behavior via `src/features/planning/state/slices/selectionSlice.ts`. |
-| `src/features/planning/state/slices/viewportSlice.test.ts` | `defer-test-or-tooling` | Planning viewport slice behavior via `src/features/planning/state/slices/viewportSlice.ts`. |
-| `src/features/planning/state/transactions/runCanvasTransaction.test.ts` | `defer-test-or-tooling` | Canvas transaction behavior via `src/features/planning/state/transactions/runCanvasTransaction.ts`. |
-| `src/features/planning/ui/PlanningCanvas.test.tsx` | `defer-test-or-tooling` | Planning canvas UI behavior via `src/features/planning/ui/PlanningCanvas.tsx`. |
-| `src/features/planning/ui/toolbars/CanvasToolbar.test.tsx` | `defer-test-or-tooling` | Canvas toolbar UI behavior via `src/features/planning/ui/toolbars/CanvasToolbar.tsx`. |
-| `src/features/planning/ui/toolbars/floating-bar/FloatingBar.test.tsx` | `defer-test-or-tooling` | Floating toolbar UI behavior via `src/features/planning/ui/toolbars/floating-bar/FloatingBar.tsx`. |
-| `src/shared/events/validation.test.ts` | `defer-test-or-tooling` | Shared event contract validation via `src/shared/events/validation.ts` and `src/shared/events/contracts.ts`. |
-
-## Non-test candidates
-
-This pass does not change the disposition of non-test zero-reference candidates from `docs/reports/zero-reference-candidates-2026-05-07.md`.
+| Candidate | Direct import / barrel export check | String / dynamic / route / registry / worker check | Test/tooling/public API check | Classification |
+| --- | --- | --- | --- | --- |
+| `src/__tests__/SmartElements.test.tsx` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/integration/smart-elements-integration.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/integration/viewport-elements-integration.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/integration/zoom-pan-behavior.test.tsx` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/performance/drag-benchmark.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/performance/export-benchmark.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/performance/peak-collaboration-load.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/performance/render-benchmark.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/setup.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/stores/canvasStore.performance.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/stores/canvasStore.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/stores/elementsSlice.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/stores/historySlice.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/stores/selectionSlice.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/__tests__/stores/viewportSlice.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/components/ArchivePanel/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/components/DepartmentPanel/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/components/Financial/InvoicesDashboard.tsx` | لا direct import ولا barrel export فعّال مثبت في src. | لم يظهر dynamic import أو route/config/registry/worker loader. | ليس test/tooling/public API مثبت؛ مناسب لقائمة الحذف. | `delete-approved` |
+| `src/components/TaskCard/index.tsx` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/components/shared/surfaces/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/components/ui/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/components/ui/performance/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/data/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/engine/canvas/collaboration/collaborationEngine.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/engine/canvas/io/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/engine/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/canvas/controllers/useCanvasDropController.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/canvas/controllers/useCanvasPointerTracking.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/canvas/controllers/useCanvasRealtimeController.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/canvas/controllers/useCanvasSelectionController.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/canvas/controllers/useCanvasViewportController.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/canvas/controllers/useMindMapConnectionController.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/canvas/viewport/InfiniteCanvas.test.tsx` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/domain/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/ai-tools.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/canvas.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/component-props.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/diagram.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/element.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/enhanced.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/event.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/hook.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/mindmap.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/planning.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/smart-doc.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/smart.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/domain/types/system-model.types.ts` | type re-export من domain types barrel أو aliases `src/types/*`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/elements/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/elements/text/utils/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/features/planning/integration/persistence/entityBindingRegistry.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/state/history/boardSnapshot.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/state/slices/selectionSlice.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/state/slices/viewportSlice.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/state/transactions/runCanvasTransaction.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/ui/PlanningCanvas.test.tsx` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/ui/toolbars/CanvasToolbar.test.tsx` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/features/planning/ui/toolbars/floating-bar/FloatingBar.test.tsx` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/hooks/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/hooks/useCanvasKeyboardNav.ts` | hook surface؛ لا delete بلا قرار API/owner. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/hooks/useFileUpload.ts` | public/deferred surface. | worker bootstrap: ينشئ `new Worker(new URL(...))`. | runtime/dynamic نعم. | `allowlist-runtime` |
+| `src/hooks/useHRLite.ts` | hook surface؛ لا delete بلا قرار API/owner. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/hooks/useKnowledgeBase.ts` | hook surface؛ لا delete بلا قرار API/owner. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/hooks/usePermission.ts` | hook surface؛ لا delete بلا قرار API/owner. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/hooks/useSnapEngine.ts` | hook surface؛ لا delete بلا قرار API/owner. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/hooks/useSurveys.ts` | hook surface؛ لا delete بلا قرار API/owner. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/lib/api/smart-elements.ts` | API helper غير محذوف حتى قرار public API. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/main.tsx` | public/deferred surface. | route/config entry: `index.html` يحمل `/src/main.tsx`. | route entry نعم. | `defer-route-entry` |
+| `src/modules/contract/contract.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/modules/crm/opportunity.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/modules/expense/expense.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/modules/hr-lite/hr-lite.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/modules/hr/hr.service.ts` | لا direct import ولا barrel export فعّال مثبت في src. | لم يظهر dynamic import أو route/config/registry/worker loader. | ليس test/tooling/public API مثبت؛ مناسب لقائمة الحذف. | `delete-approved` |
+| `src/modules/invoice/invoice.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/modules/kb/kb.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/modules/surveys/surveys.service.ts` | direct import من `src/api/*` أو feature hook/service consumer. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/aiAnalysis.ts` | لا direct import ولا barrel export فعّال مثبت في src. | لم يظهر dynamic import أو route/config/registry/worker loader. | ليس test/tooling/public API مثبت؛ مناسب لقائمة الحذف. | `delete-approved` |
+| `src/services/central/audit.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/centralBoards.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/departments.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/dependencies.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/engineJobs.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/projects.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/roles.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/search.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/tasks.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/tools.service.ts` | export من `src/services/central/index.ts` أو direct import من hooks/features. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/central/withAuthorizationAndAudit.ts` | public/deferred surface. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | موثق كنية/API محتملة لكن بلا import فعلي. | `needs-owner-decision` |
+| `src/services/invoices/invoices.service.ts` | direct import من `src/hooks/useInvoices.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/services/kanban.ts` | لا direct import ولا barrel export فعّال مثبت في src. | لم يظهر dynamic import أو route/config/registry/worker loader. | ليس test/tooling/public API مثبت؛ مناسب لقائمة الحذف. | `delete-approved` |
+| `src/shared/adapters/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/shared/events/handlers/cultural-handlers.ts` | public/deferred surface. | registry usage: side-effect `handlerRegistry.register(...)`. | runtime/dynamic نعم. | `allowlist-runtime` |
+| `src/shared/events/handlers/hr-handlers.ts` | public/deferred surface. | registry usage: side-effect `handlerRegistry.register(...)`. | runtime/dynamic نعم. | `allowlist-runtime` |
+| `src/shared/events/handlers/project-handlers.ts` | public/deferred surface. | registry usage: side-effect `handlerRegistry.register(...)`. | runtime/dynamic نعم. | `allowlist-runtime` |
+| `src/shared/events/handlers/webhook-handlers.ts` | public/deferred surface. | registry usage: side-effect `handlerRegistry.register(...)`. | runtime/dynamic نعم. | `allowlist-runtime` |
+| `src/shared/events/validation.test.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/shared/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/shared/services/approvals/approvals.service.ts` | export من shared service barrel أو direct import من module services. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/shared/services/feature-store/fs.service.ts` | export من shared service barrel أو direct import من module services. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/shared/services/sequence/sequence.service.ts` | export من shared service barrel أو direct import من module services. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/stories/BaseBadge.stories.tsx` | export من `src/stories/index.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/stories/BaseBox.stories.tsx` | export من `src/stories/index.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/stories/BaseListItem.stories.tsx` | export من `src/stories/index.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/stories/BasePageHeader.stories.tsx` | export من `src/stories/index.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/stories/BaseSearchBar.stories.tsx` | export من `src/stories/index.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/stories/BaseStatsCard.stories.tsx` | export من `src/stories/index.ts`. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/stories/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/test/setup.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/types/canvas-hooks.ts` | compat type wrapper أو public types barrel. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/types/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/utils/index.ts` | barrel export / public index؛ فحص imports إلى المسار/alias لا يكفي للحذف. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | public API / barrel / type surface. | `defer-public-api` |
+| `src/utils/performanceOptimizer.ts` | public/deferred surface. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | موثق كنية/API محتملة لكن بلا import فعلي. | `needs-owner-decision` |
+| `src/utils/styleConverter.ts` | لا direct import ولا barrel export فعّال مثبت في src. | لم يظهر dynamic import أو route/config/registry/worker loader. | ليس test/tooling/public API مثبت؛ مناسب لقائمة الحذف. | `delete-approved` |
+| `src/vite-env.d.ts` | لا direct runtime import مطلوب؛ test runner/tooling path. | لم يظهر dynamic import/worker loader خاص بهذا الملف؛ القرار مبني على API/test/tooling. | test/tooling نعم. | `defer-test-or-tooling` |
+| `src/workers/fileProcessor.worker.ts` | public/deferred surface. | worker runtime loader: اسم الملف كسلسلة في `new URL` من hook. | runtime/dynamic نعم. | `allowlist-runtime` |
