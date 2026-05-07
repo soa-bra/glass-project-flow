@@ -6,7 +6,7 @@ import { SmartElementRenderer } from '@/features/planning/elements/smart/SmartEl
 import { ResizeHandle } from '@/features/planning/canvas/selection/ResizeHandle';
 import { TextEditor } from '@/features/planning/elements/text/TextEditor';
 import { StickyNoteEditor } from '@/features/planning/elements/text/StickyNoteEditor';
-import { ShapeRenderer } from '@/features/planning/elements/diagram/ShapeRenderer';
+import { ShapeRenderer } from '@/features/planning/elements/shared';
 import { TextRenderer } from '@/features/planning/elements/text/TextRenderer';
 import { ArrowControlPoints } from '@/features/planning/elements/diagram/ArrowControlPoints';
 import { ArrowLabels } from '@/features/planning/elements/diagram/ArrowLabels';
@@ -381,6 +381,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
             />
           ) : null}
           <ShapeRenderer
+            context="diagram"
             shapeType={element.shapeType || element.data?.shapeType || 'rectangle'}
             width={element.size.width}
             height={element.size.height}
