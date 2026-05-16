@@ -81,3 +81,23 @@
 - ✅ **P1.d — مُغلَق**: `evaluateCommandAuthorization` يدعم الآن `canvas.smart-doc.create` و`canvas.smart-doc.ai-assist` بنفس قاعدة الأدوار (host/editor فقط). `SmartDocToolZone` يعطّل الأزرار للأدوار `viewer`/`guest` ويعرض toast عربي عند المحاولة. RLS على `planning_elements` يبقى الضمان الخلفي.
 
 **حالة P1**: ✅ مكتمل.
+
+---
+
+## P2 — ربط النموذج المركزي (حالة الإغلاق)
+
+| التسليم | الحالة | الدليل |
+|---|---|---|
+| خدمات `src/services/central/{boards,departments,projects,tasks,tools,engineJobs,dependencies}` | ✅ | الملفات موجودة + `index.ts` يصدّرها كـ namespaces |
+| `withAuthorizationAndAudit` (Permission → Execute → Audit) | ✅ | `src/services/central/withAuthorizationAndAudit.ts` |
+| Zod schemas موحّدة | ✅ | `src/types/central/index.ts` + barrel جديد `src/services/central/schemas.ts` |
+| React Query hooks (`useProjects, useProjectTasks, useDepartments, useCentralBoards, useBoardTools, useEngineJobs, useDependencies`) | ✅ | `src/hooks/central/useCentral.ts` + `centralKeys` لـ invalidation |
+| Realtime على `engine_jobs` | ✅ | `src/hooks/central/useEngineJobsRealtime.ts` |
+| بحث متقاطع | ✅ | `useCrossWorkspaceSearch.ts` + `search.service.ts` |
+| Seed تجريبي | ✅ | `scripts/seed-central.ts` |
+| اختبارات Zod للعقود | ✅ | `src/__tests__/services/centralSchemas.test.ts` (8/8 ✓) |
+| مراجعة RLS لكل جدول مركزي | ✅ | Supabase Linter بلا تحذيرات **حرجة** (WARN فقط على extensions/security-definer مقصودة موثّقة في `SUPABASE_LINTER_NOTES.md`) |
+
+**ملاحظة معماريّة:** قرّرنا الإبقاء على Zod schemas داخل `@/types/central` (مع barrel رفيع في `services/central/schemas.ts`) بدلاً من تكرارها، لأن Row/Insert/Update والـ schemas يجب أن تبقى متلاصقة لتفادي الانحراف.
+
+**حالة P2**: ✅ مكتمل. النقطة التالية: **P3 — ربط مساحات العمل** (إزالة `mockProjects` خلف Feature Flag).
