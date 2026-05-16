@@ -19,6 +19,27 @@ export interface AuditEventInput {
   metadata?: Record<string, unknown> | null;
 }
 
+/**
+ * Legacy auditService API — kept for existing callers (e.g. planning authz).
+ * Maps eventType/entityType/entityId/metadata into the audit_events row shape.
+ */
+export const auditService = {
+  logEvent(event: {
+    eventType: string;
+    entityType: string;
+    entityId?: string | null;
+    metadata?: Record<string, unknown> | null;
+  }): Promise<void> {
+    return audit({
+      resource_type: event.entityType,
+      action: event.eventType,
+      resource_id: event.entityId ?? null,
+      decision: event.eventType.endsWith(".denied") ? "denied" : "allowed",
+      metadata: event.metadata ?? null,
+    });
+  },
+};
+
 export async function audit(event: AuditEventInput): Promise<void> {
   try {
     const { data: auth } = await supabase.auth.getUser();
