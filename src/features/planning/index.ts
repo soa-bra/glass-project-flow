@@ -44,6 +44,8 @@ export { useAutoUnlockStaleLocks } from './hooks/useAutoUnlockStaleLocks';
 export type { UseAutoUnlockStaleLocksOptions } from './hooks/useAutoUnlockStaleLocks';
 export { useElementLockState } from './hooks/useElementLockState';
 export type { ElementLockState, ElementLockStatus } from './hooks/useElementLockState';
+export { useElementLockAcquire } from './hooks/useElementLockAcquire';
+export type { LockFailureInfo, AcquireFn } from './hooks/useElementLockAcquire';
 export type { PresencePeer } from './hooks/usePlanningRealtime';
 export type { UsePlanningElementsResult } from './hooks/usePlanningElements';
 
