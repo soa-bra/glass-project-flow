@@ -34,6 +34,11 @@ export * from './integration';
 // Hooks Layer
 export { usePlanningElements } from './hooks/usePlanningElements';
 export { usePlanningRealtime } from './hooks/usePlanningRealtime';
+export { usePlanningStoreSync } from './hooks/usePlanningStoreSync';
+export {
+  planningElementToCanvas,
+  canvasToPlanningInsert,
+} from './state/planningElementMapper';
 export { useElementLock } from './hooks/useElementLock';
 export { useAutoUnlockStaleLocks } from './hooks/useAutoUnlockStaleLocks';
 export type { UseAutoUnlockStaleLocksOptions } from './hooks/useAutoUnlockStaleLocks';
