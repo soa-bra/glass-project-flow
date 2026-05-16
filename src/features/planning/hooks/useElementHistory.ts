@@ -8,10 +8,8 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  PlanningBoardsService,
-  type PlanningElementHistoryEntry,
-} from "@/services/central";
+import { PlanningBoardsService } from "@/services/central";
+import type { PlanningElementHistoryEntry } from "@/services/central/planningBoards.service";
 
 export interface UseElementHistoryResult {
   entries: PlanningElementHistoryEntry[];
