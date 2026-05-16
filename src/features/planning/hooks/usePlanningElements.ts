@@ -23,6 +23,13 @@ import type {
   PlanningElementCreateInput,
   PlanningElementUpdateInput,
 } from "@/services/central/planningBoards.service";
+import {
+  MERGEABLE_FIELDS,
+  mergePlanningElement,
+  prunePendingStamps,
+  type MergeableField,
+  type PendingFieldStamps,
+} from "../state/conflictResolver";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 
 function sortElements(rows: PlanningElement[]): PlanningElement[] {
@@ -80,6 +87,38 @@ export function usePlanningElements(
     }, 2000);
   };
 
+  // Per-row map of pending optimistic field timestamps. Powers per-field LWW
+  // conflict resolution in `onElementUpdate`.
+  const pendingPatchesRef = useRef<Map<string, PendingFieldStamps>>(new Map());
+  const recordPendingPatch = useCallback(
+    (id: string, patch: PlanningElementUpdateInput) => {
+      const now = Date.now();
+      const prev = pendingPatchesRef.current.get(id) ?? {};
+      const next: PendingFieldStamps = { ...prev };
+      for (const field of MERGEABLE_FIELDS) {
+        if ((patch as Record<string, unknown>)[field] !== undefined) {
+          next[field as MergeableField] = now;
+        }
+      }
+      pendingPatchesRef.current.set(id, next);
+    },
+    [],
+  );
+  const settlePendingPatch = useCallback(
+    (id: string, confirmedUpdatedAt: string) => {
+      const remaining = prunePendingStamps(
+        pendingPatchesRef.current.get(id),
+        confirmedUpdatedAt,
+      );
+      if (Object.keys(remaining).length === 0) {
+        pendingPatchesRef.current.delete(id);
+      } else {
+        pendingPatchesRef.current.set(id, remaining);
+      }
+    },
+    [],
+  );
+
   const refresh = useCallback(async () => {
     if (!boardId) {
       setElements([]);
@@ -111,14 +150,20 @@ export function usePlanningElements(
   const onElementUpdate = useCallback((row: PlanningElement) => {
     setElements((prev) => {
       const idx = prev.findIndex((e) => e.id === row.id);
-      if (idx === -1) return sortElements([...prev, row]);
+      const local = idx === -1 ? undefined : prev[idx];
+      const pending = pendingPatchesRef.current.get(row.id);
+      const { next: merged } = mergePlanningElement(local, row, pending);
+      if (idx === -1) return sortElements([...prev, merged]);
       const next = prev.slice();
-      next[idx] = row;
+      next[idx] = merged;
       return sortElements(next);
     });
-  }, []);
+    // Drop any pending stamps already reflected in this remote write.
+    settlePendingPatch(row.id, row.updated_at);
+  }, [settlePendingPatch]);
 
   const onElementDelete = useCallback((id: string) => {
+    pendingPatchesRef.current.delete(id);
     setElements((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
@@ -177,6 +222,9 @@ export function usePlanningElements(
       patch: PlanningElementUpdateInput,
     ): Promise<PlanningElement> => {
       let previousRow: PlanningElement | undefined;
+      // Stamp pending fields BEFORE applying so concurrent realtime echoes
+      // arriving during the await see the pending timestamps.
+      recordPendingPatch(id, patch);
       setElements((prev) => {
         const idx = prev.findIndex((e) => e.id === id);
         if (idx === -1) return prev;
@@ -190,22 +238,42 @@ export function usePlanningElements(
         return sortElements(next);
       });
       if (!previousRow) {
+        pendingPatchesRef.current.delete(id);
         throw new Error(`Element ${id} not found in local state`);
       }
       try {
         const saved = await PlanningBoardsService.updatePlanningElement(id, patch);
         markConfirmed(saved.id);
+        // Merge the server response against any still-pending newer edits
+        // (e.g. the user kept dragging while the previous patch was in flight).
         setElements((prev) => {
           const idx = prev.findIndex((e) => e.id === id);
-          if (idx === -1) return sortElements([...prev, saved]);
+          const local = idx === -1 ? undefined : prev[idx];
+          const pending = pendingPatchesRef.current.get(id);
+          const { next: merged } = mergePlanningElement(local, saved, pending);
+          if (idx === -1) return sortElements([...prev, merged]);
           const next = prev.slice();
-          next[idx] = saved;
+          next[idx] = merged;
           return sortElements(next);
         });
+        settlePendingPatch(id, saved.updated_at);
         return saved;
       } catch (e) {
-        // rollback
+        // rollback both state and pending stamps for the failed fields.
         const snapshot = previousRow;
+        const pending = pendingPatchesRef.current.get(id);
+        if (pending) {
+          for (const field of MERGEABLE_FIELDS) {
+            if ((patch as Record<string, unknown>)[field] !== undefined) {
+              delete pending[field];
+            }
+          }
+          if (Object.keys(pending).length === 0) {
+            pendingPatchesRef.current.delete(id);
+          } else {
+            pendingPatchesRef.current.set(id, pending);
+          }
+        }
         setElements((prev) => {
           const idx = prev.findIndex((el) => el.id === id);
           if (idx === -1) return sortElements([...prev, snapshot]);
@@ -216,9 +284,8 @@ export function usePlanningElements(
         throw e instanceof Error ? e : new Error(String(e));
       }
     },
-    [],
+    [recordPendingPatch, settlePendingPatch],
   );
-
   const deleteOptimistic = useCallback(
     async (id: string): Promise<void> => {
       let removed: PlanningElement | undefined;

@@ -18,3 +18,11 @@ export * from './selectors';
 
 // Helpers
 export * from './helpers';
+
+// Conflict resolution
+export {
+  MERGEABLE_FIELDS,
+  mergePlanningElement,
+  prunePendingStamps,
+} from './conflictResolver';
+export type { MergeableField, PendingFieldStamps, MergeResult } from './conflictResolver';
