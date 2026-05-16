@@ -35,6 +35,8 @@ export * from './integration';
 export { usePlanningElements } from './hooks/usePlanningElements';
 export { usePlanningRealtime } from './hooks/usePlanningRealtime';
 export { useElementLock } from './hooks/useElementLock';
+export { useAutoUnlockStaleLocks } from './hooks/useAutoUnlockStaleLocks';
+export type { UseAutoUnlockStaleLocksOptions } from './hooks/useAutoUnlockStaleLocks';
 export type { PresencePeer } from './hooks/usePlanningRealtime';
 export type { UsePlanningElementsResult } from './hooks/usePlanningElements';
 
