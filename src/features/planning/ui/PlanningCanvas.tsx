@@ -30,8 +30,12 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
   const isHost = useCollaborationStore((state) => state.isHost);
   const participants = useCollaborationStore((state) => state.participants);
+  const selfName =
+    participants.find((p) => p.id === currentUserId)?.name ?? 'مستخدم حالي';
 
   useBoardCanvasLifecycle(board);
+
+  const { peers } = usePlanningStoreSync(board.id, selfName);
 
   useEffect(() => {
     const host = canvasHostRef.current;
