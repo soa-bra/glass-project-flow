@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { audit } from '@/services/audit';
 import type { TabData } from './types';
 
 /**
