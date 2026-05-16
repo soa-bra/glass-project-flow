@@ -1,6 +1,8 @@
 import React, { useRef, useCallback, useEffect, useState, useMemo } from 'react';
+import { Lock } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
+import { useCollaborationStore } from '@/stores/collaborationStore';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from '@/features/planning/elements/smart/SmartElementRenderer';
 import { ResizeHandle } from '@/features/planning/canvas/selection/ResizeHandle';
