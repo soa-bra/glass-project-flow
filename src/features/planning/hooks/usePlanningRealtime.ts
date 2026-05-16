@@ -29,6 +29,8 @@ export interface PresencePeer {
   display_name: string;
   color: string;
   cursor?: { x: number; y: number };
+  /** Element the peer is currently editing/locking, if any. */
+  editing_element_id?: string | null;
   lastSeen: number;
 }
 
