@@ -68,7 +68,7 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
       case 'research_tool':
         return <ResearchToolZone />;
       case 'smart_doc_tool':
-        return <SmartDocToolZone />;
+        return <SmartDocToolZone boardId={boardId} />;
       // الأدوات بدون panel (تستخدم FloatingBar)
       case 'selection_tool':
       case 'smart_pen':
