@@ -900,6 +900,39 @@ export type Database = {
         }
         Relationships: []
       }
+      planning_element_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          board_id: string
+          changed_fields: Json
+          created_at: string
+          element_id: string
+          id: string
+          snapshot: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          board_id: string
+          changed_fields?: Json
+          created_at?: string
+          element_id: string
+          id?: string
+          snapshot?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          board_id?: string
+          changed_fields?: Json
+          created_at?: string
+          element_id?: string
+          id?: string
+          snapshot?: Json | null
+        }
+        Relationships: []
+      }
       planning_elements: {
         Row: {
           board_id: string
