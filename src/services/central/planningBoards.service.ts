@@ -293,3 +293,50 @@ export async function unlockElement(id: string): Promise<void> {
     .eq("locked_by", userId);
   if (error) throw error;
 }
+
+/** Release every lock currently held by the user on a board. */
+export async function releaseUserLocksOnBoard(
+  boardId: string,
+): Promise<void> {
+  const userId = await requireUserId();
+  const { error } = await supabase
+    .from("planning_elements")
+    .update({ locked_by: null, locked_at: null })
+    .eq("board_id", boardId)
+    .eq("locked_by", userId);
+  if (error) throw error;
+}
+
+/**
+ * Exclusive lock — at most ONE element per user per board (UR-005).
+ * Releases any other element the user currently holds on the board, then
+ * acquires the target. Returns the locked row, or `null` if another user
+ * holds a live lock on the target.
+ */
+export async function acquireExclusiveElementLock(
+  boardId: string,
+  elementId: string,
+): Promise<PlanningElement | null> {
+  const userId = await requireUserId();
+  // 1) Release any other locks held by this user on this board.
+  const { error: releaseErr } = await supabase
+    .from("planning_elements")
+    .update({ locked_by: null, locked_at: null })
+    .eq("board_id", boardId)
+    .eq("locked_by", userId)
+    .neq("id", elementId);
+  if (releaseErr) throw releaseErr;
+
+  // 2) Acquire (or refresh) lock on the target with 30s TTL window.
+  const cutoffIso = new Date(Date.now() - ELEMENT_LOCK_TTL_MS).toISOString();
+  const { data, error } = await supabase
+    .from("planning_elements")
+    .update({ locked_by: userId, locked_at: new Date().toISOString() })
+    .eq("id", elementId)
+    .eq("board_id", boardId)
+    .or(`locked_by.is.null,locked_by.eq.${userId},locked_at.lt.${cutoffIso}`)
+    .select("*")
+    .maybeSingle();
+  if (error) throw error;
+  return data ?? null;
+}
