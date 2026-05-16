@@ -45,3 +45,10 @@
 - استيراد ملفات `.miro` أو `.fig` — لا.
 - Voice/Video داخل اللوحة — مؤجَّل (موجود في `RealtimeSyncManager` كـ stub).
 - AI image generation داخل الكانفس — مؤجَّل لـ P5.
+
+## 6) عقد Smart Doc (P1.c)
+
+- محتوى `smart_doc` و`interactive_sheet` يُخزَّن داخل `planning_elements.content` (jsonb) ولا يوجد جدول فرعي منفصل (`planning_smart_docs`).
+- النسخة الحالية: `SMART_DOC_SCHEMA_VERSION = 1` ضمن `src/features/planning/elements/smart-doc/contract.ts`.
+- يُحقَّق العقد عبر Zod (`validateSmartDocContent`) عند `createPlanningElement` و`updatePlanningElement`.
+- الترقية المستقبلية تمر عبر `migrateSmartDocContent(input, fromVersion)` قبل التحقق.
