@@ -136,10 +136,14 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const isLockedBySelf = !!remoteLockedBy && remoteLockedBy === currentUserId;
   const isLayerLocked = !!elementLayer?.locked;
   const isLocked = isLayerLocked || isLockedByOther;
-  const lockHolderName = useMemo(() => {
+  const lockHolder = useMemo(() => {
     if (!remoteLockedBy) return null;
-    return participants.find((p) => p.id === remoteLockedBy)?.name ?? 'مستخدم آخر';
+    return participants.find((p) => p.id === remoteLockedBy) ?? null;
   }, [remoteLockedBy, participants]);
+  const lockHolderName = lockHolder?.name ?? (remoteLockedBy ? 'مستخدم آخر' : null);
+  const lockHolderColor = lockHolder?.color ?? 'hsl(var(--accent-red))';
+  const lockHolderAvatar = lockHolder?.avatar;
+  const lockHolderInitial = (lockHolderName ?? '?').trim().charAt(0).toUpperCase() || '?';
   const smartRenderableType = useMemo(() => {
     if (element.type === 'smart') {
       return (element as any).smartType || element.data?.smartType || element.metadata?.smartType || null;
