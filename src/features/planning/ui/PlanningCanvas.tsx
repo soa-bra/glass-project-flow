@@ -110,7 +110,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
           <InfiniteCanvas boardId={board.id} />
           <div id="planning-floating-overlay" data-floating-overlay="true" className="absolute inset-0 pointer-events-none" />
         </div>
-        <ToolZone activeTool={activeTool} />
+        <ToolZone activeTool={activeTool} boardId={board.id} />
       </div>
       <BottomToolbar />
       <NavigationBar />

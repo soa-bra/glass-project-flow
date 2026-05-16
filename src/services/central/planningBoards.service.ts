@@ -15,6 +15,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { z } from "zod";
+import {
+  isSmartDocElementType,
+  SMART_DOC_SCHEMA_VERSION,
+  validateSmartDocContent,
+} from "@/features/planning/elements/smart-doc/contract";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 export type PlanningBoard = Database["public"]["Tables"]["planning_boards"]["Row"];
@@ -191,6 +196,10 @@ export async function createPlanningElement(
 ): Promise<PlanningElement> {
   const parsed = planningElementCreateSchema.parse(input);
   const created_by = await requireUserId();
+  // P1.c — validate smart-doc payloads against the contract before insert.
+  if (isSmartDocElementType(parsed.element_type) && parsed.content) {
+    validateSmartDocContent(parsed.content);
+  }
   const payload: PlanningElementInsert = {
     board_id: parsed.board_id,
     element_type: parsed.element_type,
@@ -201,7 +210,8 @@ export async function createPlanningElement(
     content: (parsed.content ?? {}) as Json,
     style: (parsed.style ?? {}) as Json,
     metadata: (parsed.metadata ?? {}) as Json,
-    schema_version: parsed.schema_version ?? 1,
+    schema_version: parsed.schema_version ??
+      (isSmartDocElementType(parsed.element_type) ? SMART_DOC_SCHEMA_VERSION : 1),
     created_by,
   };
   const { data, error } = await supabase
@@ -218,6 +228,14 @@ export async function updatePlanningElement(
   patch: PlanningElementUpdateInput,
 ): Promise<PlanningElement> {
   const parsed = planningElementUpdateSchema.parse(patch);
+  // P1.c — validate smart-doc payloads on update when type+content provided.
+  if (
+    parsed.element_type &&
+    isSmartDocElementType(parsed.element_type) &&
+    parsed.content
+  ) {
+    validateSmartDocContent(parsed.content);
+  }
   const update: PlanningElementUpdate = {
     ...parsed,
     position: parsed.position as Json | undefined,

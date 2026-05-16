@@ -1,166 +1,83 @@
-# خطة محدّثة: استيراد حزمة soabra + خطة تنفيذ (P1 و P2 مُعاد ضبطهما وفق الـ Governing Rulings)
+## P1 — تقييم الحالة وخطة الإغلاق
 
-تنفيذ الخيارين معًا، مع إعادة تأطير P1 و P2 وفقًا لـ:
+### الحالة بعد الفحص
 
-- **UR-001 → UR-010** (وثيقة الـ Governing Rulings).
-- وثيقة "التخطيط التضامني والذكاء الاصطناعي المدمج" (Miro-inspired).
-- وثيقة "تحويل العناصر، توسيع البطاقات، والموصلات الذكية" (ClickUp-inspired).
+| البند | الحالة | الدليل |
+|---|---|---|
+| P1.a Persistence + Optimistic + Conflict | ✅ منجز | `planning_boards`/`planning_elements` + `locked_by` + `conflictResolver.ts` + history table |
+| P1.b Collaboration (cursors/presence/locks/realtime indicator/backoff/history) | ✅ منجز | `usePlanningRealtime.ts` + `RealtimeStatusBadge` + `ElementHistoryPanel` |
+| P1.c Smart Docs كنوع مستقل | 🟡 جزئي | enum يحتوي `smart_doc` + `SmartDocRenderer` موجود + `schema_version` على `planning_elements`. **ناقص:** عدم وجود جدول فرعي `planning_smart_docs` منفصل (المحتوى يُخزَّن داخل `content jsonb`) |
+| P1.d Canvas RBAC | 🟡 جزئي | `evaluateCommandAuthorization` يمنع viewer/guest من أمر `canvas.smart-elements.generate` فقط. **ناقص:** لا يوجد أمر `canvas.smart-doc.create` ولا تكامل مع AI calls خارج هذا الأمر |
 
----
+### قرار معماري
 
-## الجزء 1 — استيراد الحزمة كمرجع (كما سبق)
+**P1.c:** الإبقاء على `content jsonb` داخل `planning_elements` بدلاً من إنشاء جدول `planning_smart_docs` منفصل، لأن:
+- `schema_version` موجود أصلاً على مستوى العنصر
+- يبسّط Realtime sync (channel واحد)
+- يتطابق مع نمط باقي أنواع العناصر
 
-- نسخ `soabra-conversion-package.zip` إلى `docs/reference/soabra-package/` مع `README.md` ومصفوفة تطابق.
-- إضافة الوثائق الجديدة المرفوعة إلى `docs/reference/inspired-specs/` لتُستخدم كعقد وظيفي مكمّل للحزمة.
-- إضافة قسم "Reference Contracts" داخل `docs/EXECUTION_ROADMAP.md`.
+سنوثّق العقد ونضيف Zod schema للتحقق وقت الكتابة/القراءة لضمان سلامة بنية Smart Doc.
 
----
+### خطوات التنفيذ
 
-## الجزء 2 — خطة التنفيذ المُعاد ضبطها
+#### 1. توثيق عقد Smart Doc (P1.c)
+- إنشاء `src/features/planning/elements/smart-doc/contract.ts`:
+  - `SmartDocContentSchema` (Zod) يصف `blocks`, `version`, `format` (`rich-text` | `spreadsheet`)
+  - `SMART_DOC_SCHEMA_VERSION = 1`
+  - دالة `validateSmartDocContent()` + `migrateSmartDocContent()` للترقية المستقبلية
+- تطبيق التحقق داخل `planningBoards.service.ts` عند `create/update` لعناصر من نوع `smart_doc`
 
-### مبادئ حاكمة جديدة (مأخوذة من الـ Rulings)
+#### 2. توسيع سياسة الأذونات (P1.d)
+- في `authorization.ts` إضافة الأوامر:
+  - `canvas.smart-doc.create`
+  - `canvas.smart-doc.ai-assist`
+- نفس قاعدة الأدوار: `host`/`editor` فقط، `viewer`/`guest` مرفوض
+- ربط `commandGateway` بنقطتي الإدخال:
+  - زر إنشاء Smart Doc في `SmartDocToolZone`
+  - استدعاءات `useSmartElementAI` (AI Gateway)
 
-1. **اللوحة ليست هويّة المنتج** (UR-001) — لا نوسّع canvas-first؛ نضمن أنها أداة قوية ضمن نظام أوسع.
-2. **Collaborative-by-design حاكم** (UR-005) — Realtime presence + cursors + locks ليست اختيارية في P1.
-3. **Smart Documents حاكمة** (UR-006) — يجب أن تُحفَظ كنوع عنصر مستقل من اليوم الأول.
-4. **Semantic Connectors / Smart Roots حاكمة** (UR-007) — قد تحمل دلالة تنفيذية، وليست خطوطًا فقط.
-5. **Planning→Execution Conversion حاكمة** (UR-008) — هي قلب P2.
-6. **RBAC داخل اللوحة ضيّق ومباشر** (UR-009) — يختلف عن RBAC المنصة الواسع؛ Visitor محجوب عن AI واللوحة.
-7. **Tech-debt مُعترف به** (UR-003, UR-004) — Bounding box ومعالجة النص والـ Smart Pen ليست نهائية؛ خطة P تُبقي حدودها مرئية.
+#### 3. واجهة المنع للمستخدم
+- إضافة toast عربي عند الرفض: "هذا الإجراء غير مصرّح لدورك على هذه اللوحة"
+- إخفاء/تعطيل زر Smart Doc في `BottomToolbar` عندما `currentBoardRole ∈ {viewer, guest}`
+- نفس المعاملة لزر Smart Elements AI
 
----
+#### 4. اختبارات قبول
+- وحدة: اختبار `evaluateCommandAuthorization` لأوامر Smart Doc لكل دور
+- وحدة: `SmartDocContentSchema` يرفض البنية غير الصالحة
+- يدوي: تسجيل دخول كـ viewer على لوحة وملاحظة:
+  - زر Smart Doc معطّل
+  - محاولة الاستدعاء البرمجي → toast منع + سجل audit بـ `authz.denied`
 
-### P0 — أساسيات
+#### 5. توثيق
+- تحديث `.lovable/plan.md` لوسم P1 بالكامل ✅
+- إضافة سطر في `docs/CANVAS_LIMITATIONS.md` يوضح قرار "Smart Doc داخل `content jsonb` بدلاً من جدول فرعي"
 
-- استيراد حزمة المرجع + الوثائق الملهمة.
-- مصفوفة DoD لكل لوحة من `system-map.yaml`.
-- توثيق رسمي في `docs/CANVAS_LIMITATIONS.md` لقيود UR-003 و UR-004 (Bounding box, text handling, Smart Pen = annotation-only).
+### تفاصيل تقنية
 
----
+- ملفات ستُعدَّل/تُنشأ:
+  - `src/features/planning/elements/smart-doc/contract.ts` (جديد)
+  - `src/features/planning/domain/policies/authorization.ts` (توسيع union للأوامر)
+  - `src/features/planning/ui/panels/SmartDocToolZone.tsx` (gate + disable)
+  - `src/features/planning/ui/toolbars/BottomToolbar.tsx` (disable visual)
+  - `src/hooks/useSmartElementAI.ts` (تمرير role + gate)
+  - `src/services/central/planningBoards.service.ts` (تحقق Zod عند smart_doc)
+  - `.lovable/plan.md` + `docs/CANVAS_LIMITATIONS.md`
 
-### P1 — Planning Persistence + Realtime + Smart Docs  
+- لا تتطلب الخطة أي migration على قاعدة البيانات (البنية الحالية كافية).
 
-**ما تغيّر:** P1 لم يعد مجرد "حفظ اللوحة"؛ بل ثلاثة أعمدة حاكمة:
-
-#### P1.a — Persistence
-
-- Migration: `planning_boards`, `planning_elements` (مطابق Prisma المرجعي) + RLS.
-- إضافة `element_type` enum يشمل: `sticky | shape | text | smart_doc | interactive_sheet | mindmap_node | frame | connector` (موسّع وفق وثيقة Miro §12).
-- حقل `locked_by uuid` على `planning_elements` لدعم Optimistic Locking (UR-005).
-- خدمة `src/services/central/planningBoards.service.ts` + ربط `usePlanningStore` بحفظ تدريجي (debounced).
-
-#### P1.b — Collaboration (Governing — UR-005)
-
-- إعادة استخدام `RealtimeSyncManager` الحالي + إضافة:
-  - **Live cursors** عبر Supabase Realtime broadcast channel.
-  - **Presence indicators** في أعلى اللوحة (avatars).
-  - **Element locking** عند بدء التحرير، فك تلقائي بعد خمول 30 ث.
-- معالجة Edge: قائمة انتظار للتعديلات عند انقطاع الشبكة + إعادة تطبيق (وثيقة Miro §4).
-
-#### P1.c — Smart Documents كنوع عنصر مستقل (Governing — UR-006)
-
-- جدول فرعي `planning_smart_docs` (id, element_id FK, content jsonb, schema_version).
-- مكوّن `SmartDocRenderer` يدعم Rich Text + Spreadsheet (وثيقة Miro §7).
-- لا تُخزَّن وثائق ذكية كنص ثابت — بل ككائنات مرتبطة بـ `planning_elements`.
-
-#### P1.d — Canvas-scoped RBAC (UR-009)
-
-- داخل اللوحة: `host | editor | viewer` فقط (موجود).
-- منع `guest` و `viewer` من استدعاء AI أو إنشاء Smart Docs (تحقّق في `commandGateway.ts`).
-- اعتراض الطلب في `evaluateCommandAuthorization` للأدوار غير المخوّلة.
-
-**معايير القبول:**
-
-- لوحتان تتزامنان عبر متصفّحَين بـ < 500ms latency.
-- Smart Doc يُحفَظ ويُسترجَع مع `schema_version`.
-- Visitor يرى رسالة "غير مصرّح" عند محاولة استدعاء AI.
+### معايير القبول النهائية لإغلاق P1
+- [x] لوحتان تتزامنان عبر Realtime بـ optimistic + conflict resolution
+- [ ] Smart Doc يُحفَظ ويُسترجَع مع `schema_version` معتمد عبر Zod
+- [ ] Viewer يرى زر Smart Doc معطّلًا + toast "غير مصرّح" عند المحاولة
+- [ ] سجل `audit_events` يحتوي قرار `authz.denied` للحالات المرفوضة
 
 ---
 
-### P2 — Convert / Expand / Smart Connectors
+## P1 — حالة الإغلاق (تحديث)
 
-**ما تغيّر جذريًا:** P2 لم يعد "زر تحويل لوحة كاملة إلى مشروع"؛ بل ثلاثة محاور وفق وثيقة ClickUp:
+- ✅ P1.a — منجز سابقًا.
+- ✅ P1.b — منجز سابقًا.
+- ✅ **P1.c — مُغلَق**: عقد Zod `SmartDocContentSchema` v1 في `src/features/planning/elements/smart-doc/contract.ts`، والتحقق مدمج في `planningBoards.service.ts` (create/update). `schema_version` يُضبط تلقائيًا للعناصر من نوع `smart_doc`/`interactive_sheet`.
+- ✅ **P1.d — مُغلَق**: `evaluateCommandAuthorization` يدعم الآن `canvas.smart-doc.create` و`canvas.smart-doc.ai-assist` بنفس قاعدة الأدوار (host/editor فقط). `SmartDocToolZone` يعطّل الأزرار للأدوار `viewer`/`guest` ويعرض toast عربي عند المحاولة. RLS على `planning_elements` يبقى الضمان الخلفي.
 
-#### P2.a — Smart Conversion (UR-008 + UR-010)
-
-- Edge function جديدة `planning-convert-element`:
-  - Input: `{ elementId, content, contextElements[] }`.
-  - تستدعي Lovable AI Gateway لاقتراح `suggestedType ∈ {project, task, finance_box, hr_box, contract, opportunity}`.
-  - Fallback يدوي إذا فشل الاقتراح (قائمة منسدلة).
-- عند التأكيد:
-  - إنشاء السجل الفعلي في الجدول المعني (`projects`, `tasks`, ...).
-  - استبدال `planning_element` ببطاقة من نوع `entity_card` تشير إلى السجل (`linked_entity_type`, `linked_entity_id`).
-  - Event في `event_outbox` بنوع `planning.element.converted`.
-
-#### P2.b — Expandable Entity Cards (UR-008)
-
-- مكوّن `EntityCardRenderer` يتكامل مع `framer-motion` `layoutId` (وثيقة ClickUp §قالب):
-  - بطاقة مشروع → توسيع يفتح `ProjectManagementBoard` كاملًا في Modal/Drawer.
-  - بطاقة مهمة → يفتح `TaskDetailPanel`.
-  - بطاقة صندوق مالي/HR → يفتح "وضع التنفيذ الوظيفي" المخصّص لذلك الصندوق.
-- على الموبايل: Full-Screen بدلًا من Modal (responsive rule §10).
-
-#### P2.c — Smart Root Connectors (UR-007 — Governing)
-
-- استبدال الـ MindMap connectors الحالية بنظام موحّد `smart_root_connectors`:
-  - Migration: جدول `planning_connectors (id, board_id, source_id, target_id, source_anchor, target_anchor, style, semantic_type, execution_payload jsonb)`.
-  - `semantic_type ∈ {flow, dependency, blocks, derives_from, financial_link}` — حاكم وفق UR-007.
-  - `execution_payload`: قواعد تنفيذية اختيارية (مثل: "عند إكمال source، حدّث target").
-- Cascading delete: حذف عنصر يحذف موصلاته (Edge §25).
-- Anchors تظهر عند Hover/Select فقط (إخفاء على الموبايل).
-- استخدام SVG `<path>` بمسارات Bezier/Orthogonal.
-
-#### P2.d — Execution Tools Picker (UR-010)
-
-- شريط جانبي جديد `ExecutionToolsPanel` يتيح "جلب صندوق من قسم آخر إلى اللوحة":
-  - يستعلم `has_permission()` لكل صندوق قبل عرضه (Business Rule §29).
-  - عند الإسقاط، يُنشأ `planning_element` من نوع `entity_card` مرتبط بالسجل الفعلي.
-
-#### P2.e — Workflow Layer Hook (UR-010)
-
-- Stub فقط في P2: جدول `planning_workflows` + خدمة بدون UI (يكتمل في P-Later).
-- يسمح بتسجيل: "عندما يصل connector من X إلى Y، نفّذ Z".
-
-**معايير القبول:**
-
-- تحويل ملاحظة "حملة إطلاق" إلى مشروع فعلي في `projects` خلال خطوة واحدة.
-- توسيع بطاقة مشروع يفتح لوحة الإدارة الكاملة دون مغادرة اللوحة.
-- موصل `dependency` بين مهمتين ينعكس في `tasks.dependencies`.
-- Visitor لا يرى زر "تحويل ذكي".
-
----
-
-### P3 — Operations Split
-
-- فصل تبويب Operations كلوحة مستقلة وربطها بـ `projects` + كيانات تشغيلية.
-
-### P4 — Archive + Knowledge (أسابيع 9-10) — بدون تغيير
-
-- Migrations: `archive_assets`, `knowledge_assets` + Storage buckets.
-
-### P5 — Platform-Level RBAC الكامل (أسبوع 11) — بدون تغيير
-
-- توسيع `app_role` لـ 12 دور + ABAC في RLS.
-- ملاحظة: لا يلغي UR-009 (RBAC داخل اللوحة يبقى ضيّقًا).
-
-### P6 — Contracts Enforcement (أسبوع 12) — بدون تغيير
-
-- CI checks ضد OpenAPI/AsyncAPI/JSON-Schemas من الحزمة.
-
----
-
-## تغييرات على EXECUTION_ROADMAP.md
-
-- إضافة جدول "Governing Rulings Compliance" يربط كل P# بـ UR-### المعنية.
-- إضافة `docs/CANVAS_LIMITATIONS.md` كملحق رسمي.
-
-## مخاطر مُعالَجة
-
-- **Tech-debt الـ Bounding Box و Text Handling (UR-003):** لا نخفيها؛ تظل مرئية في `CANVAS_LIMITATIONS.md` ويُعمَل عليها في موجة منفصلة (P-Later).
-- **Smart Pen (UR-004):** يبقى "annotation only" — لا أزرار "تحويل لمهمة" من قلم.
-- **RBAC مزدوج:** Canvas RBAC (UR-009) منفصل تقنيًا عن Platform RBAC (P5).
-
-## تأكيد ما لم يتغيّر
-
-- P1.a (Persistence) كان موجودًا في النسخة السابقة — أُضيف إليه فقط P1.b/c/d.
-- P2 كان "تحويل لوحة" مبسّط — أصبح ثلاثيًا (Convert + Expand + Smart Roots) ليطابق وثيقتَي ClickUp + الـ Rulings.
+**حالة P1**: ✅ مكتمل.
