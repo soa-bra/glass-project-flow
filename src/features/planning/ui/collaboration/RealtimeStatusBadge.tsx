@@ -34,25 +34,25 @@ const STATUS_META: Record<
   RealtimeConnectionStatus,
   { label: string; dotClass: string; icon: typeof Wifi }
 > = {
-  idle: { label: "غير متصل", dotClass: "bg-sb-ink/30", icon: WifiOff },
+  idle: { label: "غير متصل", dotClass: "bg-slate-400", icon: WifiOff },
   connecting: {
     label: "جارٍ الاتصال",
-    dotClass: "bg-sb-accent-yellow animate-pulse",
+    dotClass: "bg-amber-400 animate-pulse",
     icon: Loader2,
   },
   connected: {
     label: "متصل مباشر",
-    dotClass: "bg-sb-accent-green",
+    dotClass: "bg-emerald-500",
     icon: Wifi,
   },
   disconnected: {
     label: "انقطع الاتصال",
-    dotClass: "bg-sb-ink/40",
+    dotClass: "bg-slate-400",
     icon: WifiOff,
   },
   error: {
     label: "خطأ في الاتصال",
-    dotClass: "bg-sb-accent-red",
+    dotClass: "bg-red-500",
     icon: AlertTriangle,
   },
 };
