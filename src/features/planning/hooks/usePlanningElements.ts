@@ -32,6 +32,7 @@ export interface UsePlanningElementsResult {
   peersById: ReturnType<typeof usePlanningRealtime>["peersById"];
   selfUserId: string | null;
   broadcastCursor: (x: number, y: number) => void;
+  updateSelfPresence: ReturnType<typeof usePlanningRealtime>["updateSelfPresence"];
   isConnected: boolean;
 }
 
