@@ -67,7 +67,13 @@ export function usePlanningRealtime({
 }: UsePlanningRealtimeOptions) {
   const [peers, setPeers] = useState<Record<string, PresencePeer>>({});
   const [selfUserId, setSelfUserId] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<
+    "idle" | "connecting" | "connected" | "disconnected" | "error"
+  >("idle");
+  const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
+
+  const markSynced = useCallback(() => setLastSyncAt(Date.now()), []);
   const lastCursorAtRef = useRef(0);
   const selfStateRef = useRef<PresencePeer | null>(null);
 
