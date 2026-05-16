@@ -129,7 +129,17 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const layers = useCanvasStore((state) => state.layers);
   const elementLayer = layers.find((layer) => layer.id === element.layerId);
   const isVisible = element.visible !== false && elementLayer?.visible !== false;
-  const isLocked = element.locked || elementLayer?.locked;
+  const currentUserId = useCollaborationStore((state) => state.currentUserId);
+  const participants = useCollaborationStore((state) => state.participants);
+  const remoteLockedBy = (element as any).lockedBy as string | null | undefined;
+  const isLockedByOther = !!remoteLockedBy && remoteLockedBy !== currentUserId;
+  const isLockedBySelf = !!remoteLockedBy && remoteLockedBy === currentUserId;
+  const isLayerLocked = !!elementLayer?.locked;
+  const isLocked = isLayerLocked || isLockedByOther;
+  const lockHolderName = useMemo(() => {
+    if (!remoteLockedBy) return null;
+    return participants.find((p) => p.id === remoteLockedBy)?.name ?? 'مستخدم آخر';
+  }, [remoteLockedBy, participants]);
   const smartRenderableType = useMemo(() => {
     if (element.type === 'smart') {
       return (element as any).smartType || element.data?.smartType || element.metadata?.smartType || null;
