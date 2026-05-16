@@ -15,6 +15,8 @@ export { useBoardSaveState, formatBoardSaveStatusLabel } from "./useBoardSaveSta
 export { useElementLock } from "./useElementLock";
 export { useElementLockState } from "./useElementLockState";
 export type { ElementLockState, ElementLockStatus } from "./useElementLockState";
+export { useElementLockAcquire } from "./useElementLockAcquire";
+export type { LockFailureInfo, AcquireFn } from "./useElementLockAcquire";
 
 export { usePlanningElements } from "./usePlanningElements";
 export type { UsePlanningElementsResult } from "./usePlanningElements";
