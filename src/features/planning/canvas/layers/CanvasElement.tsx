@@ -353,6 +353,28 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         pointerEvents: isLocked ? 'none' : 'auto',
       }}
     >
+      {remoteLockedBy && (
+        <div
+          role="status"
+          aria-live="polite"
+          title={
+            isLockedByOther
+              ? `مقفل حاليًا — يحرّره ${lockHolderName}`
+              : 'أنت تحرّر هذا العنصر'
+          }
+          className={`absolute top-1 start-1 z-10 inline-flex items-center gap-1 rounded-full border ps-1.5 pe-2 py-0.5 text-[10px] font-medium shadow-sm pointer-events-auto ${
+            isLockedByOther
+              ? 'bg-destructive/10 text-destructive border-destructive/30'
+              : 'bg-primary/10 text-primary border-primary/30'
+          }`}
+          dir="rtl"
+        >
+          <Lock className="h-2.5 w-2.5" aria-hidden />
+          <span className="max-w-[120px] truncate">
+            {isLockedByOther ? lockHolderName : 'أنت'}
+          </span>
+        </div>
+      )}
       {element.type === 'text' && (
         <div {...selectionAnchorProps} className="w-full h-full">
           {isEditingThisText ? (
