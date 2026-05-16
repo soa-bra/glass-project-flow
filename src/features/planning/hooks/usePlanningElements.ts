@@ -222,6 +222,9 @@ export function usePlanningElements(
       patch: PlanningElementUpdateInput,
     ): Promise<PlanningElement> => {
       let previousRow: PlanningElement | undefined;
+      // Stamp pending fields BEFORE applying so concurrent realtime echoes
+      // arriving during the await see the pending timestamps.
+      recordPendingPatch(id, patch);
       setElements((prev) => {
         const idx = prev.findIndex((e) => e.id === id);
         if (idx === -1) return prev;
@@ -235,22 +238,42 @@ export function usePlanningElements(
         return sortElements(next);
       });
       if (!previousRow) {
+        pendingPatchesRef.current.delete(id);
         throw new Error(`Element ${id} not found in local state`);
       }
       try {
         const saved = await PlanningBoardsService.updatePlanningElement(id, patch);
         markConfirmed(saved.id);
+        // Merge the server response against any still-pending newer edits
+        // (e.g. the user kept dragging while the previous patch was in flight).
         setElements((prev) => {
           const idx = prev.findIndex((e) => e.id === id);
-          if (idx === -1) return sortElements([...prev, saved]);
+          const local = idx === -1 ? undefined : prev[idx];
+          const pending = pendingPatchesRef.current.get(id);
+          const { next: merged } = mergePlanningElement(local, saved, pending);
+          if (idx === -1) return sortElements([...prev, merged]);
           const next = prev.slice();
-          next[idx] = saved;
+          next[idx] = merged;
           return sortElements(next);
         });
+        settlePendingPatch(id, saved.updated_at);
         return saved;
       } catch (e) {
-        // rollback
+        // rollback both state and pending stamps for the failed fields.
         const snapshot = previousRow;
+        const pending = pendingPatchesRef.current.get(id);
+        if (pending) {
+          for (const field of MERGEABLE_FIELDS) {
+            if ((patch as Record<string, unknown>)[field] !== undefined) {
+              delete pending[field];
+            }
+          }
+          if (Object.keys(pending).length === 0) {
+            pendingPatchesRef.current.delete(id);
+          } else {
+            pendingPatchesRef.current.set(id, pending);
+          }
+        }
         setElements((prev) => {
           const idx = prev.findIndex((el) => el.id === id);
           if (idx === -1) return sortElements([...prev, snapshot]);
