@@ -30,3 +30,11 @@ export type { PlanningStore } from './state/store';
 
 // Integration Layer
 export * from './integration';
+
+// Hooks Layer
+export { usePlanningElements } from './hooks/usePlanningElements';
+export { usePlanningRealtime } from './hooks/usePlanningRealtime';
+export { useElementLock } from './hooks/useElementLock';
+export type { PresencePeer } from './hooks/usePlanningRealtime';
+export type { UsePlanningElementsResult } from './hooks/usePlanningElements';
+
