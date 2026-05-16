@@ -71,7 +71,10 @@ export function usePlanningRealtime({
     "idle" | "connecting" | "connected" | "disconnected" | "error"
   >("idle");
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryAttemptRef = useRef(0);
 
   const markSynced = useCallback(() => setLastSyncAt(Date.now()), []);
   const lastCursorAtRef = useRef(0);
