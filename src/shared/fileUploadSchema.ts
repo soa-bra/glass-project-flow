@@ -122,7 +122,7 @@ export const formatFileSize = (bytes: number) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
-export const getSharedProjectFileType = (mimeType: string) => {
+export const getSharedProjectFileType = (mimeType: string): 'archive' | 'audio' | 'document' | 'image' | 'other' | 'video' => {
   if (mimeType.startsWith('image/')) return 'image';
   if (mimeType.startsWith('video/')) return 'video';
   if (mimeType.startsWith('audio/')) return 'audio';
