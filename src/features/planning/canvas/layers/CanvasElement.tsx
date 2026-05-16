@@ -136,10 +136,14 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const isLockedBySelf = !!remoteLockedBy && remoteLockedBy === currentUserId;
   const isLayerLocked = !!elementLayer?.locked;
   const isLocked = isLayerLocked || isLockedByOther;
-  const lockHolderName = useMemo(() => {
+  const lockHolder = useMemo(() => {
     if (!remoteLockedBy) return null;
-    return participants.find((p) => p.id === remoteLockedBy)?.name ?? 'مستخدم آخر';
+    return participants.find((p) => p.id === remoteLockedBy) ?? null;
   }, [remoteLockedBy, participants]);
+  const lockHolderName = lockHolder?.name ?? (remoteLockedBy ? 'مستخدم آخر' : null);
+  const lockHolderColor = lockHolder?.color ?? 'hsl(var(--accent-red))';
+  const lockHolderAvatar = lockHolder?.avatar;
+  const lockHolderInitial = (lockHolderName ?? '?').trim().charAt(0).toUpperCase() || '?';
   const smartRenderableType = useMemo(() => {
     if (element.type === 'smart') {
       return (element as any).smartType || element.data?.smartType || element.metadata?.smartType || null;
@@ -362,17 +366,37 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
               ? `مقفل حاليًا — يحرّره ${lockHolderName}`
               : 'أنت تحرّر هذا العنصر'
           }
-          className={`absolute top-1 start-1 z-10 inline-flex items-center gap-1 rounded-full border ps-1.5 pe-2 py-0.5 text-[10px] font-medium shadow-sm pointer-events-auto ${
+          className={`absolute -top-3 start-1 z-10 inline-flex items-center gap-1.5 rounded-full border ps-0.5 pe-2 py-0.5 text-[10px] font-medium shadow-sm pointer-events-auto backdrop-blur ${
             isLockedByOther
               ? 'bg-destructive/10 text-destructive border-destructive/30'
               : 'bg-primary/10 text-primary border-primary/30'
           }`}
           dir="rtl"
         >
-          <Lock className="h-2.5 w-2.5" aria-hidden />
-          <span className="max-w-[120px] truncate">
-            {isLockedByOther ? lockHolderName : 'أنت'}
+          {isLockedByOther ? (
+            lockHolderAvatar ? (
+              <img
+                src={lockHolderAvatar}
+                alt=""
+                className="h-4 w-4 rounded-full object-cover ring-1"
+                style={{ borderColor: lockHolderColor, boxShadow: `0 0 0 1px ${lockHolderColor}` }}
+              />
+            ) : (
+              <span
+                aria-hidden
+                className="h-4 w-4 rounded-full inline-flex items-center justify-center text-[9px] font-semibold text-white"
+                style={{ backgroundColor: lockHolderColor }}
+              >
+                {lockHolderInitial}
+              </span>
+            )
+          ) : (
+            <Lock className="h-3 w-3 ms-1" aria-hidden />
+          )}
+          <span className="max-w-[140px] truncate">
+            {isLockedByOther ? lockHolderName : 'أنت تحرّر'}
           </span>
+          {isLockedByOther && <Lock className="h-2.5 w-2.5 opacity-70" aria-hidden />}
         </div>
       )}
       {element.type === 'text' && (
