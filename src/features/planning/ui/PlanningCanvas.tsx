@@ -35,7 +35,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   useBoardCanvasLifecycle(board);
 
-  const { peers } = usePlanningStoreSync(board.id, selfName);
+  const { peers, connectionStatus, lastSyncAt } = usePlanningStoreSync(board.id, selfName);
 
   useEffect(() => {
     const host = canvasHostRef.current;
@@ -96,7 +96,15 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <CanvasToolbar board={board} onBack={() => setCurrentBoard(null)} onOpenAI={commandBar.open} peers={peers} selfName={selfName} />
+      <CanvasToolbar
+        board={board}
+        onBack={() => setCurrentBoard(null)}
+        onOpenAI={commandBar.open}
+        peers={peers}
+        selfName={selfName}
+        realtimeStatus={connectionStatus}
+        lastSyncAt={lastSyncAt}
+      />
       <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
         <div data-board-frame="true" className="flex-1 relative overflow-hidden">
           <InfiniteCanvas boardId={board.id} />

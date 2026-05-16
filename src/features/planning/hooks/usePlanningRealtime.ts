@@ -67,7 +67,13 @@ export function usePlanningRealtime({
 }: UsePlanningRealtimeOptions) {
   const [peers, setPeers] = useState<Record<string, PresencePeer>>({});
   const [selfUserId, setSelfUserId] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<
+    "idle" | "connecting" | "connected" | "disconnected" | "error"
+  >("idle");
+  const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
+
+  const markSynced = useCallback(() => setLastSyncAt(Date.now()), []);
   const lastCursorAtRef = useRef(0);
   const selfStateRef = useRef<PresencePeer | null>(null);
 
@@ -90,7 +96,12 @@ export function usePlanningRealtime({
 
   // Open / tear down channel when board or user changes.
   useEffect(() => {
-    if (!boardId || !selfUserId) return;
+    if (!boardId || !selfUserId) {
+      setConnectionStatus("idle");
+      return;
+    }
+
+    setConnectionStatus("connecting");
 
     const channel = supabase.channel(`planning:${boardId}`, {
       config: { presence: { key: selfUserId } },
@@ -106,7 +117,10 @@ export function usePlanningRealtime({
           table: "planning_elements",
           filter: `board_id=eq.${boardId}`,
         },
-        (payload) => cbRef.current.onElementInsert?.(payload.new as PlanningElement),
+        (payload) => {
+          markSynced();
+          cbRef.current.onElementInsert?.(payload.new as PlanningElement);
+        },
       )
       .on(
         "postgres_changes",
@@ -116,7 +130,10 @@ export function usePlanningRealtime({
           table: "planning_elements",
           filter: `board_id=eq.${boardId}`,
         },
-        (payload) => cbRef.current.onElementUpdate?.(payload.new as PlanningElement),
+        (payload) => {
+          markSynced();
+          cbRef.current.onElementUpdate?.(payload.new as PlanningElement);
+        },
       )
       .on(
         "postgres_changes",
@@ -128,7 +145,10 @@ export function usePlanningRealtime({
         },
         (payload) => {
           const id = (payload.old as { id?: string } | null)?.id;
-          if (id) cbRef.current.onElementDelete?.(id);
+          if (id) {
+            markSynced();
+            cbRef.current.onElementDelete?.(id);
+          }
         },
       )
       .on("presence", { event: "sync" }, () => {
@@ -139,6 +159,7 @@ export function usePlanningRealtime({
           if (meta) next[key] = { ...meta, lastSeen: Date.now() };
         }
         setPeers(next);
+        markSynced();
       })
       .on("broadcast", { event: "cursor" }, ({ payload }) => {
         const p = payload as CursorBroadcastPayload;
@@ -158,6 +179,8 @@ export function usePlanningRealtime({
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
+          setConnectionStatus("connected");
+          markSynced();
           const base: PresencePeer = {
             user_id: selfUserId,
             display_name: selfDisplayName ?? "متعاون",
@@ -167,6 +190,10 @@ export function usePlanningRealtime({
           };
           selfStateRef.current = base;
           await channel.track(base);
+        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+          setConnectionStatus("error");
+        } else if (status === "CLOSED") {
+          setConnectionStatus("disconnected");
         }
       });
 
@@ -175,8 +202,9 @@ export function usePlanningRealtime({
       channelRef.current = null;
       selfStateRef.current = null;
       setPeers({});
+      setConnectionStatus("disconnected");
     };
-  }, [boardId, selfUserId, selfDisplayName]);
+  }, [boardId, selfUserId, selfDisplayName, markSynced]);
 
   /** Throttled cursor broadcast (call from pointermove). */
   const broadcastCursor = useCallback((x: number, y: number) => {
@@ -216,6 +244,15 @@ export function usePlanningRealtime({
     selfUserId,
     broadcastCursor,
     updateSelfPresence,
-    isConnected: !!channelRef.current,
+    isConnected: connectionStatus === "connected",
+    connectionStatus,
+    lastSyncAt,
   };
 }
+
+export type RealtimeConnectionStatus =
+  | "idle"
+  | "connecting"
+  | "connected"
+  | "disconnected"
+  | "error";
