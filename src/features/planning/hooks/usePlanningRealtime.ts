@@ -71,7 +71,10 @@ export function usePlanningRealtime({
     "idle" | "connecting" | "connected" | "disconnected" | "error"
   >("idle");
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const retryAttemptRef = useRef(0);
 
   const markSynced = useCallback(() => setLastSyncAt(Date.now()), []);
   const lastCursorAtRef = useRef(0);
@@ -94,117 +97,195 @@ export function usePlanningRealtime({
     };
   }, []);
 
-  // Open / tear down channel when board or user changes.
+  // Open / tear down channel when board or user changes — with auto re-subscribe + exponential backoff.
   useEffect(() => {
     if (!boardId || !selfUserId) {
       setConnectionStatus("idle");
       return;
     }
 
-    setConnectionStatus("connecting");
+    let disposed = false;
 
-    const channel = supabase.channel(`planning:${boardId}`, {
-      config: { presence: { key: selfUserId } },
-    });
-    channelRef.current = channel;
+    const clearRetry = () => {
+      if (retryTimerRef.current) {
+        clearTimeout(retryTimerRef.current);
+        retryTimerRef.current = null;
+      }
+    };
 
-    channel
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "planning_elements",
-          filter: `board_id=eq.${boardId}`,
-        },
-        (payload) => {
-          markSynced();
-          cbRef.current.onElementInsert?.(payload.new as PlanningElement);
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "planning_elements",
-          filter: `board_id=eq.${boardId}`,
-        },
-        (payload) => {
-          markSynced();
-          cbRef.current.onElementUpdate?.(payload.new as PlanningElement);
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "planning_elements",
-          filter: `board_id=eq.${boardId}`,
-        },
-        (payload) => {
-          const id = (payload.old as { id?: string } | null)?.id;
-          if (id) {
-            markSynced();
-            cbRef.current.onElementDelete?.(id);
-          }
-        },
-      )
-      .on("presence", { event: "sync" }, () => {
-        const state = channel.presenceState<PresencePeer>();
-        const next: Record<string, PresencePeer> = {};
-        for (const key of Object.keys(state)) {
-          const meta = state[key]?.[0];
-          if (meta) next[key] = { ...meta, lastSeen: Date.now() };
-        }
-        setPeers(next);
-        markSynced();
-      })
-      .on("broadcast", { event: "cursor" }, ({ payload }) => {
-        const p = payload as CursorBroadcastPayload;
-        if (!p?.user_id || p.user_id === selfUserId) return;
-        setPeers((prev) => {
-          const existing = prev[p.user_id];
-          if (!existing) return prev;
-          return {
-            ...prev,
-            [p.user_id]: {
-              ...existing,
-              cursor: { x: p.x, y: p.y },
-              lastSeen: p.t,
-            },
-          };
-        });
-      })
-      .subscribe(async (status) => {
-        if (status === "SUBSCRIBED") {
-          setConnectionStatus("connected");
-          markSynced();
-          const base: PresencePeer = {
-            user_id: selfUserId,
-            display_name: selfDisplayName ?? "متعاون",
-            color: colorFromId(selfUserId),
-            editing_element_id: null,
-            lastSeen: Date.now(),
-          };
-          selfStateRef.current = base;
-          await channel.track(base);
-        } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-          setConnectionStatus("error");
-        } else if (status === "CLOSED") {
-          setConnectionStatus("disconnected");
-        }
+    /** Exponential backoff: 1s, 2s, 4s, 8s, 16s, capped at 30s, with ±20% jitter. */
+    const computeBackoff = (attempt: number) => {
+      const base = Math.min(30_000, 1_000 * Math.pow(2, attempt));
+      const jitter = base * (0.8 + Math.random() * 0.4);
+      return Math.round(jitter);
+    };
+
+    const scheduleReconnect = () => {
+      if (disposed) return;
+      clearRetry();
+      const attempt = retryAttemptRef.current;
+      const delay = computeBackoff(attempt);
+      retryAttemptRef.current = attempt + 1;
+      setRetryAttempt(retryAttemptRef.current);
+      retryTimerRef.current = setTimeout(() => {
+        if (disposed) return;
+        // Tear down current channel before re-subscribing.
+        const prev = channelRef.current;
+        if (prev) void supabase.removeChannel(prev);
+        channelRef.current = null;
+        connect();
+      }, delay);
+    };
+
+    const connect = () => {
+      if (disposed) return;
+      setConnectionStatus("connecting");
+
+      const channel = supabase.channel(`planning:${boardId}`, {
+        config: { presence: { key: selfUserId } },
       });
+      channelRef.current = channel;
+
+      channel
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "planning_elements",
+            filter: `board_id=eq.${boardId}`,
+          },
+          (payload) => {
+            markSynced();
+            cbRef.current.onElementInsert?.(payload.new as PlanningElement);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "planning_elements",
+            filter: `board_id=eq.${boardId}`,
+          },
+          (payload) => {
+            markSynced();
+            cbRef.current.onElementUpdate?.(payload.new as PlanningElement);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "planning_elements",
+            filter: `board_id=eq.${boardId}`,
+          },
+          (payload) => {
+            const id = (payload.old as { id?: string } | null)?.id;
+            if (id) {
+              markSynced();
+              cbRef.current.onElementDelete?.(id);
+            }
+          },
+        )
+        .on("presence", { event: "sync" }, () => {
+          const state = channel.presenceState<PresencePeer>();
+          const next: Record<string, PresencePeer> = {};
+          for (const key of Object.keys(state)) {
+            const meta = state[key]?.[0];
+            if (meta) next[key] = { ...meta, lastSeen: Date.now() };
+          }
+          setPeers(next);
+          markSynced();
+        })
+        .on("broadcast", { event: "cursor" }, ({ payload }) => {
+          const p = payload as CursorBroadcastPayload;
+          if (!p?.user_id || p.user_id === selfUserId) return;
+          setPeers((prev) => {
+            const existing = prev[p.user_id];
+            if (!existing) return prev;
+            return {
+              ...prev,
+              [p.user_id]: {
+                ...existing,
+                cursor: { x: p.x, y: p.y },
+                lastSeen: p.t,
+              },
+            };
+          });
+        })
+        .subscribe(async (status) => {
+          if (disposed) return;
+          if (status === "SUBSCRIBED") {
+            setConnectionStatus("connected");
+            markSynced();
+            // Reset backoff on successful connection.
+            retryAttemptRef.current = 0;
+            setRetryAttempt(0);
+            clearRetry();
+            const base: PresencePeer = {
+              user_id: selfUserId,
+              display_name: selfDisplayName ?? "متعاون",
+              color: colorFromId(selfUserId),
+              editing_element_id: null,
+              lastSeen: Date.now(),
+            };
+            selfStateRef.current = base;
+            await channel.track(base);
+          } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+            setConnectionStatus("error");
+            scheduleReconnect();
+          } else if (status === "CLOSED") {
+            setConnectionStatus("disconnected");
+            scheduleReconnect();
+          }
+        });
+    };
+
+    // Re-subscribe when the browser comes back online or tab regains focus.
+    const handleOnline = () => {
+      if (disposed) return;
+      retryAttemptRef.current = 0;
+      setRetryAttempt(0);
+      clearRetry();
+      const prev = channelRef.current;
+      if (prev) void supabase.removeChannel(prev);
+      channelRef.current = null;
+      connect();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible" && connectionStatusRef.current !== "connected") {
+        handleOnline();
+      }
+    };
+
+    window.addEventListener("online", handleOnline);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    connect();
 
     return () => {
-      void supabase.removeChannel(channel);
+      disposed = true;
+      clearRetry();
+      window.removeEventListener("online", handleOnline);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      const ch = channelRef.current;
+      if (ch) void supabase.removeChannel(ch);
       channelRef.current = null;
       selfStateRef.current = null;
       setPeers({});
       setConnectionStatus("disconnected");
+      retryAttemptRef.current = 0;
+      setRetryAttempt(0);
     };
   }, [boardId, selfUserId, selfDisplayName, markSynced]);
+
+  // Mirror connection status into a ref for event handlers.
+  const connectionStatusRef = useRef(connectionStatus);
+  useEffect(() => {
+    connectionStatusRef.current = connectionStatus;
+  }, [connectionStatus]);
 
   /** Throttled cursor broadcast (call from pointermove). */
   const broadcastCursor = useCallback((x: number, y: number) => {
@@ -247,6 +328,7 @@ export function usePlanningRealtime({
     isConnected: connectionStatus === "connected",
     connectionStatus,
     lastSyncAt,
+    retryAttempt,
   };
 }
 
