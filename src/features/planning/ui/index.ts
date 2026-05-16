@@ -15,6 +15,9 @@ export * from './toolbars';
 // Widgets
 export * from './widgets';
 
+// Collaboration (presence avatars + live cursors)
+export * from './collaboration';
+
 // Main Pages
 export { default as PlanningCanvas } from './PlanningCanvas';
 export { default as PlanningEntryScreen } from './PlanningEntryScreen';
