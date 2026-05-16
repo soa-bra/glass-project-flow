@@ -284,9 +284,8 @@ export function usePlanningElements(
         throw e instanceof Error ? e : new Error(String(e));
       }
     },
-    [],
+    [recordPendingPatch, settlePendingPatch],
   );
-
   const deleteOptimistic = useCallback(
     async (id: string): Promise<void> => {
       let removed: PlanningElement | undefined;
