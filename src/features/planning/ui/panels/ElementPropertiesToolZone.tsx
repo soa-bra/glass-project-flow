@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Lock, Unlock, Eye, EyeOff, Trash2 } from 'lucide-react';
+import { ElementHistoryPanel } from '../collaboration/ElementHistoryPanel';
 
 export const ElementPropertiesToolZone: React.FC = () => {
   const { elements, selectedElementIds, updateElement, deleteElements, lockElements, unlockElements } = useCanvasStore();
