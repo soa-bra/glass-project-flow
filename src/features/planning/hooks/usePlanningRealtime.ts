@@ -69,6 +69,7 @@ export function usePlanningRealtime({
   const [selfUserId, setSelfUserId] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastCursorAtRef = useRef(0);
+  const selfStateRef = useRef<PresencePeer | null>(null);
 
   // Stable refs for change callbacks (avoid re-subscribing on each render).
   const cbRef = useRef({ onElementInsert, onElementUpdate, onElementDelete });
