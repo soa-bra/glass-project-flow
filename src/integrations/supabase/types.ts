@@ -864,6 +864,107 @@ export type Database = {
         }
         Relationships: []
       }
+      planning_boards: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          settings: Json
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          settings?: Json
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          settings?: Json
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      planning_elements: {
+        Row: {
+          board_id: string
+          content: Json
+          created_at: string
+          created_by: string
+          element_type: Database["public"]["Enums"]["planning_element_type"]
+          id: string
+          locked_at: string | null
+          locked_by: string | null
+          metadata: Json
+          position: Json
+          rotation: number
+          schema_version: number
+          size: Json
+          style: Json
+          updated_at: string
+          z_index: number
+        }
+        Insert: {
+          board_id: string
+          content?: Json
+          created_at?: string
+          created_by: string
+          element_type: Database["public"]["Enums"]["planning_element_type"]
+          id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          metadata?: Json
+          position?: Json
+          rotation?: number
+          schema_version?: number
+          size?: Json
+          style?: Json
+          updated_at?: string
+          z_index?: number
+        }
+        Update: {
+          board_id?: string
+          content?: Json
+          created_at?: string
+          created_by?: string
+          element_type?: Database["public"]["Enums"]["planning_element_type"]
+          id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          metadata?: Json
+          position?: Json
+          rotation?: number
+          schema_version?: number
+          size?: Json
+          style?: Json
+          updated_at?: string
+          z_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planning_elements_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1604,6 +1705,16 @@ export type Database = {
         | "validation"
       invoice_status: "draft" | "pending" | "paid" | "overdue"
       operation_type: "create" | "update" | "delete" | "move" | "resize"
+      planning_element_type:
+        | "sticky"
+        | "shape"
+        | "text"
+        | "smart_doc"
+        | "interactive_sheet"
+        | "mindmap_node"
+        | "frame"
+        | "connector"
+        | "entity_card"
       project_status:
         | "planning"
         | "active"
@@ -1838,6 +1949,17 @@ export const Constants = {
       ],
       invoice_status: ["draft", "pending", "paid", "overdue"],
       operation_type: ["create", "update", "delete", "move", "resize"],
+      planning_element_type: [
+        "sticky",
+        "shape",
+        "text",
+        "smart_doc",
+        "interactive_sheet",
+        "mindmap_node",
+        "frame",
+        "connector",
+        "entity_card",
+      ],
       project_status: [
         "planning",
         "active",
