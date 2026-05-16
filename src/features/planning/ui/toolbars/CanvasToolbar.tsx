@@ -20,14 +20,19 @@ import { CanvasPropertiesPopover } from '../overlays/CanvasPropertiesPopover';
 import { FileMenuPopover } from '../overlays/FileMenuPopover';
 import { LayersMenuPopover } from '../overlays/LayersMenuPopover';
 import { useBoardSaveState, formatBoardSaveStatusLabel } from '@/features/planning/hooks/useBoardSaveState';
+import { PresenceAvatars } from '../collaboration/PresenceAvatars';
+import type { PresencePeer } from '../../hooks/usePlanningRealtime';
+import { Users } from 'lucide-react';
 
 interface CanvasToolbarProps {
   board: CanvasBoard;
   onBack: () => void;
   onOpenAI: () => void;
+  peers?: PresencePeer[];
+  selfName?: string;
 }
 
-const CanvasToolbar: React.FC<CanvasToolbarProps> = ({ board, onBack, onOpenAI }) => {
+const CanvasToolbar: React.FC<CanvasToolbarProps> = ({ board, onBack, onOpenAI, peers = [], selfName }) => {
   const { undo, redo, history } = useCanvasStore();
   const { renameBoard } = usePlanningStore();
   const { status, lastSavedAt, canSave, saveBoardState, isDirty } = useBoardSaveState(board);
