@@ -225,6 +225,8 @@ export const ElementPropertiesToolZone: React.FC = () => {
           <span>حذف</span>
         </Button>
       </div>
+
+      {isSingleSelection && <ElementHistoryPanel elementId={element.id} />}
     </div>
   );
 };
