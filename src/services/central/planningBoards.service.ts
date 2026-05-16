@@ -228,6 +228,14 @@ export async function updatePlanningElement(
   patch: PlanningElementUpdateInput,
 ): Promise<PlanningElement> {
   const parsed = planningElementUpdateSchema.parse(patch);
+  // P1.c — validate smart-doc payloads on update when type+content provided.
+  if (
+    parsed.element_type &&
+    isSmartDocElementType(parsed.element_type) &&
+    parsed.content
+  ) {
+    validateSmartDocContent(parsed.content);
+  }
   const update: PlanningElementUpdate = {
     ...parsed,
     position: parsed.position as Json | undefined,
