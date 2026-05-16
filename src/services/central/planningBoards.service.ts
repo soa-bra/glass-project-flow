@@ -15,6 +15,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { z } from "zod";
+import {
+  isSmartDocElementType,
+  SMART_DOC_SCHEMA_VERSION,
+  validateSmartDocContent,
+} from "@/features/planning/elements/smart-doc/contract";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 export type PlanningBoard = Database["public"]["Tables"]["planning_boards"]["Row"];
