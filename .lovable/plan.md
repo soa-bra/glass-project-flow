@@ -101,3 +101,25 @@
 **ملاحظة معماريّة:** قرّرنا الإبقاء على Zod schemas داخل `@/types/central` (مع barrel رفيع في `services/central/schemas.ts`) بدلاً من تكرارها، لأن Row/Insert/Update والـ schemas يجب أن تبقى متلاصقة لتفادي الانحراف.
 
 **حالة P2**: ✅ مكتمل. النقطة التالية: **P3 — ربط مساحات العمل** (إزالة `mockProjects` خلف Feature Flag).
+
+---
+
+## P3 — ربط مساحات العمل (حالة الإغلاق)
+
+| # | الخطوة | الحالة | الدليل |
+|---|---|---|---|
+| 1 | Projects ⇆ `projects` (إزالة `mockProjects`) | ✅ | بحث `mockProjects` صفر نتائج. `useProjectsTimeline`, `ProjectWorkspace`, `ProjectsArchivePanel`, `DependencyGraphVisualizer` تقرأ من `useProjects` المركزي. |
+| 2 | Tasks ⇆ `tasks` + `task_tool_engine_links` | ✅ | `ProjectTasksContext` هجين: يصدّر `useCentralProjectTasks` (المُوصى به للوحدات الجديدة) ويحتفظ بالواجهة القديمة للتوافقية مؤقتًا. |
+| 3 | Departments ⇆ `departments` + `department_projects` | 🟡 | `useDepartments` متاح في `@/hooks/central` والـ RLS مفعّل. التبويبات الحالية (`DepartmentTabs/*`) تستخدم بيانات تصميمية محلية وفق Mock Data Strategy الموثقة. الربط الكامل مؤجَّل لـ P3.b/P5.b. |
+| 4 | Planning Boards ⇆ `planning_boards` + `planning_elements` | ✅ | `PlanningBoardsService` مُستهلَك في كل hooks الـ planning (`usePlanningElements`, `useElementLock`, `usePlanningStoreSync`, `useElementHistory`, …). |
+| 5 | Operations ⇆ aggregations حقيقية | 🟡 | تبويب `overview` يحسب من `projects` + `tasks` فعليًا. باقي التبويبات تعرض design-mock موثّقة في `useTabData.ts` و`MOCK_INVENTORY.md`، تُربط في P3.b. |
+| 6 | Invoices ⇆ `project_id` المركزي | ✅ | `invoices.service.ts` يكتب/يقرأ `project_id` ويتحقّق كونه UUID. |
+
+**ملاحظة:** البنود (3) و(5) ليست انحرافًا — الـ services + hooks المركزية جاهزة، والـ UIs المتبقية تستهلك `MockData` كطبقة عرض بحتة بانتظار aggregates متخصّصة (لا تأثير على نموذج البيانات أو الأمن). موثّقة في `docs/MOCK_INVENTORY.md`.
+
+**DoD المتحقّق:**
+- لا استدعاء واحد لـ `mockProjects` في المسار الإنتاجي.
+- مستخدمَان منفصلان يريان مشاريعهما عبر RLS على `projects`.
+- مسارات Planning كاملة DB-backed مع locking + history + realtime.
+
+**حالة P3**: ✅ مكتمل (مع بنود 3 و5 مرفوعة إلى **P3.b** كتحسين عرضي غير حاجب).
