@@ -6,7 +6,7 @@
  * (static surface — UI Governance Contract).
  */
 import { memo } from "react";
-import type { PresencePeer } from "../hooks/usePlanningRealtime";
+import type { PresencePeer } from "../../hooks/usePlanningRealtime";
 
 interface PresenceAvatarsProps {
   peers: PresencePeer[];

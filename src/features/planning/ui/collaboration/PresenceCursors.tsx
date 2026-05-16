@@ -6,7 +6,7 @@
  * current viewport transform on the wrapping element.
  */
 import { memo } from "react";
-import type { PresencePeer } from "../hooks/usePlanningRealtime";
+import type { PresencePeer } from "../../hooks/usePlanningRealtime";
 
 interface PresenceCursorsProps {
   peers: PresencePeer[];
