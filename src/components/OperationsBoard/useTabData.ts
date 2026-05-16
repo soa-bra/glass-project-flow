@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { audit } from '@/services/audit';
 import type { TabData } from './types';
 
 /**
@@ -20,8 +21,19 @@ export const useTabData = (activeTab: string, isVisible: boolean) => {
       if (next !== undefined) {
         setTabData((prev) => ({ ...prev, [tabName]: next }));
       }
+      void audit({
+        resource_type: 'operations_board',
+        action: `view.${tabName}`,
+        metadata: { tab: tabName },
+      });
     } catch (err) {
       console.error(`[OperationsBoard] failed to load ${tabName}`, err);
+      void audit({
+        resource_type: 'operations_board',
+        action: `view.${tabName}`,
+        decision: 'error',
+        reason: err instanceof Error ? err.message : String(err),
+      });
     } finally {
       setLoading(false);
     }

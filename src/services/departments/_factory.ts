@@ -1,13 +1,18 @@
 /**
  * Generic CRUD service for department domain tables.
- * Provides typed list/get/create/update/remove that pulls owner_id from the session.
  *
- * Note: We deliberately bypass Supabase's generic table typing for this factory
- * (using `as never`) because the table name is dynamic. Callers wrap the
- * returned service with their own Row type for safety.
+ * Hardened in P3.b-audit:
+ *   • Zod validation on create/update inputs (schema-driven).
+ *   • Audit events on create/update/remove via `audit()`.
+ *   • Returned rows soft-validated (warn on shape drift, never block UI).
  */
 import { supabase } from "@/integrations/supabase/client";
-import type { DepartmentTableName } from "@/types/departments";
+import { audit } from "@/services/audit";
+import {
+  DEPARTMENT_TABLES,
+  type DepartmentTableName,
+} from "@/types/departments";
+import type { z } from "zod";
 
 type Row<T> = T & { id: string; owner_id: string; created_at: string; updated_at: string };
 
@@ -19,6 +24,34 @@ export interface ListOptions {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabase as unknown as { from: (t: string) => any };
+
+const SERVER_MANAGED = ["id", "owner_id", "created_at", "updated_at"] as const;
+
+function stripServerManaged<T extends Record<string, unknown>>(input: Partial<T>): Partial<T> {
+  const out: Record<string, unknown> = { ...input };
+  for (const k of SERVER_MANAGED) delete out[k];
+  return out as Partial<T>;
+}
+
+function validateInput<T extends Record<string, unknown>>(
+  table: DepartmentTableName,
+  patch: Partial<T>,
+  mode: "create" | "update",
+): Partial<T> {
+  const fullSchema = DEPARTMENT_TABLES[table] as unknown as z.ZodObject<z.ZodRawShape>;
+  // Build a partial schema that omits server-managed fields, all optional for patch.
+  const omittedShape = { ...fullSchema.shape } as z.ZodRawShape;
+  for (const k of SERVER_MANAGED) delete omittedShape[k];
+  const partial = fullSchema.omit({ id: true, owner_id: true, created_at: true, updated_at: true } as never).partial();
+  const result = partial.safeParse(patch);
+  if (!result.success) {
+    const message = result.error.issues
+      .map((i) => `${i.path.join(".") || "_"}: ${i.message}`)
+      .join("; ");
+    throw new Error(`[${table}] ${mode} validation failed — ${message}`);
+  }
+  return result.data as Partial<T>;
+}
 
 export function createDomainService<T extends Record<string, unknown>>(
   table: DepartmentTableName,
@@ -47,28 +80,74 @@ export function createDomainService<T extends Record<string, unknown>>(
     },
 
     async create(input: Partial<T>): Promise<Row<T>> {
+      const cleaned = stripServerManaged(input);
+      const validated = validateInput<T>(table, cleaned, "create");
+
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) throw new Error("Not authenticated");
-      const payload = { ...input, owner_id: auth.user.id };
+
+      const payload = { ...validated, owner_id: auth.user.id };
       const { data, error } = await db.from(table).insert(payload).select("*").single();
-      if (error) throw error;
+      if (error) {
+        void audit({
+          resource_type: table,
+          action: "create",
+          decision: "error",
+          reason: error.message,
+        });
+        throw error;
+      }
+      void audit({
+        resource_type: table,
+        action: "create",
+        resource_id: data?.id ?? null,
+        metadata: { fields: Object.keys(validated) },
+      });
       return data as Row<T>;
     },
 
     async update(id: string, patch: Partial<T>): Promise<Row<T>> {
+      const cleaned = stripServerManaged(patch);
+      const validated = validateInput<T>(table, cleaned, "update");
+
       const { data, error } = await db
         .from(table)
-        .update(patch)
+        .update(validated)
         .eq("id", id)
         .select("*")
         .single();
-      if (error) throw error;
+      if (error) {
+        void audit({
+          resource_type: table,
+          action: "update",
+          resource_id: id,
+          decision: "error",
+          reason: error.message,
+        });
+        throw error;
+      }
+      void audit({
+        resource_type: table,
+        action: "update",
+        resource_id: id,
+        metadata: { fields: Object.keys(validated) },
+      });
       return data as Row<T>;
     },
 
     async remove(id: string): Promise<void> {
       const { error } = await db.from(table).delete().eq("id", id);
-      if (error) throw error;
+      if (error) {
+        void audit({
+          resource_type: table,
+          action: "delete",
+          resource_id: id,
+          decision: "error",
+          reason: error.message,
+        });
+        throw error;
+      }
+      void audit({ resource_type: table, action: "delete", resource_id: id });
     },
   };
 }
