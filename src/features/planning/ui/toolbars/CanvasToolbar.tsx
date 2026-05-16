@@ -122,6 +122,24 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({ board, onBack, onOpenAI, 
       </div>
 
       <div className="flex items-center gap-2">
+        <div
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sb-panel-bg border border-sb-border"
+          aria-label="المتعاونون النشِطون"
+          dir="rtl"
+        >
+          <Users size={14} className="text-sb-ink/70" />
+          <span className="text-[12px] font-semibold text-sb-ink">
+            {peers.length + 1}
+          </span>
+          {selfName && (
+            <span className="text-[12px] text-sb-ink/70 max-w-[140px] truncate">
+              أنت: {selfName}
+            </span>
+          )}
+          <PresenceAvatars peers={peers} />
+        </div>
+
+        <div className="h-6 w-px bg-sb-border" />
         <div className="relative">
           <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-2 px-4 py-1.5 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
             <Share2 size={18} />
