@@ -244,6 +244,15 @@ export function usePlanningRealtime({
     selfUserId,
     broadcastCursor,
     updateSelfPresence,
-    isConnected: !!channelRef.current,
+    isConnected: connectionStatus === "connected",
+    connectionStatus,
+    lastSyncAt,
   };
 }
+
+export type RealtimeConnectionStatus =
+  | "idle"
+  | "connecting"
+  | "connected"
+  | "disconnected"
+  | "error";
