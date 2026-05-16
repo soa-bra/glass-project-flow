@@ -87,6 +87,38 @@ export function usePlanningElements(
     }, 2000);
   };
 
+  // Per-row map of pending optimistic field timestamps. Powers per-field LWW
+  // conflict resolution in `onElementUpdate`.
+  const pendingPatchesRef = useRef<Map<string, PendingFieldStamps>>(new Map());
+  const recordPendingPatch = useCallback(
+    (id: string, patch: PlanningElementUpdateInput) => {
+      const now = Date.now();
+      const prev = pendingPatchesRef.current.get(id) ?? {};
+      const next: PendingFieldStamps = { ...prev };
+      for (const field of MERGEABLE_FIELDS) {
+        if ((patch as Record<string, unknown>)[field] !== undefined) {
+          next[field as MergeableField] = now;
+        }
+      }
+      pendingPatchesRef.current.set(id, next);
+    },
+    [],
+  );
+  const settlePendingPatch = useCallback(
+    (id: string, confirmedUpdatedAt: string) => {
+      const remaining = prunePendingStamps(
+        pendingPatchesRef.current.get(id),
+        confirmedUpdatedAt,
+      );
+      if (Object.keys(remaining).length === 0) {
+        pendingPatchesRef.current.delete(id);
+      } else {
+        pendingPatchesRef.current.set(id, remaining);
+      }
+    },
+    [],
+  );
+
   const refresh = useCallback(async () => {
     if (!boardId) {
       setElements([]);
@@ -118,14 +150,20 @@ export function usePlanningElements(
   const onElementUpdate = useCallback((row: PlanningElement) => {
     setElements((prev) => {
       const idx = prev.findIndex((e) => e.id === row.id);
-      if (idx === -1) return sortElements([...prev, row]);
+      const local = idx === -1 ? undefined : prev[idx];
+      const pending = pendingPatchesRef.current.get(row.id);
+      const { next: merged } = mergePlanningElement(local, row, pending);
+      if (idx === -1) return sortElements([...prev, merged]);
       const next = prev.slice();
-      next[idx] = row;
+      next[idx] = merged;
       return sortElements(next);
     });
-  }, []);
+    // Drop any pending stamps already reflected in this remote write.
+    settlePendingPatch(row.id, row.updated_at);
+  }, [settlePendingPatch]);
 
   const onElementDelete = useCallback((id: string) => {
+    pendingPatchesRef.current.delete(id);
     setElements((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
