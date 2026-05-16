@@ -103,6 +103,7 @@ export function usePlanningElements(
     peersById: rt.peersById,
     selfUserId: rt.selfUserId,
     broadcastCursor: rt.broadcastCursor,
+    updateSelfPresence: rt.updateSelfPresence,
     isConnected: rt.isConnected,
   };
 }
