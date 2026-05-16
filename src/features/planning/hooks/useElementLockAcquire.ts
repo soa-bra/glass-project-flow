@@ -17,12 +17,11 @@
 import { useCallback } from "react";
 import { toast } from "sonner";
 import {
-  PlanningBoardsService,
+  getPlanningElement,
+  ELEMENT_LOCK_TTL_MS,
   type PlanningElement,
 } from "@/services/central/planningBoards.service";
 import type { PresencePeer } from "./usePlanningRealtime";
-
-const { getPlanningElement, ELEMENT_LOCK_TTL_MS } = PlanningBoardsService;
 
 export interface LockFailureInfo {
   elementId: string;
