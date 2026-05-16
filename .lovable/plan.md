@@ -1,148 +1,93 @@
-## P1 — تقييم الحالة وخطة الإغلاق
+## P3.b — ربط كامل لتبويبات الأقسام بالـ Central
 
-### الحالة بعد الفحص
+### الهدف
+استبدال كل بيانات الـ design-mock في `src/components/DepartmentTabs/**` بقراءات/كتابات حقيقية من Supabase، عبر إنشاء جداول الدومين الناقصة + RLS + خدمات + hooks + ربط كل تبويب.
 
-| البند | الحالة | الدليل |
-|---|---|---|
-| P1.a Persistence + Optimistic + Conflict | ✅ منجز | `planning_boards`/`planning_elements` + `locked_by` + `conflictResolver.ts` + history table |
-| P1.b Collaboration (cursors/presence/locks/realtime indicator/backoff/history) | ✅ منجز | `usePlanningRealtime.ts` + `RealtimeStatusBadge` + `ElementHistoryPanel` |
-| P1.c Smart Docs كنوع مستقل | 🟡 جزئي | enum يحتوي `smart_doc` + `SmartDocRenderer` موجود + `schema_version` على `planning_elements`. **ناقص:** عدم وجود جدول فرعي `planning_smart_docs` منفصل (المحتوى يُخزَّن داخل `content jsonb`) |
-| P1.d Canvas RBAC | 🟡 جزئي | `evaluateCommandAuthorization` يمنع viewer/guest من أمر `canvas.smart-elements.generate` فقط. **ناقص:** لا يوجد أمر `canvas.smart-doc.create` ولا تكامل مع AI calls خارج هذا الأمر |
+### الجداول الجديدة (migration واحد شامل)
 
-### قرار معماري
+```text
+hr_employees           (department_id, name, role, email, phone, hire_date, status, salary, metadata)
+hr_attendance          (employee_id, date, check_in, check_out, status)
+hr_training_courses    (name, provider, duration_hours, start_date, status, metadata)
+hr_training_enrollments(course_id, employee_id, status, completion_date)
+hr_performance_reviews (employee_id, reviewer_id, period, score, notes)
+hr_partners            (name, type, contact_email, status)
 
-**P1.c:** الإبقاء على `content jsonb` داخل `planning_elements` بدلاً من إنشاء جدول `planning_smart_docs` منفصل، لأن:
-- `schema_version` موجود أصلاً على مستوى العنصر
-- يبسّط Realtime sync (channel واحد)
-- يتطابق مع نمط باقي أنواع العناصر
+crm_customers          (name, email, phone, company, segment, status, owner_id)
+crm_opportunities      (customer_id, name, value, probability, stage, expected_close, owner_id)
+crm_activities         (customer_id, type, subject, due_date, status, owner_id)
+crm_service_tickets    (customer_id, subject, priority, status, assignee_id)
 
-سنوثّق العقد ونضيف Zod schema للتحقق وقت الكتابة/القراءة لضمان سلامة بنية Smart Doc.
+financial_budgets      (project_id?, department_id?, name, period, planned_amount, spent_amount, currency)
+financial_transactions (budget_id?, project_id?, kind income|expense, amount, date, vendor, notes)
 
-### خطوات التنفيذ
+legal_cases            (title, type, status, client_name, opened_at, closed_at, owner_id)
+legal_contracts        (case_id?, project_id?, name, party, signed_at, expires_at, status, file_url)
 
-#### 1. توثيق عقد Smart Doc (P1.c)
-- إنشاء `src/features/planning/elements/smart-doc/contract.ts`:
-  - `SmartDocContentSchema` (Zod) يصف `blocks`, `version`, `format` (`rich-text` | `spreadsheet`)
-  - `SMART_DOC_SCHEMA_VERSION = 1`
-  - دالة `validateSmartDocContent()` + `migrateSmartDocContent()` للترقية المستقبلية
-- تطبيق التحقق داخل `planningBoards.service.ts` عند `create/update` لعناصر من نوع `smart_doc`
+brand_assets           (name, category, file_url, status, tags[], owner_id)
+brand_guidelines       (title, body_md, version, status)
 
-#### 2. توسيع سياسة الأذونات (P1.d)
-- في `authorization.ts` إضافة الأوامر:
-  - `canvas.smart-doc.create`
-  - `canvas.smart-doc.ai-assist`
-- نفس قاعدة الأدوار: `host`/`editor` فقط، `viewer`/`guest` مرفوض
-- ربط `commandGateway` بنقطتي الإدخال:
-  - زر إنشاء Smart Doc في `SmartDocToolZone`
-  - استدعاءات `useSmartElementAI` (AI Gateway)
+marketing_campaigns    (name, channel, status, start_date, end_date, budget, spent, owner_id)
+marketing_leads        (campaign_id, name, email, source, status, score)
 
-#### 3. واجهة المنع للمستخدم
-- إضافة toast عربي عند الرفض: "هذا الإجراء غير مصرّح لدورك على هذه اللوحة"
-- إخفاء/تعطيل زر Smart Doc في `BottomToolbar` عندما `currentBoardRole ∈ {viewer, guest}`
-- نفس المعاملة لزر Smart Elements AI
+csr_initiatives        (name, type, status, start_date, end_date, budget, beneficiaries_count, owner_id)
+csr_tickets            (initiative_id?, requester_name, subject, priority, status, assignee_id)
 
-#### 4. اختبارات قبول
-- وحدة: اختبار `evaluateCommandAuthorization` لأوامر Smart Doc لكل دور
-- وحدة: `SmartDocContentSchema` يرفض البنية غير الصالحة
-- يدوي: تسجيل دخول كـ viewer على لوحة وملاحظة:
-  - زر Smart Doc معطّل
-  - محاولة الاستدعاء البرمجي → toast منع + سجل audit بـ `authz.denied`
+kmpa_documents         (title, category, version, status, content_md, owner_id)
 
-#### 5. توثيق
-- تحديث `.lovable/plan.md` لوسم P1 بالكامل ✅
-- إضافة سطر في `docs/CANVAS_LIMITATIONS.md` يوضح قرار "Smart Doc داخل `content jsonb` بدلاً من جدول فرعي"
+template_items         (kind, name, description, body_md, category, owner_id)
+```
 
-### تفاصيل تقنية
+كل جدول: `id uuid pk`, `owner_id uuid`, `created_at`, `updated_at`, RLS = owners manage own + `is_owner()` bypass. كل جدول مرتبط بقسم يحوي `department_id uuid` (لا FK مباشر — على غرار جداول central الحالية).
 
-- ملفات ستُعدَّل/تُنشأ:
-  - `src/features/planning/elements/smart-doc/contract.ts` (جديد)
-  - `src/features/planning/domain/policies/authorization.ts` (توسيع union للأوامر)
-  - `src/features/planning/ui/panels/SmartDocToolZone.tsx` (gate + disable)
-  - `src/features/planning/ui/toolbars/BottomToolbar.tsx` (disable visual)
-  - `src/hooks/useSmartElementAI.ts` (تمرير role + gate)
-  - `src/services/central/planningBoards.service.ts` (تحقق Zod عند smart_doc)
-  - `.lovable/plan.md` + `docs/CANVAS_LIMITATIONS.md`
+### الخدمات والـ hooks
 
-- لا تتطلب الخطة أي migration على قاعدة البيانات (البنية الحالية كافية).
+`src/services/departments/*.service.ts` — خدمة لكل دومين بدوال: `list(deptId?)`, `get(id)`, `create(input)`, `update(id, patch)`, `remove(id)`، باستخدام نفس نمط `withAuthorizationAndAudit`.
 
-### معايير القبول النهائية لإغلاق P1
-- [x] لوحتان تتزامنان عبر Realtime بـ optimistic + conflict resolution
-- [ ] Smart Doc يُحفَظ ويُسترجَع مع `schema_version` معتمد عبر Zod
-- [ ] Viewer يرى زر Smart Doc معطّلًا + toast "غير مصرّح" عند المحاولة
-- [ ] سجل `audit_events` يحتوي قرار `authz.denied` للحالات المرفوضة
+`src/hooks/departments/*.ts` — React Query hooks: `useHrEmployees(deptId)`, `useCrmCustomers()`, إلخ. مع `queryKeys` موحَّدة و invalidation.
 
----
+Zod schemas في `src/types/departments/*.ts` لكل كيان.
 
-## P1 — حالة الإغلاق (تحديث)
+### ربط التبويبات
 
-- ✅ P1.a — منجز سابقًا.
-- ✅ P1.b — منجز سابقًا.
-- ✅ **P1.c — مُغلَق**: عقد Zod `SmartDocContentSchema` v1 في `src/features/planning/elements/smart-doc/contract.ts`، والتحقق مدمج في `planningBoards.service.ts` (create/update). `schema_version` يُضبط تلقائيًا للعناصر من نوع `smart_doc`/`interactive_sheet`.
-- ✅ **P1.d — مُغلَق**: `evaluateCommandAuthorization` يدعم الآن `canvas.smart-doc.create` و`canvas.smart-doc.ai-assist` بنفس قاعدة الأدوار (host/editor فقط). `SmartDocToolZone` يعطّل الأزرار للأدوار `viewer`/`guest` ويعرض toast عربي عند المحاولة. RLS على `planning_elements` يبقى الضمان الخلفي.
+كل تبويب يستبدل `data.ts` المحلي بـ hook حقيقي. مثال نموذجي (HR/EmployeesTab):
 
-**حالة P1**: ✅ مكتمل.
+```text
+- before: const [rows] = useState(employeesData)
+- after:  const { data: rows = [], isLoading } = useHrEmployees(deptId)
+          GenericFormModal.onSubmit → useCreateHrEmployee().mutate
+```
 
----
+ينطبق على ~50+ تبويب. التبويبات التجميعية (Overview, Analytics, Reports) تحسب من نفس الـ hooks محلياً عبر `useMemo`.
 
-## P2 — ربط النموذج المركزي (حالة الإغلاق)
+### KPIs و Overview
+`OverviewTab` لكل قسم يستخدم counts و aggregates من الـ hooks (مثلاً عدد الموظفين النشطين، إجمالي قيمة الفرص، الميزانية المصروفة). لا حاجة لـ RPCs في هذه المرحلة.
 
-| التسليم | الحالة | الدليل |
-|---|---|---|
-| خدمات `src/services/central/{boards,departments,projects,tasks,tools,engineJobs,dependencies}` | ✅ | الملفات موجودة + `index.ts` يصدّرها كـ namespaces |
-| `withAuthorizationAndAudit` (Permission → Execute → Audit) | ✅ | `src/services/central/withAuthorizationAndAudit.ts` |
-| Zod schemas موحّدة | ✅ | `src/types/central/index.ts` + barrel جديد `src/services/central/schemas.ts` |
-| React Query hooks (`useProjects, useProjectTasks, useDepartments, useCentralBoards, useBoardTools, useEngineJobs, useDependencies`) | ✅ | `src/hooks/central/useCentral.ts` + `centralKeys` لـ invalidation |
-| Realtime على `engine_jobs` | ✅ | `src/hooks/central/useEngineJobsRealtime.ts` |
-| بحث متقاطع | ✅ | `useCrossWorkspaceSearch.ts` + `search.service.ts` |
-| Seed تجريبي | ✅ | `scripts/seed-central.ts` |
-| اختبارات Zod للعقود | ✅ | `src/__tests__/services/centralSchemas.test.ts` (8/8 ✓) |
-| مراجعة RLS لكل جدول مركزي | ✅ | Supabase Linter بلا تحذيرات **حرجة** (WARN فقط على extensions/security-definer مقصودة موثّقة في `SUPABASE_LINTER_NOTES.md`) |
+### Mock removal
+- إزالة `data.ts` من كل مجلد قسم.
+- تحديث `docs/MOCK_INVENTORY.md` لشطب الصفوف 5-14.
+- إضافة سطر إغلاق P3.b في `.lovable/plan.md`.
 
-**ملاحظة معماريّة:** قرّرنا الإبقاء على Zod schemas داخل `@/types/central` (مع barrel رفيع في `services/central/schemas.ts`) بدلاً من تكرارها، لأن Row/Insert/Update والـ schemas يجب أن تبقى متلاصقة لتفادي الانحراف.
+### الترتيب الزمني (سأنفّذها بالتسلسل في هذه الجلسة)
 
-**حالة P2**: ✅ مكتمل. النقطة التالية: **P3 — ربط مساحات العمل** (إزالة `mockProjects` خلف Feature Flag).
+1. **Migration واحد كبير**: كل الجداول + RLS + indexes.
+2. **Services**: 7 ملفات خدمة (hr, crm, financial, legal, brand, marketing, csr, kmpa, templates).
+3. **Hooks + Zod**: hooks لكل خدمة.
+4. **ربط التبويبات قسماً قسماً**: HR → CRM → Financial → Legal → Brand → Marketing → CSR → KMPA → Templates → Training.
+5. **تنظيف**: حذف `data.ts`، تحديث المستندات.
 
----
+### تحفّظات
+- لا يوجد Seed تجريبي — التبويبات ستبدأ فارغة وتمتلئ بالـ CRUD من الواجهة.
+- التبويبات الفرعية المعقدة جداً (مثل Brand/Templates التي تحوي معاينة ملفات) ستربط على مستوى البيانات فقط؛ معاينة الملفات تبقى placeholder حتى يتم تفعيل Storage upload.
+- لن أُضيف `useMockHr` flags — الـ design-mock يُحذف نهائياً وفق رغبتك.
 
-## P3 — ربط مساحات العمل (حالة الإغلاق)
+### حجم العمل المتوقع
+- 1 migration (~700 سطر SQL)
+- ~9 خدمات (~1500 سطر)
+- ~9 ملفات hooks (~600 سطر)
+- ~50+ تبويب يُعدَّل (تبديل مصدر البيانات + ربط الـ mutations)
 
-| # | الخطوة | الحالة | الدليل |
-|---|---|---|---|
-| 1 | Projects ⇆ `projects` (إزالة `mockProjects`) | ✅ | بحث `mockProjects` صفر نتائج. `useProjectsTimeline`, `ProjectWorkspace`, `ProjectsArchivePanel`, `DependencyGraphVisualizer` تقرأ من `useProjects` المركزي. |
-| 2 | Tasks ⇆ `tasks` + `task_tool_engine_links` | ✅ | `ProjectTasksContext` هجين: يصدّر `useCentralProjectTasks` (المُوصى به للوحدات الجديدة) ويحتفظ بالواجهة القديمة للتوافقية مؤقتًا. |
-| 3 | Departments ⇆ `departments` + `department_projects` | 🟡 | `useDepartments` متاح في `@/hooks/central` والـ RLS مفعّل. التبويبات الحالية (`DepartmentTabs/*`) تستخدم بيانات تصميمية محلية وفق Mock Data Strategy الموثقة. الربط الكامل مؤجَّل لـ P3.b/P5.b. |
-| 4 | Planning Boards ⇆ `planning_boards` + `planning_elements` | ✅ | `PlanningBoardsService` مُستهلَك في كل hooks الـ planning (`usePlanningElements`, `useElementLock`, `usePlanningStoreSync`, `useElementHistory`, …). |
-| 5 | Operations ⇆ aggregations حقيقية | 🟡 | تبويب `overview` يحسب من `projects` + `tasks` فعليًا. باقي التبويبات تعرض design-mock موثّقة في `useTabData.ts` و`MOCK_INVENTORY.md`، تُربط في P3.b. |
-| 6 | Invoices ⇆ `project_id` المركزي | ✅ | `invoices.service.ts` يكتب/يقرأ `project_id` ويتحقّق كونه UUID. |
+### المخاطر
+- قد لا يكتمل ربط جميع التبويبات الـ50+ في جلسة واحدة بدون regressions. سأنفّذ على دفعات وأبلّغك بعد كل قسم. إذا أردت إيقاف بعد قسم معيّن لمراجعة، أخبرني.
 
-**ملاحظة:** البنود (3) و(5) ليست انحرافًا — الـ services + hooks المركزية جاهزة، والـ UIs المتبقية تستهلك `MockData` كطبقة عرض بحتة بانتظار aggregates متخصّصة (لا تأثير على نموذج البيانات أو الأمن). موثّقة في `docs/MOCK_INVENTORY.md`.
-
-**DoD المتحقّق:**
-- لا استدعاء واحد لـ `mockProjects` في المسار الإنتاجي.
-- مستخدمَان منفصلان يريان مشاريعهما عبر RLS على `projects`.
-- مسارات Planning كاملة DB-backed مع locking + history + realtime.
-
-**حالة P3**: ✅ مكتمل (مع بنود 3 و5 مرفوعة إلى **P3.b** كتحسين عرضي غير حاجب).
-
----
-
-## P4 — Audit + Events + Engine Jobs (حالة الإغلاق)
-
-| التسليم | الحالة | الدليل |
-|---|---|---|
-| جدول `audit_events` + RLS | ✅ | RLS: `audit insert auth` (actor=auth.uid) + `audit read own` (actor أو owner). لا UPDATE/DELETE. |
-| استبدال `mockAuditEvents` بكتابة فعلية | ✅ | `src/services/central/audit.service.ts` يكتب مباشرة في الجدول. `ProjectWorkspace` يستدعي `AuditService.log` للإنشاء/التحديث. |
-| Decorator موحَّد (Permission → Execute → Audit) | ✅ | `src/services/central/withAuthorizationAndAudit.ts` يغلّف العمليات الحساسة مع `has_permission` + audit log allowed/denied. |
-| `event_outbox` + `event_dlq` (Migration حقيقية) | ✅ | الجدولان موجودان مع RLS (owner-only read، لا INSERT/UPDATE/DELETE من الواجهة). |
-| Edge Function `outbox-relay` | ✅ | `supabase/functions/outbox-relay/index.ts` — يستهلك batch=50، MAX_ATTEMPTS=3، الفاشل ينتقل إلى DLQ. مُجدوَل عبر pg_cron. |
-| Edge Function `engine-jobs-worker` | ✅ | `supabase/functions/engine-jobs-worker/index.ts` — يلتقط jobs بحالة `planned`، ينقلها إلى `active` ثم `completed/failed`. |
-| Realtime على `engine_jobs.state` | ✅ | `src/hooks/central/useEngineJobsRealtime.ts` يشترك في `postgres_changes` ويبطل React Query cache. |
-| Audit Center في Settings | ✅ | `src/components/SettingsPanel/categories/AuditCenterPanel.tsx` — آخر 100 حدث، فلترة بنوع المورد والإجراء، refetch كل 30 ث. مسجَّل في `CategoryPanelFactory`. |
-
-**DoD المتحقّق:**
-- كل أمر حسّاس مغلَّف بـ `withAuthorizationAndAudit` يولّد سجلًا (allowed أو denied) عبر `AuditService`.
-- Outbox/DLQ يعملان مع retry وانتقال للـ DLQ بعد 3 محاولات.
-- Engine Jobs تنفّذ وتُحدّث حالتها، والواجهة تستقبل التحديثات Realtime.
-- مركز التدقيق متاح للمالكين فقط عبر RLS.
-
-**حالة P4**: ✅ مكتمل. النقطة التالية: **P5 — التحصين** (Lighthouse، اختبارات، a11y، Sentry).
+هل أبدأ بالـ migration؟
