@@ -11,6 +11,7 @@ import SmartDocToolZone from './SmartDocToolZone';
 interface ToolZoneProps {
   activeTool: ToolId;
   onClose?: () => void;
+  boardId?: string;
 }
 
 const panelTitles: Record<ToolId, string> = {
