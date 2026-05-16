@@ -15,6 +15,7 @@ import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import type { PresencePeer } from "./usePlanningRealtime";
 
+
 const { ELEMENT_LOCK_TTL_MS } = PlanningBoardsService;
 
 export type ElementLockStatus =
