@@ -16,8 +16,13 @@ export interface PolicyAttributes {
   isTrustedSession: boolean;
 }
 
+export type CanvasCommand =
+  | 'canvas.smart-elements.generate'
+  | 'canvas.smart-doc.create'
+  | 'canvas.smart-doc.ai-assist';
+
 export interface CommandAuthorizationRequest {
-  command: 'canvas.smart-elements.generate';
+  command: CanvasCommand;
   actor: CommandActor;
   attributes: PolicyAttributes;
 }
