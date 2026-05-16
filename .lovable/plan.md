@@ -112,3 +112,16 @@ Zod schemas في `src/types/departments/*.ts` لكل كيان.
 - تحديث `MOCK_INVENTORY.md`
 
 البنية التحتية جاهزة بالكامل — كل تبويب باقٍ هو تطبيق نفس النمط على `HrEmployees`/`CrmCustomers`/إلخ.
+
+## P3.b — Operations Board (دفعة ثانية)
+
+✅ **منجَز:**
+- إعادة كتابة `src/components/OperationsBoard/useTabData.ts` ليُجمِّع كل تبويب من جداول central + departments حقيقيةً:
+  - `overview`: projects/tasks/crm_customers/crm_service_tickets
+  - `finance`: financial_budgets + financial_transactions + invoices (monthlyBudget, cashFlow, KPIs)
+  - `projects`: projects (تصنيف delayed/at-risk/on-track + progress من metadata)
+  - `marketing`: marketing_campaigns + marketing_leads (ROAS per channel)
+  - `hr`: hr_employees + hr_attendance + hr_performance_reviews
+  - `clients`: crm_customers + crm_opportunities + crm_service_tickets + legal_contracts (funnel + portfolioHealth)
+  - `reports`: kmpa_documents + counts (projects, invoices) + popularCategories
+- حذف `src/components/OperationsBoard/mockData.ts` نهائيًا — لا توجد بيانات تجريبية في لوحة Operations.
