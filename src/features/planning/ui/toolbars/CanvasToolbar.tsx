@@ -133,6 +133,8 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
+        <RealtimeStatusBadge status={realtimeStatus} lastSyncAt={lastSyncAt} />
+
         <div
           className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sb-panel-bg border border-sb-border"
           aria-label="المتعاونون النشِطون"
