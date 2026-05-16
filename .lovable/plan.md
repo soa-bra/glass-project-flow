@@ -123,3 +123,26 @@
 - مسارات Planning كاملة DB-backed مع locking + history + realtime.
 
 **حالة P3**: ✅ مكتمل (مع بنود 3 و5 مرفوعة إلى **P3.b** كتحسين عرضي غير حاجب).
+
+---
+
+## P4 — Audit + Events + Engine Jobs (حالة الإغلاق)
+
+| التسليم | الحالة | الدليل |
+|---|---|---|
+| جدول `audit_events` + RLS | ✅ | RLS: `audit insert auth` (actor=auth.uid) + `audit read own` (actor أو owner). لا UPDATE/DELETE. |
+| استبدال `mockAuditEvents` بكتابة فعلية | ✅ | `src/services/central/audit.service.ts` يكتب مباشرة في الجدول. `ProjectWorkspace` يستدعي `AuditService.log` للإنشاء/التحديث. |
+| Decorator موحَّد (Permission → Execute → Audit) | ✅ | `src/services/central/withAuthorizationAndAudit.ts` يغلّف العمليات الحساسة مع `has_permission` + audit log allowed/denied. |
+| `event_outbox` + `event_dlq` (Migration حقيقية) | ✅ | الجدولان موجودان مع RLS (owner-only read، لا INSERT/UPDATE/DELETE من الواجهة). |
+| Edge Function `outbox-relay` | ✅ | `supabase/functions/outbox-relay/index.ts` — يستهلك batch=50، MAX_ATTEMPTS=3، الفاشل ينتقل إلى DLQ. مُجدوَل عبر pg_cron. |
+| Edge Function `engine-jobs-worker` | ✅ | `supabase/functions/engine-jobs-worker/index.ts` — يلتقط jobs بحالة `planned`، ينقلها إلى `active` ثم `completed/failed`. |
+| Realtime على `engine_jobs.state` | ✅ | `src/hooks/central/useEngineJobsRealtime.ts` يشترك في `postgres_changes` ويبطل React Query cache. |
+| Audit Center في Settings | ✅ | `src/components/SettingsPanel/categories/AuditCenterPanel.tsx` — آخر 100 حدث، فلترة بنوع المورد والإجراء، refetch كل 30 ث. مسجَّل في `CategoryPanelFactory`. |
+
+**DoD المتحقّق:**
+- كل أمر حسّاس مغلَّف بـ `withAuthorizationAndAudit` يولّد سجلًا (allowed أو denied) عبر `AuditService`.
+- Outbox/DLQ يعملان مع retry وانتقال للـ DLQ بعد 3 محاولات.
+- Engine Jobs تنفّذ وتُحدّث حالتها، والواجهة تستقبل التحديثات Realtime.
+- مركز التدقيق متاح للمالكين فقط عبر RLS.
+
+**حالة P4**: ✅ مكتمل. النقطة التالية: **P5 — التحصين** (Lighthouse، اختبارات، a11y، Sentry).
