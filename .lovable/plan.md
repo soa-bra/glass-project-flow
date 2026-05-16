@@ -125,3 +125,14 @@ Zod schemas في `src/types/departments/*.ts` لكل كيان.
   - `clients`: crm_customers + crm_opportunities + crm_service_tickets + legal_contracts (funnel + portfolioHealth)
   - `reports`: kmpa_documents + counts (projects, invoices) + popularCategories
 - حذف `src/components/OperationsBoard/mockData.ts` نهائيًا — لا توجد بيانات تجريبية في لوحة Operations.
+
+## P3.b — تحقق Zod + Audit (دفعة ثالثة)
+
+✅ **منجَز:**
+- `src/services/audit.ts` — مُحدَّث:
+  - `audit()` دالة موحَّدة تكتب إلى `audit_events` (decision: allowed/denied/error).
+  - `auditService.logEvent()` يبقى متوافقًا مع المستدعين القدامى (planning authz).
+- `src/services/departments/_factory.ts` — مُقَوّى:
+  - `validateInput()` يطبّق Zod (من `DEPARTMENT_TABLES`) على create/update، يحذف الحقول المُدارة سيرفر-سايد، ويرمي خطأً وصفيًا عند الفشل.
+  - كل create/update/remove يطلق `audit()` بالحقل/المعرّف، وكل خطأ سيرفر يُسجَّل بـ decision=error مع السبب.
+- `src/components/OperationsBoard/useTabData.ts` — يسجّل `operations_board.view.<tab>` لكل تحميل تبويب، ويفصل بين success/error.
