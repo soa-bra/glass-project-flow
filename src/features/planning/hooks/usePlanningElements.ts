@@ -23,6 +23,13 @@ import type {
   PlanningElementCreateInput,
   PlanningElementUpdateInput,
 } from "@/services/central/planningBoards.service";
+import {
+  MERGEABLE_FIELDS,
+  mergePlanningElement,
+  prunePendingStamps,
+  type MergeableField,
+  type PendingFieldStamps,
+} from "../state/conflictResolver";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 
 function sortElements(rows: PlanningElement[]): PlanningElement[] {
