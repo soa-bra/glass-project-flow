@@ -91,3 +91,24 @@ Zod schemas في `src/types/departments/*.ts` لكل كيان.
 - قد لا يكتمل ربط جميع التبويبات الـ50+ في جلسة واحدة بدون regressions. سأنفّذ على دفعات وأبلّغك بعد كل قسم. إذا أردت إيقاف بعد قسم معيّن لمراجعة، أخبرني.
 
 هل أبدأ بالـ migration؟
+---
+
+## P3.b — حالة الإغلاق (دفعة أولى)
+
+✅ **منجَز في هذه الجلسة:**
+- Migration كامل: 22 جدول دومين (HR/CRM/Financial/Legal/Brand/Marketing/CSR/KMPA/Templates) + RLS (owners manage own + is_owner bypass) + indexes + update triggers
+- `src/types/departments/index.ts` — Zod schemas + TS types لكل الجداول
+- `src/services/departments/_factory.ts` + `index.ts` — Generic CRUD factory + 22 خدمة جاهزة
+- `src/hooks/departments/index.ts` — React Query hooks (useList/useOne/useCreate/useUpdate/useRemove) لكل دومين
+- **تبويب نموذجي مربوط بالكامل**: `HR/EmployeesTab` (قراءة/إضافة/تعديل/حذف من `hr_employees`، الحقول الغنية في `metadata` jsonb)
+
+🟡 **متبقّي (للجلسات التالية):**
+- ربط باقي تبويبات HR: Attendance, Training, Performance, Partners, Recruitment
+- ربط تبويبات CRM: Customers, Opportunities, Activities, Service
+- ربط تبويبات Financial: Budgets, Transactions, Analysis (Invoices مربوطة سلفًا)
+- ربط Legal/Brand/Marketing/CSR/KMPA/Templates
+- تبويبات Overview/Analytics/Reports تُحسب من نفس الـ hooks
+- حذف ملفات `data.ts` بعد اكتمال ربط كل قسم
+- تحديث `MOCK_INVENTORY.md`
+
+البنية التحتية جاهزة بالكامل — كل تبويب باقٍ هو تطبيق نفس النمط على `HrEmployees`/`CrmCustomers`/إلخ.
