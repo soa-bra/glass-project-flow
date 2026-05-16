@@ -38,7 +38,7 @@ const toolsWithoutPanel: ToolId[] = [
   'text_tool', // تم نقل أدوات النص إلى FloatingBar
 ];
 
-const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
+const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   // الحصول على حالة التحرير
