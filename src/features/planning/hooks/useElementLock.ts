@@ -12,11 +12,13 @@
  *   await release();             // optional — auto-released on unmount
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
+import { PlanningBoardsService } from "@/services/central";
+
+const {
   acquireExclusiveElementLock,
   releaseUserLocksOnBoard,
   ELEMENT_LOCK_TTL_MS,
-} from "@/services/central";
+} = PlanningBoardsService;
 
 const HEARTBEAT_MS = Math.floor(ELEMENT_LOCK_TTL_MS / 3); // ≈10s
 
