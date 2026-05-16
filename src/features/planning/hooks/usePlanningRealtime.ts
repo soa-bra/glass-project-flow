@@ -328,6 +328,7 @@ export function usePlanningRealtime({
     isConnected: connectionStatus === "connected",
     connectionStatus,
     lastSyncAt,
+    retryAttempt,
   };
 }
 
