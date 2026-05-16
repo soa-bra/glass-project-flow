@@ -13,6 +13,7 @@ import { createTypedSmartElement } from '@/features/planning/elements/smart/fact
 import { executeCommandWithAuthorization } from '@/features/planning/domain/commands';
 import { useCollaborationStore } from '@/stores/collaborationStore';
 import { useBoardCanvasLifecycle } from '@/features/planning/hooks/useBoardCanvasLifecycle';
+import { usePlanningStoreSync } from '@/features/planning/hooks/usePlanningStoreSync';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
