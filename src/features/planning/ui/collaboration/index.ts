@@ -4,3 +4,4 @@ export { ElementEditorsBadge } from "./ElementEditorsBadge";
 export { ElementLockBadge } from "./ElementLockBadge";
 export { ElementLockedOverlay } from "./ElementLockedOverlay";
 export { RealtimeStatusBadge } from "./RealtimeStatusBadge";
+export { ElementHistoryPanel } from "./ElementHistoryPanel";

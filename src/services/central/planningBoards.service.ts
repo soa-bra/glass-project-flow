@@ -340,3 +340,29 @@ export async function acquireExclusiveElementLock(
   if (error) throw error;
   return data ?? null;
 }
+
+// ── Element history ─────────────────────────────────────────────────────────
+export interface PlanningElementHistoryEntry {
+  id: string;
+  element_id: string;
+  board_id: string;
+  actor_id: string | null;
+  action: "insert" | "update" | "delete";
+  changed_fields: Record<string, { old: unknown; new: unknown }>;
+  snapshot: Record<string, unknown> | null;
+  created_at: string;
+}
+
+export async function listElementHistory(
+  elementId: string,
+  limit = 100,
+): Promise<PlanningElementHistoryEntry[]> {
+  const { data, error } = await supabase
+    .from("planning_element_history" as never)
+    .select("*")
+    .eq("element_id", elementId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as unknown as PlanningElementHistoryEntry[];
+}
