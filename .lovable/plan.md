@@ -70,3 +70,14 @@
 - [ ] Smart Doc يُحفَظ ويُسترجَع مع `schema_version` معتمد عبر Zod
 - [ ] Viewer يرى زر Smart Doc معطّلًا + toast "غير مصرّح" عند المحاولة
 - [ ] سجل `audit_events` يحتوي قرار `authz.denied` للحالات المرفوضة
+
+---
+
+## P1 — حالة الإغلاق (تحديث)
+
+- ✅ P1.a — منجز سابقًا.
+- ✅ P1.b — منجز سابقًا.
+- ✅ **P1.c — مُغلَق**: عقد Zod `SmartDocContentSchema` v1 في `src/features/planning/elements/smart-doc/contract.ts`، والتحقق مدمج في `planningBoards.service.ts` (create/update). `schema_version` يُضبط تلقائيًا للعناصر من نوع `smart_doc`/`interactive_sheet`.
+- ✅ **P1.d — مُغلَق**: `evaluateCommandAuthorization` يدعم الآن `canvas.smart-doc.create` و`canvas.smart-doc.ai-assist` بنفس قاعدة الأدوار (host/editor فقط). `SmartDocToolZone` يعطّل الأزرار للأدوار `viewer`/`guest` ويعرض toast عربي عند المحاولة. RLS على `planning_elements` يبقى الضمان الخلفي.
+
+**حالة P1**: ✅ مكتمل.
