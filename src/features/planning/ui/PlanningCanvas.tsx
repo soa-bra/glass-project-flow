@@ -35,7 +35,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   useBoardCanvasLifecycle(board);
 
-  const { peers } = usePlanningStoreSync(board.id, selfName);
+  const { peers, connectionStatus, lastSyncAt } = usePlanningStoreSync(board.id, selfName);
 
   useEffect(() => {
     const host = canvasHostRef.current;
