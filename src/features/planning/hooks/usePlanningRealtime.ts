@@ -29,6 +29,8 @@ export interface PresencePeer {
   display_name: string;
   color: string;
   cursor?: { x: number; y: number };
+  /** Element the peer is currently editing/locking, if any. */
+  editing_element_id?: string | null;
   lastSeen: number;
 }
 
@@ -67,6 +69,7 @@ export function usePlanningRealtime({
   const [selfUserId, setSelfUserId] = useState<string | null>(null);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const lastCursorAtRef = useRef(0);
+  const selfStateRef = useRef<PresencePeer | null>(null);
 
   // Stable refs for change callbacks (avoid re-subscribing on each render).
   const cbRef = useRef({ onElementInsert, onElementUpdate, onElementDelete });
@@ -155,18 +158,22 @@ export function usePlanningRealtime({
       })
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
-          await channel.track({
+          const base: PresencePeer = {
             user_id: selfUserId,
             display_name: selfDisplayName ?? "متعاون",
             color: colorFromId(selfUserId),
+            editing_element_id: null,
             lastSeen: Date.now(),
-          } satisfies PresencePeer);
+          };
+          selfStateRef.current = base;
+          await channel.track(base);
         }
       });
 
     return () => {
       void supabase.removeChannel(channel);
       channelRef.current = null;
+      selfStateRef.current = null;
       setPeers({});
     };
   }, [boardId, selfUserId, selfDisplayName]);
@@ -185,6 +192,19 @@ export function usePlanningRealtime({
     });
   }, [selfUserId]);
 
+  /** Patch self presence (e.g. which element is being edited). */
+  const updateSelfPresence = useCallback(
+    async (patch: Partial<Pick<PresencePeer, "editing_element_id">>) => {
+      const ch = channelRef.current;
+      const base = selfStateRef.current;
+      if (!ch || !base) return;
+      const next: PresencePeer = { ...base, ...patch, lastSeen: Date.now() };
+      selfStateRef.current = next;
+      await ch.track(next);
+    },
+    [],
+  );
+
   const peerList = useMemo(
     () => Object.values(peers).filter((p) => p.user_id !== selfUserId),
     [peers, selfUserId],
@@ -195,6 +215,7 @@ export function usePlanningRealtime({
     peersById: peers,
     selfUserId,
     broadcastCursor,
+    updateSelfPresence,
     isConnected: !!channelRef.current,
   };
 }

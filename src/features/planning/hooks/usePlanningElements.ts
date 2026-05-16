@@ -32,6 +32,7 @@ export interface UsePlanningElementsResult {
   peersById: ReturnType<typeof usePlanningRealtime>["peersById"];
   selfUserId: string | null;
   broadcastCursor: (x: number, y: number) => void;
+  updateSelfPresence: ReturnType<typeof usePlanningRealtime>["updateSelfPresence"];
   isConnected: boolean;
 }
 
@@ -102,6 +103,7 @@ export function usePlanningElements(
     peersById: rt.peersById,
     selfUserId: rt.selfUserId,
     broadcastCursor: rt.broadcastCursor,
+    updateSelfPresence: rt.updateSelfPresence,
     isConnected: rt.isConnected,
   };
 }
