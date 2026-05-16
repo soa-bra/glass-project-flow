@@ -22,10 +22,21 @@ const {
 
 const HEARTBEAT_MS = Math.floor(ELEMENT_LOCK_TTL_MS / 3); // ≈10s
 
-export function useElementLock(boardId: string | null | undefined) {
+type PresencePublisher = (
+  patch: { editing_element_id?: string | null },
+) => void | Promise<void>;
+
+export function useElementLock(
+  boardId: string | null | undefined,
+  publishPresence?: PresencePublisher,
+) {
   const [locked, setLocked] = useState<string | null>(null);
   const lockedRef = useRef<string | null>(null);
   const beatRef = useRef<number | null>(null);
+  const publishRef = useRef<PresencePublisher | undefined>(publishPresence);
+  useEffect(() => {
+    publishRef.current = publishPresence;
+  }, [publishPresence]);
 
   const clearBeat = useCallback(() => {
     if (beatRef.current != null) {
@@ -39,6 +50,11 @@ export function useElementLock(boardId: string | null | undefined) {
     const board = boardId;
     lockedRef.current = null;
     setLocked(null);
+    try {
+      await publishRef.current?.({ editing_element_id: null });
+    } catch {
+      /* best-effort */
+    }
     if (!board) return;
     try {
       await releaseUserLocksOnBoard(board);
@@ -55,6 +71,11 @@ export function useElementLock(boardId: string | null | undefined) {
       if (!row) return false;
       lockedRef.current = elementId;
       setLocked(elementId);
+      try {
+        await publishRef.current?.({ editing_element_id: elementId });
+      } catch {
+        /* best-effort */
+      }
       clearBeat();
       beatRef.current = window.setInterval(() => {
         // Heartbeat: re-acquire to refresh locked_at; ignore failures.
@@ -71,7 +92,6 @@ export function useElementLock(boardId: string | null | undefined) {
       if (document.visibilityState === "hidden") void release();
     };
     const onUnload = () => {
-      // Fire and forget; server-side TTL will clean up if this fails.
       void release();
     };
     document.addEventListener("visibilitychange", onHide);
