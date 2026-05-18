@@ -5,15 +5,17 @@ import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { emitSettingsAudit } from '../auditTrail';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { RateLimiter } from '../../../utils/validation';
 
 interface SecuritySettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
-export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () => {
+export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ canWrite = true }) => {
   const [formData, setFormData] = useState({
     mfa: {
       enabled: true,
@@ -93,6 +95,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
         detail: { section: 'security', data: formData }
       });
       window.dispatchEvent(event);
+      emitSettingsAudit('security', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently
     }
@@ -352,6 +355,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
               </button>
               <button
                 onClick={handleSave}
+                disabled={!canWrite}
                 style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
                 className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
               >
