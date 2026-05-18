@@ -1,5 +1,6 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
 
@@ -59,14 +60,12 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
     { key: 'ocean-breeze', name: 'نسيم المحيط', primary: '#006994', secondary: '#E0F6FF' }
   ];
 
+  const saveMutation = useSettingsSectionMutation('theme' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'theme', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
     } catch (error) {
       // Error handled silently
     }

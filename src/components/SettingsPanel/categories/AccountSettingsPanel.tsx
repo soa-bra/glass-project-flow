@@ -1,5 +1,6 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { User, Camera, Key, Globe, Save } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -94,6 +95,8 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
     validateField('newPassword', mockSuggestion);
   };
 
+  const saveMutation = useSettingsSectionMutation('account' as const);
+
   const handleSave = async () => {
     try {
       // Validate all fields before saving
@@ -110,11 +113,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
 
       // Saving account settings
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'account', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
     } catch (error) {
       // Error handled silently
     }
