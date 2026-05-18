@@ -1,0 +1,1 @@
+export { KnowledgeBaseDashboard } from './KnowledgeBaseDashboard';

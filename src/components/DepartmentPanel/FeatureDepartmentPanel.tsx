@@ -1,7 +1,10 @@
 import React from 'react';
 import { usePermission } from '@/hooks/usePermission';
 import { canRunAction } from '@/auth/permissions';
-import { resolveDepartment, getDepartmentCoverageReport, buildDepartmentVerificationMatrix } from '../DepartmentTabs/shared/departmentResolver';
+import { resolveDepartment, getDepartmentCoverageReport } from '../DepartmentTabs/shared/departmentResolver';
+import { PartnershipsDashboard } from '../DepartmentTabs/Partnerships';
+import { KnowledgeBaseDashboard } from '../DepartmentTabs/Knowledge';
+import { BrandCommunityDashboard } from '../DepartmentTabs/BrandCommunity';
 
 interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
@@ -27,6 +30,17 @@ export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   );
 
   const renderDepartmentDashboard = () => {
+    switch (selectedDepartment) {
+      case 'partnerships':
+        return <PartnershipsDashboard />;
+      case 'knowledge':
+        return <KnowledgeBaseDashboard />;
+      case 'brand-community':
+        return <BrandCommunityDashboard />;
+      default:
+        break;
+    }
+
     const resolved = resolveDepartment(selectedDepartment);
     if (!resolved) {
       return renderStateBlock('error', 'Endpoint Error State', `مفتاح الإدارة غير موجود في departmentsSpecification: ${selectedDepartment}`);
