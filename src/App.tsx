@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import JoinBoardPage from "./pages/JoinBoardPage";
 import AuthPage from "./pages/AuthPage";
 import DepartmentRoutePage from "./pages/DepartmentRoutePage";
+import SpecPreviewPage from "./pages/SpecPreviewPage";
 
 // P5 — React Query tuning: balance freshness vs unneeded refetches.
 const queryClient = new QueryClient({
