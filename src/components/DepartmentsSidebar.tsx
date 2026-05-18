@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
+import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, UserCheck, Handshake, Globe, Lightbulb } from 'lucide-react';
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (department: string) => void;
