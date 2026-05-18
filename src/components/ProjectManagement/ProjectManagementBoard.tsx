@@ -29,8 +29,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [loading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   if (!isVisible) return null;
   const handleDeleteProject = () => {
     // تنفيذ عملية حذف المشروع
@@ -48,12 +46,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     setShowEditModal(true);
   };
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    try {
-      onProjectUpdated?.(updatedProject);
-      setShowEditModal(false);
-    } catch (saveError) {
-      setError('فشل حفظ بيانات المشروع');
-    }
+    onProjectUpdated?.(updatedProject);
+    setShowEditModal(false);
   };
 
   // تحويل بيانات المشروع للتوافق مع نموذج AddProjectModal
@@ -70,35 +64,27 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   };
   const tabs = [{
     id: 'overview',
-    tabCode: 'overview',
     label: 'نظرة عامة'
   }, {
     id: 'tasks',
-    tabCode: 'tasks',
     label: 'إدارة المهام'
   }, {
     id: 'finance',
-    tabCode: 'finance',
     label: 'الإدارة المالية'
   }, {
     id: 'team',
-    tabCode: 'team',
     label: 'إدارة الفريق'
   }, {
     id: 'client',
-    tabCode: 'client',
     label: 'العميل'
   }, {
     id: 'files',
-    tabCode: 'files',
     label: 'إدارة المرفقات'
   }, {
     id: 'templates',
-    tabCode: 'templates',
     label: 'النماذج والقوالب'
   }, {
     id: 'reports',
-    tabCode: 'reports',
     label: 'التقارير'
   }];
 
@@ -226,11 +212,11 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
       case 'finance':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><FinancialTab data={project} projectId={project.id} canMutate={Boolean(project.id)} /></Reveal>
+            <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
           </div>;
       case 'team':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><TeamTab teamData={project.team} projectId={project.id} canMutate={Boolean(project.id)} /></Reveal>
+            <Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal>
           </div>;
       case 'client':
         return <div className="flex-1 overflow-auto">
@@ -238,7 +224,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
           </div>;
       case 'files':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><AttachmentsTab documents={null} projectId={project.id} canMutate={Boolean(project.id)} /></Reveal>
+            <Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal>
           </div>;
       case 'templates':
         return <div className="flex-1 overflow-auto">
@@ -269,7 +255,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
         {/* محتوى التبويبة النشطة */}
-        {loading ? <div>جاري تحميل بيانات المشروع...</div> : error ? <div>{error}</div> : project ? renderTabContent() : <div>لا توجد بيانات مشروع.</div>}
+        {renderTabContent()}
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

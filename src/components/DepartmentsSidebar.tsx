@@ -1,6 +1,5 @@
 import React from 'react';
-import { DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, UserCheck, Handshake, Library, UsersRound } from 'lucide-react';
-import { departmentsSpecification } from './DepartmentTabs/shared/departmentDataModel';
+import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (department: string) => void;
@@ -13,26 +12,43 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   isCollapsed,
   onToggleCollapse
 }) => {
-  const iconMap = {
-    financial: DollarSign,
-    legal: Scale,
-    marketing: TrendingUp,
-    hr: Users,
-    crm: UserCheck,
-    partnerships: Handshake,
-    social: Heart,
-    training: GraduationCap,
-    research: BookOpen,
-    knowledge: Library,
-    brand: Award,
-    'brand-community': UsersRound
-  } as const;
-
-  const departments = departmentsSpecification.map((department) => ({
-    key: department.key,
-    label: department.label,
-    icon: iconMap[department.key as keyof typeof iconMap] ?? BookOpen
-  }));
+  const departments = [{
+    key: 'financial',
+    label: 'إدارة الأوضاع المالية',
+    icon: DollarSign
+  }, {
+    key: 'legal',
+    label: 'إدارة الأحوال القانونية',
+    icon: Scale
+  }, {
+    key: 'marketing',
+    label: 'إدارة الأنشطة التسويقية',
+    icon: TrendingUp
+  }, {
+    key: 'hr',
+    label: 'إدارة الطاقات البشرية',
+    icon: Users
+  }, {
+    key: 'crm',
+    label: 'إدارة علاقات العملاء',
+    icon: UserCheck
+  }, {
+    key: 'social',
+    label: 'إدارة المسؤولية الاجتماعية',
+    icon: Heart
+  }, {
+    key: 'training',
+    label: 'إدارة التدريب',
+    icon: GraduationCap
+  }, {
+    key: 'research',
+    label: 'إدارة المعرفة والنشر والبحث العلمي',
+    icon: BookOpen
+  }, {
+    key: 'brand',
+    label: 'إدارة العلامة التجارية',
+    icon: Award
+  }];
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };

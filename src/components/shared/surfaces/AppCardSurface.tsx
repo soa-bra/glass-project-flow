@@ -16,7 +16,6 @@ export interface AppCardSurfaceProps {
   overflow?: SurfaceOverflow;
   header?: React.ReactNode;
   footer?: React.ReactNode;
-  boxRef?: string;
 }
 
 const densityClasses: Record<SurfaceDensity, string> = {
@@ -58,11 +57,9 @@ export const AppCardSurface: React.FC<AppCardSurfaceProps> = ({
   overflow = 'hidden',
   header,
   footer,
-  boxRef,
 }) => {
   return (
     <div
-      data-box-ref={boxRef}
       className={cn(
         'bg-white border border-[#DADCE0] rounded-[24px]',
         'shadow-[0_1px_1px_rgba(0,0,0,0.03),0_8px_24px_rgba(0,0,0,0.06)]',

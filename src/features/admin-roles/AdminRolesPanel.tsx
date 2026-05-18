@@ -10,7 +10,6 @@ import { AppCardSurface } from "@/components/shared/surfaces/AppCardSurface";
 import { BaseBadge } from "@/components/ui/BaseBadge";
 import { Loader2, Crown, Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { emitSettingsAudit } from "@/components/SettingsPanel/auditTrail";
 
 const ROLE_OPTIONS: AppRole[] = [
   "owner", "ciso", "dpo", "infra_admin", "finance_admin",
@@ -28,12 +27,12 @@ export const AdminRolesPanel: React.FC = () => {
   const assign = useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: AppRole }) =>
       RolesService.assignRole(userId, role),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin", "users-roles"] }); emitSettingsAudit("admin-roles", "revoke-role"); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "users-roles"] }),
   });
   const revoke = useMutation({
     mutationFn: ({ userId, role }: { userId: string; role: AppRole }) =>
       RolesService.revokeRole(userId, role),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin", "users-roles"] }); emitSettingsAudit("admin-roles", "assign-role"); },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "users-roles"] }),
   });
 
   if (isLoading) {

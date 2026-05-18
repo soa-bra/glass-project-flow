@@ -16,19 +16,27 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   isMainSidebarCollapsed,
   isDepartmentsSidebarCollapsed
 }) => {
-  // Departments with specialized dashboards
-  const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'partnerships', 'social', 'training', 'research', 'knowledge', 'brand', 'brand-community'];
-  
+  // Early return for no selection
   if (!selectedDepartment) {
     return <EmptyDepartmentState />;
   }
 
-  return specializedDepartments.includes(selectedDepartment) ? (
-    <DepartmentPanelLayout>
-      <FeatureDepartmentPanel selectedDepartment={selectedDepartment} />
-    </DepartmentPanelLayout>
-  ) : (
-    <BaseDepartmentPanel selectedDepartment={selectedDepartment} />
+  // Departments with specialized dashboards
+  const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'social', 'training'];
+  
+  if (specializedDepartments.includes(selectedDepartment)) {
+    return (
+      <DepartmentPanelLayout>
+        <FeatureDepartmentPanel selectedDepartment={selectedDepartment} />
+      </DepartmentPanelLayout>
+    );
+  }
+
+  // Generic departments with tabbed interface
+  return (
+    <div className="h-full rounded-3xl overflow-hidden" style={{ background: 'var(--sb-column-2-bg)' }}>
+      <BaseDepartmentPanel selectedDepartment={selectedDepartment} />
+    </div>
   );
 };
 

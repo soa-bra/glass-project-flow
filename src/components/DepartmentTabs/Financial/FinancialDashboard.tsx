@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
-import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { BudgetsTab } from './BudgetsTab';
 import { TransactionsTab } from './TransactionsTab';
@@ -14,7 +13,16 @@ import { ReportsTab } from './ReportsTab';
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   
-  const tabItems = dashboardTabsByKey.FinancialDashboard;
+  const tabItems = [
+    { value: 'overview', label: 'النظرة العامة' },
+    { value: 'budgets', label: 'الميزانيات' },
+    { value: 'transactions', label: 'النفقات والإيرادات' },
+    { value: 'invoices', label: 'الفواتير والمدفوعات' },
+    { value: 'analysis', label: 'التحليل والتقارير' },
+    { value: 'settings', label: 'الضبط' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
 
   return (
     <DashboardLayout

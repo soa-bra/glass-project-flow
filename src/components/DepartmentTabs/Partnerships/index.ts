@@ -1,1 +1,0 @@
-export { PartnershipsDashboard } from './PartnershipsDashboard';

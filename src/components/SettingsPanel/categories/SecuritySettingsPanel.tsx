@@ -1,23 +1,19 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
-import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { ShieldCheck, Smartphone, Key, Monitor, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
-import { useSettingsMutation } from '../settingsMutations';
-import { emitSettingsAudit } from '../auditTrail';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { RateLimiter } from '../../../utils/validation';
 
 interface SecuritySettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
-  canWrite?: boolean;
 }
 
-export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ canWrite = true }) => {
+export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () => {
   const [formData, setFormData] = useState({
     mfa: {
       enabled: true,
@@ -57,8 +53,6 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ ca
     }
   });
 
-  const saveMutation = useSettingsMutation('security', canWrite);
-
   const generateNewApiKey = () => {
     if (!RateLimiter.isAllowed('generateApiKey', 3, 300000)) {
       alert('تم تجاوز الحد المسموح لإنشاء مفاتيح API. حاول مرة أخرى بعد 5 دقائق.');
@@ -91,13 +85,14 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ ca
     }));
   };
 
-  const saveMutation = useSettingsSectionMutation('security' as const);
-
   const handleSave = async () => {
     try {
       clearDraft();
-      await saveMutation.mutateAsync(formData as Record<string, unknown>);
-      emitSettingsAudit('security', 'save', { hasWritePermission: canWrite });
+      
+      const event = new CustomEvent('settings.updated', {
+        detail: { section: 'security', data: formData }
+      });
+      window.dispatchEvent(event);
     } catch (error) {
       // Error handled silently
     }
@@ -357,7 +352,6 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ ca
               </button>
               <button
                 onClick={handleSave}
-                disabled={!canWrite}
                 style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
                 className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
               >

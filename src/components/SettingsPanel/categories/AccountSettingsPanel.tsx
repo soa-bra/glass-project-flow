@@ -1,22 +1,19 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
-import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { User, Camera, Key, Globe, Save } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
-import { useSettingsMutation } from '../settingsMutations';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { ValidationSchemas, FormValidator, InputSanitizer, RateLimiter } from '../../../utils/validation';
 
 interface AccountSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
-  canWrite?: boolean;
 }
 
-export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = ({ canWrite = true }) => {
+export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
   const [formData, setFormData] = useState({
     profile: {
       fullName: 'أحمد محمد السعيد',
@@ -47,8 +44,6 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = ({ canW
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
-
-  const saveMutation = useSettingsMutation('account', canWrite);
 
   const validateField = (field: string, value: string) => {
     let error: string | null = null;
@@ -99,8 +94,6 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = ({ canW
     validateField('newPassword', mockSuggestion);
   };
 
-  const saveMutation = useSettingsSectionMutation('account' as const);
-
   const handleSave = async () => {
     try {
       // Validate all fields before saving
@@ -117,7 +110,11 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = ({ canW
 
       // Saving account settings
       clearDraft();
-      await saveMutation.mutateAsync(formData as Record<string, unknown>);
+      
+      const event = new CustomEvent('settings.updated', {
+        detail: { section: 'account', data: formData }
+      });
+      window.dispatchEvent(event);
     } catch (error) {
       // Error handled silently
     }

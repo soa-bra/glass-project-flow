@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { StatusBox } from '@/components/custom/StatusBox';
 import { ClientProfile } from '@/components/custom/ClientProfile';
 import { TeamRoster } from '@/components/custom/TeamRoster';
@@ -20,27 +19,9 @@ import { getProjectFiles } from '@/data/projectFiles';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 // تبويب الوضع المالي
-type ProjectTabCommonProps = {
-  projectId?: string | number;
-  canMutate?: boolean;
-};
-
-const postProjectAction = async (projectId: string | number | undefined, action: string, payload: unknown) => {
-  if (!projectId) throw new Error('PROJECT_ID_REQUIRED');
-  const response = await fetch(`/api/projects/${projectId}/${action}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!response.ok) throw new Error(`API_${action.toUpperCase()}_FAILED`);
-  return response.json().catch(() => null);
-};
-
 export const FinancialTab = ({
-  data,
-  projectId,
-  canMutate = true
-}: any & ProjectTabCommonProps) => {
+  data
+}: any) => {
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isApprovalRequestOpen, setIsApprovalRequestOpen] = useState(false);
   const [isAnalysisModalOpen, setIsAnalysisModalOpen] = useState(false);
@@ -70,22 +51,12 @@ export const FinancialTab = ({
       color: '#f1b5b9'
     }]
   });
-  const addExpenseMutation = useMutation({
-    mutationFn: (payload: unknown) => postProjectAction(projectId, 'expenses', payload)
-  });
-
-  const approvalRequestMutation = useMutation({
-    mutationFn: (payload: unknown) => postProjectAction(projectId, 'approval-requests', payload)
-  });
-
-  const handleAddExpense = async (expense: {
+  const handleAddExpense = (expense: {
     category: string;
     amount: number;
     description: string;
     date: string;
   }) => {
-    if (!canMutate || !projectId) return;
-    await addExpenseMutation.mutateAsync(expense);
     setFinancialData(prev => {
       const newTotalExpenses = prev.totalExpenses + expense.amount;
       const newExpenses = [...prev.expenses];
@@ -108,12 +79,11 @@ export const FinancialTab = ({
       };
     });
   };
-  const handleApprovalRequest = async (request: {
+  const handleApprovalRequest = (request: {
     requiredBudget: number;
     justification: string;
     attachments: File[];
   }) => {
-    if (!canMutate || !projectId) return;
     const newRequest = {
       id: Date.now().toString(),
       ...request,
@@ -121,7 +91,6 @@ export const FinancialTab = ({
       submittedAt: new Date().toISOString(),
       submittedBy: 'مدير المشروع' // This should come from user context
     };
-    await approvalRequestMutation.mutateAsync(newRequest);
     setApprovalRequests(prev => [...prev, newRequest]);
 
     // Here you would typically send notifications to Financial Manager and Admin
@@ -247,21 +216,21 @@ export const FinancialTab = ({
           <div className="p-4 border border-[#DADCE0] rounded-[24px] bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">إضافة مصروف جديد</h4>
             <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
-            <button disabled={!canMutate || !projectId} onClick={() => setIsExpenseModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsExpenseModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة مصروف
             </button>
           </div>
           <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">طلب موافقة على تعديل ميزانية المشروع</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
-            <button disabled={!canMutate || !projectId} onClick={() => setIsApprovalRequestOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsApprovalRequestOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               طلب موافقة
             </button>
           </div>
           <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">تحليل الانحرافات</h4>
             <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
-            <button disabled={!projectId} onClick={() => setIsAnalysisModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsAnalysisModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               عرض التحليل
             </button>
           </div>
@@ -335,19 +304,13 @@ export const ClientTab = ({
 
 // تبويب الفريق
 export const TeamTab = ({
-  teamData,
-  projectId,
-  canMutate = true
-}: any & ProjectTabCommonProps) => {
+  teamData
+}: any) => {
   const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
   const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
   const [isManualTaskDistributionModalOpen, setIsManualTaskDistributionModalOpen] = useState(false);
   const [isPerformanceEvaluationModalOpen, setIsPerformanceEvaluationModalOpen] = useState(false);
-
-  const teamMutation = useMutation({
-    mutationFn: ({ action, payload }: { action: string; payload: unknown }) => postProjectAction(projectId, action, payload)
-  });
 
   // إدارة حالة الفريق والمهام
   const [teamMembers, setTeamMembers] = useState([{
@@ -401,7 +364,7 @@ export const TeamTab = ({
   }]);
 
   // معالج إضافة عضو جديد
-  const handleAddTeamMember = async (memberId: string, taskIds: string[]) => {
+  const handleAddTeamMember = (memberId: string, taskIds: string[]) => {
     const availableMembers = [{
       id: '5',
       name: 'سارة أحمد',
@@ -428,7 +391,6 @@ export const TeamTab = ({
       phone: '+966508901234'
     }];
     const memberToAdd = availableMembers.find(m => m.id === memberId);
-    if (!canMutate || !projectId) return;
     if (memberToAdd) {
       const newMember = {
         ...memberToAdd,
@@ -439,7 +401,6 @@ export const TeamTab = ({
         hoursLogged: 0,
         targetHours: 180
       };
-      await teamMutation.mutateAsync({ action: 'team-members', payload: { memberId, taskIds } });
       setTeamMembers(prev => [...prev, newMember]);
     }
   };
@@ -454,16 +415,12 @@ export const TeamTab = ({
     }
     const member = teamMembers.find(m => m.id === memberId);
     if (member && window.confirm(`هل تريد بالتأكيد استبعاد ${member.name} من الفريق؟`)) {
-      if (!projectId || !canMutate) return;
-      teamMutation.mutate({ action: 'team-members/remove', payload: { memberId } });
       setTeamMembers(prev => prev.filter(m => m.id !== memberId));
     }
   };
 
   // معالج توزيع المهام
-  const handleTaskDistribution = async (redistributedTasks: any[]) => {
-    if (!canMutate || !projectId) return;
-    await teamMutation.mutateAsync({ action: 'task-distribution', payload: { redistributedTasks } });
+  const handleTaskDistribution = (redistributedTasks: any[]) => {
     // تحديث توزيع المهام حسب النتائج
     // توزيع المهام يدوياً أو بالذكاء الاصطناعي
   };
@@ -520,14 +477,14 @@ export const TeamTab = ({
           <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إسناد مهام للموارد البشرية</h4>
             <p className="text-xs text-black/70 mb-3">إسناد مهام المشروع لموظفي قسم الموارد البشرية</p>
-            <button disabled={!canMutate || !projectId} onClick={() => setIsAddTeamMemberModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsAddTeamMemberModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة عضو
             </button>
           </div>
           <div className="p-4 border border-[#DADCE0] rounded-[24px] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
-            <button disabled={!canMutate || !projectId} onClick={() => setIsManualTaskDistributionModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsManualTaskDistributionModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               توزيع المهام
             </button>
           </div>
@@ -603,14 +560,12 @@ export const TeamTab = ({
 
       <TaskAssignmentModal isOpen={isTaskAssignmentModalOpen} onClose={() => setIsTaskAssignmentModalOpen(false)} onSave={(employeeId, taskIds) => {
       // إسناد مهام
-      if (!canMutate || !projectId) return;
-      teamMutation.mutate({ action: 'task-assignment', payload: { employeeId, taskIds } });
+      alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
     }} />
 
       <TaskRedistributionModal isOpen={isTaskRedistributionModalOpen} onClose={() => setIsTaskRedistributionModalOpen(false)} onRedistribute={redistributedTasks => {
       // إعادة توزيع المهام
-      if (!canMutate || !projectId) return;
-      teamMutation.mutate({ action: 'task-redistribution', payload: { redistributedTasks } });
+      alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
     }} />
 
       <AddTeamMemberModal isOpen={isAddTeamMemberModalOpen} onClose={() => setIsAddTeamMemberModalOpen(false)} onSave={(memberId, taskIds) => {
@@ -629,17 +584,12 @@ export const TeamTab = ({
 
 // تبويب المرفقات
 export const AttachmentsTab = ({
-  documents,
-  projectId,
-  canMutate = true
-}: any & ProjectTabCommonProps) => {
+  documents
+}: any) => {
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
   const [isFolderOrganizationModalOpen, setIsFolderOrganizationModalOpen] = useState(false);
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
   const [projectFiles, setProjectFiles] = useState<any[]>([]);
-  const attachmentsMutation = useMutation({
-    mutationFn: ({ action, payload }: { action: string; payload: unknown }) => postProjectAction(projectId, action, payload)
-  });
 
   // مهام المشروع الوهمية للربط
   const projectTasks = [{
@@ -658,14 +608,12 @@ export const AttachmentsTab = ({
     id: '5',
     title: 'مراجعة الكود'
   }];
-  const handleFileUpload = async (data: {
+  const handleFileUpload = (data: {
     files: File[];
     title: string;
     linkedTasks: string[];
     projectId: string;
   }) => {
-    if (!canMutate || !projectId) return;
-    await attachmentsMutation.mutateAsync({ action: 'attachments/upload', payload: data });
     // معالجة رفع الملفات
     const newFiles = data.files.map((file, index) => ({
       id: Date.now() + index,
@@ -681,12 +629,10 @@ export const AttachmentsTab = ({
     setIsFileUploadModalOpen(false);
     // ملفات جديدة تم رفعها
   };
-  const handleFolderOrganization = async (data: {
+  const handleFolderOrganization = (data: {
     folders: any[];
     actions: any[];
   }) => {
-    if (!canMutate || !projectId) return;
-    await attachmentsMutation.mutateAsync({ action: 'attachments/folders', payload: data });
     // تنظيم المجلدات
     setIsFolderOrganizationModalOpen(false);
   };
@@ -744,14 +690,14 @@ export const AttachmentsTab = ({
           <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
-            <button disabled={!canMutate || !projectId} onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع ملف
             </button>
           </div>
           <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
-            <button disabled={!canMutate || !projectId} onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
+            <button onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم المجلدات
             </button>
           </div>
@@ -761,7 +707,7 @@ export const AttachmentsTab = ({
             <button onClick={() => {
             // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
             const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
-            const hasPermission = canMutate && !!projectId && ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
+            const hasPermission = ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
             if (hasPermission) {
               setIsPermissionsModalOpen(true);
             } else {
@@ -778,10 +724,10 @@ export const AttachmentsTab = ({
       <DocumentsGrid projectId="current" />
 
       {/* نافذة رفع الملفات */}
-      <FileUploadModal isOpen={isFileUploadModalOpen} onClose={() => setIsFileUploadModalOpen(false)} projectTasks={projectTasks} projectId={String(projectId ?? 'current')} />
+      <FileUploadModal isOpen={isFileUploadModalOpen} onClose={() => setIsFileUploadModalOpen(false)} projectTasks={projectTasks} projectId="current" />
 
       {/* نافذة تنظيم المجلدات */}
-      <FolderOrganizationModal isOpen={isFolderOrganizationModalOpen} onClose={() => setIsFolderOrganizationModalOpen(false)} projectId={String(projectId ?? 'current')} />
+      <FolderOrganizationModal isOpen={isFolderOrganizationModalOpen} onClose={() => setIsFolderOrganizationModalOpen(false)} projectId="current" />
 
       {/* نافذة إدارة الصلاحيات */}
       <PermissionsModal isOpen={isPermissionsModalOpen} onClose={() => setIsPermissionsModalOpen(false)} />

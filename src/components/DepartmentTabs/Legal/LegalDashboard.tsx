@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
-import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { ContractsTab } from './ContractsTab';
 import { ComplianceTab } from './ComplianceTab';
@@ -13,7 +12,15 @@ import { ReportsTab } from './ReportsTab';
 export const LegalDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   
-  const tabItems = dashboardTabsByKey.LegalDashboard;
+  const tabItems = [
+    { value: 'overview', label: 'النظرة العامة' },
+    { value: 'contracts', label: 'العقود والاتفاقيات' },
+    { value: 'compliance', label: 'الامتثال' },
+    { value: 'risks', label: 'المخاطر والنزاعات' },
+    { value: 'licenses', label: 'التراخيص والملكية الفكرية' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' }
+  ];
 
   return (
     <DashboardLayout

@@ -1,22 +1,19 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
-import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Bell, Smartphone, Mail, MessageSquare, Settings, Volume2, VolumeX, Clock, Target } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
-import { useSettingsMutation } from '../settingsMutations';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 
 interface NotificationsSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
-  canWrite?: boolean;
 }
 
-export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProps> = ({ canWrite = true }) => {
+export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProps> = () => {
   const [formData, setFormData] = useState({
     preferences: {
       email: true,
@@ -65,8 +62,6 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
     }
   });
 
-  const saveMutation = useSettingsMutation('notifications', canWrite);
-
   const updatePreference = (key: string, value: boolean) => {
     setFormData(prev => ({
       ...prev,
@@ -81,12 +76,14 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
     }));
   };
 
-  const saveMutation = useSettingsSectionMutation('notifications' as const);
-
   const handleSave = async () => {
     try {
       clearDraft();
-      await saveMutation.mutateAsync(formData as Record<string, unknown>);
+      
+      const event = new CustomEvent('settings.updated', {
+        detail: { section: 'notifications', data: formData }
+      });
+      window.dispatchEvent(event);
     } catch (error) {
       // Error handled silently
     }

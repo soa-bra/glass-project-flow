@@ -1,6 +1,6 @@
 import React from 'react';
+import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText, Cpu, Network, Wrench, Crown } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { SETTINGS_POLICY } from './SettingsPanel/policies';
 
 interface SettingsSidebarProps {
   selectedCategory: string | null;
@@ -15,14 +15,100 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
   isCollapsed,
   onToggleCollapse
 }) => {
-  const categories = Object.entries(SETTINGS_POLICY).map(([key, value]) => ({
-    key,
-    label: value.label,
-    icon: value.icon,
-    route: value.route,
-    badge: key === 'notifications',
-  }));
-
+  const categories = [
+    {
+      key: 'account',
+      label: 'الحساب الشخصي',
+      icon: User,
+      route: '/settings/account',
+      access: 'all'
+    },
+    {
+      key: 'security',
+      label: 'الخصوصية والأمان',
+      icon: ShieldCheck,
+      route: '/settings/security',
+      access: 'role in [admin, dept_manager]'
+    },
+    {
+      key: 'notifications',
+      label: 'الإشعارات',
+      icon: Bell,
+      route: '/settings/notifications',
+      access: 'all',
+      badge: true
+    },
+    {
+      key: 'integrations',
+      label: 'التكاملات الخارجية',
+      icon: Link2,
+      route: '/settings/integrations',
+      access: 'permission: Integrations.Manage'
+    },
+    {
+      key: 'ai',
+      label: 'الذكاء الاصطناعي',
+      icon: BrainCircuit,
+      route: '/settings/ai',
+      access: 'role in [System Admin, AI Ops]'
+    },
+    {
+      key: 'theme',
+      label: 'المظهر',
+      icon: Palette,
+      route: '/settings/theme',
+      access: 'all'
+    },
+    {
+      key: 'data-governance',
+      label: 'إدارة البيانات',
+      icon: Database,
+      route: '/settings/data-governance',
+      access: 'role >= Data Officer'
+    },
+    {
+      key: 'users-roles',
+      label: 'المستخدمون والأدوار',
+      icon: Users,
+      route: '/settings/users-roles',
+      access: 'role == System Admin'
+    },
+    {
+      key: 'audit',
+      label: 'مركز التدقيق',
+      icon: ScrollText,
+      route: '/settings/audit',
+      access: 'role == Owner'
+    },
+    {
+      key: 'engine-jobs',
+      label: 'لوحة المحركات',
+      icon: Cpu,
+      route: '/settings/engine-jobs',
+      access: 'role >= System Admin'
+    },
+    {
+      key: 'dependency-graph',
+      label: 'خريطة التبعيات',
+      icon: Network,
+      route: '/settings/dependency-graph',
+      access: 'all'
+    },
+    {
+      key: 'tools-marketplace',
+      label: 'سوق الأدوات',
+      icon: Wrench,
+      route: '/settings/tools-marketplace',
+      access: 'all'
+    },
+    {
+      key: 'admin-roles',
+      label: 'إدارة الأدوار',
+      icon: Crown,
+      route: '/settings/admin-roles',
+      access: 'role == Owner'
+    }
+  ];
   
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);

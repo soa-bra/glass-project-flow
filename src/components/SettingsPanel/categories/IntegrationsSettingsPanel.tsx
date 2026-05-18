@@ -1,19 +1,15 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
-import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Link2, Key, Shield, CheckCircle, AlertCircle, Settings, Zap, Download, Upload } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
-import { useSettingsMutation } from '../settingsMutations';
-import { emitSettingsAudit } from '../auditTrail';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface IntegrationsSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
-  canWrite?: boolean;
 }
 
 interface Integration {
@@ -27,7 +23,7 @@ interface Integration {
   lastSync?: string;
 }
 
-export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps> = ({ canWrite = true }) => {
+export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps> = () => {
   const [integrations, setIntegrations] = useState<Integration[]>([
     {
       id: 'slack',
@@ -91,8 +87,6 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     }
   });
 
-  const saveMutation = useSettingsMutation('integrations', canWrite);
-
   const handleIntegrationToggle = (integrationId: string) => {
     setIntegrations(prev => prev.map(integration => 
       integration.id === integrationId 
@@ -101,13 +95,14 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     ));
   };
 
-  const saveMutation = useSettingsSectionMutation('integrations' as const);
-
   const handleSave = async () => {
     try {
       clearDraft();
-      await saveMutation.mutateAsync(formData as Record<string, unknown>);
-      emitSettingsAudit('integrations', 'save', { hasWritePermission: canWrite });
+      
+      const event = new CustomEvent('settings.updated', {
+        detail: { section: 'integrations', data: formData }
+      });
+      window.dispatchEvent(event);
     } catch (error) {
       // Error handled silently
     }
@@ -407,7 +402,6 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
               </button>
               <button
                 onClick={handleSave}
-                disabled={!canWrite}
                 style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
                 className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
               >

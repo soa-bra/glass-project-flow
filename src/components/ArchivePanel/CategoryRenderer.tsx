@@ -4,6 +4,5 @@ import { CategoryPanelFactory } from './CategoryPanelFactory';
 import { CategoryRendererProps } from './CategoryPanelTypes';
 
 export const CategoryRenderer: React.FC<CategoryRendererProps> = ({ selectedCategory }) => {
-  const normalizedCategory = selectedCategory.trim().toLowerCase();
-  return <CategoryPanelFactory category={normalizedCategory} />;
+  return <CategoryPanelFactory category={selectedCategory} />;
 };

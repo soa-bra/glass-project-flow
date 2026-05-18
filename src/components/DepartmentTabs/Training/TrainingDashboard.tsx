@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
-import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { CoursesTab } from './CoursesTab';
 import { LMSTab } from './LMSTab';
@@ -15,7 +14,18 @@ import { ReportsTab } from './ReportsTab';
 
 export const TrainingDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = dashboardTabsByKey.TrainingDashboard;
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'courses', label: 'الدورات التدريبية' },
+    { value: 'lms', label: 'نظام إدارة التعلم' },
+    { value: 'scheduling', label: 'الجدولة والتسجيل' },
+    { value: 'certifications', label: 'الشهادات والمهارات' },
+    { value: 'analytics', label: 'التحليلات والأداء' },
+    { value: 'corporate', label: 'البرامج المؤسسية' },
+    { value: 'partnerships', label: 'الشراكات الأكاديمية' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' },
+  ];
 
   return (
     <DashboardLayout

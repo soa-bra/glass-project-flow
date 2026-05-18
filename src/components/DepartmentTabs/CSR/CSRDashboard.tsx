@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
-import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { InitiativesTab } from './InitiativesTab';
 import { PartnershipsTab } from './PartnershipsTab';
@@ -12,7 +11,15 @@ import { ReportsTab } from './ReportsTab';
 
 export const CSRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = dashboardTabsByKey.CSRDashboard;
+  const tabItems = [
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'initiatives', label: 'المبادرات' },
+    { value: 'partnerships', label: 'الشراكات والموارد' },
+    { value: 'monitoring', label: 'المراقبة والتقييم' },
+    { value: 'stories', label: 'قصص الأثر' },
+    { value: 'templates', label: 'النماذج والقوالب' },
+    { value: 'reports', label: 'التقارير' },
+  ];
 
   return (
     <DashboardLayout
