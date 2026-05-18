@@ -5,10 +5,12 @@ import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { emitSettingsAudit } from '../auditTrail';
 
 interface UsersRolesSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
 interface User {
@@ -31,7 +33,7 @@ interface Role {
   level: number;
 }
 
-export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = () => {
+export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = ({ canWrite = true }) => {
   const [users, setUsers] = useState<User[]>([
     {
       id: '1',
@@ -101,6 +103,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
         detail: { section: 'users-roles', data: { users, roles } }
       });
       window.dispatchEvent(event);
+      emitSettingsAudit('users-roles', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently
     }
@@ -248,6 +251,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
               </button>
               <button
                 onClick={handleSave}
+                disabled={!canWrite}
                 style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
                 className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
               >

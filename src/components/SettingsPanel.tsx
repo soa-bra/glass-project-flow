@@ -37,6 +37,8 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     return <EmptySettingsState />;
   }
 
+  const status: BoxStatus = 'data';
+
   return (
     <SettingsPanelLayout>
       <ManagedBox
