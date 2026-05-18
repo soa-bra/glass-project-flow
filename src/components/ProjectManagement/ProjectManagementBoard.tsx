@@ -73,27 +73,43 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   };
   const tabs = [{
     id: 'overview',
+    tabCode: 'overview',
+    boxRef: 'pm-overview-tab',
     label: 'نظرة عامة'
   }, {
     id: 'tasks',
+    tabCode: 'tasks',
+    boxRef: 'pm-tasks-tab',
     label: 'إدارة المهام'
   }, {
     id: 'finance',
+    tabCode: 'finance',
+    boxRef: 'pm-finance-tab',
     label: 'الإدارة المالية'
   }, {
     id: 'team',
+    tabCode: 'team',
+    boxRef: 'pm-team-tab',
     label: 'إدارة الفريق'
   }, {
     id: 'client',
+    tabCode: 'client',
+    boxRef: 'pm-client-tab',
     label: 'العميل'
   }, {
     id: 'files',
+    tabCode: 'files',
+    boxRef: 'pm-files-tab',
     label: 'إدارة المرفقات'
   }, {
     id: 'templates',
+    tabCode: 'templates',
+    boxRef: 'pm-templates-tab',
     label: 'النماذج والقوالب'
   }, {
     id: 'reports',
+    tabCode: 'reports',
+    boxRef: 'pm-reports-tab',
     label: 'التقارير'
   }];
 
@@ -221,11 +237,11 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
       case 'finance':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
+            <Reveal delay={0.2}><FinancialTab data={project} projectId={project.id} canMutate={Boolean(project.id)} /></Reveal>
           </div>;
       case 'team':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><TeamTab teamData={project.team} /></Reveal>
+            <Reveal delay={0.2}><TeamTab teamData={project.team} projectId={project.id} canMutate={Boolean(project.id)} /></Reveal>
           </div>;
       case 'client':
         return <div className="flex-1 overflow-auto">
@@ -233,7 +249,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
           </div>;
       case 'files':
         return <div className="flex-1 overflow-auto">
-            <Reveal delay={0.2}><AttachmentsTab documents={null} /></Reveal>
+            <Reveal delay={0.2}><AttachmentsTab documents={null} projectId={project.id} canMutate={Boolean(project.id)} /></Reveal>
           </div>;
       case 'templates':
         return <div className="flex-1 overflow-auto">
