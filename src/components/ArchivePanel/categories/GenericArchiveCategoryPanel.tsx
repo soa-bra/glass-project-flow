@@ -17,7 +17,7 @@ export const GenericArchiveCategoryPanel: React.FC<Props> = ({ category, records
 
   return (
     <div className="h-full flex flex-col bg-transparent">
-      <div className="flex items-center justify-between px-6 py-6">
+      <div data-testid={`${category}-header-actions`} className="flex items-center justify-between px-6 py-6">
         <h2 className="font-medium text-black font-arabic text-3xl">{ARCHIVE_CATEGORY_TITLES[category]}</h2>
         <div className="flex items-center gap-3">
           <Button className="bg-black text-white rounded-full" onClick={() => console.info('archive-export', category, exportRows())}>
@@ -29,7 +29,7 @@ export const GenericArchiveCategoryPanel: React.FC<Props> = ({ category, records
         </div>
       </div>
 
-      <div className="px-6 mb-6">
+      <div data-testid={`${category}-search`} className="px-6 mb-6">
         <AppCardSurface density="compact">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="بحث نصي..." className="md:col-span-2 px-3 py-2 rounded-full ring-1" />
@@ -42,7 +42,7 @@ export const GenericArchiveCategoryPanel: React.FC<Props> = ({ category, records
         </AppCardSurface>
       </div>
 
-      <div className="flex-1 px-6 pb-6">
+      <div data-testid={`${category}-records-list`} className="flex-1 px-6 pb-6">
         {isLoading ? <div className="py-16 flex justify-center"><Loader2 className="w-6 h-6 animate-spin" /></div> : isError ? <AppCardSurface><div className="py-12 text-center">حدث خطأ أثناء تحميل البيانات.</div></AppCardSurface> : filteredCount === 0 ? <AppCardSurface><div className="py-12 text-center">لا توجد عناصر مطابقة.</div></AppCardSurface> : (
           <div className="space-y-3">
             {pageItems.map((item) => (

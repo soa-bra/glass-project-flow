@@ -12,6 +12,19 @@ export type ArchiveWorkspaceCategory =
   | 'templates'
   | 'policies';
 
+export type ArchivePermissionScope = 'archive:read' | 'archive:export' | 'archive:manage';
+
+export interface ArchiveServiceContract {
+  category: ArchiveWorkspaceCategory;
+  recordSource: 'central-projects' | 'unified-archive';
+  permissions: ArchivePermissionScope[];
+  capabilities: {
+    headerActions: readonly ['export'];
+    search: true;
+    recordsList: true;
+  };
+}
+
 export interface ArchiveItem {
   id: string;
   category: Exclude<ArchiveWorkspaceCategory, 'projects'>;
