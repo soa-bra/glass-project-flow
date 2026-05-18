@@ -55,6 +55,7 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
         </div>
       )}
     </BaseBox>
+    </div>
   );
 };
 
