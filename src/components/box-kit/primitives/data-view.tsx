@@ -143,3 +143,73 @@ export const ChartFrame: React.FC<{ children: React.ReactNode; height?: number; 
     {children}
   </div>
 );
+
+/** DAV-ALR-01 — Alert / notification block */
+export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
+export const AlertBlock: React.FC<{
+  tone?: AlertTone;
+  title?: React.ReactNode;
+  message?: React.ReactNode;
+  items?: { id: string | number; text: React.ReactNode; tone?: AlertTone }[];
+  className?: string;
+}> = ({ tone = 'info', title, message, items, className }) => {
+  const toneClass: Record<AlertTone, string> = {
+    info: 'border-blue-200 bg-blue-50 text-blue-900',
+    success: 'border-emerald-200 bg-emerald-50 text-emerald-900',
+    warning: 'border-amber-200 bg-amber-50 text-amber-900',
+    danger: 'border-red-200 bg-red-50 text-red-900',
+  };
+  return (
+    <div className={cn('rounded-lg border px-3 py-2 text-sm', toneClass[tone], className)}>
+      {title && <div className="font-semibold mb-1">{title}</div>}
+      {message && <div className="text-xs opacity-80">{message}</div>}
+      {items && items.length > 0 && (
+        <ul className="mt-2 flex flex-col gap-1 text-xs">
+          {items.map((it) => (
+            <li key={it.id} className={cn('flex items-start gap-2', it.tone && toneClass[it.tone].split(' ').slice(-1)[0])}>
+              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-current opacity-60" />
+              <span>{it.text}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
+/** DAV-TML-01 — Vertical activity timeline */
+export type TimelineItem = {
+  id: string | number;
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  timestamp?: React.ReactNode;
+  tone?: AlertTone;
+};
+export const Timeline: React.FC<{ items: TimelineItem[]; className?: string }> = ({ items, className }) => {
+  if (!items.length) return <div className="text-sm text-muted-foreground py-4 text-center">لا توجد أحداث</div>;
+  const dotTone: Record<AlertTone, string> = {
+    info: 'bg-blue-500',
+    success: 'bg-emerald-500',
+    warning: 'bg-amber-500',
+    danger: 'bg-red-500',
+  };
+  return (
+    <ol className={cn('relative flex flex-col gap-3 ps-4', className)}>
+      <span className="absolute start-1.5 top-2 bottom-2 w-px bg-border" aria-hidden />
+      {items.map((it) => (
+        <li key={it.id} className="relative">
+          <span
+            className={cn(
+              'absolute -start-[14px] top-1.5 h-2.5 w-2.5 rounded-full ring-2 ring-background',
+              dotTone[it.tone ?? 'info']
+            )}
+            aria-hidden
+          />
+          <div className="text-sm font-medium text-foreground">{it.title}</div>
+          {it.description && <div className="text-xs text-muted-foreground mt-0.5">{it.description}</div>}
+          {it.timestamp && <div className="text-[10px] text-muted-foreground mt-0.5">{it.timestamp}</div>}
+        </li>
+      ))}
+    </ol>
+  );
+};

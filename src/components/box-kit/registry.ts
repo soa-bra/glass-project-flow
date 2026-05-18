@@ -13,8 +13,10 @@ import {
   DataTable,
   DataList,
   ChartFrame,
+  AlertBlock,
+  Timeline,
 } from './primitives/data-view';
-import { SearchInput, SelectFilter, DateRangeFilter, ToggleGroup } from './primitives/input-filter';
+import { SearchInput, SelectFilter, DateRangeFilter, ToggleGroup, TextField, TextAreaField } from './primitives/input-filter';
 import { ActionButton, ActionMenu, StatusChip } from './primitives/action';
 import { ModalShell, ModalHeader } from './primitives/modal';
 
@@ -29,11 +31,15 @@ export const BOX_KIT_REGISTRY: Record<string, BoxKitComponent> = {
   'DAV-TBL-01': DataTable,
   'DAV-LST-01': DataList,
   'DAV-CHT-01': ChartFrame,
+  'DAV-ALR-01': AlertBlock,
+  'DAV-TML-01': Timeline,
   // IPF-* (input/filter)
   'IPF-SRH-01': SearchInput,
   'IPF-SLT-01': SelectFilter,
   'IPF-DAT-01': DateRangeFilter,
   'IPF-TGL-01': ToggleGroup,
+  'IPF-TXT-01': TextField,
+  'IPF-TXA-01': TextAreaField,
   // ACT-* (action)
   'ACT-BTN-01': ActionButton,
   'ACT-BTN-02': ActionButton,
