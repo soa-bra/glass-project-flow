@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
+import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { CulturalIdentityTab } from './CulturalIdentityTab';
 import { VisualAssetsTab } from './VisualAssetsTab';
@@ -12,16 +13,7 @@ import { ReportsTab } from './ReportsTab';
 
 export const BrandDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = [
-    { value: 'overview', label: 'نظرة عامة' },
-    { value: 'identity', label: 'الهوية الثقافية' },
-    { value: 'assets', label: 'الأصول البصرية' },
-    { value: 'content', label: 'المحتوى والرسائل' },
-    { value: 'research', label: 'البحث والتطوير الثقافي' },
-    { value: 'events', label: 'الفعاليات' },
-    { value: 'templates', label: 'النماذج والقوالب' },
-    { value: 'reports', label: 'التقارير' },
-  ];
+  const tabItems = dashboardTabsByKey.BrandDashboard;
 
   return (
     <DashboardLayout
