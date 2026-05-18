@@ -20,7 +20,7 @@ const DepartmentPanel: React.FC<DepartmentPanelProps> = ({
   const status: BoxStatus = selectedDepartment ? 'data' : 'empty';
 
   // Departments with specialized dashboards
-  const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'social', 'training'];
+  const specializedDepartments = ['financial', 'legal', 'marketing', 'hr', 'crm', 'partnerships', 'social', 'training', 'research', 'knowledge', 'brand', 'brand-community'];
   
   return (
     <ManagedBox
