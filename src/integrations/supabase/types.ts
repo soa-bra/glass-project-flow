@@ -56,6 +56,48 @@ export type Database = {
         }
         Relationships: []
       }
+      bcm_members: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          joined_at: string | null
+          metadata: Json | null
+          name: string
+          notes: string | null
+          owner_id: string
+          segment: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          joined_at?: string | null
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          owner_id: string
+          segment?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          joined_at?: string | null
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          segment?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       board_invite_links: {
         Row: {
           board_id: string
@@ -1464,6 +1506,48 @@ export type Database = {
         }
         Relationships: []
       }
+      knowledge_articles: {
+        Row: {
+          body_md: string | null
+          category: string | null
+          created_at: string
+          id: string
+          owner_id: string
+          status: string
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          body_md?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          owner_id: string
+          status?: string
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          body_md?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          owner_id?: string
+          status?: string
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       legal_cases: {
         Row: {
           client_name: string | null
@@ -1742,6 +1826,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      partnership_agreements: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          notes: string | null
+          owner_id: string
+          partner_name: string | null
+          start_date: string | null
+          status: string
+          type: string | null
+          updated_at: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          owner_id: string
+          partner_name?: string | null
+          start_date?: string | null
+          status?: string
+          type?: string | null
+          updated_at?: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          partner_name?: string | null
+          start_date?: string | null
+          status?: string
+          type?: string | null
+          updated_at?: string
+          value?: number | null
+        }
+        Relationships: []
       }
       permissions: {
         Row: {
