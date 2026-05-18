@@ -1,5 +1,6 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { ShieldCheck, Smartphone, Key, Monitor, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -90,11 +91,12 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ ca
     }));
   };
 
+  const saveMutation = useSettingsSectionMutation('security' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      await saveMutation.mutateAsync(formData);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
       emitSettingsAudit('security', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently

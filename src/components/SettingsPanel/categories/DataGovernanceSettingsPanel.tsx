@@ -1,5 +1,6 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Database, Shield, FileText, Clock, AlertTriangle, CheckCircle, Lock, Unlock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
 import { useSettingsMutation } from '../settingsMutations';
@@ -68,13 +69,12 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
     }
   });
 
-  const saveMutation = useSettingsMutation('data-governance', canWrite);
+  const saveMutation = useSettingsSectionMutation('data-governance' as const);
 
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      await saveMutation.mutateAsync(formData);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
     } catch (error) {
       // Error handled silently
     }
