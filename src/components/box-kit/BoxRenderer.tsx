@@ -22,7 +22,8 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
   const unknownRefs = (box.componentRefs ?? []).filter((r) => !resolveBoxKitComponent(r));
 
   return (
-    <BaseBox title={box.name ?? undefined} variant="standard" size="md" data-box-ref={box.ref}>
+    <div data-box-ref={box.ref} className="h-full">
+    <BaseBox title={box.name ?? undefined} variant="standard" size="md">
       {(box.componentRefs ?? []).length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
 
       <div className="flex flex-col gap-3">
