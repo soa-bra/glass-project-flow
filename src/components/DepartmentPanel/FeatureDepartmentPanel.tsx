@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { usePermission } from '@/hooks/usePermission';
 import { canRunAction } from '@/auth/permissions';
@@ -9,7 +8,7 @@ interface FeatureDepartmentPanelProps {
 }
 
 export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
-  selectedDepartment 
+  selectedDepartment
 }) => {
   const financialRead = usePermission('financial.read');
   const legalRead = usePermission('legal.read');
