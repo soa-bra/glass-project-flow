@@ -7,7 +7,8 @@
  *
  * Run: node scripts/generate-app-spec.mjs
  */
-import * as XLSX from 'xlsx';
+import { readFileSync } from 'node:fs';
+import XLSX from 'xlsx';
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
