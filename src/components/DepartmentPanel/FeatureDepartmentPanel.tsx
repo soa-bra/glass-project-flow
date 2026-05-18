@@ -9,6 +9,9 @@ import { HRDashboard } from '../DepartmentTabs/HR';
 import { CRMDashboard } from '../DepartmentTabs/CRM';
 import { CSRDashboard } from '../DepartmentTabs/CSR';
 import { TrainingDashboard } from '../DepartmentTabs/Training';
+import { KMPADashboard } from '../DepartmentTabs/KMPA';
+import { BrandDashboard } from '../DepartmentTabs/Brand';
+import { departmentsSpecByKey } from '../DepartmentTabs/shared/departmentDataModel';
 
 interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
@@ -27,6 +30,7 @@ export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   if (hrRead.allowed) granted.add('hr.read');
 
   const renderDepartmentDashboard = () => {
+    const spec = departmentsSpecByKey[selectedDepartment];
     switch (selectedDepartment) {
       case 'financial':
         return canRunAction('financial.open', granted) ? <FinancialDashboard /> : <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض قسم المالية.</div>;
@@ -42,6 +46,15 @@ export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
         return <CSRDashboard />;
       case 'training':
         return <TrainingDashboard />;
+      case 'research':
+        return <KMPADashboard />;
+      case 'partnerships':
+      case 'knowledge':
+      case 'brand-community':
+        return <div className="p-6 text-sm text-gray-600">{`Dashboard ${spec?.dashboard ?? selectedDepartment} جاهز للربط بعد اعتماد تفاصيل التبويبات والصناديق.`}</div>;
+      case 'brand':
+        return <BrandDashboard />;
+
       default:
         return null;
     }
