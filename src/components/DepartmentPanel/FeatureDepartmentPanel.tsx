@@ -2,6 +2,9 @@ import React from 'react';
 import { usePermission } from '@/hooks/usePermission';
 import { canRunAction } from '@/auth/permissions';
 import { resolveDepartment, getDepartmentCoverageReport } from '../DepartmentTabs/shared/departmentResolver';
+import { PartnershipsDashboard } from '../DepartmentTabs/Partnerships';
+import { KnowledgeBaseDashboard } from '../DepartmentTabs/Knowledge';
+import { BrandCommunityDashboard } from '../DepartmentTabs/BrandCommunity';
 
 interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
@@ -20,6 +23,17 @@ export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   if (hrRead.allowed) granted.add('hr.read');
 
   const renderDepartmentDashboard = () => {
+    switch (selectedDepartment) {
+      case 'partnerships':
+        return <PartnershipsDashboard />;
+      case 'knowledge':
+        return <KnowledgeBaseDashboard />;
+      case 'brand-community':
+        return <BrandCommunityDashboard />;
+      default:
+        break;
+    }
+
     const resolved = resolveDepartment(selectedDepartment);
     if (!resolved) {
       return <div className="p-6 text-sm text-red-600">مفتاح الإدارة غير موجود في departmentsSpecification: {selectedDepartment}</div>;

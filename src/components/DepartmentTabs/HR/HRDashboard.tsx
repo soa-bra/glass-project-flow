@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
+import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { EmployeesTab } from './EmployeesTab';
 import { AttendanceTab } from './AttendanceTab';
@@ -12,34 +13,7 @@ import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 export const HRDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = [{
-    value: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    value: 'employees',
-    label: 'ملفات الموظفين'
-  }, {
-    value: 'attendance',
-    label: 'الحضور والإجازات'
-  }, {
-    value: 'performance',
-    label: 'الأداء والتقييم'
-  }, {
-    value: 'recruitment',
-    label: 'التوظيف والمواهب'
-  }, {
-    value: 'training',
-    label: 'التدريب والتطوير'
-  }, {
-    value: 'partners',
-    label: 'الشركاء'
-  }, {
-    value: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    value: 'reports',
-    label: 'التقارير'
-  }];
+  const tabItems = dashboardTabsByKey.HRDashboard;
   return (
     <DashboardLayout
       title="إدارة الطاقات البشرية"
