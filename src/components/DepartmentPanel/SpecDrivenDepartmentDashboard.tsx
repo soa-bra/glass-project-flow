@@ -15,13 +15,14 @@ interface Props {
 }
 
 export const SpecDrivenDepartmentDashboard: React.FC<Props> = ({ dashboardKey }) => {
-  const dashboard = useMemo(
-    () =>
-      APP_SPEC.workspaces
-        .flatMap((w) => w.dashboards)
-        .find((d) => d.key === dashboardKey),
-    [dashboardKey],
-  );
+  const dashboard = useMemo(() => {
+    for (const w of APP_SPEC.workspaces) {
+      for (const d of w.dashboards as ReadonlyArray<any>) {
+        if (d.key === dashboardKey) return d as { key: string; title: string; tabs: any[] };
+      }
+    }
+    return undefined;
+  }, [dashboardKey]);
 
   const [activeCode, setActiveCode] = useState<string | undefined>(
     dashboard?.tabs[0]?.code,
