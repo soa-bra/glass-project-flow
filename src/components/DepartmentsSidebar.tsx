@@ -12,43 +12,20 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   isCollapsed,
   onToggleCollapse
 }) => {
-  const departments = [{
-    key: 'financial',
-    label: 'إدارة الأوضاع المالية',
-    icon: DollarSign
-  }, {
-    key: 'legal',
-    label: 'إدارة الأحوال القانونية',
-    icon: Scale
-  }, {
-    key: 'marketing',
-    label: 'إدارة الأنشطة التسويقية',
-    icon: TrendingUp
-  }, {
-    key: 'hr',
-    label: 'إدارة الطاقات البشرية',
-    icon: Users
-  }, {
-    key: 'crm',
-    label: 'إدارة علاقات العملاء',
-    icon: UserCheck
-  }, {
-    key: 'social',
-    label: 'إدارة المسؤولية الاجتماعية',
-    icon: Heart
-  }, {
-    key: 'training',
-    label: 'إدارة التدريب',
-    icon: GraduationCap
-  }, {
-    key: 'research',
-    label: 'إدارة المعرفة والنشر والبحث العلمي',
-    icon: BookOpen
-  }, {
-    key: 'brand',
-    label: 'إدارة العلامة التجارية',
-    icon: Award
-  }];
+  const departments = [
+    { key: 'financial',    label: 'إدارة العمليات المالية',           icon: DollarSign },
+    { key: 'legal',        label: 'إدارة الأحوال القانونية',           icon: Scale },
+    { key: 'marketing',    label: 'إدارة الأنشطة التسويقية',           icon: TrendingUp },
+    { key: 'hr',           label: 'إدارة الطاقات البشرية',             icon: Users },
+    { key: 'crm',          label: 'إدارة علاقات العملاء',              icon: UserCheck },
+    { key: 'csr',          label: 'إدارة المسؤولية الاجتماعية',         icon: Heart },
+    { key: 'bcm',          label: 'إدارة مجتمع العلامة',                icon: Globe },
+    { key: 'training',     label: 'إدارة التدريب والتطوير',             icon: GraduationCap },
+    { key: 'partnerships', label: 'إدارة الشراكات',                     icon: Handshake },
+    { key: 'kmpa',         label: 'إدارة المعرفة والنشر والبحث العلمي', icon: BookOpen },
+    { key: 'knowledge',    label: 'إدارة المعرفة المؤسسية',             icon: Lightbulb },
+    { key: 'brand',        label: 'إدارة العلامة التجارية',             icon: Award },
+  ];
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };
