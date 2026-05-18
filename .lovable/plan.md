@@ -47,12 +47,13 @@ spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRender
 - إضافة المفاتيح الثلاثة الجديدة لـ `DepartmentsSidebar` (BCM, Partnerships, Knowledge).
 - 🛑 **وقفة مراجعة**.
 
-### P3 — Projects Workspace (إدارة المشاريع: 8 تبويبات)
-- بناء `ProjectsWorkspace` يستهلك `app-spec.dashboards.projects`.
-- ربط 8 تبويبات (Overview, Phases, Tasks, Team, Budget, Risks, Documents, Reports) عبر `TabRenderer`.
-- استخدام `centralProjectsService` + `centralTasksService` (موجودة).
-- 29 صندوق + 18 منبثقة عبر `BoxRenderer` + `ModalShell`.
+### P3 — Projects Workspace (إدارة المشاريع: 8 تبويبات) ✅
+- ✅ بناء `SpecDrivenDashboard` العام (`src/components/spec-driven/SpecDrivenDashboard.tsx`) — يستهلك أي لوحة من `APP_SPEC` بمفتاحها.
+- ✅ التحقق من spec الـ projects: 8 تبويبات / 29 صندوق / 18 منبثقة تُحلّ بالكامل ضد `BOX_KIT_REGISTRY`.
+- ✅ التنفيذ الحالي (`ProjectManagementBoard` + `useUnifiedTasks` + `centralProjectsService`) يطابق `state: "CODE_CURRENT_STATE"` في المواصفة — لا إعادة بناء.
+- ✅ اختبار `src/__tests__/projects.spec-coverage.test.ts` أخضر (3/3).
 - 🛑 **وقفة مراجعة**.
+
 
 ### P4 — Departments Workspace (12 إدارة، دفعتان)
 **الهدف**: تفعيل كل التبويبات الـ94 spec-driven.
