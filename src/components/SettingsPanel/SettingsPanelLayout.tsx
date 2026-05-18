@@ -8,12 +8,12 @@ interface SettingsPanelLayoutProps {
 
 export const SettingsPanelLayout: React.FC<SettingsPanelLayoutProps> = ({ children }) => {
   return (
-    <div className={`h-full ${LAYOUT.CARD_ROUNDED} overflow-hidden bg-white`}>
+    <div className={`h-full ${LAYOUT.CARD_ROUNDED} overflow-hidden`}>
       <div className="h-full flex flex-col overflow-hidden">
         <div className={`flex-1 min-h-0 overflow-hidden`}>
           <ScrollArea className="h-full w-full">
             <div className={`${SPACING.CONTENT_PADDING}`}>
-              <div className={`${SPACING.SECTION_MARGIN} ${LAYOUT.CARD_ROUNDED} overflow-hidden bg-white`}>
+              <div className={`${SPACING.SECTION_MARGIN} h-full`}>
                 {children}
               </div>
             </div>
