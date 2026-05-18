@@ -44,7 +44,7 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
       <ManagedBox
         boxRef="archive-box"
         title="الأرشيف"
-        status={status}
+        status={"ready" as BoxStatus}
         emptyState={<EmptyArchiveState />}
       >
         {selectedCategory ? <ArchiveCategoryPanel selectedCategory={selectedCategory} /> : null}
