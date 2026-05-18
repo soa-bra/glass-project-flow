@@ -1,5 +1,6 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Bell, Smartphone, Mail, MessageSquare, Settings, Volume2, VolumeX, Clock, Target } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -76,14 +77,12 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
     }));
   };
 
+  const saveMutation = useSettingsSectionMutation('notifications' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'notifications', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
     } catch (error) {
       // Error handled silently
     }
