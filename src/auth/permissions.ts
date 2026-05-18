@@ -2,7 +2,7 @@ export type PermissionCode = string;
 
 export const BOX_PERMISSIONS = {
   settings: ["settings.admin", "settings.security"],
-  archive: ["archive.read", "archive.export", "archive.manage_docs"],
+  archive: ["archive.records.read", "archive.records.export", "archive.records.manage"],
   projectManagementBoard: ["project.read", "project.write", "project.approve", "project.files"],
   departments: {
     financial: ["financial.read", "financial.write", "financial.approve"],
@@ -13,9 +13,9 @@ export const BOX_PERMISSIONS = {
 
 export const ACTION_PERMISSIONS = {
   "settings.open": ["settings.admin", "settings.security"],
-  "archive.open": ["archive.read"],
-  "archive.export": ["archive.export"],
-  "archive.manage": ["archive.manage_docs"],
+  "archive.open": ["archive.records.read"],
+  "archive.export": ["archive.records.export"],
+  "archive.manage": ["archive.records.manage"],
   "project.open": ["project.read"],
   "project.edit": ["project.write"],
   "project.archive": ["project.approve"],
