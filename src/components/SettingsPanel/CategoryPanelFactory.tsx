@@ -18,6 +18,10 @@ const wrap = (Component: React.ComponentType) => () => (
   <div className="p-6 h-full overflow-auto"><Component /></div>
 );
 
+export const SETTINGS_TABS = [
+  'account','security','notifications','integrations','ai','theme','data-governance','users-roles','audit','engine-jobs','dependency-graph','tools-marketplace','admin-roles'
+] as const;
+
 export class CategoryPanelFactory {
   static getComponent(category: string): React.ComponentType<any> {
     switch (category) {
@@ -49,7 +53,7 @@ export class CategoryPanelFactory {
         return wrap(AdminRolesPanel);
 
       default:
-        return (props: any) => <GenericSettingsPanel category={category} {...props} />;
+        return (props: any) => <GenericSettingsPanel category={category} {...props} panelCode={category} />;
     }
   }
 }

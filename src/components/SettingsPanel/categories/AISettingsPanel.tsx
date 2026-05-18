@@ -2,6 +2,7 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { emitSettingsAudit } from '../auditTrail';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -9,6 +10,7 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 interface AISettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
 interface Experiment {
@@ -20,7 +22,7 @@ interface Experiment {
   estimatedCompletion: string;
 }
 
-export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
+export const AISettingsPanel: React.FC<AISettingsPanelProps> = ({ canWrite = true }) => {
   const [activeExperiments] = useState<Experiment[]>([
     {
       id: '1',
@@ -99,6 +101,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
         detail: { section: 'ai', data: formData }
       });
       window.dispatchEvent(event);
+      emitSettingsAudit('ai', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently
     }
@@ -385,6 +388,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
               </button>
               <button
                 onClick={handleSave}
+                disabled={!canWrite}
                 style={{ backgroundColor: '#000000', color: '#FFFFFF' }}
                 className="px-6 py-2 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
               >
