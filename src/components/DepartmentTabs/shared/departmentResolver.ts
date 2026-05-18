@@ -8,6 +8,9 @@ import { CSRDashboard } from "../CSR";
 import { TrainingDashboard } from "../Training";
 import { KMPADashboard } from "../KMPA";
 import { BrandDashboard } from "../Brand";
+import { PartnershipsDashboard } from "../Partnerships";
+import { KnowledgeBaseDashboard } from "../Knowledge";
+import { BrandCommunityDashboard } from "../BrandCommunity";
 import { departmentsSpecification, departmentsSpecByKey } from "./departmentDataModel";
 import * as DepartmentServices from "@/services/departments";
 
@@ -17,6 +20,23 @@ type DepartmentResolverEntry = {
   dashboardComponent?: React.ComponentType;
   serviceClient?: DepartmentClient;
   implementedTabs: string[];
+};
+
+type CrudOperation = "read" | "create" | "update" | "delete";
+
+export type TabOperationContract = {
+  tab: string;
+  endpoint: string;
+  operations: Partial<Record<CrudOperation, string>>;
+  state: "ready" | "empty" | "error";
+  permission: Record<CrudOperation, string>;
+};
+
+export type DepartmentVerificationRow = {
+  boxRef: string;
+  dataSource: string;
+  mutation: string;
+  permission: string;
 };
 
 const registry: Partial<Record<string, DepartmentResolverEntry>> = {
@@ -112,15 +132,77 @@ export const resolveDepartment = (key: string) => {
     console.warn("[DepartmentResolver] Missing tab implementations", { key, missingTabs, expectedTabs: Object.keys(spec.service.tabEndpoints) });
   }
 
+  const tabContracts = buildTabContracts(spec, entry);
+
   return {
     key,
     spec,
     dashboardComponent: entry?.dashboardComponent,
     serviceClient: entry?.serviceClient,
     tabEndpoints: spec.service.tabEndpoints,
+    tabContracts,
     implementedTabs: entry?.implementedTabs ?? [],
     missingTabs,
   };
+};
+
+const buildTabContracts = (
+  spec: (typeof departmentsSpecification)[number],
+  entry?: DepartmentResolverEntry,
+): TabOperationContract[] => {
+  const implementedSet = new Set(entry?.implementedTabs ?? []);
+
+  return Object.entries(spec.service.tabEndpoints).map(([tab, endpoint]) => {
+    const ready = implementedSet.has(tab);
+    const permissionBase = `${spec.service.scope}.${tab}`;
+    const operations = ready
+      ? {
+          read: endpoint,
+          create: endpoint,
+          update: `${endpoint}/:id`,
+          delete: `${endpoint}/:id`,
+        }
+      : {};
+
+    return {
+      tab,
+      endpoint,
+      operations,
+      state: ready ? "ready" : entry ? "empty" : "error",
+      permission: {
+        read: `${permissionBase}.read`,
+        create: `${permissionBase}.create`,
+        update: `${permissionBase}.update`,
+        delete: `${permissionBase}.delete`,
+      },
+    };
+  });
+};
+
+export const buildDepartmentVerificationMatrix = (key: string): DepartmentVerificationRow[] => {
+  const resolved = resolveDepartment(key);
+  if (!resolved) return [];
+
+  return resolved.tabContracts.flatMap((contract) => {
+    const rows: DepartmentVerificationRow[] = [];
+    rows.push({
+      boxRef: `${key}.${contract.tab}`,
+      dataSource: contract.endpoint,
+      mutation: contract.operations.read ?? contract.state,
+      permission: contract.permission.read,
+    });
+
+    (["create", "update", "delete"] as const).forEach((op) => {
+      rows.push({
+        boxRef: `${key}.${contract.tab}`,
+        dataSource: contract.endpoint,
+        mutation: contract.operations[op] ?? contract.state,
+        permission: contract.permission[op],
+      });
+    });
+
+    return rows;
+  });
 };
 
 export const getDepartmentCoverageReport = () => {
@@ -136,4 +218,3 @@ export const getDepartmentCoverageReport = () => {
     };
   });
 };
-

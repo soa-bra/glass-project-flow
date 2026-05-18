@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
+import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { CustomersTab } from './CustomersTab';
 import { OpportunitiesTab } from './OpportunitiesTab';
@@ -19,28 +20,7 @@ export const CRMDashboard: React.FC = () => {
       setActiveTab('customers');
     }
   }, [navigationState.selectedCustomer]);
-  const tabItems = [{
-    value: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    value: 'customers',
-    label: 'العملاء'
-  }, {
-    value: 'opportunities',
-    label: 'الفرص والعروض'
-  }, {
-    value: 'service',
-    label: 'خدمة العملاء والدعم'
-  }, {
-    value: 'analytics',
-    label: 'التحليلات'
-  }, {
-    value: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    value: 'reports',
-    label: 'التقارير'
-  }];
+  const tabItems = dashboardTabsByKey.CRMDashboard;
   return (
     <DashboardLayout
       title="إدارة علاقات العملاء"

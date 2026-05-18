@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
+import { dashboardTabsByKey } from '@/config/departmentDashboardTabs';
 import { OverviewTab } from './OverviewTab';
 import { KnowledgeRepositoryTab } from './KnowledgeRepositoryTab';
 import { AuthoringVersionsTab } from './AuthoringVersionsTab';
@@ -9,25 +10,7 @@ import { ModelsTemplatesTab } from './ModelsTemplatesTab';
 import { ReportsTab } from './ReportsTab';
 export const KMPADashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const tabItems = [{
-    value: 'overview',
-    label: 'نظرة عامة'
-  }, {
-    value: 'repository',
-    label: 'مستودع المعرفة'
-  }, {
-    value: 'authoring',
-    label: 'التأليف والإصدارات'
-  }, {
-    value: 'analytics',
-    label: 'التحليلات والتأثير'
-  }, {
-    value: 'templates',
-    label: 'النماذج والقوالب'
-  }, {
-    value: 'reports',
-    label: 'التقارير'
-  }];
+  const tabItems = dashboardTabsByKey.KMPADashboard;
   return (
     <DashboardLayout
       title="إدارة المعرفة والنشر والبحث العلمي"
