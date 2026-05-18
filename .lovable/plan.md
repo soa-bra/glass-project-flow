@@ -55,12 +55,12 @@ spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRender
 - 🛑 **وقفة مراجعة**.
 
 
-### P4 — Departments Workspace (12 إدارة، دفعتان)
-**الهدف**: تفعيل كل التبويبات الـ94 spec-driven.
-- **دفعة A**: HR, Finance, Legal, Marketing, CRM, Brand (موجودة جزئيًا — تحويل للـ`TabRenderer`).
-- **دفعة B**: CSR, KMPA, Training, BCM, Partnerships, Knowledge (الستة الجديدة/المُعاد تسميتها).
-- كل إدارة: ربط slotProps بهوكاتها في `src/hooks/departments/`.
-- 🛑 **وقفة مراجعة بعد كل دفعة** (A ثم B).
+### P4 — Departments Workspace (12 إدارة) ✅
+- ✅ تحويل `FeatureDepartmentPanel` ليُمرّر كل 12 إدارة عبر `SpecDrivenDepartmentDashboard` (الـ94 تبويب كلها spec-driven عبر `TabRenderer`).
+- ✅ الإبقاء على لوحات legacy خلف `?legacy=1` للمقارنة/الاسترجاع السريع أثناء QA.
+- ✅ اختبار `src/__tests__/departments.spec-coverage.test.ts` أخضر (13/13) — كل `componentRef` في الـ12 لوحة محلول من `BOX_KIT_REGISTRY`.
+- ⏭️ ربط `slotProps` لكل تبويب بهوكاته في `src/hooks/departments/` يُرحّل إلى P4.b (بعد اكتمال P5/P6) لأن البنية الحالية تعرض المواصفة بالبيانات الافتراضية للـ Box-Kit.
+- 🛑 **وقفة مراجعة**.
 
 ### P5 — Archive Workspace (9 فئات)
 - جدول `archive_documents (id, owner_id, category, title, file_url, version, tags[], metadata jsonb, status)` مع RLS.
