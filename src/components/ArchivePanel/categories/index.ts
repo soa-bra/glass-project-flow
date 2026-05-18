@@ -12,3 +12,4 @@ export { OrganizationalArchivePanel } from './OrganizationalArchivePanel';
 export { KnowledgeArchivePanel } from './KnowledgeArchivePanel';
 export { TemplatesArchivePanel } from './TemplatesArchivePanel';
 export { PoliciesArchivePanel } from './PoliciesArchivePanel';
+export { ARCHIVE_CATEGORY_SERVICE_CONTRACTS } from './archiveContracts';

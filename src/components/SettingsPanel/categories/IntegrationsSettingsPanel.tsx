@@ -1,10 +1,12 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Link2, Key, Shield, CheckCircle, AlertCircle, Settings, Zap, Download, Upload } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
@@ -89,6 +91,8 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     }
   });
 
+  const saveMutation = useSettingsMutation('integrations', canWrite);
+
   const handleIntegrationToggle = (integrationId: string) => {
     setIntegrations(prev => prev.map(integration => 
       integration.id === integrationId 
@@ -97,14 +101,12 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     ));
   };
 
+  const saveMutation = useSettingsSectionMutation('integrations' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'integrations', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
       emitSettingsAudit('integrations', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently

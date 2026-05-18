@@ -1,7 +1,9 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Database, Shield, FileText, Clock, AlertTriangle, CheckCircle, Lock, Unlock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -9,9 +11,10 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 interface DataGovernanceSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
-export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelProps> = () => {
+export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelProps> = ({ canWrite = true }) => {
   const [formData, setFormData] = useState({
     retention: {
       financial: 10, // years
@@ -66,14 +69,12 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
     }
   });
 
+  const saveMutation = useSettingsSectionMutation('data-governance' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'data-governance', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
     } catch (error) {
       // Error handled silently
     }

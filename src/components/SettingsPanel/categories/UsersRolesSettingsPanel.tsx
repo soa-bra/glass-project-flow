@@ -1,10 +1,12 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Users, UserPlus, Shield, Key, Crown, Edit3, Trash2, Eye } from 'lucide-react';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 
 interface UsersRolesSettingsPanelProps {
@@ -89,20 +91,20 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
     }
   });
 
+  const saveMutation = useSettingsMutation('users-roles', canWrite);
+
   const handleUserStatusChange = (userId: string, newStatus: User['status']) => {
     setUsers(prev => prev.map(user => 
       user.id === userId ? { ...user, status: newStatus } : user
     ));
   };
 
+  const saveMutation = useSettingsSectionMutation('users-roles' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'users-roles', data: { users, roles } }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync({ users, roles } as Record<string, unknown>);
       emitSettingsAudit('users-roles', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently

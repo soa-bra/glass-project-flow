@@ -59,7 +59,7 @@ jobs:
       - name: Recovery smoke gate (core paths)
         run: node scripts/recovery/smoke-gate.mjs
 
-      - name: Workspace manifest check
+      - name: Workspace manifest consistency check
         run: npm run check:workspace-manifest
 
       - name: Build baseline quality artifact
