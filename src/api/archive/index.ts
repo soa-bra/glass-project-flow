@@ -9,15 +9,40 @@ import type {
 import { getProject, listProjects, updateProject } from '@/services/central/projects.service';
 import type {
   ArchiveItem,
+  ArchivePermissionScope,
   ArchiveProjectItem,
+  ArchiveServiceContract,
   ArchiveUpdateInput,
   ArchiveWorkspaceApi,
   ArchiveWorkspaceCategory,
 } from './types';
 
 const store = new Map<Exclude<ArchiveWorkspaceCategory, 'projects'>, ArchiveItem[]>();
+const PROJECTS_SOURCE = 'central-projects';
+const UNIFIED_ARCHIVE_SOURCE = 'unified-archive';
+
+const defaultPermissions: ArchivePermissionScope[] = ['archive:read', 'archive:export', 'archive:manage'];
+
+export const archiveServiceContracts: Record<ArchiveWorkspaceCategory, ArchiveServiceContract> = {
+  documents: { category: 'documents', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  projects: { category: 'projects', recordSource: PROJECTS_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  hr: { category: 'hr', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  financial: { category: 'financial', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  legal: { category: 'legal', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  organizational: { category: 'organizational', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  knowledge: { category: 'knowledge', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  templates: { category: 'templates', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+  policies: { category: 'policies', recordSource: UNIFIED_ARCHIVE_SOURCE, permissions: defaultPermissions, capabilities: { headerActions: ['export'], search: true, recordsList: true } },
+};
 
 const result = <T>(data: T, total?: number): OperationResult<T> => ({ data, total });
+const matchesFilter = (row: Record<string, unknown>, filters: Record<string, unknown>) =>
+  Object.entries(filters).every(([k, v]) => row[k] === v);
+const matchesSearch = (q: string, values: Array<string | null | undefined>) => {
+  const normalized = q.toLowerCase();
+  return values.some((value) => (value ?? '').toLowerCase().includes(normalized));
+};
+const exportAsJson = async <T>(loader: () => Promise<T[]>) => JSON.stringify(await loader());
 
 const createGenericApi = (
   category: Exclude<ArchiveWorkspaceCategory, 'projects'>,
@@ -39,19 +64,14 @@ const createGenericApi = (
     return next;
   },
   async export(_params: ExportParams) {
-    return JSON.stringify(store.get(category) ?? []);
+    return exportAsJson(async () => store.get(category) ?? []);
   },
   async filter(params: FilterParams) {
-    const data = (store.get(category) ?? []).filter((item) =>
-      Object.entries(params.filters).every(([k, v]) => item.metadata?.[k] === v),
-    );
+    const data = (store.get(category) ?? []).filter((item) => matchesFilter(item.metadata ?? {}, params.filters));
     return result(data, data.length);
   },
   async search(params: SearchParams) {
-    const q = params.q.toLowerCase();
-    const data = (store.get(category) ?? []).filter((item) =>
-      item.title.toLowerCase().includes(q) || (item.description ?? '').toLowerCase().includes(q),
-    );
+    const data = (store.get(category) ?? []).filter((item) => matchesSearch(params.q, [item.title, item.description]));
     return result(data, data.length);
   },
 });
@@ -76,23 +96,16 @@ const projectsApi: TypedWorkspaceApi<ArchiveProjectItem, ArchiveUpdateInput> = {
     return { ...project, category: 'projects' };
   },
   async export(_params: ExportParams) {
-    const data = await this.list();
-    return JSON.stringify(data.data);
+    return exportAsJson(async () => (await this.list()).data);
   },
   async filter(params: FilterParams) {
     const rows = await this.list();
-    const data = rows.data.filter((project) =>
-      Object.entries(params.filters).every(([k, v]) => (project as Record<string, unknown>)[k] === v),
-    );
+    const data = rows.data.filter((project) => matchesFilter(project as Record<string, unknown>, params.filters));
     return result(data, data.length);
   },
   async search(params: SearchParams) {
     const rows = await this.list();
-    const q = params.q.toLowerCase();
-    const data = rows.data.filter(
-      (project) =>
-        project.name.toLowerCase().includes(q) || (project.description ?? '').toLowerCase().includes(q),
-    );
+    const data = rows.data.filter((project) => matchesSearch(params.q, [project.name, project.description]));
     return result(data, data.length);
   },
 };
