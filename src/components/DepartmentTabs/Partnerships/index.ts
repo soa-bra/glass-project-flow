@@ -1,0 +1,1 @@
+export { PartnershipsDashboard } from './PartnershipsDashboard';

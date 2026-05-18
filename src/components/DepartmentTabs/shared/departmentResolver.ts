@@ -8,6 +8,9 @@ import { CSRDashboard } from "../CSR";
 import { TrainingDashboard } from "../Training";
 import { KMPADashboard } from "../KMPA";
 import { BrandDashboard } from "../Brand";
+import { PartnershipsDashboard } from "../Partnerships";
+import { KnowledgeBaseDashboard } from "../Knowledge";
+import { BrandCommunityDashboard } from "../BrandCommunity";
 import { departmentsSpecification, departmentsSpecByKey } from "./departmentDataModel";
 import * as DepartmentServices from "@/services/departments";
 
