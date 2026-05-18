@@ -5,6 +5,7 @@ import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { RateLimiter } from '../../../utils/validation';
@@ -55,6 +56,8 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ ca
     }
   });
 
+  const saveMutation = useSettingsMutation('security', canWrite);
+
   const generateNewApiKey = () => {
     if (!RateLimiter.isAllowed('generateApiKey', 3, 300000)) {
       alert('تم تجاوز الحد المسموح لإنشاء مفاتيح API. حاول مرة أخرى بعد 5 دقائق.');
@@ -91,10 +94,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = ({ ca
     try {
       clearDraft();
       
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'security', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData);
       emitSettingsAudit('security', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently

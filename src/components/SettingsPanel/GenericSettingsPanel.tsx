@@ -2,6 +2,7 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState, useEffect } from 'react';
 import { User, Shield, Bell, Settings, Database, Palette, Users } from 'lucide-react';
 import { useAutosave } from './hooks/useAutosave';
+import { useSettingsMutation } from './settingsMutations';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -10,12 +11,14 @@ interface GenericSettingsPanelProps {
   category: string;
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
 export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({ 
   category,
   isMainSidebarCollapsed,
-  isSettingsSidebarCollapsed 
+  isSettingsSidebarCollapsed,
+  canWrite = true 
 }) => {
   const getCategoryInfo = (categoryKey: string): { title: string; icon: React.ComponentType<any>; description: string; hasWizard?: boolean } => {
     const categories: Record<string, { title: string; icon: React.ComponentType<any>; description: string; hasWizard?: boolean }> = {
@@ -94,6 +97,8 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
+
+  const saveMutation = useSettingsMutation(category, canWrite);
   
   // Load draft on component mount
   useEffect(() => {
@@ -119,10 +124,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       clearDraft();
       
       // Trigger settings.updated event
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: category, data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData);
       
       // Settings saved successfully
     } catch (error) {

@@ -2,13 +2,15 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 
 interface ThemeSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
-export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
+export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = ({ canWrite = true }) => {
   const [formData, setFormData] = useState({
     appearance: {
       mode: 'auto', // light, dark, auto
@@ -52,6 +54,8 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
     }
   });
 
+  const saveMutation = useSettingsMutation('theme', canWrite);
+
   const colorSchemes = [
     { key: 'soabra-default', name: 'سـوبــرا الافتراضي', primary: '#000000', secondary: '#F2FFFF' },
     { key: 'dark-professional', name: 'المهني الداكن', primary: '#FFFFFF', secondary: '#1a1a1a' },
@@ -63,10 +67,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
     try {
       clearDraft();
       
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'theme', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData);
     } catch (error) {
       // Error handled silently
     }

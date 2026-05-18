@@ -2,6 +2,7 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -75,6 +76,8 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = ({ canWrite = tru
     }
   });
 
+  const saveMutation = useSettingsMutation('ai', canWrite);
+
   const handleModelToggle = (modelType: string) => {
     setFormData(prev => ({
       ...prev,
@@ -97,10 +100,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = ({ canWrite = tru
     try {
       clearDraft();
       
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'ai', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData);
       emitSettingsAudit('ai', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently

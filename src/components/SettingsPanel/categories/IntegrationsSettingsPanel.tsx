@@ -5,6 +5,7 @@ import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
@@ -89,6 +90,8 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     }
   });
 
+  const saveMutation = useSettingsMutation('integrations', canWrite);
+
   const handleIntegrationToggle = (integrationId: string) => {
     setIntegrations(prev => prev.map(integration => 
       integration.id === integrationId 
@@ -101,10 +104,7 @@ export const IntegrationsSettingsPanel: React.FC<IntegrationsSettingsPanelProps>
     try {
       clearDraft();
       
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'integrations', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData);
       emitSettingsAudit('integrations', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently
