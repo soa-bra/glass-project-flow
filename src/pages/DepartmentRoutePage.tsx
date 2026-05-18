@@ -9,9 +9,12 @@ const departmentKeys = new Set([
   "marketing",
   "hr",
   "crm",
-  "social",
+  "csr",
+  "bcm",
   "training",
-  "research",
+  "partnerships",
+  "kmpa",
+  "knowledge",
   "brand",
 ]);
 
