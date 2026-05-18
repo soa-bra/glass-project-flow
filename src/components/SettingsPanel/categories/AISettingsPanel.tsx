@@ -1,5 +1,6 @@
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
+import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
 import { emitSettingsAudit } from '../auditTrail';
@@ -93,14 +94,12 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = ({ canWrite = tru
     console.log('بدء تدريب نموذج جديد من الأرشيف...');
   };
 
+  const saveMutation = useSettingsSectionMutation('ai' as const);
+
   const handleSave = async () => {
     try {
       clearDraft();
-      
-      const event = new CustomEvent('settings.updated', {
-        detail: { section: 'ai', data: formData }
-      });
-      window.dispatchEvent(event);
+      await saveMutation.mutateAsync(formData as Record<string, unknown>);
       emitSettingsAudit('ai', 'save', { hasWritePermission: canWrite });
     } catch (error) {
       // Error handled silently
