@@ -4,7 +4,6 @@ import { canAccessBox } from '@/auth/permissions';
 import { SettingsPanelLayout } from './SettingsPanel/SettingsPanelLayout';
 import { EmptySettingsState } from './SettingsPanel/EmptySettingsState';
 import { SettingsCategoryPanel } from './SettingsPanel/SettingsCategoryPanel';
-import { ManagedBox, type BoxStatus } from './common/ManagedBox';
 
 interface SettingsPanelProps {
   selectedCategory: string | null;
@@ -37,24 +36,13 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
     return <EmptySettingsState />;
   }
 
-  const status: BoxStatus = 'data';
-
   return (
     <SettingsPanelLayout>
-      <ManagedBox
-        boxRef="settings-box"
-        title="الإعدادات"
-        status={status}
-        emptyState={<EmptySettingsState />}
-      >
-        {selectedCategory ? (
-          <SettingsCategoryPanel 
-            category={selectedCategory}
-            isMainSidebarCollapsed={isMainSidebarCollapsed}
-            isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
-          />
-        ) : null}
-      </ManagedBox>
+      <SettingsCategoryPanel 
+        category={selectedCategory}
+        isMainSidebarCollapsed={isMainSidebarCollapsed}
+        isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
+      />
     </SettingsPanelLayout>
   );
 };

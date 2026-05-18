@@ -27,12 +27,10 @@ export const SettingsCategoryPanel: React.FC<SettingsCategoryPanelProps> = ({
   }
   
   return (
-    <div className="h-full flex flex-col bg-white">
-      <CategoryComponent 
-        isMainSidebarCollapsed={isMainSidebarCollapsed}
-        isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
-        canWrite={write.allowed}
-      />
-    </div>
+    <CategoryComponent 
+      isMainSidebarCollapsed={isMainSidebarCollapsed}
+      isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
+      canWrite={write.allowed}
+    />
   );
 };
