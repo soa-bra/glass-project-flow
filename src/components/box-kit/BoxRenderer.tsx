@@ -29,10 +29,21 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
         {(box.componentRefs ?? []).map((ref, i) => {
           const Cmp = resolveBoxKitComponent(ref);
           if (!Cmp) return null;
-          const props = slotProps?.[ref] ?? {};
-          // children-only primitives need a sensible default
-          const safeProps: Record<string, unknown> = { ...props };
-          return <Cmp key={`${ref}-${i}`} {...safeProps} />;
+          const supplied = slotProps?.[ref];
+          if (!supplied) {
+            // No data wired yet — render a neutral placeholder instead of forcing
+            // every primitive to accept undefined props.
+            return (
+              <div
+                key={`${ref}-${i}`}
+                className="text-[11px] text-muted-foreground/70 italic border border-dashed border-border/60 rounded-md px-2 py-1.5"
+                data-component-ref={ref}
+              >
+                {ref}
+              </div>
+            );
+          }
+          return <Cmp key={`${ref}-${i}`} {...supplied} />;
         })}
       </div>
 
