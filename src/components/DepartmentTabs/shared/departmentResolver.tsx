@@ -8,6 +8,9 @@ import { CSRDashboard } from '@/components/DepartmentTabs/CSR';
 import { TrainingDashboard } from '@/components/DepartmentTabs/Training';
 import { KMPADashboard } from '@/components/DepartmentTabs/KMPA';
 import { BrandDashboard } from '@/components/DepartmentTabs/Brand';
+import { PartnershipsDashboard } from '@/components/DepartmentTabs/Partnerships';
+import { KnowledgeBaseDashboard } from '@/components/DepartmentTabs/Knowledge';
+import { BrandCommunityDashboard } from '@/components/DepartmentTabs/BrandCommunity';
 import * as DepartmentServices from '@/services/departments';
 import { departmentsSpecification, departmentsSpecByKey } from './departmentDataModel';
 
@@ -46,7 +49,8 @@ const resolverMap: Record<string, DepartmentResolverEntry> = {
     implementedTabs: ['overview', 'campaigns', 'content', 'performance', 'budgets', 'pr', 'templates', 'reports']
   },
   partnerships: {
-    implementedTabs: []
+    dashboardComponent: PartnershipsDashboard,
+    implementedTabs: ['overview', 'partners', 'opportunities', 'agreements', 'templates', 'reports']
   },
   social: {
     dashboardComponent: CSRDashboard,
@@ -64,7 +68,8 @@ const resolverMap: Record<string, DepartmentResolverEntry> = {
     implementedTabs: ['overview', 'repository', 'authoring', 'analytics', 'templates', 'reports']
   },
   knowledge: {
-    implementedTabs: []
+    dashboardComponent: KnowledgeBaseDashboard,
+    implementedTabs: ['overview', 'repository', 'taxonomy', 'access', 'templates', 'reports']
   },
   brand: {
     dashboardComponent: BrandDashboard,
@@ -72,7 +77,8 @@ const resolverMap: Record<string, DepartmentResolverEntry> = {
     implementedTabs: ['overview', 'identity', 'assets', 'content', 'research', 'events', 'templates', 'reports']
   },
   'brand-community': {
-    implementedTabs: []
+    dashboardComponent: BrandCommunityDashboard,
+    implementedTabs: ['overview', 'members', 'engagement', 'events', 'templates', 'reports']
   }
 };
 

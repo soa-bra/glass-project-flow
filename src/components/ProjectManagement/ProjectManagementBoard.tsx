@@ -11,8 +11,6 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
-import { ManagedBox, type BoxStatus } from '@/components/common/ManagedBox';
-import { Telemetry } from '@/infra/telemetry';
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
@@ -54,7 +52,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       onProjectUpdated?.(updatedProject);
       setShowEditModal(false);
     } catch (saveError) {
-      Telemetry.reportError(saveError, { boxRef: 'project-management-board', operation: 'save' });
       setError('فشل حفظ بيانات المشروع');
     }
   };
@@ -74,42 +71,34 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const tabs = [{
     id: 'overview',
     tabCode: 'overview',
-    boxRef: 'pm-overview-tab',
     label: 'نظرة عامة'
   }, {
     id: 'tasks',
     tabCode: 'tasks',
-    boxRef: 'pm-tasks-tab',
     label: 'إدارة المهام'
   }, {
     id: 'finance',
     tabCode: 'finance',
-    boxRef: 'pm-finance-tab',
     label: 'الإدارة المالية'
   }, {
     id: 'team',
     tabCode: 'team',
-    boxRef: 'pm-team-tab',
     label: 'إدارة الفريق'
   }, {
     id: 'client',
     tabCode: 'client',
-    boxRef: 'pm-client-tab',
     label: 'العميل'
   }, {
     id: 'files',
     tabCode: 'files',
-    boxRef: 'pm-files-tab',
     label: 'إدارة المرفقات'
   }, {
     id: 'templates',
     tabCode: 'templates',
-    boxRef: 'pm-templates-tab',
     label: 'النماذج والقوالب'
   }, {
     id: 'reports',
     tabCode: 'reports',
-    boxRef: 'pm-reports-tab',
     label: 'التقارير'
   }];
 
@@ -263,8 +252,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return null;
     }
   };
-  const status: BoxStatus = loading ? 'loading' : error ? 'error' : project ? 'data' : 'empty';
-
   return <>
       <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
       top: "var(--sidebar-top-offset)",
@@ -282,16 +269,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
         {/* محتوى التبويبة النشطة */}
-        <ManagedBox
-          boxRef="project-management-board"
-          title="لوحة إدارة المشروع"
-          status={status}
-          loading={<div>جاري تحميل بيانات المشروع...</div>}
-          error={<div>{error}</div>}
-          emptyState={<div>لا توجد بيانات مشروع.</div>}
-        >
-          {renderTabContent()}
-        </ManagedBox>
+        {loading ? <div>جاري تحميل بيانات المشروع...</div> : error ? <div>{error}</div> : project ? renderTabContent() : <div>لا توجد بيانات مشروع.</div>}
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

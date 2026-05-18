@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "check:workspace-manifest": "node scripts/workspace-manifest-check.mjs"
+    "check:workspace-manifest": "node scripts/workspace-manifest-check.mjs",
+    "check:department-tabs": "node scripts/check-department-tab-coverage.mjs"
   },
   "dependencies": {
     "@ark-ui/react": "^5.30.0",

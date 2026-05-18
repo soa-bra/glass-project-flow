@@ -5,7 +5,6 @@ import { canAccessBox } from '@/auth/permissions';
 import { ArchivePanelLayout } from './ArchivePanelLayout';
 import { EmptyArchiveState } from './EmptyArchiveState';
 import { ArchiveCategoryPanel } from './ArchiveCategoryPanel';
-import { ManagedBox, type BoxStatus } from '@/components/common/ManagedBox';
 
 interface ArchivePanelProps {
   selectedCategory: string | null;
@@ -41,14 +40,7 @@ const ArchivePanel: React.FC<ArchivePanelProps> = ({
 
   return (
     <ArchivePanelLayout>
-      <ManagedBox
-        boxRef="archive-box"
-        title="الأرشيف"
-        status={"ready" as BoxStatus}
-        emptyState={<EmptyArchiveState />}
-      >
-        {selectedCategory ? <ArchiveCategoryPanel selectedCategory={selectedCategory} /> : null}
-      </ManagedBox>
+      <ArchiveCategoryPanel selectedCategory={selectedCategory} />
     </ArchivePanelLayout>
   );
 };
