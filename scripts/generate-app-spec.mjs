@@ -33,7 +33,7 @@ const sheetName = (wb, keywords) => {
 };
 
 const readSheet = (path, keywords) => {
-  const wb = XLSX.readFile(path);
+  const wb = XLSX.read(readFileSync(path), { type: 'buffer' });
   const name = sheetName(wb, keywords);
   if (!name) throw new Error(`No sheet matching ${keywords} in ${path}`);
   return XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: null });
