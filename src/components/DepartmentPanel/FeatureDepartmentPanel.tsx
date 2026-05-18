@@ -1,24 +1,14 @@
-
 import React from 'react';
 import { usePermission } from '@/hooks/usePermission';
 import { canRunAction } from '@/auth/permissions';
-import { FinancialDashboard } from '../DepartmentTabs/Financial';
-import { LegalDashboard } from '../DepartmentTabs/Legal';
-import { MarketingDashboard } from '../DepartmentTabs/Marketing';
-import { HRDashboard } from '../DepartmentTabs/HR';
-import { CRMDashboard } from '../DepartmentTabs/CRM';
-import { CSRDashboard } from '../DepartmentTabs/CSR';
-import { TrainingDashboard } from '../DepartmentTabs/Training';
-import { KMPADashboard } from '../DepartmentTabs/KMPA';
-import { BrandDashboard } from '../DepartmentTabs/Brand';
-import { departmentsSpecByKey } from '../DepartmentTabs/shared/departmentDataModel';
+import { resolveDepartment, getDepartmentCoverageReport } from '../DepartmentTabs/shared/departmentResolver';
 
 interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
 }
 
 export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
-  selectedDepartment 
+  selectedDepartment
 }) => {
   const financialRead = usePermission('financial.read');
   const legalRead = usePermission('legal.read');
@@ -30,35 +20,34 @@ export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   if (hrRead.allowed) granted.add('hr.read');
 
   const renderDepartmentDashboard = () => {
-    const spec = departmentsSpecByKey[selectedDepartment];
-    switch (selectedDepartment) {
-      case 'financial':
-        return canRunAction('financial.open', granted) ? <FinancialDashboard /> : <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض قسم المالية.</div>;
-      case 'legal':
-        return canRunAction('legal.open', granted) ? <LegalDashboard /> : <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض القسم القانوني.</div>;
-      case 'marketing':
-        return <MarketingDashboard />;
-      case 'hr':
-        return canRunAction('hr.open', granted) ? <HRDashboard /> : <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض قسم الموارد البشرية.</div>;
-      case 'crm':
-        return <CRMDashboard />;
-      case 'social':
-        return <CSRDashboard />;
-      case 'training':
-        return <TrainingDashboard />;
-      case 'research':
-        return <KMPADashboard />;
-      case 'partnerships':
-      case 'knowledge':
-      case 'brand-community':
-        return <div className="p-6 text-sm text-gray-600">{`Dashboard ${spec?.dashboard ?? selectedDepartment} جاهز للربط بعد اعتماد تفاصيل التبويبات والصناديق.`}</div>;
-      case 'brand':
-        return <BrandDashboard />;
-
-      default:
-        return null;
+    const resolved = resolveDepartment(selectedDepartment);
+    if (!resolved) {
+      return <div className="p-6 text-sm text-red-600">مفتاح الإدارة غير موجود في departmentsSpecification: {selectedDepartment}</div>;
     }
+
+    const dashboardName = resolved.spec.dashboard;
+    if (!resolved.dashboardComponent) {
+      return <div className="p-6 text-sm text-red-600">لا يوجد تنفيذ Dashboard للمفتاح: {selectedDepartment} ({dashboardName})</div>;
+    }
+
+    if (selectedDepartment === 'financial' && !canRunAction('financial.open', granted)) {
+      return <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض قسم المالية.</div>;
+    }
+    if (selectedDepartment === 'legal' && !canRunAction('legal.open', granted)) {
+      return <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض القسم القانوني.</div>;
+    }
+    if (selectedDepartment === 'hr' && !canRunAction('hr.open', granted)) {
+      return <div className="p-6 text-sm text-gray-500">لا تملك صلاحية عرض قسم الموارد البشرية.</div>;
+    }
+
+    const DashboardComponent = resolved.dashboardComponent;
+    return <DashboardComponent />;
   };
+
+  React.useEffect(() => {
+    const report = getDepartmentCoverageReport();
+    console.table(report);
+  }, []);
 
   return renderDepartmentDashboard();
 };
