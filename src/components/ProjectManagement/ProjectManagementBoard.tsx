@@ -11,6 +11,8 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
+import { ManagedBox, type BoxStatus } from '@/components/common/ManagedBox';
+import { Telemetry } from '@/infra/telemetry';
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
@@ -29,6 +31,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [loading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   if (!isVisible) return null;
   const handleDeleteProject = () => {
     // تنفيذ عملية حذف المشروع
@@ -46,8 +50,13 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     setShowEditModal(true);
   };
   const handleProjectUpdated = (updatedProject: ProjectData) => {
-    onProjectUpdated?.(updatedProject);
-    setShowEditModal(false);
+    try {
+      onProjectUpdated?.(updatedProject);
+      setShowEditModal(false);
+    } catch (saveError) {
+      Telemetry.reportError(saveError, { boxRef: 'project-management-board', operation: 'save' });
+      setError('فشل حفظ بيانات المشروع');
+    }
   };
 
   // تحويل بيانات المشروع للتوافق مع نموذج AddProjectModal
@@ -238,6 +247,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return null;
     }
   };
+  const status: BoxStatus = loading ? 'loading' : error ? 'error' : project ? 'data' : 'empty';
+
   return <>
       <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
       top: "var(--sidebar-top-offset)",
@@ -255,7 +266,16 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
         {/* محتوى التبويبة النشطة */}
-        {renderTabContent()}
+        <ManagedBox
+          boxRef="project-management-board"
+          title="لوحة إدارة المشروع"
+          status={status}
+          loading={<div>جاري تحميل بيانات المشروع...</div>}
+          error={<div>{error}</div>}
+          emptyState={<div>لا توجد بيانات مشروع.</div>}
+        >
+          {renderTabContent()}
+        </ManagedBox>
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MoreHorizontal, Edit, Archive, Trash } from 'lucide-react';
 import { Project } from '@/types/project';
+import { usePermission } from '@/hooks/usePermission';
+import { canRunAction } from '@/auth/permissions';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 
 interface TabItem {
@@ -29,6 +31,17 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
   onTabChange,
   tabs
 }) => {
+  const projectRead = usePermission('project.read');
+  const projectWrite = usePermission('project.write');
+  const projectApprove = usePermission('project.approve');
+  const projectFiles = usePermission('project.files');
+
+  const granted = new Set<string>();
+  if (projectRead.allowed) granted.add('project.read');
+  if (projectWrite.allowed) granted.add('project.write');
+  if (projectApprove.allowed) granted.add('project.approve');
+  if (projectFiles.allowed) granted.add('project.files');
+
   const animatedTabItems = tabs.map(tab => ({
     value: tab.id,
     label: tab.label
@@ -89,8 +102,11 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                   className="absolute top-[60px] left-0 mt-2"
                 >
                   <div className="flex flex-col items-start gap-2 w-48">
+                    {!canRunAction('project.edit', granted) && !canRunAction('project.archive', granted) && !canRunAction('project.delete', granted) && (
+                      <div className="w-full rounded-2xl bg-white/90 px-3 py-2 text-sm text-gray-500">لا توجد إجراءات متاحة حسب صلاحياتك.</div>
+                    )}
                     {/* تعديل المشروع */}
-                    <motion.button
+                    {canRunAction('project.edit', granted) && <motion.button
                       initial={{ opacity: 0, x: -16 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -16 }}
@@ -118,10 +134,10 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       />
                       <Edit className="w-4 h-4" />
                       تعديل المشروع
-                    </motion.button>
+                    </motion.button>}
 
                     {/* أرشفة المشروع */}
-                    <motion.button
+                    {canRunAction('project.archive', granted) && <motion.button
                       initial={{ opacity: 0, x: -16 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -16 }}
@@ -148,10 +164,10 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       />
                       <Archive className="w-4 h-4" />
                       أرشفة المشروع
-                    </motion.button>
+                    </motion.button>}
 
                     {/* حذف المشروع */}
-                    <motion.button
+                    {canRunAction('project.delete', granted) && <motion.button
                       initial={{ opacity: 0, x: -16 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -16 }}
@@ -178,7 +194,7 @@ export const ProjectManagementHeader: React.FC<ProjectManagementHeaderProps> = (
                       />
                       <Trash className="w-4 h-4" />
                       حذف المشروع
-                    </motion.button>
+                    </motion.button>}
                   </div>
                 </motion.div>
               )}

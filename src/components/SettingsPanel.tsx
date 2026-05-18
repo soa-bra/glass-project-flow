@@ -1,7 +1,10 @@
 import React from 'react';
+import { usePermission } from '@/hooks/usePermission';
+import { canAccessBox } from '@/auth/permissions';
 import { SettingsPanelLayout } from './SettingsPanel/SettingsPanelLayout';
 import { EmptySettingsState } from './SettingsPanel/EmptySettingsState';
 import { SettingsCategoryPanel } from './SettingsPanel/SettingsCategoryPanel';
+import { ManagedBox, type BoxStatus } from './common/ManagedBox';
 
 interface SettingsPanelProps {
   selectedCategory: string | null;
@@ -14,6 +17,21 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   isMainSidebarCollapsed,
   isSettingsSidebarCollapsed
 }) => {
+  const settingsAdmin = usePermission('settings.admin');
+  const settingsSecurity = usePermission('settings.security');
+  const granted = new Set<string>();
+
+  if (settingsAdmin.allowed) granted.add('settings.admin');
+  if (settingsSecurity.allowed) granted.add('settings.security');
+
+  if (settingsAdmin.isLoading || settingsSecurity.isLoading) {
+    return <div className="h-full flex items-center justify-center text-sm text-gray-500">جار التحقق من الصلاحيات...</div>;
+  }
+
+  if (!canAccessBox('settings', granted)) {
+    return <div className="h-full flex items-center justify-center text-sm text-gray-500">لا تملك صلاحية الوصول إلى الإعدادات.</div>;
+  }
+
   // Early return for no selection
   if (!selectedCategory) {
     return <EmptySettingsState />;
@@ -21,11 +39,20 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   return (
     <SettingsPanelLayout>
-      <SettingsCategoryPanel 
-        category={selectedCategory}
-        isMainSidebarCollapsed={isMainSidebarCollapsed}
-        isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
-      />
+      <ManagedBox
+        boxRef="settings-box"
+        title="الإعدادات"
+        status={status}
+        emptyState={<EmptySettingsState />}
+      >
+        {selectedCategory ? (
+          <SettingsCategoryPanel 
+            category={selectedCategory}
+            isMainSidebarCollapsed={isMainSidebarCollapsed}
+            isSettingsSidebarCollapsed={isSettingsSidebarCollapsed}
+          />
+        ) : null}
+      </ManagedBox>
     </SettingsPanelLayout>
   );
 };
