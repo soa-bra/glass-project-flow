@@ -294,24 +294,24 @@ src/
 
 ## الترتيب التنفيذي (Roadmap على Batches)
 
-| Batch | المحتوى | اعتماد |
-|---|---|---|
-| **R0** | A1+A2 (Spec ثابت + Index + memories) | — |
-| **R1** | B1+B2 (Design Tokens + ESLint Governance) | R0 |
-| **R2** | D1+D2+D3 (Box-Kit + Renderers + Behaviors) | R0+R1 |
-| **R3** | C0 + C1 (WorkspaceShell + Operations Workspace جديد) | R2 |
-| **R4** | C2 (Projects Workspace + 8/29/18) | R2 |
-| **R5** | C3 (Departments — تفاصيل في خطة 12 إدارة الموافَق عليها) | R2 |
-| **R6** | C5 (Archive Workspace + جدول archive_documents) | R2+E1 |
-| **R7** | C6 (Settings Workspace + جداول الإعدادات + RBAC) | R2 |
-| **R8** | C4 (Planning Workspace — Gap analysis + قطع الفجوات) | R2 |
-| **R9** | E1+E2+E3 (Data Model alignment + migrations + Zod) | R5-R8 |
-| **R10** | F1+F2+F3 (Event Bus + Command Layer + Tracing) | R9 |
-| **R11** | G (Integrations + AI Gateway hardening) | R10 |
-| **R12** | H (10 تدفقات + E2E tests) | R3-R11 |
-| **R13** | I (Acceptance checklist + CI gates) | R12 |
-| **R14** | J (إعادة هيكلة الطبقات تدريجية) | R10 |
-| **R15** | K (PR template + lint rules + توثيق نهائي) | R14 |
+| Batch | المحتوى | اعتماد | الحالة |
+|---|---|---|---|
+| **R0** | A1+A2 (Spec ثابت + Index + memories) | — | ✅ مكتمل — `src/config/app-spec.ts` مولَّد آليًا (15/124/476/184)، `docs/specs/INDEX.md` + 3 memories، اختبار تغطية يحرس الأعداد. |
+| **R1** | B1+B2 (Design Tokens + ESLint Governance) | R0 | 🟡 قائمة |
+| **R2** | D1+D2+D3 (Box-Kit + Renderers + Behaviors) | R0+R1 | ✅ مكتمل — `src/components/box-kit/` يحوي 17 primitive (DAV/IPF/ACT/MDL) + `registry.ts` + `BoxRenderer` + `TabRenderer`، اختبار smoke يرسم أول تبويب من كل workspace بدون أعطال. |
+| **R3** | C0 + C1 (WorkspaceShell + Operations Workspace جديد) | R2 | 🟡 قائمة |
+| **R4** | C2 (Projects Workspace + 8/29/18) | R2 | 🟡 قائمة |
+| **R5** | C3 (Departments — تفاصيل في خطة 12 إدارة الموافَق عليها) | R2 | 🟡 قائمة |
+| **R6** | C5 (Archive Workspace + جدول archive_documents) | R2+E1 | 🟡 قائمة |
+| **R7** | C6 (Settings Workspace + جداول الإعدادات + RBAC) | R2 | 🟡 قائمة |
+| **R8** | C4 (Planning Workspace — Gap analysis + قطع الفجوات) | R2 | 🟡 قائمة |
+| **R9** | E1+E2+E3 (Data Model alignment + migrations + Zod) | R5-R8 | 🟡 قائمة |
+| **R10** | F1+F2+F3 (Event Bus + Command Layer + Tracing) | R9 | 🟡 قائمة |
+| **R11** | G (Integrations + AI Gateway hardening) | R10 | 🟡 قائمة |
+| **R12** | H (10 تدفقات + E2E tests) | R3-R11 | 🟡 قائمة |
+| **R13** | I (Acceptance checklist + CI gates) | R12 | 🟡 قائمة |
+| **R14** | J (إعادة هيكلة الطبقات تدريجية) | R10 | 🟡 قائمة |
+| **R15** | K (PR template + lint rules + توثيق نهائي) | R14 | 🟡 قائمة |
 
 ---
 
