@@ -62,6 +62,30 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/spec-preview"
+                  element={
+                    <ProtectedRoute>
+                      <SpecPreviewPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/spec-preview/:dashboardKey"
+                  element={
+                    <ProtectedRoute>
+                      <SpecPreviewPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/spec-preview/:dashboardKey/:tabCode"
+                  element={
+                    <ProtectedRoute>
+                      <SpecPreviewPage />
+                    </ProtectedRoute>
+                  }
+                />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
