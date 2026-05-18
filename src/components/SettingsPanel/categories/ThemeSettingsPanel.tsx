@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 
 interface ThemeSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
-export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
+export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = ({ canWrite = true }) => {
   const [formData, setFormData] = useState({
     appearance: {
       mode: 'auto', // light, dark, auto
@@ -52,6 +54,8 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
+
+  const saveMutation = useSettingsMutation('theme', canWrite);
 
   const colorSchemes = [
     { key: 'soabra-default', name: 'سـوبــرا الافتراضي', primary: '#000000', secondary: '#F2FFFF' },

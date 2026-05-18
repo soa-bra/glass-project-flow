@@ -6,15 +6,17 @@ import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 
 interface NotificationsSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
-export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProps> = () => {
+export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProps> = ({ canWrite = true }) => {
   const [formData, setFormData] = useState({
     preferences: {
       email: true,
@@ -62,6 +64,8 @@ export const NotificationsSettingsPanel: React.FC<NotificationsSettingsPanelProp
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
+
+  const saveMutation = useSettingsMutation('notifications', canWrite);
 
   const updatePreference = (key: string, value: boolean) => {
     setFormData(prev => ({

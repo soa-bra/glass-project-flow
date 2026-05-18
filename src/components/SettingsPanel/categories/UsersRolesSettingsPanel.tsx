@@ -6,6 +6,7 @@ import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 
 interface UsersRolesSettingsPanelProps {
@@ -89,6 +90,8 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
+
+  const saveMutation = useSettingsMutation('users-roles', canWrite);
 
   const handleUserStatusChange = (userId: string, newStatus: User['status']) => {
     setUsers(prev => prev.map(user => 

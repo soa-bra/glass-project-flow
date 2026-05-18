@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { emitSettingsAudit } from '../auditTrail';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -75,6 +76,8 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = ({ canWrite = tru
       setLastAutosave(new Date().toLocaleTimeString('ar-SA'));
     }
   });
+
+  const saveMutation = useSettingsMutation('ai', canWrite);
 
   const handleModelToggle = (modelType: string) => {
     setFormData(prev => ({

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSettingsSectionMutation } from '@/hooks/useSettingsSectionMutation';
 import { Database, Shield, FileText, Clock, AlertTriangle, CheckCircle, Lock, Unlock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { useSettingsMutation } from '../settingsMutations';
 import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -10,9 +11,10 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 interface DataGovernanceSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
   isSettingsSidebarCollapsed: boolean;
+  canWrite?: boolean;
 }
 
-export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelProps> = () => {
+export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelProps> = ({ canWrite = true }) => {
   const [formData, setFormData] = useState({
     retention: {
       financial: 10, // years
