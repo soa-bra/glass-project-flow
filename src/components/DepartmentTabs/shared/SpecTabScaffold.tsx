@@ -191,7 +191,7 @@ export const SpecTabScaffold: React.FC<Props> = ({
         </AppGridItem>
 
         {/* Box 4 — Actions */}
-        <AppGridItem colSpan={12} tabletSpan={12}>
+        <AppGridItem colSpan={12} tabletSpan={6}>
           <div className="rounded-[24px] bg-white border border-[#DADCE0] p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic uppercase tracking-wide">
