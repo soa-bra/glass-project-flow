@@ -26,6 +26,9 @@ import type {
   MarketingCampaign,
   MarketingLead,
   TemplateItem,
+  BcmMember,
+  PartnershipAgreement,
+  KnowledgeArticle,
 } from "@/types/departments";
 
 // HR
