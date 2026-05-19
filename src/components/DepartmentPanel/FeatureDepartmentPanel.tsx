@@ -1,9 +1,12 @@
 /**
  * FeatureDepartmentPanel
  *
- * P4 — All 12 departments are now rendered through SpecDrivenDepartmentDashboard
- * (driven by APP_SPEC). Legacy feature dashboards remain importable for fallback
- * via the `?legacy=1` query param while data wiring (slotProps) lands per dept.
+ * Routing policy:
+ *  - Existing departments (financial, legal, marketing, hr, crm, csr, training,
+ *    kmpa, brand) render their full legacy feature dashboards by default.
+ *  - Newly added departments (bcm, partnerships, knowledge) render through
+ *    SpecDrivenDepartmentDashboard until full feature implementations land.
+ *  - Append `?spec=1` to force the spec-driven view for any department (QA).
  *
  * @specRef Section 6 (Departments) — 12 dashboards / 94 tabs
  */
@@ -23,7 +26,7 @@ interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
 }
 
-const LEGACY: Record<string, React.ComponentType> = {
+const FEATURE_DASHBOARDS: Record<string, React.ComponentType> = {
   financial: FinancialDashboard,
   legal: LegalDashboard,
   marketing: MarketingDashboard,
@@ -35,26 +38,23 @@ const LEGACY: Record<string, React.ComponentType> = {
   brand: BrandDashboard,
 };
 
-const SPEC_DEPARTMENTS = new Set([
-  'financial', 'legal', 'marketing', 'hr', 'crm', 'brand',
-  'csr', 'kmpa', 'training', 'bcm', 'partnerships', 'knowledge',
-]);
+const SPEC_ONLY_DEPARTMENTS = new Set(['bcm', 'partnerships', 'knowledge']);
 
 export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   selectedDepartment,
 }) => {
-  if (!SPEC_DEPARTMENTS.has(selectedDepartment)) return null;
-
-  // Legacy fallback for QA: append `?legacy=1` to compare with previous dashboards.
-  const useLegacy =
+  const forceSpec =
     typeof window !== 'undefined' &&
-    new URLSearchParams(window.location.search).get('legacy') === '1' &&
-    LEGACY[selectedDepartment];
+    new URLSearchParams(window.location.search).get('spec') === '1';
 
-  if (useLegacy) {
-    const Legacy = LEGACY[selectedDepartment];
-    return <Legacy />;
+  if (!forceSpec) {
+    const Feature = FEATURE_DASHBOARDS[selectedDepartment];
+    if (Feature) return <Feature />;
   }
 
-  return <SpecDrivenDepartmentDashboard dashboardKey={selectedDepartment} />;
+  if (forceSpec || SPEC_ONLY_DEPARTMENTS.has(selectedDepartment)) {
+    return <SpecDrivenDepartmentDashboard dashboardKey={selectedDepartment} />;
+  }
+
+  return null;
 };
