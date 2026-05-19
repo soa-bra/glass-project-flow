@@ -68,11 +68,9 @@ export const HRDashboard: React.FC = () => {
         <TrainingTab />
       </BaseTabContent>
 
-      <BaseTabContent value="partners">
-        <PartnersTab />
-      </BaseTabContent>
-
       <BaseTabContent value="templates">
+        <TemplatesTab />
+      </BaseTabContent>
         <TemplatesTab />
       </BaseTabContent>
 
