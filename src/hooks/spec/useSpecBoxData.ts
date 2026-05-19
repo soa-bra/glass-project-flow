@@ -59,7 +59,7 @@ function useBcmBoxData(): SpecBoxData {
       'BCMDashboard.overview.recent': {
         'DAV-LST-01': { items: recentItems },
       },
-      'BCMDashboard.members.list': {
+      'BCMDashboard.members.table': {
         'DAV-LST-01': {
           items: members.slice(0, 10).map((m) => ({
             id: m.id,
@@ -91,7 +91,7 @@ function usePartnershipsBoxData(): SpecBoxData {
     const types = new Set(agreements.map((a) => a.type).filter(Boolean));
 
     return {
-      'PartnershipsDashboard.overview.summary': {
+      'InstitutionalPartnershipsDashboard.overview.summary': {
         'DAV-KPI-01': {
           items: [
             { label: 'الاتفاقيات', value: agreements.length },
@@ -101,7 +101,7 @@ function usePartnershipsBoxData(): SpecBoxData {
         },
         'DAV-TAG-01': { tags: Array.from(types).slice(0, 6) as string[] },
       },
-      'PartnershipsDashboard.overview.health': {
+      'InstitutionalPartnershipsDashboard.overview.health': {
         'DAV-ALR-01': {
           tone: expiringSoon.length > 0 ? ('warning' as const) : ('success' as const),
           title:
@@ -114,7 +114,7 @@ function usePartnershipsBoxData(): SpecBoxData {
           })),
         },
       },
-      'PartnershipsDashboard.overview.recent': {
+      'InstitutionalPartnershipsDashboard.overview.recent': {
         'DAV-LST-01': {
           items: agreements.slice(0, 5).map((a) => ({
             id: a.id,
@@ -142,7 +142,7 @@ function useKnowledgeBoxData(): SpecBoxData {
     const allTags = Array.from(new Set(articles.flatMap((a) => a.tags ?? []))).slice(0, 8);
 
     return {
-      'KnowledgeDashboard.overview.summary': {
+      'KnowledgeBaseDashboard.overview.summary': {
         'DAV-KPI-01': {
           items: [
             { label: 'إجمالي المقالات', value: articles.length },
@@ -153,7 +153,7 @@ function useKnowledgeBoxData(): SpecBoxData {
         },
         'DAV-TAG-01': { tags: allTags },
       },
-      'KnowledgeDashboard.overview.health': {
+      'KnowledgeBaseDashboard.overview.health': {
         'DAV-ALR-01': {
           tone: drafts > published ? ('warning' as const) : ('info' as const),
           title:
@@ -162,7 +162,7 @@ function useKnowledgeBoxData(): SpecBoxData {
               : 'حالة المعرفة جيدة',
         },
       },
-      'KnowledgeDashboard.overview.recent': {
+      'KnowledgeBaseDashboard.overview.recent': {
         'DAV-LST-01': {
           items: articles.slice(0, 5).map((a) => ({
             id: a.id,
