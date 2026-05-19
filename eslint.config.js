@@ -171,5 +171,35 @@ export default tseslint.config(
         },
       ],
     },
+  },
+
+  // قاعدة 7 (P7): منع الاستيراد العميق لمكوّنات Box-Kit الأولية.
+  // كل الاستهلاك يجب أن يمر عبر السجل (BOX_KIT_REGISTRY) ليبقى TabRenderer
+  // هو المصدر الوحيد لربط componentRef ↔ React component.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/components/box-kit/**",
+      "src/__tests__/**",
+      "src/stories/**",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "**/components/box-kit/primitives/**",
+                "@/components/box-kit/primitives/**",
+              ],
+              message:
+                "❌ ممنوع الاستيراد العميق من box-kit/primitives. استخدم BOX_KIT_REGISTRY أو TabRenderer/BoxRenderer من @/components/box-kit.",
+            },
+          ],
+        },
+      ],
+    },
   }
 );
+
