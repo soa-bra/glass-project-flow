@@ -13,9 +13,12 @@ import { EngineJobsDashboard } from '@/features/engine-jobs';
 import { DependencyGraphVisualizer } from '@/features/dependency-graph';
 import { ToolsMarketplace } from '@/features/tools-marketplace';
 import { AdminRolesPanel } from '@/features/admin-roles';
+import { SpecSettingsShell } from './SpecSettingsShell';
 
-const wrap = (Component: React.ComponentType) => () => (
-  <div className="p-6 h-full overflow-auto"><Component /></div>
+const wrapTechnical = (Component: React.ComponentType, title: string, subtitle?: string) => () => (
+  <SpecSettingsShell title={title} subtitle={subtitle}>
+    <Component />
+  </SpecSettingsShell>
 );
 
 export class CategoryPanelFactory {
@@ -40,13 +43,13 @@ export class CategoryPanelFactory {
       case 'audit':
         return AuditCenterPanel;
       case 'engine-jobs':
-        return wrap(EngineJobsDashboard);
+        return wrapTechnical(EngineJobsDashboard, 'محرك المهام', 'مراقبة Engine Jobs الحية');
       case 'dependency-graph':
-        return wrap(DependencyGraphVisualizer);
+        return wrapTechnical(DependencyGraphVisualizer, 'خريطة الاعتماديات', 'علاقات الكيانات المركزية');
       case 'tools-marketplace':
-        return wrap(ToolsMarketplace);
+        return wrapTechnical(ToolsMarketplace, 'سوق الأدوات', 'إدارة الأدوات والإضافات');
       case 'admin-roles':
-        return wrap(AdminRolesPanel);
+        return wrapTechnical(AdminRolesPanel, 'الأدوار الإدارية', 'إدارة الأدوار والصلاحيات المتقدمة');
 
       default:
         return (props: any) => <GenericSettingsPanel category={category} {...props} />;
