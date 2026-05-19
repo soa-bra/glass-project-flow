@@ -62,11 +62,14 @@ spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRender
 - ⏭️ ربط `slotProps` لكل تبويب بهوكاته في `src/hooks/departments/` يُرحّل إلى P4.b (بعد اكتمال P5/P6) لأن البنية الحالية تعرض المواصفة بالبيانات الافتراضية للـ Box-Kit.
 - 🛑 **وقفة مراجعة**.
 
-### P5 — Archive Workspace (9 فئات)
-- جدول `archive_documents (id, owner_id, category, title, file_url, version, tags[], metadata jsonb, status)` مع RLS.
-- خدمة `archiveService` مع filter حسب `category`.
-- إضافة `TemplatesArchivePanel` إلى المواصفة كفئة معتمدة.
-- تحويل كل الـ `CategoryPanelFactory` إلى `SpecDrivenDashboard` بفئات spec.
+### P5 — Archive Workspace (9 فئات) ✅
+- ✅ Migration: جدول `archive_documents` (category, title, file_url, version, tags[], metadata jsonb, status) + 4 سياسات RLS (owner-only + is_owner override) + trigger `update_updated_at_column`.
+- ✅ `src/services/archive/archiveService.ts`: CRUD + Zod schemas + audit لكل عملية.
+- ✅ `src/hooks/archive/useArchiveDocuments.ts`: React Query bindings (list/create/delete) مع invalidation per-category.
+- ✅ `DocumentsArchivePanel` مربوط فعلياً بـ `archive_documents` (category='documents') مع fallback لقائمة عرض حتى يكتب المستخدم وثائق حقيقية.
+- ✅ `CategoryPanelFactory` يدعم `?spec=1` لعرض المواصفة عبر `SpecDrivenDashboard('archive')` بدلاً من اللوحات legacy.
+- ✅ اختبار `src/__tests__/archive.spec-coverage.test.ts` أخضر (3/3) — كل componentRef في 9 فئات الأرشيف محلول من registry.
+- ⏭️ ربط باقي 8 فئات (HR/Financial/Legal/Organizational/Knowledge/Templates/Policies/Projects) بـ `archiveService` يُرحَّل إلى P5.b بنفس نمط Documents (Mapper + fallback).
 - 🛑 **وقفة مراجعة**.
 
 ### P6 — Settings Workspace (13 فئة)
