@@ -72,6 +72,11 @@ spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRender
 - ⏭️ ربط باقي 8 فئات (HR/Financial/Legal/Organizational/Knowledge/Templates/Policies/Projects) بـ `archiveService` يُرحَّل إلى P5.b بنفس نمط Documents (Mapper + fallback).
 - 🛑 **وقفة مراجعة**.
 
+### P5.x — Data Wiring (slotProps)
+- ✅ **P5.3** — الإدارات الجديدة الثلاث (BCM / Partnerships / Knowledge): `src/hooks/spec/useSpecBoxData.ts` يحقن `boxData` للصناديق `*.overview.summary/health/recent` و `BCMDashboard.members.table` من جداول Supabase الحقيقية. `SpecDrivenDashboard` يستقبل `boxData` (افتراضياً عبر `useSpecBoxData(dashboardKey)`) ويمرره إلى `TabRenderer`.
+- ✅ **P5.4** — الإدارات الـ9 القديمة: تبقى على لوحاتها البرمجية (feature dashboards) عبر `FeatureDepartmentPanel`، مع `?spec=1` كمعاينة QA. لا حاجة لـ slotProps لها.
+- ✅ **P5.1** — Operations Board: مربوط مسبقاً ببيانات حقيقية عبر `src/components/OperationsBoard/useTabData.ts` (Aggregations من projects/tasks/invoices/customers). لا spec entry له.
+
 ### P6 — Settings Workspace (13 فئة)
 - جدول `user_settings (user_id, category, payload jsonb)` مع RLS (`user_id = auth.uid()`).
 - خدمة `settingsService` مع upsert by `(user_id, category)`.
