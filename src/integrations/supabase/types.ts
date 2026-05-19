@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      archive_documents: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          file_url: string | null
+          id: string
+          metadata: Json
+          owner_id: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          metadata?: Json
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          metadata?: Json
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       audit_events: {
         Row: {
           action: string
