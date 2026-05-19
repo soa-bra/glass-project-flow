@@ -14,12 +14,16 @@ import { APP_SPEC } from '@/config/app-spec';
 import { TabRenderer } from '@/components/box-kit';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
+import { useSpecBoxData } from '@/hooks/spec/useSpecBoxData';
 
 interface Props {
   dashboardKey: string;
+  /** Optional per-box slot props override (keyed by box ref). When omitted, the
+   *  shared `useSpecBoxData(dashboardKey)` resolver is used. */
+  boxData?: Record<string, Record<string, Record<string, unknown>>>;
 }
 
-export const SpecDrivenDashboard: React.FC<Props> = ({ dashboardKey }) => {
+export const SpecDrivenDashboard: React.FC<Props> = ({ dashboardKey, boxData }) => {
   const dashboard = useMemo(() => {
     for (const w of APP_SPEC.workspaces) {
       for (const d of w.dashboards as ReadonlyArray<any>) {
@@ -28,6 +32,9 @@ export const SpecDrivenDashboard: React.FC<Props> = ({ dashboardKey }) => {
     }
     return undefined;
   }, [dashboardKey]);
+
+  const resolved = useSpecBoxData(dashboardKey);
+  const effectiveBoxData = boxData ?? resolved;
 
   const tabs = useMemo(
     () => (dashboard?.tabs ?? []).map((t) => ({ value: t.code, label: t.name })),
@@ -52,7 +59,7 @@ export const SpecDrivenDashboard: React.FC<Props> = ({ dashboardKey }) => {
     >
       {dashboard.tabs.map((t) => (
         <BaseTabContent key={t.code} value={t.code}>
-          <TabRenderer tab={t} />
+          <TabRenderer tab={t} boxData={effectiveBoxData} />
         </BaseTabContent>
       ))}
     </DashboardLayout>
