@@ -64,7 +64,7 @@ export const settingsService = {
     const { data, error } = await supabase
       .from('user_settings')
       .upsert(
-        [{ user_id: uid, category, payload }],
+        [{ user_id: uid, category, payload: payload as never }],
         { onConflict: 'user_id,category' },
       )
       .select('*')
