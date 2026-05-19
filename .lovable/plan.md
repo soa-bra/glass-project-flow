@@ -72,10 +72,14 @@ spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRender
 - ⏭️ ربط باقي 8 فئات (HR/Financial/Legal/Organizational/Knowledge/Templates/Policies/Projects) بـ `archiveService` يُرحَّل إلى P5.b بنفس نمط Documents (Mapper + fallback).
 - 🛑 **وقفة مراجعة**.
 
-### P5.x — Data Wiring (slotProps)
-- ✅ **P5.3** — الإدارات الجديدة الثلاث (BCM / Partnerships / Knowledge): `src/hooks/spec/useSpecBoxData.ts` يحقن `boxData` للصناديق `*.overview.summary/health/recent` و `BCMDashboard.members.table` من جداول Supabase الحقيقية. `SpecDrivenDashboard` يستقبل `boxData` (افتراضياً عبر `useSpecBoxData(dashboardKey)`) ويمرره إلى `TabRenderer`.
+### P5.x — Data Wiring (slotProps) ✅
+- ✅ **P5.3** — الإدارات الجديدة الثلاث (BCM / Partnerships / Knowledge): `src/hooks/spec/useSpecBoxData.ts` يحقن `boxData` للصناديق `*.overview.summary/health/recent` و `BCMDashboard.members.table` من جداول Supabase الحقيقية.
 - ✅ **P5.4** — الإدارات الـ9 القديمة: تبقى على لوحاتها البرمجية (feature dashboards) عبر `FeatureDepartmentPanel`، مع `?spec=1` كمعاينة QA. لا حاجة لـ slotProps لها.
-- ✅ **P5.1** — Operations Board: مربوط مسبقاً ببيانات حقيقية عبر `src/components/OperationsBoard/useTabData.ts` (Aggregations من projects/tasks/invoices/customers). لا spec entry له.
+- ✅ **P5.1** — Operations Board: مربوط مسبقاً ببيانات حقيقية عبر `src/components/OperationsBoard/useTabData.ts`.
+- ✅ **P5.2** — Projects Workspace: `useProjectsBoxData` يحقن KPIs و قائمة المشاريع و تجميع المهام (state) في صناديق `ProjectManagementBoard.overview.{project-summary,cards-grid,phase-progress}` و `ProjectManagementBoard.tasks.tasks-kpis` من `central.projects` + `tasks`.
+- ✅ **P5.5** — Archive + Settings:
+  - **Archive**: `useArchiveBoxData` يستدعي `archiveService.listByCategory` للفئات الـ9 ويملأ `ArchiveWorkspace.<category>.records-list` بـ `DAV-LST-01` و `DAV-TBL-01`.
+  - **Settings**: جدول جديد `public.user_settings` (per-user, per-category JSONB) + `settingsService` + `useSettings/useUpsertSettings` + RLS صارمة. `useSettingsBoxData` يربط `SettingsWorkspace.account.account-stats` و `SettingsWorkspace.security.status-card`.
 
 ### P6 — Settings Workspace (13 فئة)
 - جدول `user_settings (user_id, category, payload jsonb)` مع RLS (`user_id = auth.uid()`).
