@@ -81,20 +81,21 @@ spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRender
   - **Archive**: `useArchiveBoxData` يستدعي `archiveService.listByCategory` للفئات الـ9 ويملأ `ArchiveWorkspace.<category>.records-list` بـ `DAV-LST-01` و `DAV-TBL-01`.
   - **Settings**: جدول جديد `public.user_settings` (per-user, per-category JSONB) + `settingsService` + `useSettings/useUpsertSettings` + RLS صارمة. `useSettingsBoxData` يربط `SettingsWorkspace.account.account-stats` و `SettingsWorkspace.security.status-card`.
 
-### P6 — Settings Workspace (13 فئة)
-- جدول `user_settings (user_id, category, payload jsonb)` مع RLS (`user_id = auth.uid()`).
-- خدمة `settingsService` مع upsert by `(user_id, category)`.
-- 9 لوحات إعدادات (Account, Security, Integrations, Notifications, AI, Theme, Data Governance, Users/Roles, Audit) → مربوطة بـ `user_settings`.
-- 4 لوحات تقنية (Engine Jobs, Dependency Graph, Tools Marketplace, Admin Roles) → **غلاف رفيع** فقط: تُلَف بـ `WorkspaceShell` + breadcrumb spec بدون تعديل منطقها.
+### P6 — Settings Workspace (13 فئة) ✅
+- ✅ جدول `public.user_settings` (P5.5) — RLS صارمة `user_id = auth.uid()` + upsert by `(user_id, category)`.
+- ✅ `src/services/settings/settingsService.ts` — Zod enum للـ13 فئة + CRUD + audit.
+- ✅ `src/hooks/settings/usePersistedSettings.ts` — هوك موحّد (load + debounced autosave 800ms) جاهز للاستخدام من أي لوحة إعدادات.
+- ✅ اللوحات الـ9 الوظيفية (Account, Security, Integrations, Notifications, AI, Theme, Data Governance, Users/Roles, Audit) تستهلك `usePersistedSettings` أو `useSettings/useUpsertSettings`.
+- ✅ اللوحات الـ4 التقنية (Engine Jobs, Dependency Graph, Tools Marketplace, Admin Roles) ملفوفة بـ `SpecSettingsShell` (غلاف رفيع: WorkspaceShell + breadcrumb spec) دون تعديل منطقها الداخلي — مطابق لقرار الأسئلة المفتوحة #3.
 - 🛑 **وقفة مراجعة**.
 
-### P7 — التحقق النهائي + CI Gates
-- اختبار تغطية: كل `componentRef` في spec له entry في `BOX_KIT_REGISTRY`.
-- اختبار: كل `tabId` في spec يُرسم بدون أخطاء عبر `TabRenderer`.
-- ESLint rule: منع imports عميقة للـ Box-Kit primitives (تجبر استخدام registry).
-- `pnpm test` + supabase linter أخضر.
-- توثيق نهائي في `docs/specs/INDEX.md`.
-- 🛑 **مراجعة نهائية + إغلاق**.
+### P7 — التحقق النهائي + CI Gates ✅
+- ✅ `src/__tests__/full-spec.coverage.test.ts` — يمرّ على كل لوحات/تبويبات/صناديق `APP_SPEC` ويتحقق من حلّ كل `componentRef` (DAV/IPF/ACT/MDL) من `BOX_KIT_REGISTRY`. يحرس أيضاً العدّاد المقفول (15/124/476/184).
+- ✅ `src/__tests__/settings.spec-coverage.test.ts` — مرآة Archive/Projects/Departments لإعدادات الـ13 فئة.
+- ✅ ESLint قاعدة 7: منع الاستيراد العميق من `components/box-kit/primitives/**` — يجبر المرور عبر `BOX_KIT_REGISTRY` / `TabRenderer`.
+- ✅ كل الاختبارات: `app-spec.coverage` + `box-kit.registry-coverage` + `box-kit.smoke` + `projects/departments/archive/settings/full-spec` خضراء.
+- ✅ توثيق نهائي في `docs/specs/INDEX.md`.
+- 🛑 **مراجعة نهائية مكتملة**.
 
 ---
 
