@@ -1,6 +1,15 @@
-
+/**
+ * CategoryPanelFactory — selects an archive category renderer.
+ *
+ * Routing policy (mirrors FeatureDepartmentPanel):
+ *  - Default: legacy specialized panel for each of the 9 spec categories.
+ *  - `?spec=1` query param forces rendering through SpecDrivenDashboard
+ *    (entire ArchiveWorkspace spec, 9 tabs) for QA.
+ *
+ * @specRef Section 7 (Archive Workspace) — 9 categories
+ */
 import React from 'react';
-import { 
+import {
   DocumentsArchivePanel,
   ProjectsArchivePanel,
   HRArchivePanel,
@@ -9,49 +18,42 @@ import {
   OrganizationalArchivePanel,
   KnowledgeArchivePanel,
   TemplatesArchivePanel,
-  PoliciesArchivePanel
+  PoliciesArchivePanel,
 } from './categories';
 import { BaseArchivePanel } from './BaseArchivePanel';
 import { ArchiveCategoryType } from './CategoryPanelTypes';
+import { SpecDrivenDashboard } from '@/components/spec-driven/SpecDrivenDashboard';
 
 interface CategoryPanelFactoryProps {
   category: string;
 }
 
+const SPECIALIZED: Record<ArchiveCategoryType, React.ComponentType> = {
+  documents: DocumentsArchivePanel,
+  projects: ProjectsArchivePanel,
+  hr: HRArchivePanel,
+  financial: FinancialArchivePanel,
+  legal: LegalArchivePanel,
+  organizational: OrganizationalArchivePanel,
+  knowledge: KnowledgeArchivePanel,
+  templates: TemplatesArchivePanel,
+  policies: PoliciesArchivePanel,
+};
+
+const isSpecialized = (cat: string): cat is ArchiveCategoryType =>
+  cat in SPECIALIZED;
+
 export const CategoryPanelFactory: React.FC<CategoryPanelFactoryProps> = ({ category }) => {
-  const renderSpecializedPanel = (categoryType: ArchiveCategoryType) => {
-    switch (categoryType) {
-      case 'documents':
-        return <DocumentsArchivePanel />;
-      case 'projects':
-        return <ProjectsArchivePanel />;
-      case 'hr':
-        return <HRArchivePanel />;
-      case 'financial':
-        return <FinancialArchivePanel />;
-      case 'legal':
-        return <LegalArchivePanel />;
-      case 'organizational':
-        return <OrganizationalArchivePanel />;
-      case 'knowledge':
-        return <KnowledgeArchivePanel />;
-      case 'templates':
-        return <TemplatesArchivePanel />;
-      case 'policies':
-        return <PoliciesArchivePanel />;
-      default:
-        return null;
-    }
-  };
+  const forceSpec =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('spec') === '1';
 
-  const isSpecializedCategory = (cat: string): cat is ArchiveCategoryType => {
-    return ['documents', 'projects', 'hr', 'financial', 'legal', 'organizational', 'knowledge', 'templates', 'policies'].includes(cat);
-  };
+  if (forceSpec) return <SpecDrivenDashboard dashboardKey="archive" />;
 
-  if (isSpecializedCategory(category)) {
-    return renderSpecializedPanel(category);
+  if (isSpecialized(category)) {
+    const Panel = SPECIALIZED[category];
+    return <Panel />;
   }
 
-  // Fallback for unknown categories
   return <BaseArchivePanel category={category} />;
 };
