@@ -68,6 +68,15 @@ function useBcmBoxData(): SpecBoxData {
             trailing: m.status,
           })),
         },
+        'DAV-TBL-01': {
+          columns: [
+            { key: 'name', header: 'الاسم' },
+            { key: 'segment', header: 'الشريحة' },
+            { key: 'status', header: 'الحالة' },
+            { key: 'joined_at', header: 'تاريخ الانضمام', render: (r: { joined_at?: string | null }) => fmtDate(r.joined_at) },
+          ],
+          rows: members.slice(0, 20),
+        },
       },
     };
   }, [members]);
