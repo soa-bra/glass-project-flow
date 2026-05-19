@@ -67,6 +67,31 @@ function archetypeFor(tabCode: string, boxRef: string): string {
   return 'detail';
 }
 
+/**
+ * Guaranteed-safe baseline for every known componentRef.
+ * Ensures array/required props always exist so primitives never crash on `.map()`.
+ */
+const SAFE_DEFAULTS: Record<string, Record<string, unknown>> = {
+  'DAV-KPI-01': { items: [] },
+  'DAV-TAG-01': { tags: [] },
+  'DAV-DTL-01': { rows: [] },
+  'DAV-LST-01': { items: [] },
+  'DAV-TBL-01': { columns: [], rows: [] },
+  'DAV-ALR-01': { tone: 'info', title: '', message: '', items: [] },
+  'DAV-TML-01': { items: [] },
+  'DAV-CHT-01': { children: null },
+  'IPF-SRH-01': { value: '', onChange: () => {}, placeholder: 'بحث…' },
+  'IPF-SLT-01': { value: '', onChange: () => {}, options: [] },
+  'IPF-DAT-01': { onChange: () => {} },
+  'IPF-TGL-01': { value: '', onChange: () => {}, options: [] },
+  'IPF-TXT-01': { value: '', onChange: () => {} },
+  'IPF-TXA-01': { value: '', onChange: () => {} },
+  'ACT-BTN-01': { children: 'إجراء', variant: 'primary' },
+  'ACT-BTN-02': { children: 'إجراء', variant: 'secondary' },
+  'ACT-MNU-01': { items: [] },
+  'ACT-STS-01': { children: 'الحالة', tone: 'neutral' },
+};
+
 function defaultPropsFor(
   archetype: string,
   componentRef: string,
@@ -79,10 +104,11 @@ function defaultPropsFor(
 
   if (componentRef === 'DAV-TTL-01') return null; // title handled by BaseBox
 
+  let arch: Record<string, unknown> | null = null;
   switch (archetype) {
     case 'kpi-tags': {
       if (componentRef === 'DAV-KPI-01')
-        return {
+        arch = {
           items: [
             { label: `إجمالي ${noun}`, value: records.length },
             ...(records.length
@@ -90,8 +116,8 @@ function defaultPropsFor(
               : [{ label: 'الحالة', value: 'لا توجد بيانات بعد' }]),
           ],
         };
-      if (componentRef === 'DAV-TAG-01')
-        return {
+      else if (componentRef === 'DAV-TAG-01')
+        arch = {
           tags: Array.from(
             new Set(records.flatMap((r) => r.tags ?? []).filter(Boolean)),
           ).slice(0, 6),
@@ -100,18 +126,18 @@ function defaultPropsFor(
     }
     case 'alert': {
       if (componentRef === 'DAV-ALR-01')
-        return {
+        arch = {
           tone: 'info' as const,
           title: records.length ? 'الوضع مستقر' : `لم تُسجَّل ${noun} بعد`,
           message: records.length
             ? `يوجد ${records.length} سجلًا متاحًا للمراجعة.`
             : 'ابدأ بإضافة سجلات لتفعيل المؤشرات.',
         };
-      if (componentRef === 'DAV-TAG-01')
-        return { tags: records.slice(0, 4).map((r) => r.trailing ?? r.primary).filter(Boolean) as string[] };
-      if (componentRef === 'DAV-DTL-01')
-        return {
-          items: [
+      else if (componentRef === 'DAV-TAG-01')
+        arch = { tags: records.slice(0, 4).map((r) => (r.trailing ?? r.primary) as string).filter(Boolean) };
+      else if (componentRef === 'DAV-DTL-01')
+        arch = {
+          rows: [
             { label: 'إجمالي', value: records.length },
             { label: 'الأحدث', value: records[0]?.primary ?? '—' },
           ],
@@ -120,7 +146,7 @@ function defaultPropsFor(
     }
     case 'list': {
       if (componentRef === 'DAV-LST-01')
-        return {
+        arch = {
           items: records.slice(0, 10).map((r) => ({
             id: r.id,
             primary: r.primary,
@@ -128,8 +154,8 @@ function defaultPropsFor(
             trailing: r.trailing,
           })),
         };
-      if (componentRef === 'DAV-TBL-01')
-        return {
+      else if (componentRef === 'DAV-TBL-01')
+        arch = {
           columns: [
             { key: 'primary', header: 'العنوان' },
             { key: 'secondary', header: 'التفاصيل' },
@@ -137,50 +163,52 @@ function defaultPropsFor(
           ],
           rows: records.slice(0, 20),
         };
-      if (isAction) return { label: 'فتح' };
+      else if (componentRef === 'ACT-BTN-01') arch = { children: 'فتح', variant: 'primary' };
+      else if (componentRef === 'ACT-MNU-01')
+        arch = {
+          items: [
+            { label: 'عرض', onSelect: () => {} },
+            { label: 'تعديل', onSelect: () => {} },
+          ],
+        };
       break;
     }
     case 'detail': {
       const r = records[0];
       if (componentRef === 'DAV-DTL-01')
-        return {
-          items: r?.detail ?? [
+        arch = {
+          rows: r?.detail ?? [
             { label: 'العنوان', value: r?.primary ?? '—' },
             { label: 'التفاصيل', value: r?.secondary ?? '—' },
             { label: 'الحالة', value: r?.trailing ?? '—' },
           ],
         };
-      if (componentRef === 'DAV-TAG-01')
-        return { tags: r?.tags?.slice(0, 6) ?? [] };
+      else if (componentRef === 'DAV-TAG-01')
+        arch = { tags: r?.tags?.slice(0, 6) ?? [] };
       break;
     }
     case 'editor': {
       if (componentRef === 'IPF-TXT-01')
-        return { label: 'العنوان', placeholder: 'أدخل العنوان…', value: '' };
-      if (componentRef === 'IPF-TXA-01')
-        return { label: 'الوصف', placeholder: 'أدخل الوصف…', value: '', rows: 4 };
-      if (componentRef === 'IPF-SLT-01')
-        return {
-          label: 'الحالة',
+        arch = { label: 'العنوان', placeholder: 'أدخل العنوان…' };
+      else if (componentRef === 'IPF-TXA-01')
+        arch = { label: 'الوصف', placeholder: 'أدخل الوصف…', rows: 4 };
+      else if (componentRef === 'IPF-SLT-01')
+        arch = {
           options: [
             { value: 'draft', label: 'مسودة' },
             { value: 'active', label: 'نشط' },
             { value: 'archived', label: 'مؤرشف' },
           ],
         };
-      if (componentRef === 'IPF-DAT-01') return { label: 'التاريخ' };
-      if (componentRef === 'ACT-BTN-01') return { label: 'حفظ', variant: 'primary' };
-      if (componentRef === 'ACT-BTN-02') return { label: 'إلغاء', variant: 'secondary' };
-      if (componentRef === 'ACT-STS-01')
-        return { label: 'مسودة', tone: 'neutral' as const };
+      else if (componentRef === 'ACT-BTN-01') arch = { children: 'حفظ', variant: 'primary' };
+      else if (componentRef === 'ACT-BTN-02') arch = { children: 'إلغاء', variant: 'secondary' };
+      else if (componentRef === 'ACT-STS-01') arch = { children: 'مسودة', tone: 'neutral' as const };
       break;
     }
     case 'filters': {
-      if (componentRef === 'IPF-SRH-01')
-        return { placeholder: `ابحث في ${noun}…`, value: '' };
-      if (componentRef === 'IPF-SLT-01')
-        return {
-          label: 'النوع',
+      if (componentRef === 'IPF-SRH-01') arch = { placeholder: `ابحث في ${noun}…` };
+      else if (componentRef === 'IPF-SLT-01')
+        arch = {
           options: [
             { value: 'all', label: 'الكل' },
             ...Array.from(new Set(records.map((r) => r.trailing).filter(Boolean)))
@@ -188,36 +216,33 @@ function defaultPropsFor(
               .map((v) => ({ value: String(v), label: String(v) })),
           ],
         };
-      if (componentRef === 'IPF-DAT-01') return { label: 'النطاق الزمني' };
-      if (isAction) return { label: 'تطبيق', variant: 'primary' };
+      else if (componentRef === 'ACT-BTN-01') arch = { children: 'تطبيق', variant: 'primary' };
       break;
     }
     case 'actions': {
-      if (componentRef === 'ACT-BTN-01') return { label: 'إجراء أساسي', variant: 'primary' };
-      if (componentRef === 'ACT-BTN-02') return { label: 'إجراء ثانوي', variant: 'secondary' };
-      if (componentRef === 'ACT-MNU-01')
-        return {
+      if (componentRef === 'ACT-BTN-01') arch = { children: 'إجراء أساسي', variant: 'primary' };
+      else if (componentRef === 'ACT-BTN-02') arch = { children: 'إجراء ثانوي', variant: 'secondary' };
+      else if (componentRef === 'ACT-MNU-01')
+        arch = {
           items: [
-            { id: 'open', label: 'فتح' },
-            { id: 'edit', label: 'تعديل' },
-            { id: 'archive', label: 'أرشفة' },
+            { label: 'فتح', onSelect: () => {} },
+            { label: 'تعديل', onSelect: () => {} },
+            { label: 'أرشفة', onSelect: () => {} },
           ],
         };
-      if (componentRef === 'ACT-STS-01') return { label: 'جاهز', tone: 'positive' as const };
+      else if (componentRef === 'ACT-STS-01') arch = { children: 'جاهز', tone: 'success' as const };
       break;
     }
     case 'chart': {
-      if (componentRef === 'DAV-CHT-01')
-        return {
-          title: 'الاتجاه',
-          data: records.slice(0, 8).map((r, i) => ({ x: r.primary, y: i + 1 })),
-        };
+      if (componentRef === 'DAV-CHT-01') arch = { children: null };
       break;
     }
   }
 
-  // Fallback skips: unknown ref → return null so renderer ignores it
+  const safe = SAFE_DEFAULTS[componentRef];
+  if (safe || arch) return { ...(safe ?? {}), ...(arch ?? {}) };
   if (isData || isInput || isAction) return {};
+
   return null;
 }
 
