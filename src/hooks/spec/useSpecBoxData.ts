@@ -1,19 +1,27 @@
 /**
  * useSpecBoxData — resolves real `slotProps` (keyed by box ref → componentRef → props)
- * for the spec-driven dashboards added in P2 (bcm, partnerships, knowledge).
+ * for spec-driven dashboards.
  *
  * Wiring contract documented in P5 plan: when a key in this map matches the
  * current dashboard, the SpecDrivenDashboard forwards `boxData` into TabRenderer,
  * which replaces the "بانتظار ربط البيانات" placeholder with the live primitives.
  *
- * @specRef P5.3 — Departments جديدة (BCM / Partnerships / Knowledge)
+ * @specRef
+ *  - P5.2 — Projects (ProjectManagementBoard)
+ *  - P5.3 — Departments جديدة (BCM / Partnerships / Knowledge)
+ *  - P5.5 — Archive (ArchiveWorkspace) + Settings (SettingsWorkspace.account)
  */
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   BcmMembers,
   PartnershipAgreements,
   KnowledgeArticles,
 } from '@/hooks/departments';
+import { useProjects } from '@/hooks/central/useCentral';
+import { supabase } from '@/integrations/supabase/client';
+import { archiveService, type ArchiveCategory } from '@/services/archive/archiveService';
+import { useSettings } from '@/hooks/settings/useSettings';
 
 export type SpecBoxData = Record<string, Record<string, Record<string, unknown>>>;
 
@@ -185,6 +193,166 @@ function useKnowledgeBoxData(): SpecBoxData {
   }, [articles]);
 }
 
+// ── Projects (P5.2) ─────────────────────────────────────────────────────────
+const ARCHIVE_CATEGORIES: ArchiveCategory[] = [
+  'documents', 'projects', 'hr', 'financial', 'legal',
+  'organizational', 'knowledge', 'templates', 'policies',
+];
+
+function useProjectsBoxData(): SpecBoxData {
+  const { data: projects = [] } = useProjects();
+  const { data: taskAgg = { total: 0, byState: {} as Record<string, number> } } = useQuery({
+    queryKey: ['spec', 'tasks-aggregate'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('state')
+        .limit(1000);
+      if (error) throw error;
+      const byState: Record<string, number> = {};
+      ((data ?? []) as Array<{ state: string | null }>).forEach((t) => {
+        const k = t.state ?? 'unknown';
+        byState[k] = (byState[k] ?? 0) + 1;
+      });
+      return { total: data?.length ?? 0, byState };
+    },
+  });
+
+  return useMemo(() => {
+    const active = projects.filter((p) => p.state === 'active').length;
+    const completed = projects.filter((p) => p.state === 'completed').length;
+    const archived = projects.filter((p) => p.state === 'archived').length;
+
+    return {
+      'ProjectManagementBoard.overview.project-summary': {
+        'DAV-KPI-01': {
+          items: [
+            { label: 'إجمالي المشاريع', value: projects.length },
+            { label: 'نشطة', value: active, tone: 'positive' as const },
+            { label: 'مكتملة', value: completed },
+            { label: 'مؤرشفة', value: archived, tone: 'neutral' as const },
+          ],
+        },
+      },
+      'ProjectManagementBoard.overview.cards-grid': {
+        'DAV-LST-01': {
+          items: projects.slice(0, 8).map((p) => ({
+            id: p.id,
+            primary: (p as { name?: string; title?: string }).name ?? (p as { title?: string }).title ?? '—',
+            secondary: `${p.state ?? '—'} • محدّث ${fmtDate(p.updated_at as string)}`,
+            trailing: p.state,
+          })),
+        },
+      },
+      'ProjectManagementBoard.overview.phase-progress': {
+        'DAV-KPI-01': {
+          items: [
+            { label: 'نسبة المكتمل', value: projects.length ? `${Math.round((completed / projects.length) * 100)}%` : '0%' },
+            { label: 'النشط الآن', value: active },
+          ],
+        },
+      },
+      'ProjectManagementBoard.tasks.tasks-kpis': {
+        'DAV-KPI-01': {
+          items: [
+            { label: 'إجمالي المهام', value: taskAgg.total },
+            { label: 'منجزة', value: taskAgg.byState.completed ?? 0, tone: 'positive' as const },
+            { label: 'نشطة', value: taskAgg.byState.active ?? 0 },
+            { label: 'متوقفة', value: (taskAgg.byState.blocked ?? 0) + (taskAgg.byState.paused ?? 0), tone: 'critical' as const },
+          ],
+        },
+      },
+    };
+  }, [projects, taskAgg]);
+}
+
+// ── Archive (P5.5) ──────────────────────────────────────────────────────────
+function useArchiveBoxData(): SpecBoxData {
+  const { data: byCategory = {} } = useQuery({
+    queryKey: ['spec', 'archive-all'],
+    queryFn: async () => {
+      const out: Record<string, Array<{ id: string; title: string; updated_at: string; version: string | null; status: string }>> = {};
+      await Promise.all(
+        ARCHIVE_CATEGORIES.map(async (c) => {
+          try {
+            const rows = await archiveService.listByCategory(c);
+            out[c] = rows.slice(0, 10).map((r) => ({
+              id: r.id,
+              title: r.title,
+              updated_at: r.updated_at,
+              version: r.version,
+              status: r.status,
+            }));
+          } catch {
+            out[c] = [];
+          }
+        }),
+      );
+      return out;
+    },
+  });
+
+  return useMemo(() => {
+    const map: SpecBoxData = {};
+    ARCHIVE_CATEGORIES.forEach((c) => {
+      const rows = byCategory[c] ?? [];
+      map[`ArchiveWorkspace.${c}.records-list`] = {
+        'DAV-LST-01': {
+          items: rows.map((r) => ({
+            id: r.id,
+            primary: r.title,
+            secondary: `${r.version ?? 'v1'} • محدّث ${fmtDate(r.updated_at)}`,
+            trailing: r.status,
+          })),
+        },
+        'DAV-TBL-01': {
+          columns: [
+            { key: 'title', header: 'العنوان' },
+            { key: 'version', header: 'الإصدار' },
+            { key: 'status', header: 'الحالة' },
+            { key: 'updated_at', header: 'آخر تحديث', render: (r: { updated_at: string }) => fmtDate(r.updated_at) },
+          ],
+          rows,
+        },
+      };
+    });
+    return map;
+  }, [byCategory]);
+}
+
+// ── Settings (P5.5) ─────────────────────────────────────────────────────────
+function useSettingsBoxData(): SpecBoxData {
+  const { data: account } = useSettings('account');
+  const { data: security } = useSettings('security');
+
+  return useMemo(() => {
+    const accountPayload = (account?.payload ?? {}) as Record<string, unknown>;
+    const securityPayload = (security?.payload ?? {}) as Record<string, unknown>;
+
+    return {
+      'SettingsWorkspace.account.account-stats': {
+        'DAV-KPI-01': {
+          items: [
+            { label: 'الحساب', value: account ? 'محفوظ' : 'افتراضي' },
+            { label: 'آخر تحديث', value: account ? fmtDate(account.updated_at) : '—' },
+          ],
+        },
+        'DAV-TAG-01': {
+          tags: Object.keys(accountPayload).slice(0, 6),
+        },
+      },
+      'SettingsWorkspace.security.status-card': {
+        'DAV-KPI-01': {
+          items: [
+            { label: 'MFA', value: securityPayload.mfa ? 'مفعّل' : 'غير مفعّل' },
+            { label: 'آخر تحديث', value: security ? fmtDate(security.updated_at) : '—' },
+          ],
+        },
+      },
+    };
+  }, [account, security]);
+}
+
 const EMPTY: SpecBoxData = {};
 
 /**
@@ -196,9 +364,15 @@ export function useSpecBoxData(dashboardKey: string): SpecBoxData {
   const bcm = useBcmBoxData();
   const partnerships = usePartnershipsBoxData();
   const knowledge = useKnowledgeBoxData();
+  const projects = useProjectsBoxData();
+  const archive = useArchiveBoxData();
+  const settings = useSettingsBoxData();
 
   if (dashboardKey === 'bcm') return bcm;
   if (dashboardKey === 'partnerships') return partnerships;
   if (dashboardKey === 'knowledge') return knowledge;
+  if (dashboardKey === 'projects') return projects;
+  if (dashboardKey === 'archive') return archive;
+  if (dashboardKey === 'settings') return settings;
   return EMPTY;
 }
