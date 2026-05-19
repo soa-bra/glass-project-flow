@@ -193,13 +193,6 @@ function useKnowledgeBoxData(): SpecBoxData {
   }, [articles]);
 }
 
-const EMPTY: SpecBoxData = {};
-
-/**
- * Returns the slot props map for a given dashboard key.
- * Hooks for each dashboard are called unconditionally to keep the order stable
- * across renders; only the matching map is returned.
- */
 // ── Projects (P5.2) ─────────────────────────────────────────────────────────
 const ARCHIVE_CATEGORIES: ArchiveCategory[] = [
   'documents', 'projects', 'hr', 'financial', 'legal',
