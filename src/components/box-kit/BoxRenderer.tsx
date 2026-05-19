@@ -1,11 +1,15 @@
 /**
  * BoxRenderer — renders one spec box using BaseBox shell + spec componentRefs.
- * Unknown refs render a visible diagnostic chip instead of crashing.
+ *
+ * Spec componentRefs mix two kinds:
+ *   1) Box-Kit primitive codes (DAV-/IPF-/ACT-/MDL-) → resolved via registry.
+ *   2) Shell hints like "BaseBox" or feature component names → metadata only,
+ *      silently ignored (the box already lives inside <BaseBox/>).
  *
  * @specRef Section 4.0.1 (Workspace Shell) + Section 6
  */
 import React from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Layers } from 'lucide-react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { resolveBoxKitComponent } from './registry';
 import type { BoxSpec } from '@/config/app-spec';
@@ -18,43 +22,44 @@ export interface BoxRendererProps {
   fallback?: React.ReactNode;
 }
 
+const PRIMITIVE_RE = /^(DAV|IPF|ACT|MDL)-/;
+
 export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallback }) => {
-  const unknownRefs = (box.componentRefs ?? []).filter((r) => !resolveBoxKitComponent(r));
+  const refs = box.componentRefs ?? [];
+  const primitiveRefs = refs.filter((r) => PRIMITIVE_RE.test(r));
+  const unknownRefs = primitiveRefs.filter((r) => !resolveBoxKitComponent(r));
+  const renderedPrimitives = primitiveRefs.filter((r) => resolveBoxKitComponent(r));
+
+  const wiredCount = renderedPrimitives.filter((r) => slotProps?.[r]).length;
+  const hasAnyWiring = wiredCount > 0;
 
   return (
     <div data-box-ref={box.ref} className="h-full">
-    <BaseBox title={box.name ?? undefined} variant="standard" size="md">
-      {(box.componentRefs ?? []).length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
+      <BaseBox title={box.name ?? undefined} variant="standard" size="md">
+        {renderedPrimitives.length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
 
-      <div className="flex flex-col gap-3">
-        {(box.componentRefs ?? []).map((ref, i) => {
-          const Cmp = resolveBoxKitComponent(ref);
-          if (!Cmp) return null;
-          const supplied = slotProps?.[ref];
-          if (!supplied) {
-            // No data wired yet — render a neutral placeholder instead of forcing
-            // every primitive to accept undefined props.
-            return (
-              <div
-                key={`${ref}-${i}`}
-                className="text-[11px] text-muted-foreground/70 italic border border-dashed border-border/60 rounded-md px-2 py-1.5"
-                data-component-ref={ref}
-              >
-                {ref}
-              </div>
-            );
-          }
-          return <Cmp key={`${ref}-${i}`} {...supplied} />;
-        })}
-      </div>
+        {hasAnyWiring ? (
+          <div className="flex flex-col gap-3">
+            {renderedPrimitives.map((ref, i) => {
+              const Cmp = resolveBoxKitComponent(ref)!;
+              const supplied = slotProps?.[ref];
+              if (!supplied) return null;
+              return <Cmp key={`${ref}-${i}`} {...supplied} />;
+            })}
+          </div>
+        ) : (
+          renderedPrimitives.length > 0 && (
+            <PendingWiring purpose={box.purpose} count={renderedPrimitives.length} />
+          )
+        )}
 
-      {unknownRefs.length > 0 && (
-        <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1">
-          <AlertTriangle className="h-3.5 w-3.5" />
-          <span>مكون غير مُسجّل: {unknownRefs.join(', ')}</span>
-        </div>
-      )}
-    </BaseBox>
+        {unknownRefs.length > 0 && (
+          <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            <span>مكون غير مُسجّل: {unknownRefs.join(', ')}</span>
+          </div>
+        )}
+      </BaseBox>
     </div>
   );
 };
@@ -62,5 +67,17 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
 const EmptyHint: React.FC<{ purpose?: string | null }> = ({ purpose }) => (
   <div className="text-xs text-muted-foreground py-4 text-center">
     {purpose ?? 'لم يُربط هذا الصندوق ببيانات حقيقية بعد.'}
+  </div>
+);
+
+const PendingWiring: React.FC<{ purpose?: string | null; count: number }> = ({ purpose, count }) => (
+  <div className="flex flex-col items-start gap-2 py-3">
+    {purpose && (
+      <p className="text-sm leading-relaxed text-foreground/80 text-start">{purpose}</p>
+    )}
+    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+      <Layers className="h-3 w-3" />
+      <span>{count} عنصر بانتظار ربط البيانات</span>
+    </div>
   </div>
 );
