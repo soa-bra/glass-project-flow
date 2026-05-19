@@ -28,6 +28,8 @@ export type SpecBoxData = Record<string, Record<string, Record<string, unknown>>
 const fmtDate = (d?: string | null) =>
   d ? new Date(d).toLocaleDateString('ar-SA-u-nu-latn', { dateStyle: 'medium' }) : '—';
 
+import { synthesizeDashboardBoxData, type SynthRecord } from './synthesizeBoxes';
+
 // ── BCM ─────────────────────────────────────────────────────────────────────
 function useBcmBoxData(): SpecBoxData {
   const { data: members = [] } = BcmMembers.useList({
@@ -38,55 +40,50 @@ function useBcmBoxData(): SpecBoxData {
   return useMemo(() => {
     const active = members.filter((m) => m.status === 'active').length;
     const segments = new Set(members.map((m) => m.segment).filter(Boolean));
-    const recentItems = members.slice(0, 5).map((m) => ({
-      id: m.id,
-      primary: m.name,
-      secondary: `${m.segment ?? 'بدون شريحة'} • انضم ${fmtDate(m.joined_at as string)}`,
-      trailing: m.status,
-    }));
     const atRisk = members.filter((m) => m.status === 'at_risk' || m.status === 'churn').length;
 
-    return {
-      'BCMDashboard.overview.summary': {
-        'DAV-KPI-01': {
-          items: [
-            { label: 'إجمالي الأعضاء', value: members.length },
-            { label: 'النشطون', value: active, tone: 'positive' as const },
-            { label: 'الشرائح', value: segments.size },
-          ],
+    const records: SynthRecord[] = members.map((m) => ({
+      id: m.id,
+      primary: m.name,
+      secondary: `${m.segment ?? 'بدون شريحة'} • ${m.email ?? '—'}`,
+      trailing: m.status,
+      tags: m.segment ? [m.segment] : [],
+      detail: [
+        { label: 'الاسم', value: m.name },
+        { label: 'البريد', value: m.email ?? '—' },
+        { label: 'الشريحة', value: m.segment ?? '—' },
+        { label: 'الحالة', value: m.status ?? '—' },
+        { label: 'الانضمام', value: fmtDate(m.joined_at as string) },
+      ],
+    }));
+
+    return synthesizeDashboardBoxData({
+      dashboardKey: 'bcm',
+      records,
+      noun: 'الأعضاء',
+      boxOverrides: {
+        'BCMDashboard.overview.summary': {
+          'DAV-KPI-01': {
+            items: [
+              { label: 'إجمالي الأعضاء', value: members.length },
+              { label: 'النشطون', value: active, tone: 'positive' as const },
+              { label: 'الشرائح', value: segments.size },
+            ],
+          },
+          'DAV-TAG-01': { tags: Array.from(segments).slice(0, 6) as string[] },
         },
-        'DAV-TAG-01': { tags: Array.from(segments).slice(0, 6) as string[] },
-      },
-      'BCMDashboard.overview.health': {
-        'DAV-ALR-01': {
-          tone: atRisk > 0 ? ('warning' as const) : ('success' as const),
-          title: atRisk > 0 ? `${atRisk} عضو بحاجة متابعة` : 'لا توجد تنبيهات',
-          message: atRisk > 0 ? 'يُنصح بمراجعة الأعضاء ذوي مؤشر الانسحاب.' : 'صحة المجتمع مستقرة.',
+        'BCMDashboard.overview.health': {
+          'DAV-ALR-01': {
+            tone: atRisk > 0 ? ('warning' as const) : ('success' as const),
+            title: atRisk > 0 ? `${atRisk} عضو بحاجة متابعة` : 'لا توجد تنبيهات',
+            message:
+              atRisk > 0
+                ? 'يُنصح بمراجعة الأعضاء ذوي مؤشر الانسحاب.'
+                : 'صحة المجتمع مستقرة.',
+          },
         },
       },
-      'BCMDashboard.overview.recent': {
-        'DAV-LST-01': { items: recentItems },
-      },
-      'BCMDashboard.members.table': {
-        'DAV-LST-01': {
-          items: members.slice(0, 10).map((m) => ({
-            id: m.id,
-            primary: m.name,
-            secondary: m.email ?? '—',
-            trailing: m.status,
-          })),
-        },
-        'DAV-TBL-01': {
-          columns: [
-            { key: 'name', header: 'الاسم' },
-            { key: 'segment', header: 'الشريحة' },
-            { key: 'status', header: 'الحالة' },
-            { key: 'joined_at', header: 'تاريخ الانضمام', render: (r: { joined_at?: string | null }) => fmtDate(r.joined_at) },
-          ],
-          rows: members.slice(0, 20),
-        },
-      },
-    };
+    });
   }, [members]);
 }
 
@@ -102,46 +99,57 @@ function usePartnershipsBoxData(): SpecBoxData {
     const totalValue = agreements.reduce((s, a) => s + Number(a.value ?? 0), 0);
     const expiringSoon = agreements.filter((a) => {
       if (!a.end_date) return false;
-      const days = (new Date(a.end_date).getTime() - Date.now()) / 86400_000;
+      const days = (new Date(a.end_date as string).getTime() - Date.now()) / 86400_000;
       return days >= 0 && days <= 60;
     });
     const types = new Set(agreements.map((a) => a.type).filter(Boolean));
 
-    return {
-      'InstitutionalPartnershipsDashboard.overview.summary': {
-        'DAV-KPI-01': {
-          items: [
-            { label: 'الاتفاقيات', value: agreements.length },
-            { label: 'النشطة', value: active, tone: 'positive' as const },
-            { label: 'القيمة الإجمالية', value: totalValue.toLocaleString('ar-SA-u-nu-latn') },
-          ],
+    const records: SynthRecord[] = agreements.map((a) => ({
+      id: a.id,
+      primary: a.name,
+      secondary: `${a.partner_name ?? '—'} • ${a.type ?? '—'}`,
+      trailing: a.status,
+      tags: a.type ? [a.type] : [],
+      detail: [
+        { label: 'الاسم', value: a.name },
+        { label: 'الشريك', value: a.partner_name ?? '—' },
+        { label: 'النوع', value: a.type ?? '—' },
+        { label: 'القيمة', value: Number(a.value ?? 0).toLocaleString('ar-SA-u-nu-latn') },
+        { label: 'النهاية', value: fmtDate(a.end_date as string) },
+        { label: 'الحالة', value: a.status ?? '—' },
+      ],
+    }));
+
+    return synthesizeDashboardBoxData({
+      dashboardKey: 'partnerships',
+      records,
+      noun: 'الاتفاقيات',
+      boxOverrides: {
+        'InstitutionalPartnershipsDashboard.overview.summary': {
+          'DAV-KPI-01': {
+            items: [
+              { label: 'الاتفاقيات', value: agreements.length },
+              { label: 'النشطة', value: active, tone: 'positive' as const },
+              { label: 'القيمة الإجمالية', value: totalValue.toLocaleString('ar-SA-u-nu-latn') },
+            ],
+          },
+          'DAV-TAG-01': { tags: Array.from(types).slice(0, 6) as string[] },
         },
-        'DAV-TAG-01': { tags: Array.from(types).slice(0, 6) as string[] },
-      },
-      'InstitutionalPartnershipsDashboard.overview.health': {
-        'DAV-ALR-01': {
-          tone: expiringSoon.length > 0 ? ('warning' as const) : ('success' as const),
-          title:
-            expiringSoon.length > 0
-              ? `${expiringSoon.length} اتفاقية تنتهي خلال 60 يومًا`
-              : 'لا توجد اتفاقيات قاربت الانتهاء',
-          items: expiringSoon.slice(0, 5).map((a) => ({
-            id: a.id,
-            text: `${a.name} — ${fmtDate(a.end_date as string)}`,
-          })),
+        'InstitutionalPartnershipsDashboard.overview.health': {
+          'DAV-ALR-01': {
+            tone: expiringSoon.length > 0 ? ('warning' as const) : ('success' as const),
+            title:
+              expiringSoon.length > 0
+                ? `${expiringSoon.length} اتفاقية تنتهي خلال 60 يومًا`
+                : 'لا توجد اتفاقيات قاربت الانتهاء',
+            items: expiringSoon.slice(0, 5).map((a) => ({
+              id: a.id,
+              text: `${a.name} — ${fmtDate(a.end_date as string)}`,
+            })),
+          },
         },
       },
-      'InstitutionalPartnershipsDashboard.overview.recent': {
-        'DAV-LST-01': {
-          items: agreements.slice(0, 5).map((a) => ({
-            id: a.id,
-            primary: a.name,
-            secondary: `${a.partner_name ?? '—'} • ${a.type ?? '—'}`,
-            trailing: a.status,
-          })),
-        },
-      },
-    };
+    });
   }, [agreements]);
 }
 
@@ -158,40 +166,51 @@ function useKnowledgeBoxData(): SpecBoxData {
     const categories = new Set(articles.map((a) => a.category).filter(Boolean));
     const allTags = Array.from(new Set(articles.flatMap((a) => a.tags ?? []))).slice(0, 8);
 
-    return {
-      'KnowledgeBaseDashboard.overview.summary': {
-        'DAV-KPI-01': {
-          items: [
-            { label: 'إجمالي المقالات', value: articles.length },
-            { label: 'منشورة', value: published, tone: 'positive' as const },
-            { label: 'مسودات', value: drafts, tone: 'neutral' as const },
-            { label: 'التصنيفات', value: categories.size },
-          ],
+    const records: SynthRecord[] = articles.map((a) => ({
+      id: a.id,
+      primary: a.title,
+      secondary: `${a.category ?? '—'} • v${a.version}`,
+      trailing: a.status,
+      tags: a.tags ?? [],
+      detail: [
+        { label: 'العنوان', value: a.title },
+        { label: 'التصنيف', value: a.category ?? '—' },
+        { label: 'الإصدار', value: `v${a.version}` },
+        { label: 'الحالة', value: a.status ?? '—' },
+        { label: 'آخر تحديث', value: fmtDate(a.updated_at as string) },
+      ],
+    }));
+
+    return synthesizeDashboardBoxData({
+      dashboardKey: 'knowledge',
+      records,
+      noun: 'المقالات',
+      boxOverrides: {
+        'KnowledgeBaseDashboard.overview.summary': {
+          'DAV-KPI-01': {
+            items: [
+              { label: 'إجمالي المقالات', value: articles.length },
+              { label: 'منشورة', value: published, tone: 'positive' as const },
+              { label: 'مسودات', value: drafts, tone: 'neutral' as const },
+              { label: 'التصنيفات', value: categories.size },
+            ],
+          },
+          'DAV-TAG-01': { tags: allTags },
         },
-        'DAV-TAG-01': { tags: allTags },
-      },
-      'KnowledgeBaseDashboard.overview.health': {
-        'DAV-ALR-01': {
-          tone: drafts > published ? ('warning' as const) : ('info' as const),
-          title:
-            drafts > published
-              ? 'عدد المسودات يتجاوز المنشور — يُنصح بمراجعة قائمة الانتظار'
-              : 'حالة المعرفة جيدة',
+        'KnowledgeBaseDashboard.overview.health': {
+          'DAV-ALR-01': {
+            tone: drafts > published ? ('warning' as const) : ('info' as const),
+            title:
+              drafts > published
+                ? 'عدد المسودات يتجاوز المنشور — يُنصح بمراجعة قائمة الانتظار'
+                : 'حالة المعرفة جيدة',
+          },
         },
       },
-      'KnowledgeBaseDashboard.overview.recent': {
-        'DAV-LST-01': {
-          items: articles.slice(0, 5).map((a) => ({
-            id: a.id,
-            primary: a.title,
-            secondary: `${a.category ?? '—'} • v${a.version}`,
-            trailing: a.status,
-          })),
-        },
-      },
-    };
+    });
   }, [articles]);
 }
+
 
 // ── Projects (P5.2) ─────────────────────────────────────────────────────────
 const ARCHIVE_CATEGORIES: ArchiveCategory[] = [
