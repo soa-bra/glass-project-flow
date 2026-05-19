@@ -7,7 +7,7 @@ import { AttendanceTab } from './AttendanceTab';
 import { PerformanceTab } from './PerformanceTab';
 import { RecruitmentTab } from './RecruitmentTab';
 import { TrainingTab } from './TrainingTab';
-import { PartnersTab } from './PartnersTab';
+
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 export const HRDashboard: React.FC = () => {
