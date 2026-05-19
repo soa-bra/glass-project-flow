@@ -70,3 +70,12 @@ export const KmpaDocumentsService = createDomainService<KmpaDocument>("kmpa_docu
 
 // Templates
 export const TemplateItemsService = createDomainService<TemplateItem>("template_items");
+
+// BCM — P5.3
+export const BcmMembersService = createDomainService<BcmMember>("bcm_members");
+
+// Partnerships — P5.3
+export const PartnershipAgreementsService = createDomainService<PartnershipAgreement>("partnership_agreements");
+
+// Knowledge — P5.3
+export const KnowledgeArticlesService = createDomainService<KnowledgeArticle>("knowledge_articles");
