@@ -1,19 +1,27 @@
 /**
  * useSpecBoxData — resolves real `slotProps` (keyed by box ref → componentRef → props)
- * for the spec-driven dashboards added in P2 (bcm, partnerships, knowledge).
+ * for spec-driven dashboards.
  *
  * Wiring contract documented in P5 plan: when a key in this map matches the
  * current dashboard, the SpecDrivenDashboard forwards `boxData` into TabRenderer,
  * which replaces the "بانتظار ربط البيانات" placeholder with the live primitives.
  *
- * @specRef P5.3 — Departments جديدة (BCM / Partnerships / Knowledge)
+ * @specRef
+ *  - P5.2 — Projects (ProjectManagementBoard)
+ *  - P5.3 — Departments جديدة (BCM / Partnerships / Knowledge)
+ *  - P5.5 — Archive (ArchiveWorkspace) + Settings (SettingsWorkspace.account)
  */
 import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   BcmMembers,
   PartnershipAgreements,
   KnowledgeArticles,
 } from '@/hooks/departments';
+import { useProjects } from '@/hooks/central/useCentral';
+import { supabase } from '@/integrations/supabase/client';
+import { archiveService, type ArchiveCategory } from '@/services/archive/archiveService';
+import { useSettings } from '@/hooks/settings/useSettings';
 
 export type SpecBoxData = Record<string, Record<string, Record<string, unknown>>>;
 
