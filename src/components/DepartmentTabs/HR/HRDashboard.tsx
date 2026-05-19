@@ -31,9 +31,6 @@ export const HRDashboard: React.FC = () => {
     value: 'training',
     label: 'التدريب والتطوير'
   }, {
-    value: 'partners',
-    label: 'الشركاء'
-  }, {
     value: 'templates',
     label: 'النماذج والقوالب'
   }, {
