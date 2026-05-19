@@ -3,6 +3,9 @@ import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
 import { InitiativesTab } from './InitiativesTab';
+import { ImpactTab } from './ImpactTab';
+import { BeneficiariesTab } from './BeneficiariesTab';
+import { ResourcesTab } from './ResourcesTab';
 import { PartnershipsTab } from './PartnershipsTab';
 import { MonitoringTab } from './MonitoringTab';
 import { StoriesTab } from './StoriesTab';
@@ -14,7 +17,10 @@ export const CSRDashboard: React.FC = () => {
   const tabItems = [
     { value: 'overview', label: 'نظرة عامة' },
     { value: 'initiatives', label: 'المبادرات' },
-    { value: 'partnerships', label: 'الشراكات والموارد' },
+    { value: 'impact', label: 'الأثر والقياس' },
+    { value: 'beneficiaries', label: 'المستفيدون' },
+    { value: 'resources', label: 'الموارد' },
+    { value: 'partnerships', label: 'الشراكات' },
     { value: 'monitoring', label: 'المراقبة والتقييم' },
     { value: 'stories', label: 'قصص الأثر' },
     { value: 'templates', label: 'النماذج والقوالب' },
@@ -28,33 +34,16 @@ export const CSRDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      <BaseTabContent value="overview">
-        <OverviewTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="initiatives">
-        <InitiativesTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="partnerships">
-        <PartnershipsTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="monitoring">
-        <MonitoringTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="stories">
-        <StoriesTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="templates">
-        <TemplatesTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="reports">
-        <ReportsTab />
-      </BaseTabContent>
+      <BaseTabContent value="overview"><OverviewTab /></BaseTabContent>
+      <BaseTabContent value="initiatives"><InitiativesTab /></BaseTabContent>
+      <BaseTabContent value="impact"><ImpactTab /></BaseTabContent>
+      <BaseTabContent value="beneficiaries"><BeneficiariesTab /></BaseTabContent>
+      <BaseTabContent value="resources"><ResourcesTab /></BaseTabContent>
+      <BaseTabContent value="partnerships"><PartnershipsTab /></BaseTabContent>
+      <BaseTabContent value="monitoring"><MonitoringTab /></BaseTabContent>
+      <BaseTabContent value="stories"><StoriesTab /></BaseTabContent>
+      <BaseTabContent value="templates"><TemplatesTab /></BaseTabContent>
+      <BaseTabContent value="reports"><ReportsTab /></BaseTabContent>
     </DashboardLayout>
   );
 };
