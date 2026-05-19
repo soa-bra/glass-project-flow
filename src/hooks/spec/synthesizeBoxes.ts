@@ -223,16 +223,15 @@ function defaultPropsFor(
 
 export function synthesizeDashboardBoxData(opts: SynthOptions): SpecBoxData {
   const { dashboardKey, records, tabOverrides = {}, boxOverrides = {}, noun = 'السجلات' } = opts;
-  const dashboard = APP_SPEC.workspaces
-    .flatMap((w) => w.dashboards)
-    .find((d) => (d as { key: string }).key === dashboardKey) as
-    | { tabs: TabSpec[] }
-    | undefined;
+  const allDashboards = APP_SPEC.workspaces.flatMap(
+    (w) => w.dashboards as readonly { key: string; tabs: readonly TabSpec[] }[],
+  );
+  const dashboard = allDashboards.find((d) => d.key === dashboardKey);
   if (!dashboard) return {};
 
   const out: SpecBoxData = {};
   for (const tab of dashboard.tabs) {
-    for (const box of tab.boxes as BoxSpec[]) {
+    for (const box of tab.boxes as readonly BoxSpec[]) {
       const archetype = archetypeFor(tab.code, box.ref);
       const slot: Record<string, Record<string, unknown>> = {};
       for (const ref of box.componentRefs ?? []) {
