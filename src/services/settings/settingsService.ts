@@ -64,24 +64,26 @@ export const settingsService = {
     const { data, error } = await supabase
       .from('user_settings')
       .upsert(
-        { user_id: uid, category, payload },
+        [{ user_id: uid, category, payload }],
         { onConflict: 'user_id,category' },
       )
       .select('*')
       .single();
     if (error) {
       await audit({
+        resource_type: 'user_settings',
         action: 'settings.upsert',
+        resource_id: category,
         decision: 'error',
-        resource: `user_settings/${category}`,
         metadata: { error: error.message },
       });
       throw error;
     }
     await audit({
+      resource_type: 'user_settings',
       action: 'settings.upsert',
+      resource_id: category,
       decision: 'allowed',
-      resource: `user_settings/${category}`,
     });
     return data as UserSettingsRow;
   },
