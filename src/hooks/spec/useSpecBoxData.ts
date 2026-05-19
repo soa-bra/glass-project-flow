@@ -201,25 +201,25 @@ const ARCHIVE_CATEGORIES: ArchiveCategory[] = [
 
 function useProjectsBoxData(): SpecBoxData {
   const { data: projects = [] } = useProjects();
-  const { data: taskAgg = { total: 0, byStatus: {} as Record<string, number> } } = useQuery({
+  const { data: taskAgg = { total: 0, byState: {} as Record<string, number> } } = useQuery({
     queryKey: ['spec', 'tasks-aggregate'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('tasks')
-        .select('status')
+        .select('state')
         .limit(1000);
       if (error) throw error;
-      const byStatus: Record<string, number> = {};
-      (data ?? []).forEach((t: { status: string | null }) => {
-        const k = t.status ?? 'unknown';
-        byStatus[k] = (byStatus[k] ?? 0) + 1;
+      const byState: Record<string, number> = {};
+      ((data ?? []) as Array<{ state: string | null }>).forEach((t) => {
+        const k = t.state ?? 'unknown';
+        byState[k] = (byState[k] ?? 0) + 1;
       });
-      return { total: data?.length ?? 0, byStatus };
+      return { total: data?.length ?? 0, byState };
     },
   });
 
   return useMemo(() => {
-    const active = projects.filter((p) => p.state === 'active' || p.state === 'in_progress').length;
+    const active = projects.filter((p) => p.state === 'active').length;
     const completed = projects.filter((p) => p.state === 'completed').length;
     const archived = projects.filter((p) => p.state === 'archived').length;
 
@@ -238,7 +238,7 @@ function useProjectsBoxData(): SpecBoxData {
         'DAV-LST-01': {
           items: projects.slice(0, 8).map((p) => ({
             id: p.id,
-            primary: p.title,
+            primary: (p as { name?: string; title?: string }).name ?? (p as { title?: string }).title ?? '—',
             secondary: `${p.state ?? '—'} • محدّث ${fmtDate(p.updated_at as string)}`,
             trailing: p.state,
           })),
@@ -256,9 +256,9 @@ function useProjectsBoxData(): SpecBoxData {
         'DAV-KPI-01': {
           items: [
             { label: 'إجمالي المهام', value: taskAgg.total },
-            { label: 'منجزة', value: taskAgg.byStatus.completed ?? 0, tone: 'positive' as const },
-            { label: 'قيد التنفيذ', value: taskAgg.byStatus.in_progress ?? 0 },
-            { label: 'متأخرة', value: taskAgg.byStatus.overdue ?? 0, tone: 'critical' as const },
+            { label: 'منجزة', value: taskAgg.byState.completed ?? 0, tone: 'positive' as const },
+            { label: 'نشطة', value: taskAgg.byState.active ?? 0 },
+            { label: 'متوقفة', value: (taskAgg.byState.blocked ?? 0) + (taskAgg.byState.paused ?? 0), tone: 'critical' as const },
           ],
         },
       },
