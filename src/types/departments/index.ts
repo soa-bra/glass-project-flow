@@ -291,6 +291,47 @@ export const templateItemSchema = z.object({
 });
 export type TemplateItem = z.infer<typeof templateItemSchema>;
 
+// ── BCM (Brand Community Management) — P5.3 ─────────────────────────────────
+export const bcmMemberSchema = z.object({
+  ...baseDates,
+  name: z.string().min(1),
+  email: z.string().nullable().optional(),
+  segment: z.string().nullable().optional(),
+  status: z.string(),
+  joined_at: z.string().nullable().optional(),
+  notes: z.string().nullable().optional(),
+  metadata: z.record(z.unknown()).nullable().optional(),
+});
+export type BcmMember = z.infer<typeof bcmMemberSchema>;
+
+// ── Partnerships — P5.3 ─────────────────────────────────────────────────────
+export const partnershipAgreementSchema = z.object({
+  ...baseDates,
+  name: z.string().min(1),
+  partner_name: z.string().nullable().optional(),
+  type: z.string().nullable().optional(),
+  status: z.string(),
+  start_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
+  value: z.number(),
+  notes: z.string().nullable().optional(),
+  metadata: z.record(z.unknown()).nullable().optional(),
+});
+export type PartnershipAgreement = z.infer<typeof partnershipAgreementSchema>;
+
+// ── Knowledge — P5.3 ────────────────────────────────────────────────────────
+export const knowledgeArticleSchema = z.object({
+  ...baseDates,
+  title: z.string().min(1),
+  summary: z.string().nullable().optional(),
+  body_md: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+  status: z.string(),
+  tags: z.array(z.string()),
+  version: z.string(),
+});
+export type KnowledgeArticle = z.infer<typeof knowledgeArticleSchema>;
+
 // ── Domain catalog (table name → schema) — used by generic factory ──────────
 export const DEPARTMENT_TABLES = {
   hr_employees: hrEmployeeSchema,
@@ -315,6 +356,9 @@ export const DEPARTMENT_TABLES = {
   csr_tickets: csrTicketSchema,
   kmpa_documents: kmpaDocumentSchema,
   template_items: templateItemSchema,
+  bcm_members: bcmMemberSchema,
+  partnership_agreements: partnershipAgreementSchema,
+  knowledge_articles: knowledgeArticleSchema,
 } as const;
 
 export type DepartmentTableName = keyof typeof DEPARTMENT_TABLES;

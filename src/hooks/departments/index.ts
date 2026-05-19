@@ -114,3 +114,8 @@ export const KmpaDocuments = bind("kmpa_documents", Services.KmpaDocumentsServic
 
 // Templates
 export const TemplateItems = bind("template_items", Services.TemplateItemsService);
+
+// BCM / Partnerships / Knowledge — P5.3
+export const BcmMembers = bind("bcm_members", Services.BcmMembersService);
+export const PartnershipAgreements = bind("partnership_agreements", Services.PartnershipAgreementsService);
+export const KnowledgeArticles = bind("knowledge_articles", Services.KnowledgeArticlesService);
