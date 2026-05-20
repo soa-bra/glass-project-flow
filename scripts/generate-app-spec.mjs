@@ -25,6 +25,13 @@ const FILES = {
   settings: 'settings-spec.xlsx',
 };
 
+const LEGACY_COMPONENT_REF_MAP = {
+  'ACT-BTN-01': 'ACT-BTN-P02',
+  'ACT-BTN-02': 'ACT-BTN-S02',
+  'ACT-STS-01': 'ACT-STS-SC01',
+  'MDL-WND-01': 'MDL-WND-D01',
+};
+
 const sheetName = (wb, keywords) => {
   for (const name of wb.SheetNames) {
     if (keywords.some((k) => name.includes(k))) return name;
@@ -39,8 +46,21 @@ const readSheet = (path, keywords) => {
   return XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: null });
 };
 
-const splitRefs = (s) =>
-  s ? String(s).split('|').map((x) => x.trim()).filter(Boolean) : [];
+function normalizeComponentRef(ref, context) {
+  if (ref === 'ACT-MNU-01') {
+    return context === 'popup' ? 'ACT-MNU-W01' : 'ACT-MNU-B01';
+  }
+  return LEGACY_COMPONENT_REF_MAP[ref] ?? ref;
+}
+
+const splitRefs = (value, context = 'box') =>
+  value
+    ? String(value)
+        .split('|')
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .map((ref) => normalizeComponentRef(ref, context))
+    : [];
 
 const loadWorkspace = (surface, file, listKw, isMulti) => {
   const path = resolve(SPECS, file);
@@ -69,7 +89,7 @@ const loadWorkspace = (surface, file, listKw, isMulti) => {
             kind: b['صورة الصندوق'],
             purpose: b['الوظيفة الأساسية'],
             backend: b['ارتباطات الباك اند'],
-            componentRefs: splitRefs(b['المكونات المرجعية للصندوق']),
+            componentRefs: splitRefs(b['المكونات المرجعية للصندوق'], 'box'),
             state: b['الحالة'],
           }));
         const tabPopups = dashPopups
@@ -80,7 +100,7 @@ const loadWorkspace = (surface, file, listKw, isMulti) => {
             name: p['اسم النافذة المنبثقة'],
             purpose: p['الوظيفة/الدور/الهدف'],
             trigger: p['الزر الذي تنبثق منه'],
-            componentRefs: splitRefs(p['الأرقام المرجعية لمكونات النافذة']),
+            componentRefs: splitRefs(p['الأرقام المرجعية لمكونات النافذة'], 'popup'),
             backend: p['ارتباطات الباك اند'],
           }));
         return {
@@ -121,7 +141,6 @@ const workspaces = [
   loadWorkspace('settings', FILES.settings, ['قائمة'], false),
 ];
 
-// Counts
 const counts = workspaces.reduce(
   (acc, ws) => {
     for (const d of ws.dashboards) {
