@@ -245,9 +245,13 @@ export const ActionMenu: React.FC<{
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         {trigger ?? (
-          <BaseActionButtonControl buttonRef="ACT-BTN-S03" size="sm" className={className} ariaLabel="المزيد من الإجراءات">
-            <MoreHorizontal className="h-4 w-4" />
-          </BaseActionButtonControl>
+          <BaseActionButtonControl
+            buttonRef="ACT-BTN-S03"
+            size="sm"
+            className={className}
+            ariaLabel="المزيد من الإجراءات"
+            icon={<MoreHorizontal />}
+          />
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={5} surface={menuConfig.surface} className="w-48 font-arabic">
