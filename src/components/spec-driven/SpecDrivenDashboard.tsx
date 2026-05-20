@@ -15,11 +15,12 @@ import { TabRenderer } from '@/components/box-kit';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
 import { useSpecBoxData } from '@/hooks/spec/useSpecBoxData';
+import { LAYOUT_RUNTIME_MAP, resolveDashboardLayoutKey } from '@/config/box-kit/layout-reference-map';
 
 interface Props {
   dashboardKey: string;
   /** Optional per-box slot props override (keyed by box ref). When omitted, the
-   *  shared `useSpecBoxData(dashboardKey)` resolver is used. */
+   * shared `useSpecBoxData(dashboardKey)` resolver is used. */
   boxData?: Record<string, Record<string, Record<string, unknown>>>;
 }
 
@@ -35,6 +36,7 @@ export const SpecDrivenDashboard: React.FC<Props> = ({ dashboardKey, boxData }) 
 
   const resolved = useSpecBoxData(dashboardKey);
   const effectiveBoxData = boxData ?? resolved;
+  const layoutRuntime = LAYOUT_RUNTIME_MAP[resolveDashboardLayoutKey(dashboardKey)];
 
   const tabs = useMemo(
     () => (dashboard?.tabs ?? []).map((t) => ({ value: t.code, label: t.name })),
@@ -51,18 +53,20 @@ export const SpecDrivenDashboard: React.FC<Props> = ({ dashboardKey, boxData }) 
   }
 
   return (
-    <DashboardLayout
-      title={dashboard.title}
-      tabs={tabs}
-      activeTab={activeTab}
-      onTabChange={setActiveTab}
-    >
-      {dashboard.tabs.map((t) => (
-        <BaseTabContent key={t.code} value={t.code}>
-          <TabRenderer tab={t} boxData={effectiveBoxData} />
-        </BaseTabContent>
-      ))}
-    </DashboardLayout>
+    <div data-layout-header-ref={layoutRuntime.headerRef}>
+      <DashboardLayout
+        title={dashboard.title}
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      >
+        {dashboard.tabs.map((t) => (
+          <BaseTabContent key={t.code} value={t.code}>
+            <TabRenderer tab={t} dashboardKey={dashboardKey} boxData={effectiveBoxData} />
+          </BaseTabContent>
+        ))}
+      </DashboardLayout>
+    </div>
   );
 };
 
