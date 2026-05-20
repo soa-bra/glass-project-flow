@@ -20,7 +20,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 type LegacyButtonVariant = 'primary' | 'secondary';
-
 type StatusTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 
 function isActionButtonRef(value?: string): value is ActionButtonRef {
@@ -48,29 +47,34 @@ function getButtonIntentClass(family: (typeof ACTION_BUTTON_REFERENCE_MAP)[Actio
   }
 }
 
-function getButtonSizeClass(size: 'sm' | 'default' | 'lg', content: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]['content']) {
+function getButtonFrameClass(size: 'sm' | 'default' | 'lg', content: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]['content']) {
   const bySize = {
     sm: {
       iconOnly: 'h-10 w-10',
       textOnly: 'h-10 px-4 text-sm',
       iconAndText: 'h-10 gap-2 px-4 text-sm',
-      icon: 'h-[18px] w-[18px]',
     },
     default: {
       iconOnly: 'h-11 w-11',
       textOnly: 'h-11 px-5 text-sm',
       iconAndText: 'h-11 gap-2.5 px-5 text-sm',
-      icon: 'h-5 w-5',
     },
     lg: {
       iconOnly: 'h-12 w-12',
       textOnly: 'h-12 px-6 text-base',
       iconAndText: 'h-12 gap-3 px-6 text-base',
-      icon: 'h-[22px] w-[22px]',
     },
   } as const;
 
   return bySize[size][content];
+}
+
+function getButtonIconClass(size: 'sm' | 'default' | 'lg') {
+  return {
+    sm: 'h-[18px] w-[18px]',
+    default: 'h-5 w-5',
+    lg: 'h-[22px] w-[22px]',
+  }[size];
 }
 
 function renderActionButtonBody(options: {
@@ -80,7 +84,7 @@ function renderActionButtonBody(options: {
   size: 'sm' | 'default' | 'lg';
 }) {
   const { content, icon, children, size } = options;
-  const iconClass = getButtonSizeClass(size, content);
+  const iconClass = getButtonIconClass(size);
   const renderedIcon = React.isValidElement(icon)
     ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, {
         className: cn(iconClass, (icon.props as { className?: string }).className),
@@ -126,7 +130,7 @@ function BaseActionButtonControl(props: {
         'disabled:pointer-events-none disabled:opacity-50',
         config.content === 'iconOnly' ? 'p-0' : '',
         getButtonIntentClass(config.family),
-        getButtonSizeClass(size, config.content),
+        getButtonFrameClass(size, config.content),
         className,
       )}
     >
@@ -135,7 +139,6 @@ function BaseActionButtonControl(props: {
   );
 }
 
-/** ACT-BTN-* — action button family */
 export const ActionButton: React.FC<{
   componentRef?: string;
   variant?: LegacyButtonVariant;
@@ -229,7 +232,6 @@ export type ActionMenuItem = {
   disabled?: boolean;
 };
 
-/** ACT-MNU-* — contextual action menu */
 export const ActionMenu: React.FC<{
   componentRef?: string;
   items: ActionMenuItem[];
@@ -264,7 +266,6 @@ export const ActionMenu: React.FC<{
   );
 };
 
-/** ACT-STS-* — semantic status chip */
 export const StatusChip: React.FC<{
   componentRef?: string;
   tone?: StatusTone;
