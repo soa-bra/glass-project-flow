@@ -13,6 +13,8 @@ import { AlertTriangle, Layers } from 'lucide-react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { resolveBoxKitComponent } from './registry';
 import type { BoxSpec } from '@/config/app-spec';
+import { LAYOUT_BOX_ROLE_MAP, resolveBoxLayoutRef } from '@/config/box-kit/layout-reference-map';
+import { cn } from '@/lib/utils';
 
 export interface BoxRendererProps {
   box: BoxSpec;
@@ -29,12 +31,23 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
   const primitiveRefs = refs.filter((r) => PRIMITIVE_RE.test(r));
   const unknownRefs = primitiveRefs.filter((r) => !resolveBoxKitComponent(r));
   const renderedPrimitives = primitiveRefs.filter((r) => resolveBoxKitComponent(r));
+  const boxLayoutRef = resolveBoxLayoutRef(box);
+  const boxLayout = LAYOUT_BOX_ROLE_MAP[boxLayoutRef];
 
   const wiredCount = renderedPrimitives.filter((r) => slotProps?.[r]).length;
   const hasAnyWiring = wiredCount > 0;
 
   return (
-    <div data-box-ref={box.ref} className="h-full">
+    <div
+      data-box-ref={box.ref}
+      data-layout-ref={boxLayoutRef}
+      className={cn(
+        'h-full',
+        boxLayout.columnsSpan === 2 && 'md:col-span-2',
+        boxLayout.rowSpan === 2 && 'md:row-span-2',
+      )}
+      style={{ minHeight: boxLayout.minHeight }}
+    >
       <BaseBox title={box.name ?? undefined} variant="standard" size="md">
         {renderedPrimitives.length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
 
@@ -44,7 +57,7 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
               const Cmp = resolveBoxKitComponent(ref)!;
               const supplied = slotProps?.[ref];
               if (!supplied) return null;
-              return <Cmp key={`${ref}-${i}`} {...supplied} />;
+              return <Cmp key={`${ref}-${i}`} componentRef={ref} {...supplied} />;
             })}
           </div>
         ) : (
@@ -54,7 +67,7 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
         )}
 
         {unknownRefs.length > 0 && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-2 py-1">
+          <div className="mt-3 flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs text-amber-700">
             <AlertTriangle className="h-3.5 w-3.5" />
             <span>مكون غير مُسجّل: {unknownRefs.join(', ')}</span>
           </div>
@@ -65,16 +78,14 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
 };
 
 const EmptyHint: React.FC<{ purpose?: string | null }> = ({ purpose }) => (
-  <div className="text-xs text-muted-foreground py-4 text-center">
+  <div className="py-4 text-center text-xs text-muted-foreground">
     {purpose ?? 'لم يُربط هذا الصندوق ببيانات حقيقية بعد.'}
   </div>
 );
 
 const PendingWiring: React.FC<{ purpose?: string | null; count: number }> = ({ purpose, count }) => (
   <div className="flex flex-col items-start gap-2 py-3">
-    {purpose && (
-      <p className="text-sm leading-relaxed text-foreground/80 text-start">{purpose}</p>
-    )}
+    {purpose ? <p className="text-start text-sm leading-relaxed text-foreground/80">{purpose}</p> : null}
     <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
       <Layers className="h-3 w-3" />
       <span>{count} عنصر بانتظار ربط البيانات</span>
