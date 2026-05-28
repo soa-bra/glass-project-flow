@@ -25,8 +25,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
-      <div dir="rtl" className={`${LAYOUT.FLEX_BETWEEN} my-0 flex-shrink-0 px-6 py-[45px]`}>
+    <div className="flex min-h-full flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div dir="rtl" className={`${LAYOUT.FLEX_BETWEEN} sticky top-0 z-20 my-0 flex-shrink-0 px-6 py-[45px]`} style={{ background: 'var(--sb-column-3-bg)' }}>
         <Reveal delay={0}>
           <h2 className={`whitespace-nowrap px-[24px] text-3xl font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {title}
@@ -39,11 +39,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Reveal>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
-        <Tabs value={activeTab} onValueChange={onTabChange} className="flex min-h-full w-full flex-col px-6 pb-6" dir="rtl">
-          {children}
-        </Tabs>
-      </div>
+      <Tabs value={activeTab} onValueChange={onTabChange} className="flex w-full flex-col px-6 pb-6" dir="rtl">
+        {children}
+      </Tabs>
     </div>
   );
 };
