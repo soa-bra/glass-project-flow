@@ -47,13 +47,22 @@ interface Props {
   detailFields: Array<{ label: string; value: string }>;
   actions: SpecAction[];
   filterPlaceholder?: string;
+  /** Optional controlled selection. When provided, parent owns selectedId. */
+  selectedId?: string | null;
+  onSelectItem?: (id: string) => void;
 }
 
 export const SpecTabScaffold: React.FC<Props> = ({
   intro, kpis, items, detailFields, actions, filterPlaceholder = 'بحث…',
+  selectedId: controlledSelectedId, onSelectItem,
 }) => {
   const [q, setQ] = useState('');
-  const [selectedId, setSelectedId] = useState(items[0]?.id);
+  const [internalSelectedId, setInternalSelectedId] = useState(items[0]?.id);
+  const selectedId = controlledSelectedId !== undefined ? controlledSelectedId : internalSelectedId;
+  const setSelectedId = (id: string) => {
+    if (onSelectItem) onSelectItem(id);
+    else setInternalSelectedId(id);
+  };
 
   const filtered = items.filter(i =>
     i.title.toLowerCase().includes(q.toLowerCase()) ||

@@ -86,7 +86,7 @@ function renderActionButtonBody(options: {
   const { content, icon, children, size } = options;
   const iconClass = getButtonIconClass(size);
   const renderedIcon = React.isValidElement(icon)
-    ? React.cloneElement(icon as React.ReactElement<{ className?: string }>, {
+    ? React.cloneElement(icon as React.ReactElement<{ className?: string; 'aria-hidden'?: boolean }>, {
         className: cn(iconClass, (icon.props as { className?: string }).className),
         'aria-hidden': true,
       })
@@ -300,7 +300,7 @@ export const StatusChip: React.FC<{
       style={{
         backgroundColor: statusConfig.background,
         color: statusConfig.foreground,
-        borderColor: statusConfig.border,
+        borderColor: 'border' in statusConfig ? (statusConfig as { border: string }).border : undefined,
         ...style,
       }}
       onClick={onClick}

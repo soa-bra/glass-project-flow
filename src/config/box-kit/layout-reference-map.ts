@@ -134,7 +134,7 @@ export function resolveTabLayoutRef(tab: { code?: string | null; name?: string |
   return 'LAY-TAB-W01';
 }
 
-export function resolveBoxLayoutRef(box: { componentRefs?: string[]; purpose?: string | null }): LayoutBoxRef {
+export function resolveBoxLayoutRef(box: { componentRefs?: readonly string[]; purpose?: string | null }): LayoutBoxRef {
   const refs = box.componentRefs ?? [];
   if (refs.includes('DAV-TBL-01')) return 'LAY-BOX-TBL01';
   if (refs.includes('DAV-CHT-01')) return 'LAY-BOX-CHT01';
