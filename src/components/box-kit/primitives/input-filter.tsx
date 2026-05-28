@@ -6,6 +6,7 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 /** IPF-SRH-01 — Search input */
@@ -16,7 +17,7 @@ export const SearchInput: React.FC<{ value: string; onChange: (v: string) => voi
   className,
 }) => (
   <div className={cn('relative', className)}>
-    <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/45" />
     <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="ps-9" />
   </div>
 );
@@ -53,7 +54,7 @@ export const DateRangeFilter: React.FC<{
 }> = ({ from, to, onChange, className }) => (
   <div className={cn('flex items-center gap-2', className)}>
     <Input type="date" value={from ?? ''} onChange={(e) => onChange({ from: e.target.value, to })} className="w-auto" />
-    <span className="text-muted-foreground text-xs">→</span>
+    <span className="text-xs text-black/45">→</span>
     <Input type="date" value={to ?? ''} onChange={(e) => onChange({ from, to: e.target.value })} className="w-auto" />
   </div>
 );
@@ -65,15 +66,15 @@ export const ToggleGroup: React.FC<{
   options: SelectOption[];
   className?: string;
 }> = ({ value, onChange, options, className }) => (
-  <div className={cn('inline-flex rounded-lg border border-border bg-muted/30 p-1', className)}>
+  <div className={cn('inline-flex rounded-[20px] border border-black/20 bg-white p-1', className)}>
     {options.map((o) => (
       <button
         key={o.value}
         type="button"
         onClick={() => onChange(o.value)}
         className={cn(
-          'px-3 py-1 text-xs rounded-md transition-colors',
-          value === o.value ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+          'rounded-[16px] px-3 py-1 text-xs transition-colors',
+          value === o.value ? 'bg-black text-white shadow-sm' : 'text-black/60 hover:text-black'
         )}
       >
         {o.label}
@@ -92,9 +93,9 @@ export const TextField: React.FC<{
   required?: boolean;
   className?: string;
 }> = ({ value, onChange, label, placeholder, type = 'text', required, className }) => (
-  <label className={cn('flex flex-col gap-1', className)}>
+  <label className={cn('flex flex-col gap-1.5', className)}>
     {label && (
-      <span className="text-xs font-medium text-muted-foreground">
+      <span className="text-right text-xs font-medium text-black/60 font-arabic">
         {label} {required && <span className="text-red-500">*</span>}
       </span>
     )}
@@ -112,19 +113,18 @@ export const TextAreaField: React.FC<{
   required?: boolean;
   className?: string;
 }> = ({ value, onChange, label, placeholder, rows = 3, required, className }) => (
-  <label className={cn('flex flex-col gap-1', className)}>
+  <label className={cn('flex flex-col gap-1.5', className)}>
     {label && (
-      <span className="text-xs font-medium text-muted-foreground">
+      <span className="text-right text-xs font-medium text-black/60 font-arabic">
         {label} {required && <span className="text-red-500">*</span>}
       </span>
     )}
-    <textarea
+    <Textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
       required={required}
-      className="rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
     />
   </label>
 );
