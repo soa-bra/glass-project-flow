@@ -10,9 +10,9 @@ export const DepartmentPanelLayout: React.FC<DepartmentPanelLayoutProps> = ({
   return (
     <div
       style={{ background: 'var(--sb-column-3-bg)' }}
-      className="h-full rounded-3xl overflow-hidden"
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl"
     >
-      <div className="h-full min-h-0" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="min-h-0 flex-1" style={{ background: 'var(--sb-column-3-bg)' }}>
         {children}
       </div>
     </div>
