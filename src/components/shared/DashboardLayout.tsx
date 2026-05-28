@@ -26,11 +26,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="h-full flex flex-col overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
-      {/* Header — fixed */}
-      <div className={`${LAYOUT.FLEX_BETWEEN} my-0 py-[45px] px-6 flex-shrink-0`}>
+    <div className="flex h-full flex-col overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div dir="rtl" className={`${LAYOUT.FLEX_BETWEEN} my-0 flex-shrink-0 px-6 py-[45px]`}>
         <Reveal delay={0}>
-          <h2 className={`font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} text-3xl whitespace-nowrap px-[24px]`}>
+          <h2 className={`font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} whitespace-nowrap px-[24px] text-3xl`}>
             {title}
           </h2>
         </Reveal>
@@ -41,10 +40,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Reveal>
       </div>
 
-      {/* Content — scrollable via ScrollArea */}
-      <div className="flex-1 min-h-0 overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="min-h-0 flex-1 overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
         <ScrollArea className="h-full w-full">
-          <div className="pb-6 px-6">
+          <div className="px-6 pb-6">
             <Tabs value={activeTab} onValueChange={onTabChange} className="w-full" dir="rtl">
               {children}
             </Tabs>
