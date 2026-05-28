@@ -187,7 +187,7 @@ export const DataBoundSpecTab: React.FC<Props> = ({
         </div>
       )}
 
-      <SpecTabScaffoldBound
+      <SpecTabScaffold
         intro={intro}
         kpis={kpis}
         items={items}
@@ -195,7 +195,7 @@ export const DataBoundSpecTab: React.FC<Props> = ({
         actions={actions}
         filterPlaceholder={filterPlaceholder}
         selectedId={effectiveSelectedId}
-        onSelect={setSelectedId}
+        onSelectItem={setSelectedId}
       />
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
