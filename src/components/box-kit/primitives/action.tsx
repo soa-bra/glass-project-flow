@@ -51,18 +51,18 @@ function getButtonFrameClass(size: 'sm' | 'default' | 'lg', content: (typeof ACT
   const bySize = {
     sm: {
       iconOnly: 'h-10 w-10',
-      textOnly: 'h-10 px-4 text-sm',
-      iconAndText: 'h-10 gap-2 px-4 text-sm',
+      textOnly: 'h-10 min-w-[136px] px-5 text-sm',
+      iconAndText: 'h-10 min-w-[148px] gap-2 px-5 text-sm',
     },
     default: {
       iconOnly: 'h-11 w-11',
-      textOnly: 'h-11 px-5 text-sm',
-      iconAndText: 'h-11 gap-2.5 px-5 text-sm',
+      textOnly: 'h-11 min-w-[148px] px-6 text-sm',
+      iconAndText: 'h-11 min-w-[160px] gap-2.5 px-6 text-sm',
     },
     lg: {
       iconOnly: 'h-12 w-12',
-      textOnly: 'h-12 px-6 text-base',
-      iconAndText: 'h-12 gap-3 px-6 text-base',
+      textOnly: 'h-12 min-w-[168px] px-7 text-base',
+      iconAndText: 'h-12 min-w-[180px] gap-3 px-7 text-base',
     },
   } as const;
 
