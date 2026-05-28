@@ -31,7 +31,11 @@ export const ModalShell: React.FC<{
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className={cn(
-          'sb-modal-shell [&_input]:rounded-full [&_textarea]:rounded-[24px] [&_[data-slot=select-trigger]]:rounded-full [&_[role=combobox]]:rounded-full',
+          'sb-modal-shell',
+          '[&_input]:rounded-[24px] [&_input]:border-black/20 [&_input]:bg-white/30 [&_input]:text-right [&_input]:text-black [&_input]:placeholder:text-black/50 [&_input]:focus:border-black [&_input]:focus:ring-0',
+          '[&_textarea]:rounded-[24px] [&_textarea]:border-black/20 [&_textarea]:bg-white/30 [&_textarea]:text-right [&_textarea]:text-black [&_textarea]:placeholder:text-black/50 [&_textarea]:focus:border-black [&_textarea]:focus:ring-0',
+          '[&_[data-slot=select-trigger]]:rounded-[24px] [&_[data-slot=select-trigger]]:border-black/20 [&_[data-slot=select-trigger]]:bg-white/30',
+          '[&_[role=combobox]]:rounded-[24px] [&_[role=combobox]]:border-black/20 [&_[role=combobox]]:bg-white/30 [&_[role=combobox]]:text-right [&_[role=combobox]]:text-black [&_[role=combobox]]:focus:border-black [&_[role=combobox]]:focus:ring-0',
           widthCls,
           modalConfig.direction === 'rtl' && 'rtl',
           className,
