@@ -67,7 +67,7 @@ export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, box
 
       <div
         className={cn('grid gap-4', gridClass, className)}
-        style={{ gridAutoRows: gridLayout.minRowHeight }}
+        style={{ gridAutoRows: `minmax(${gridLayout.minRowHeight}, auto)` }}
         data-grid-ref={dashboardLayout.gridRef}
         data-tab-layout-ref={tabLayoutRef}
       >
