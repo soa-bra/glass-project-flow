@@ -39,11 +39,11 @@ function getButtonIntentClass(family: (typeof ACTION_BUTTON_REFERENCE_MAP)[Actio
     case 'primary':
       return 'border border-transparent bg-black text-white hover:bg-black/90 active:bg-black/80';
     case 'secondary':
-      return 'border-2 border-black bg-transparent text-black hover:bg-black/[0.04] active:bg-black/[0.08]';
+      return 'border border-black bg-transparent text-black hover:bg-black/[0.04] active:bg-black/[0.08]';
     case 'primarySensitiveAction':
       return 'border border-transparent bg-[#EF4444] text-black hover:bg-[#EF4444]/90 active:bg-[#EF4444]/80';
     case 'secondarySensitiveAction':
-      return 'border-2 border-[#EF4444] bg-transparent text-[#EF4444] hover:bg-[#EF4444]/[0.06] active:bg-[#EF4444]/[0.10]';
+      return 'border border-[#EF4444] bg-transparent text-[#EF4444] hover:bg-[#EF4444]/[0.06] active:bg-[#EF4444]/[0.10]';
   }
 }
 
