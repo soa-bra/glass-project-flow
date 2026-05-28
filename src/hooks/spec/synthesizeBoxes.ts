@@ -102,7 +102,7 @@ function defaultPropsFor(
   const isInput = componentRef.startsWith('IPF-');
   const isAction = componentRef.startsWith('ACT-');
 
-  if (componentRef === 'DAV-TTL-01') return null; // title handled by BaseBox
+  if (componentRef === 'DAV-TTL-01') return null;
 
   let arch: Record<string, unknown> | null = null;
   switch (archetype) {
@@ -194,11 +194,19 @@ function defaultPropsFor(
         arch = { label: 'الوصف', placeholder: 'أدخل الوصف…', rows: 4 };
       else if (componentRef === 'IPF-SLT-01')
         arch = {
+          label: 'الحالة',
+          placeholder: 'اختر الحالة',
           options: [
             { value: 'draft', label: 'مسودة' },
             { value: 'active', label: 'نشط' },
             { value: 'archived', label: 'مؤرشف' },
           ],
+        };
+      else if (componentRef === 'IPF-DAT-01')
+        arch = {
+          label: 'الفترة',
+          fromPlaceholder: 'اختر تاريخ البداية',
+          toPlaceholder: 'اختر تاريخ النهاية',
         };
       else if (componentRef === 'ACT-BTN-01') arch = { children: 'حفظ', variant: 'primary' };
       else if (componentRef === 'ACT-BTN-02') arch = { children: 'إلغاء', variant: 'secondary' };
@@ -206,15 +214,24 @@ function defaultPropsFor(
       break;
     }
     case 'filters': {
-      if (componentRef === 'IPF-SRH-01') arch = { placeholder: `ابحث في ${noun}…` };
+      if (componentRef === 'IPF-SRH-01')
+        arch = { label: 'بحث', placeholder: `ابحث في ${noun}…` };
       else if (componentRef === 'IPF-SLT-01')
         arch = {
+          label: 'الحالة',
+          placeholder: 'اختر الحالة',
           options: [
             { value: 'all', label: 'الكل' },
             ...Array.from(new Set(records.map((r) => r.trailing).filter(Boolean)))
               .slice(0, 5)
               .map((v) => ({ value: String(v), label: String(v) })),
           ],
+        };
+      else if (componentRef === 'IPF-DAT-01')
+        arch = {
+          label: 'الفترة',
+          fromPlaceholder: 'اختر تاريخ البداية',
+          toPlaceholder: 'اختر تاريخ النهاية',
         };
       else if (componentRef === 'ACT-BTN-01') arch = { children: 'تطبيق', variant: 'primary' };
       break;
@@ -264,14 +281,12 @@ export function synthesizeDashboardBoxData(opts: SynthOptions): SpecBoxData {
         const props = defaultPropsFor(archetype, ref, records, noun);
         if (props !== null) slot[ref] = props;
       }
-      // Apply tab-level overrides (e.g. real KPI items for `overview.summary`)
       const tabOv = tabOverrides[tab.code]?.[box.ref.split('.').pop()!];
       if (tabOv) {
         for (const [ref, props] of Object.entries(tabOv)) {
           slot[ref] = { ...(slot[ref] ?? {}), ...(props as Record<string, unknown>) };
         }
       }
-      // Apply box-level overrides
       const boxOv = boxOverrides[box.ref];
       if (boxOv) {
         for (const [ref, props] of Object.entries(boxOv)) {
