@@ -29,7 +29,14 @@ export const ModalShell: React.FC<{
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={cn('sb-modal-shell', widthCls, modalConfig.direction === 'rtl' && 'rtl', className)}>
+      <DialogContent
+        className={cn(
+          'sb-modal-shell [&_input]:rounded-full [&_textarea]:rounded-[24px] [&_[data-slot=select-trigger]]:rounded-full [&_[role=combobox]]:rounded-full',
+          widthCls,
+          modalConfig.direction === 'rtl' && 'rtl',
+          className,
+        )}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}
