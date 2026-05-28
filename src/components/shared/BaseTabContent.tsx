@@ -1,5 +1,6 @@
 import React from 'react';
 import { TabsContent } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { SPACING } from './design-system/constants';
 import { Reveal } from './motion';
 
@@ -15,12 +16,12 @@ export const BaseTabContent: React.FC<UnifiedTabContentProps> = ({
   className = '',
 }) => {
   return (
-    <TabsContent 
-      value={value} 
-      className={`space-y-6 ${SPACING.SECTION_MARGIN} ${className}`}
+    <TabsContent
+      value={value}
+      className={cn('mt-0 w-full focus-visible:ring-0', SPACING.SECTION_MARGIN, className)}
     >
       <Reveal delay={0.2}>
-        {children}
+        <div className="w-full">{children}</div>
       </Reveal>
     </TabsContent>
   );
