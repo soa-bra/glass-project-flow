@@ -48,7 +48,7 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
       )}
       style={{ minHeight: boxLayout.minHeight }}
     >
-      <BaseBox title={box.name ?? undefined} variant="standard" size="md" className="flex h-full flex-col">
+      <BaseBox title={box.name ?? undefined} variant="standard" size="md" overflow="visible" className="flex h-full flex-col">
         {renderedPrimitives.length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
 
         {hasAnyWiring ? (
