@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const fieldLabelClass = 'text-right text-base font-semibold text-black font-arabic';
-const dateTriggerClass = 'flex min-h-[50px] w-full items-center justify-between rounded-[24px] border border-black/20 bg-white px-4 py-2.5 text-right text-base font-normal text-black font-arabic transition-colors outline-none ring-0 focus:border-black focus:outline-none focus:ring-0';
+const dateTriggerClass = 'flex min-h-[46px] w-full items-center justify-between rounded-[24px] border border-black/20 bg-white px-4 py-2 text-right text-base font-normal text-black font-arabic transition-colors outline-none ring-0 focus:border-black focus:outline-none focus:ring-0';
 
 function DateButton({ value, placeholder, onClick }: { value?: string; placeholder: string; onClick?: () => void }) {
   return (
