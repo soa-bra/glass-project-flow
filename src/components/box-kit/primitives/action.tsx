@@ -300,7 +300,7 @@ export const StatusChip: React.FC<{
       style={{
         backgroundColor: statusConfig.background,
         color: statusConfig.foreground,
-        borderColor: statusConfig.border,
+        borderColor: 'border' in statusConfig ? (statusConfig as { border: string }).border : undefined,
         ...style,
       }}
       onClick={onClick}
