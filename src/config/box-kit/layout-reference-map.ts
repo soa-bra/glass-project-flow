@@ -50,7 +50,7 @@ export const LAYOUT_KPI_MAP = {
 export const LAYOUT_GRID_MAP = {
   'LAY-GRD-D01': {
     density: 'spacious',
-    minRowHeight: '160px',
+    minRowHeight: '200px',
     columns: 4,
   },
   'LAY-GRD-A01': {
@@ -68,7 +68,7 @@ export const LAYOUT_GRID_MAP = {
 export const LAYOUT_BOX_ROLE_MAP = {
   'LAY-BOX-SUM01': {
     role: 'summary-Box',
-    minHeight: '160px',
+    minHeight: '200px',
     rowSpan: 1,
     columnsSpan: 2,
   },
@@ -86,13 +86,13 @@ export const LAYOUT_BOX_ROLE_MAP = {
   },
   'LAY-BOX-FTR01': {
     role: 'feature-Box',
-    minHeight: '160px',
+    minHeight: '200px',
     rowSpan: 1,
     columnsSpan: 1,
   },
   'LAY-BOX-DTL01': {
     role: 'detail-Box',
-    minHeight: '160px',
+    minHeight: '200px',
     rowSpan: 1,
     columnsSpan: 1,
   },
