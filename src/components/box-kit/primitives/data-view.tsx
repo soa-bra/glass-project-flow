@@ -18,7 +18,7 @@ export const BoxTitle: React.FC<{ children: React.ReactNode; subtitle?: string; 
   subtitle,
   className,
 }) => (
-  <div className={cn('flex flex-col gap-1 mb-3', className)}>
+  <div className={cn('mb-3 flex flex-col gap-1', className)}>
     <h3 className="text-base font-semibold text-foreground">{children}</h3>
     {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
   </div>
@@ -53,7 +53,7 @@ export const KpiCluster: React.FC<{ items: KpiItem[]; className?: string }> = ({
 export const TagStrip: React.FC<{ tags: string[]; className?: string }> = ({ tags, className }) => (
   <div className={cn('flex flex-wrap gap-2', className)}>
     {tags.map((t) => (
-      <span key={t} className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+      <span key={t} className="inline-flex items-center rounded-full bg-muted px-2.5 py-1 text-xs text-black">
         {t}
       </span>
     ))}
@@ -67,7 +67,7 @@ export const DetailList: React.FC<{ rows: DetailRow[]; className?: string }> = (
     {rows.map((r, i) => (
       <React.Fragment key={i}>
         <dt className="text-muted-foreground">{r.label}</dt>
-        <dd className="text-foreground font-medium text-end">{r.value}</dd>
+        <dd className="text-end font-medium text-foreground">{r.value}</dd>
       </React.Fragment>
     ))}
   </dl>
@@ -86,14 +86,14 @@ export function DataTable<T extends Record<string, any>>({
   empty?: string;
   className?: string;
 }) {
-  if (!rows.length) return <div className="text-sm text-muted-foreground py-6 text-center">{empty}</div>;
+  if (!rows.length) return <div className="py-6 text-center text-sm text-muted-foreground">{empty}</div>;
   return (
     <div className={cn('overflow-x-auto', className)}>
       <table className="w-full text-sm">
         <thead className="text-xs uppercase text-muted-foreground">
           <tr>
             {columns.map((c) => (
-              <th key={String(c.key)} className="text-start font-medium py-2 px-3">
+              <th key={String(c.key)} className="px-3 py-2 text-start font-medium">
                 {c.header}
               </th>
             ))}
@@ -103,7 +103,7 @@ export function DataTable<T extends Record<string, any>>({
           {rows.map((r, i) => (
             <tr key={i} className="border-t border-border/50">
               {columns.map((c) => (
-                <td key={String(c.key)} className="py-2 px-3 text-foreground">
+                <td key={String(c.key)} className="px-3 py-2 text-foreground">
                   {c.render ? c.render(r) : (r as any)[c.key]}
                 </td>
               ))}
@@ -124,8 +124,8 @@ export const DataList: React.FC<{ items: { id: string | number; primary: React.R
     {items.map((it) => (
       <li key={it.id} className="flex items-center justify-between gap-3 rounded-lg border border-border/50 px-3 py-2">
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-medium text-foreground truncate">{it.primary}</div>
-          {it.secondary && <div className="text-xs text-muted-foreground truncate">{it.secondary}</div>}
+          <div className="truncate text-sm font-medium text-foreground">{it.primary}</div>
+          {it.secondary && <div className="truncate text-xs text-muted-foreground">{it.secondary}</div>}
         </div>
         {it.trailing && <div className="flex-shrink-0">{it.trailing}</div>}
       </li>
@@ -154,20 +154,28 @@ export const AlertBlock: React.FC<{
   className?: string;
 }> = ({ tone = 'info', title, message, items, className }) => {
   const toneClass: Record<AlertTone, string> = {
-    info: 'border-blue-200 bg-blue-50 text-blue-900',
-    success: 'border-emerald-200 bg-emerald-50 text-emerald-900',
-    warning: 'border-amber-200 bg-amber-50 text-amber-900',
-    danger: 'border-red-200 bg-red-50 text-red-900',
+    info: 'border-blue-200 bg-blue-50',
+    success: 'border-emerald-200 bg-emerald-50',
+    warning: 'border-amber-200 bg-amber-50',
+    danger: 'border-red-200 bg-red-50',
   };
+
+  const dotClass: Record<AlertTone, string> = {
+    info: 'bg-blue-500',
+    success: 'bg-emerald-500',
+    warning: 'bg-amber-500',
+    danger: 'bg-red-500',
+  };
+
   return (
-    <div className={cn('rounded-lg border px-3 py-2 text-sm', toneClass[tone], className)}>
-      {title && <div className="font-semibold mb-1">{title}</div>}
-      {message && <div className="text-xs opacity-80">{message}</div>}
+    <div className={cn('rounded-lg border px-3 py-2 text-sm text-black', toneClass[tone], className)}>
+      {title && <div className="mb-1 font-semibold text-black">{title}</div>}
+      {message && <div className="text-xs text-black/65">{message}</div>}
       {items && items.length > 0 && (
-        <ul className="mt-2 flex flex-col gap-1 text-xs">
+        <ul className="mt-2 flex flex-col gap-1 text-xs text-black">
           {items.map((it) => (
-            <li key={it.id} className={cn('flex items-start gap-2', it.tone && toneClass[it.tone].split(' ').slice(-1)[0])}>
-              <span className="mt-1 h-1.5 w-1.5 rounded-full bg-current opacity-60" />
+            <li key={it.id} className="flex items-start gap-2 text-black">
+              <span className={cn('mt-1 h-1.5 w-1.5 rounded-full opacity-70', dotClass[it.tone ?? tone])} />
               <span>{it.text}</span>
             </li>
           ))}
@@ -186,7 +194,7 @@ export type TimelineItem = {
   tone?: AlertTone;
 };
 export const Timeline: React.FC<{ items: TimelineItem[]; className?: string }> = ({ items, className }) => {
-  if (!items.length) return <div className="text-sm text-muted-foreground py-4 text-center">لا توجد أحداث</div>;
+  if (!items.length) return <div className="py-4 text-center text-sm text-muted-foreground">لا توجد أحداث</div>;
   const dotTone: Record<AlertTone, string> = {
     info: 'bg-blue-500',
     success: 'bg-emerald-500',
@@ -206,8 +214,8 @@ export const Timeline: React.FC<{ items: TimelineItem[]; className?: string }> =
             aria-hidden
           />
           <div className="text-sm font-medium text-foreground">{it.title}</div>
-          {it.description && <div className="text-xs text-muted-foreground mt-0.5">{it.description}</div>}
-          {it.timestamp && <div className="text-[10px] text-muted-foreground mt-0.5">{it.timestamp}</div>}
+          {it.description && <div className="mt-0.5 text-xs text-muted-foreground">{it.description}</div>}
+          {it.timestamp && <div className="mt-0.5 text-[10px] text-muted-foreground">{it.timestamp}</div>}
         </li>
       ))}
     </ol>
