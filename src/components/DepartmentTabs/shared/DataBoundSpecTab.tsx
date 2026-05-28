@@ -317,22 +317,3 @@ const Field: React.FC<{ label: string; children: React.ReactNode }> = ({ label, 
   </div>
 );
 
-/**
- * Internal variant of SpecTabScaffold that accepts external selection control.
- * Mirrors SpecTabScaffold props but lets the data-bound parent own selectedId.
- */
-const SpecTabScaffoldBound: React.FC<
-  React.ComponentProps<typeof SpecTabScaffold> & {
-    selectedId: string | null;
-    onSelect: (id: string) => void;
-  }
-> = ({ selectedId, onSelect, items, ...rest }) => {
-  // Reorder items so the controlled selected one is first (SpecTabScaffold uses items[0] as default).
-  const reordered = useMemo(() => {
-    if (!selectedId) return items;
-    const sel = items.find((i) => i.id === selectedId);
-    if (!sel) return items;
-    return [sel, ...items.filter((i) => i.id !== selectedId)];
-  }, [items, selectedId]);
-  return <SpecTabScaffold {...rest} items={reordered} />;
-};
