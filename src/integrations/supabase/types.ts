@@ -2342,6 +2342,54 @@ export type Database = {
         }
         Relationships: []
       }
+      spec_tab_items: {
+        Row: {
+          created_at: string
+          department_code: string
+          details: Json
+          id: string
+          kpis: Json
+          meta: string | null
+          owner_id: string
+          position: number
+          status: string | null
+          subtitle: string | null
+          tab_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department_code: string
+          details?: Json
+          id?: string
+          kpis?: Json
+          meta?: string | null
+          owner_id?: string
+          position?: number
+          status?: string | null
+          subtitle?: string | null
+          tab_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department_code?: string
+          details?: Json
+          id?: string
+          kpis?: Json
+          meta?: string | null
+          owner_id?: string
+          position?: number
+          status?: string | null
+          subtitle?: string | null
+          tab_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       task_cards: {
         Row: {
           central_board_id: string | null
