@@ -3,7 +3,6 @@ import { Tabs } from '@/components/ui/tabs';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
 import { Reveal } from './motion';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface TabItem {
   value: string;
@@ -26,10 +25,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="flex h-full flex-col overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="flex h-full min-h-0 flex-col overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
       <div dir="rtl" className={`${LAYOUT.FLEX_BETWEEN} my-0 flex-shrink-0 px-6 py-[45px]`}>
         <Reveal delay={0}>
-          <h2 className={`font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT} whitespace-nowrap px-[24px] text-3xl`}>
+          <h2 className={`whitespace-nowrap px-[24px] text-3xl font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {title}
           </h2>
         </Reveal>
@@ -40,14 +39,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Reveal>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
-        <ScrollArea className="h-full w-full">
-          <div className="px-6 pb-6">
-            <Tabs value={activeTab} onValueChange={onTabChange} className="w-full" dir="rtl">
-              {children}
-            </Tabs>
-          </div>
-        </ScrollArea>
+      <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden" style={{ background: 'var(--sb-column-3-bg)' }}>
+        <Tabs value={activeTab} onValueChange={onTabChange} className="flex min-h-full w-full flex-col px-6 pb-6" dir="rtl">
+          {children}
+        </Tabs>
       </div>
     </div>
   );
