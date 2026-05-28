@@ -42,17 +42,17 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
       data-box-ref={box.ref}
       data-layout-ref={boxLayoutRef}
       className={cn(
-        'h-full',
+        'h-full self-stretch',
         boxLayout.columnsSpan === 2 && 'md:col-span-2',
         boxLayout.rowSpan === 2 && 'md:row-span-2',
       )}
       style={{ minHeight: boxLayout.minHeight }}
     >
-      <BaseBox title={box.name ?? undefined} variant="standard" size="md">
+      <BaseBox title={box.name ?? undefined} variant="standard" size="md" className="flex h-full flex-col">
         {renderedPrimitives.length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
 
         {hasAnyWiring ? (
-          <div className="flex flex-col gap-3">
+          <div className="flex min-h-0 flex-1 flex-col gap-3">
             {renderedPrimitives.map((ref, i) => {
               const Cmp = resolveBoxKitComponent(ref)!;
               const supplied = slotProps?.[ref];
