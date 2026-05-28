@@ -50,7 +50,7 @@ export const LAYOUT_KPI_MAP = {
 export const LAYOUT_GRID_MAP = {
   'LAY-GRD-D01': {
     density: 'spacious',
-    minRowHeight: '140px',
+    minRowHeight: '160px',
     columns: 4,
   },
   'LAY-GRD-A01': {
