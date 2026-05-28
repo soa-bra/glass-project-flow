@@ -80,7 +80,7 @@ export default function SpecPreviewPage() {
       }
     >
       {tab ? (
-        <TabRenderer tab={tab} />
+        <TabRenderer tab={tab} dashboardKey={dashboardKey!} />
       ) : (
         <p className="text-sm text-muted-foreground">اختر تبويباً من القائمة الجانبية.</p>
       )}
