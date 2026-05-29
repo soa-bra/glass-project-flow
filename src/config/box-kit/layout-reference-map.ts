@@ -74,27 +74,27 @@ export const LAYOUT_BOX_ROLE_MAP = {
   },
   'LAY-BOX-CHT01': {
     role: 'chart-Box',
-    minHeight: '320px',
+    minHeight: '416px',
     rowSpan: 2,
-    columnsSpan: 1,
+    columnsSpan: 4,
   },
   'LAY-BOX-TBL01': {
     role: 'table-Box',
-    minHeight: '320px',
-    rowSpan: 2,
-    columnsSpan: 2,
+    minHeight: '632px',
+    rowSpan: 3,
+    columnsSpan: 4,
   },
   'LAY-BOX-FTR01': {
     role: 'feature-Box',
     minHeight: '200px',
     rowSpan: 1,
-    columnsSpan: 1,
+    columnsSpan: 2,
   },
   'LAY-BOX-DTL01': {
     role: 'detail-Box',
-    minHeight: '200px',
-    rowSpan: 1,
-    columnsSpan: 1,
+    minHeight: '416px',
+    rowSpan: 2,
+    columnsSpan: 2,
   },
 } as const;
 
