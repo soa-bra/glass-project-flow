@@ -122,8 +122,10 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
       data-layout-ref={boxLayoutRef}
       className={cn(
         'h-full self-stretch',
-        boxLayout.columnsSpan === 2 && 'md:col-span-2',
+        boxLayout.columnsSpan === 2 && 'xl:col-span-2',
+        boxLayout.columnsSpan === 4 && 'md:col-span-2 xl:col-span-4',
         boxLayout.rowSpan === 2 && 'md:row-span-2',
+        boxLayout.rowSpan === 3 && 'md:row-span-3',
       )}
       style={{ minHeight: boxLayout.minHeight }}
     >
