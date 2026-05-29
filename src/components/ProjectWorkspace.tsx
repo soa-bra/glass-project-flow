@@ -1,4 +1,3 @@
-
 import React, { useEffect, useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
@@ -10,7 +9,7 @@ import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
-import { useProjects, useCreateProject, useUpdateProject } from '@/hooks/central';
+import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/central';
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService } from '@/services/central/audit.service';
 import { toast } from 'sonner';
@@ -24,6 +23,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   const { data: centralProjects } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
+  const deleteProject = useDeleteProject();
 
   const centralUiProjects = useMemo<Project[]>(
     () => (centralProjects ?? []).map(centralToUiProject),
@@ -117,6 +117,59 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     );
   };
 
+  const handleProjectDeleted = (projectId: string) => {
+    deleteProject.mutate(projectId, {
+      onSuccess: () => {
+        toast.success('تم حذف المشروع');
+        closePanel();
+        void AuditService.log({
+          action: 'central.project.delete',
+          resource_type: 'project',
+          resource_id: projectId,
+        }).catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] AuditService.log(delete) failed:', err);
+        });
+      },
+      onError: (err) => {
+        // eslint-disable-next-line no-console
+        console.error('[ProjectWorkspace] deleteProject failed:', err);
+        toast.error('تعذّر حذف المشروع', {
+          description: err instanceof Error ? err.message : 'خطأ غير معروف',
+        });
+      },
+    });
+  };
+
+  const handleProjectArchived = (projectId: string) => {
+    updateProject.mutate(
+      {
+        id: projectId,
+        patch: { state: 'archived' },
+      },
+      {
+        onSuccess: () => {
+          toast.success('تمت أرشفة المشروع');
+          closePanel();
+          void AuditService.log({
+            action: 'central.project.archive',
+            resource_type: 'project',
+            resource_id: projectId,
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
+          });
+        },
+        onError: (err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] archiveProject failed:', err);
+          toast.error('تعذّرت أرشفة المشروع', {
+            description: err instanceof Error ? err.message : 'خطأ غير معروف',
+          });
+        },
+      },
+    );
+  };
 
   // دالة تطبيق الفلترة
   const handleApplyFilter = (filters: ProjectFilterOptions) => {
@@ -167,8 +220,6 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   const projectsColumnWidth = 'var(--projects-width)';
   const operationsBoardRight = isSidebarCollapsed ? 'var(--operations-right-collapsed)' : 'var(--operations-right-expanded)';
   const operationsBoardWidth = isSidebarCollapsed ? 'var(--operations-width-collapsed)' : 'var(--operations-width-expanded)';
-  const projectPanelRight = operationsBoardRight;
-  const projectPanelWidth = operationsBoardWidth;
 
   // panel content switches: always mount ProjectPanel but swap inner content with fade
   const shownProject = displayedProjectId
@@ -226,6 +277,8 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           onClose={closePanel}
           isSidebarCollapsed={isSidebarCollapsed}
           onProjectUpdated={handleProjectUpdated}
+          onProjectDeleted={handleProjectDeleted}
+          onProjectArchived={handleProjectArchived}
         />
       )}
     </ProjectTasksProvider>
