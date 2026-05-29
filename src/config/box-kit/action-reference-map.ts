@@ -1,4 +1,4 @@
-export type ActionButtonRef =
+export type BaseActionButtonRef =
   | 'ACT-BTN-P01'
   | 'ACT-BTN-P02'
   | 'ACT-BTN-P03'
@@ -11,6 +11,10 @@ export type ActionButtonRef =
   | 'ACT-BTN-SSA01'
   | 'ACT-BTN-SSA02'
   | 'ACT-BTN-SSA03';
+
+export type ActionButtonSizeRank = 1 | 2 | 3 | 4;
+export type ActionButtonSizedRef = `${BaseActionButtonRef}-${ActionButtonSizeRank}`;
+export type ActionButtonRef = BaseActionButtonRef | ActionButtonSizedRef;
 
 export type ActionMenuRef = 'ACT-MNU-W01' | 'ACT-MNU-B01';
 
@@ -39,24 +43,75 @@ export type ActionButtonFamily =
 
 export type ActionButtonContent = 'iconAndText' | 'textOnly' | 'iconOnly';
 
-export const ACTION_BUTTON_REFERENCE_MAP = {
-  'ACT-BTN-P01': { family: 'primary', content: 'iconAndText', sensitive: false },
-  'ACT-BTN-P02': { family: 'primary', content: 'textOnly', sensitive: false },
-  'ACT-BTN-P03': { family: 'primary', content: 'iconOnly', sensitive: false },
-  'ACT-BTN-S01': { family: 'secondary', content: 'iconAndText', sensitive: false },
-  'ACT-BTN-S02': { family: 'secondary', content: 'textOnly', sensitive: false },
-  'ACT-BTN-S03': { family: 'secondary', content: 'iconOnly', sensitive: false },
-  'ACT-BTN-PSA01': { family: 'primarySensitiveAction', content: 'iconAndText', sensitive: true },
-  'ACT-BTN-PSA02': { family: 'primarySensitiveAction', content: 'textOnly', sensitive: true },
-  'ACT-BTN-PSA03': { family: 'primarySensitiveAction', content: 'iconOnly', sensitive: true },
-  'ACT-BTN-SSA01': { family: 'secondarySensitiveAction', content: 'iconAndText', sensitive: true },
-  'ACT-BTN-SSA02': { family: 'secondarySensitiveAction', content: 'textOnly', sensitive: true },
-  'ACT-BTN-SSA03': { family: 'secondarySensitiveAction', content: 'iconOnly', sensitive: true },
-} as const satisfies Record<ActionButtonRef, {
+type ActionButtonBaseConfig = {
   family: ActionButtonFamily;
   content: ActionButtonContent;
   sensitive: boolean;
-}>;
+  defaultSizeRank: ActionButtonSizeRank;
+};
+
+export type ActionButtonConfig = {
+  family: ActionButtonFamily;
+  content: ActionButtonContent;
+  sensitive: boolean;
+  sizeRank: ActionButtonSizeRank;
+  canonicalRef: ActionButtonSizedRef;
+  baseRef: BaseActionButtonRef;
+};
+
+const ACTION_BUTTON_BASE_REFERENCE_MAP: Record<BaseActionButtonRef, ActionButtonBaseConfig> = {
+  'ACT-BTN-P01': { family: 'primary', content: 'iconAndText', sensitive: false, defaultSizeRank: 1 },
+  'ACT-BTN-P02': { family: 'primary', content: 'textOnly', sensitive: false, defaultSizeRank: 1 },
+  'ACT-BTN-P03': { family: 'primary', content: 'iconOnly', sensitive: false, defaultSizeRank: 2 },
+
+  'ACT-BTN-S01': { family: 'secondary', content: 'iconAndText', sensitive: false, defaultSizeRank: 1 },
+  'ACT-BTN-S02': { family: 'secondary', content: 'textOnly', sensitive: false, defaultSizeRank: 1 },
+  'ACT-BTN-S03': { family: 'secondary', content: 'iconOnly', sensitive: false, defaultSizeRank: 2 },
+
+  'ACT-BTN-PSA01': { family: 'primarySensitiveAction', content: 'iconAndText', sensitive: true, defaultSizeRank: 1 },
+  'ACT-BTN-PSA02': { family: 'primarySensitiveAction', content: 'textOnly', sensitive: true, defaultSizeRank: 1 },
+  'ACT-BTN-PSA03': { family: 'primarySensitiveAction', content: 'iconOnly', sensitive: true, defaultSizeRank: 2 },
+
+  'ACT-BTN-SSA01': { family: 'secondarySensitiveAction', content: 'iconAndText', sensitive: true, defaultSizeRank: 1 },
+  'ACT-BTN-SSA02': { family: 'secondarySensitiveAction', content: 'textOnly', sensitive: true, defaultSizeRank: 1 },
+  'ACT-BTN-SSA03': { family: 'secondarySensitiveAction', content: 'iconOnly', sensitive: true, defaultSizeRank: 2 },
+};
+
+const BUTTON_SIZE_RANKS: readonly ActionButtonSizeRank[] = [1, 2, 3, 4] as const;
+
+function buildActionButtonReferenceMap(): Record<ActionButtonRef, ActionButtonConfig> {
+  const map = {} as Record<ActionButtonRef, ActionButtonConfig>;
+
+  for (const [baseRef, config] of Object.entries(ACTION_BUTTON_BASE_REFERENCE_MAP) as Array<
+    [BaseActionButtonRef, ActionButtonBaseConfig]
+  >) {
+    for (const sizeRank of BUTTON_SIZE_RANKS) {
+      const sizedRef = `${baseRef}-${sizeRank}` as ActionButtonSizedRef;
+      map[sizedRef] = {
+        family: config.family,
+        content: config.content,
+        sensitive: config.sensitive,
+        sizeRank,
+        canonicalRef: sizedRef,
+        baseRef,
+      };
+    }
+
+    const canonicalRef = `${baseRef}-${config.defaultSizeRank}` as ActionButtonSizedRef;
+    map[baseRef] = {
+      family: config.family,
+      content: config.content,
+      sensitive: config.sensitive,
+      sizeRank: config.defaultSizeRank,
+      canonicalRef,
+      baseRef,
+    };
+  }
+
+  return map;
+}
+
+export const ACTION_BUTTON_REFERENCE_MAP = buildActionButtonReferenceMap();
 
 export const ACTION_MENU_REFERENCE_MAP = {
   'ACT-MNU-W01': { surface: 'glass', usage: 'window' },
@@ -104,6 +159,12 @@ export const MODAL_WINDOW_REFERENCE_MAP = {
   usesWindowMenuRef: ActionMenuRef;
 }>;
 
+export function normalizeActionButtonRef(value?: string): ActionButtonRef | undefined {
+  if (!value) return undefined;
+  if (value in ACTION_BUTTON_REFERENCE_MAP) return value as ActionButtonRef;
+  return undefined;
+}
+
 export function resolveLegacyActionButtonRef(options: {
   variant?: 'primary' | 'secondary';
   destructive?: boolean;
@@ -121,8 +182,12 @@ export function resolveLegacyActionButtonRef(options: {
 
   const content: ActionButtonContent = hasIcon && hasChildren ? 'iconAndText' : hasIcon ? 'iconOnly' : 'textOnly';
 
-  const match = Object.entries(ACTION_BUTTON_REFERENCE_MAP).find(([, value]) => value.family === family && value.content === content);
-  return (match?.[0] as ActionButtonRef | undefined) ?? 'ACT-BTN-P02';
+  const match = Object.entries(ACTION_BUTTON_BASE_REFERENCE_MAP).find(
+    ([, value]) => value.family === family && value.content === content,
+  );
+  const baseRef = (match?.[0] as BaseActionButtonRef | undefined) ?? 'ACT-BTN-P02';
+  const defaultSizeRank = ACTION_BUTTON_BASE_REFERENCE_MAP[baseRef].defaultSizeRank;
+  return `${baseRef}-${defaultSizeRank}` as ActionButtonRef;
 }
 
 export function resolveLegacyActionMenuRef(surface: 'glass' | 'solid' = 'solid'): ActionMenuRef {
