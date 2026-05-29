@@ -9,7 +9,7 @@ import { BaseBox } from '@/components/ui/BaseBox';
 import { resolveBoxKitComponent } from './registry';
 import type { BoxSpec } from '@/config/app-spec';
 import { LAYOUT_BOX_ROLE_MAP, resolveBoxLayoutRef } from '@/config/box-kit/layout-reference-map';
-import { ACTION_BUTTON_REFERENCE_MAP } from '@/config/box-kit/action-reference-map';
+import { ACTION_BUTTON_REFERENCE_MAP, normalizeActionButtonRef } from '@/config/box-kit/action-reference-map';
 import { cn } from '@/lib/utils';
 
 export interface BoxRendererProps {
@@ -21,10 +21,6 @@ export interface BoxRendererProps {
 const PRIMITIVE_RE = /^(DAV|IPF|ACT|MDL)-/;
 
 type LayoutMode = 'default' | 'form' | 'action-panel' | 'content-with-actions';
-
-function isActionButtonRef(value: string): value is keyof typeof ACTION_BUTTON_REFERENCE_MAP {
-  return value in ACTION_BUTTON_REFERENCE_MAP;
-}
 
 export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallback }) => {
   const refs = box.componentRefs ?? [];
@@ -46,8 +42,9 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
   );
 
   const headerButtonRefs = actionButtonRefs.filter((ref) => {
-    if (!isActionButtonRef(ref)) return false;
-    const cfg = ACTION_BUTTON_REFERENCE_MAP[ref];
+    const normalized = normalizeActionButtonRef(ref);
+    if (!normalized) return false;
+    const cfg = ACTION_BUTTON_REFERENCE_MAP[normalized];
     return cfg.family === 'secondary' && cfg.content === 'iconOnly';
   });
   const bodyButtonRefs = actionButtonRefs.filter((ref) => !headerButtonRefs.includes(ref));
