@@ -11,7 +11,7 @@ import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/central';
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
-import { AuditService } from '@/services/central/audit.service';
+import { AuditService, PermissionsService } from '@/services/central';
 import { toast } from 'sonner';
 
 interface ProjectWorkspaceProps {
@@ -49,8 +49,24 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     closePanel,
   } = useProjectPanelAnimation();
 
+  const denyProjectAction = (err: unknown, fallback: string) => {
+    const description = err instanceof Error ? err.message : 'غير مصرح بتنفيذ هذا الإجراء';
+    toast.error(fallback, { description });
+  };
+
   // إضافة مشروع: تُكتب مباشرة في DB المركزي، invalidation يُحدّث القائمة.
-  const handleProjectAdded = (newProject: ProjectData) => {
+  const handleProjectAdded = async (newProject: ProjectData) => {
+    try {
+      await PermissionsService.requirePermission('central.project.create', {
+        action: 'central.project.create',
+        resourceType: 'project',
+        metadata: { name: newProject.name },
+      });
+    } catch (err) {
+      denyProjectAction(err, 'تعذّر إنشاء المشروع');
+      return;
+    }
+
     createProject.mutate(
       uiCreateInputToCentral({
         name: newProject.name,
@@ -83,7 +99,19 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   };
 
   // تحديث مشروع
-  const handleProjectUpdated = (updatedProject: ProjectData) => {
+  const handleProjectUpdated = async (updatedProject: ProjectData) => {
+    try {
+      await PermissionsService.requirePermission('central.project.update', {
+        action: 'central.project.update',
+        resourceType: 'project',
+        resourceId: updatedProject.id.toString(),
+        metadata: { name: updatedProject.name },
+      });
+    } catch (err) {
+      denyProjectAction(err, 'تعذّر حفظ تعديلات المشروع');
+      return;
+    }
+
     updateProject.mutate(
       {
         id: updatedProject.id.toString(),
@@ -117,7 +145,18 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     );
   };
 
-  const handleProjectDeleted = (projectId: string) => {
+  const handleProjectDeleted = async (projectId: string) => {
+    try {
+      await PermissionsService.requirePermission('central.project.delete', {
+        action: 'central.project.delete',
+        resourceType: 'project',
+        resourceId: projectId,
+      });
+    } catch (err) {
+      denyProjectAction(err, 'تعذّر حذف المشروع');
+      return;
+    }
+
     deleteProject.mutate(projectId, {
       onSuccess: () => {
         toast.success('تم حذف المشروع');
@@ -141,7 +180,18 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     });
   };
 
-  const handleProjectArchived = (projectId: string) => {
+  const handleProjectArchived = async (projectId: string) => {
+    try {
+      await PermissionsService.requirePermission('central.project.archive', {
+        action: 'central.project.archive',
+        resourceType: 'project',
+        resourceId: projectId,
+      });
+    } catch (err) {
+      denyProjectAction(err, 'تعذّرت أرشفة المشروع');
+      return;
+    }
+
     updateProject.mutate(
       {
         id: projectId,
