@@ -8,10 +8,10 @@ export type LayoutGridRef = 'LAY-GRD-D01' | 'LAY-GRD-A01' | 'LAY-GRD-S01';
 
 export type LayoutBoxRef =
   | 'LAY-BOX-SUM01'
-  | 'LAY-BOX-CHT01'
-  | 'LAY-BOX-TBL01'
-  | 'LAY-BOX-FTR01'
-  | 'LAY-BOX-DTL01';
+  | 'LAY-BOX-FW101'
+  | 'LAY-BOX-FW201'
+  | 'LAY-BOX-FW301'
+  | 'LAY-BOX-FW401';
 
 export const LAYOUT_HEADER_MAP = {
   'LAY-HDR-D01': {
@@ -67,34 +67,34 @@ export const LAYOUT_GRID_MAP = {
 
 export const LAYOUT_BOX_ROLE_MAP = {
   'LAY-BOX-SUM01': {
-    role: 'summary-Box',
+    role: 'summary-half-1',
     minHeight: '200px',
     rowSpan: 1,
     columnsSpan: 2,
   },
-  'LAY-BOX-CHT01': {
-    role: 'chart-Box',
+  'LAY-BOX-FW101': {
+    role: 'feature-half-1',
+    minHeight: '200px',
+    rowSpan: 1,
+    columnsSpan: 2,
+  },
+  'LAY-BOX-FW201': {
+    role: 'feature-half-2',
+    minHeight: '416px',
+    rowSpan: 2,
+    columnsSpan: 2,
+  },
+  'LAY-BOX-FW301': {
+    role: 'feature-full-2',
     minHeight: '416px',
     rowSpan: 2,
     columnsSpan: 4,
   },
-  'LAY-BOX-TBL01': {
-    role: 'table-Box',
+  'LAY-BOX-FW401': {
+    role: 'feature-full-3',
     minHeight: '632px',
     rowSpan: 3,
     columnsSpan: 4,
-  },
-  'LAY-BOX-FTR01': {
-    role: 'feature-Box',
-    minHeight: '200px',
-    rowSpan: 1,
-    columnsSpan: 2,
-  },
-  'LAY-BOX-DTL01': {
-    role: 'detail-Box',
-    minHeight: '416px',
-    rowSpan: 2,
-    columnsSpan: 2,
   },
 } as const;
 
@@ -136,9 +136,20 @@ export function resolveTabLayoutRef(tab: { code?: string | null; name?: string |
 
 export function resolveBoxLayoutRef(box: { componentRefs?: readonly string[]; purpose?: string | null }): LayoutBoxRef {
   const refs = box.componentRefs ?? [];
-  if (refs.includes('DAV-TBL-01')) return 'LAY-BOX-TBL01';
-  if (refs.includes('DAV-CHT-01')) return 'LAY-BOX-CHT01';
-  if (refs.includes('DAV-KPI-01')) return 'LAY-BOX-SUM01';
-  if (refs.includes('DAV-DTL-01')) return 'LAY-BOX-DTL01';
-  return 'LAY-BOX-FTR01';
+  const inputCount = refs.filter((ref) => ref.startsWith('IPF-')).length;
+  const actionCount = refs.filter((ref) => ref.startsWith('ACT-BTN-') || ref.startsWith('ACT-MNU-')).length;
+  const hasTable = refs.includes('DAV-TBL-01');
+  const hasChart = refs.includes('DAV-CHT-01');
+  const hasDetail = refs.includes('DAV-DTL-01');
+  const hasKpi = refs.includes('DAV-KPI-01');
+  const hasTextarea = refs.includes('IPF-TXA-01');
+  const hasList = refs.includes('DAV-LST-01');
+
+  if (hasTable) return 'LAY-BOX-FW401';
+  if (hasChart) return 'LAY-BOX-FW301';
+  if (hasKpi) return 'LAY-BOX-SUM01';
+  if (hasTextarea || hasDetail || inputCount >= 3 || (inputCount >= 2 && actionCount >= 2) || (hasList && actionCount >= 2)) {
+    return 'LAY-BOX-FW201';
+  }
+  return 'LAY-BOX-FW101';
 }
