@@ -12,6 +12,7 @@ import {
   type ActionButtonRef,
   type ActionMenuRef,
   type ActionStatusRef,
+  normalizeActionButtonRef,
   resolveLegacyActionButtonRef,
   resolveLegacyActionMenuRef,
   resolveLegacyActionStatusRef,
@@ -21,10 +22,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 type LegacyButtonVariant = 'primary' | 'secondary';
 type StatusTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
-
-function isActionButtonRef(value?: string): value is ActionButtonRef {
-  return Boolean(value && value in ACTION_BUTTON_REFERENCE_MAP);
-}
 
 function isActionMenuRef(value?: string): value is ActionMenuRef {
   return Boolean(value && value in ACTION_MENU_REFERENCE_MAP);
@@ -47,47 +44,63 @@ function getButtonIntentClass(family: (typeof ACTION_BUTTON_REFERENCE_MAP)[Actio
   }
 }
 
-function getButtonFrameClass(
-  size: 'sm' | 'default' | 'lg',
-  content: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]['content'],
-) {
-  const bySize = {
-    sm: {
-      iconOnly: 'h-10 w-10',
-      textOnly: 'h-10 min-w-[104px] px-4 text-sm',
-      iconAndText: 'h-10 min-w-[116px] gap-2 px-4 text-sm',
-    },
-    default: {
-      iconOnly: 'h-11 w-11',
-      textOnly: 'h-11 min-w-[112px] px-5 text-sm',
-      iconAndText: 'h-11 min-w-[124px] gap-2.5 px-5 text-sm',
-    },
-    lg: {
-      iconOnly: 'h-12 w-12',
-      textOnly: 'h-12 min-w-[128px] px-6 text-base',
-      iconAndText: 'h-12 min-w-[140px] gap-3 px-6 text-base',
-    },
-  } as const;
+function getButtonFrameClass(config: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]) {
+  if (config.content === 'iconOnly') {
+    const byRank = {
+      1: 'h-8 w-8',
+      2: 'h-10 w-10',
+      3: 'h-11 w-11',
+      4: 'h-12 w-12',
+    } as const;
+    return byRank[config.sizeRank];
+  }
 
-  return bySize[size][content];
+  if (config.content === 'textOnly') {
+    const byRank = {
+      1: 'h-10 min-w-[104px] px-4 text-sm',
+      2: 'h-9 min-w-[96px] px-3.5 text-sm',
+      3: 'h-11 min-w-[112px] px-5 text-sm',
+      4: 'h-12 min-w-[128px] px-6 text-base',
+    } as const;
+    return byRank[config.sizeRank];
+  }
+
+  const byRank = {
+    1: 'h-10 min-w-[116px] gap-2 px-4 text-sm',
+    2: 'h-9 min-w-[104px] gap-2 px-3.5 text-sm',
+    3: 'h-11 min-w-[124px] gap-2.5 px-5 text-sm',
+    4: 'h-12 min-w-[140px] gap-3 px-6 text-base',
+  } as const;
+  return byRank[config.sizeRank];
 }
 
-function getButtonIconClass(size: 'sm' | 'default' | 'lg') {
-  return {
-    sm: 'h-[18px] w-[18px]',
-    default: 'h-5 w-5',
-    lg: 'h-[22px] w-[22px]',
-  }[size];
+function getButtonIconClass(config: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]) {
+  if (config.content === 'iconOnly') {
+    const byRank = {
+      1: 'h-4 w-4',
+      2: 'h-[18px] w-[18px]',
+      3: 'h-5 w-5',
+      4: 'h-[22px] w-[22px]',
+    } as const;
+    return byRank[config.sizeRank];
+  }
+
+  const byRank = {
+    1: 'h-[18px] w-[18px]',
+    2: 'h-4 w-4',
+    3: 'h-5 w-5',
+    4: 'h-[22px] w-[22px]',
+  } as const;
+  return byRank[config.sizeRank];
 }
 
 function renderActionButtonBody(options: {
-  content: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]['content'];
+  config: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef];
   icon?: React.ReactNode;
   children?: React.ReactNode;
-  size: 'sm' | 'default' | 'lg';
 }) {
-  const { content, icon, children, size } = options;
-  const iconClass = getButtonIconClass(size);
+  const { config, icon, children } = options;
+  const iconClass = getButtonIconClass(config);
   const renderedIcon = React.isValidElement(icon)
     ? React.cloneElement(icon as React.ReactElement<{ className?: string; 'aria-hidden'?: boolean }>, {
         className: cn(iconClass, (icon.props as { className?: string }).className),
@@ -95,8 +108,8 @@ function renderActionButtonBody(options: {
       })
     : icon;
 
-  if (content === 'iconOnly') return renderedIcon;
-  if (content === 'textOnly') return <span className="truncate">{children}</span>;
+  if (config.content === 'iconOnly') return renderedIcon;
+  if (config.content === 'textOnly') return <span className="truncate">{children}</span>;
 
   return (
     <>
@@ -108,7 +121,6 @@ function renderActionButtonBody(options: {
 
 function BaseActionButtonControl(props: {
   buttonRef: ActionButtonRef;
-  size: 'sm' | 'default' | 'lg';
   disabled?: boolean;
   className?: string;
   icon?: React.ReactNode;
@@ -117,7 +129,7 @@ function BaseActionButtonControl(props: {
   type?: 'button' | 'submit' | 'reset';
   ariaLabel?: string;
 }) {
-  const { buttonRef, size, disabled, className, icon, children, onClick, type = 'button', ariaLabel } = props;
+  const { buttonRef, disabled, className, icon, children, onClick, type = 'button', ariaLabel } = props;
   const config = ACTION_BUTTON_REFERENCE_MAP[buttonRef];
 
   return (
@@ -133,11 +145,11 @@ function BaseActionButtonControl(props: {
         'disabled:pointer-events-none disabled:opacity-50',
         config.content === 'iconOnly' ? 'p-0 shrink-0' : '',
         getButtonIntentClass(config.family),
-        getButtonFrameClass(size, config.content),
+        getButtonFrameClass(config),
         className,
       )}
     >
-      {renderActionButtonBody({ content: config.content, icon, children, size })}
+      {renderActionButtonBody({ config, icon, children })}
     </button>
   );
 }
@@ -160,21 +172,20 @@ export const ActionButton: React.FC<{
   children,
   onClick,
   disabled,
-  size = 'sm',
   icon,
   className,
   destructive = false,
   confirmTitle = 'تأكيد الإجراء',
   confirmDescription = 'هذا إجراء حساس. هل أنت متأكد أنك تبي تكمل؟',
 }) => {
-  const buttonRef = isActionButtonRef(componentRef)
-    ? componentRef
-    : resolveLegacyActionButtonRef({
-        variant,
-        destructive,
-        hasIcon: Boolean(icon),
-        hasChildren: React.Children.count(children) > 0,
-      });
+  const buttonRef =
+    normalizeActionButtonRef(componentRef) ??
+    resolveLegacyActionButtonRef({
+      variant,
+      destructive,
+      hasIcon: Boolean(icon),
+      hasChildren: React.Children.count(children) > 0,
+    });
   const config = ACTION_BUTTON_REFERENCE_MAP[buttonRef];
   const [confirmOpen, setConfirmOpen] = React.useState(false);
 
@@ -196,7 +207,6 @@ export const ActionButton: React.FC<{
     <>
       <BaseActionButtonControl
         buttonRef={buttonRef}
-        size={size}
         disabled={disabled}
         onClick={handlePrimaryClick}
         icon={icon}
@@ -214,10 +224,10 @@ export const ActionButton: React.FC<{
               <DialogDescription>{confirmDescription}</DialogDescription>
             </DialogHeader>
             <DialogFooter className="gap-3">
-              <BaseActionButtonControl buttonRef="ACT-BTN-P02" size="default" onClick={() => setConfirmOpen(false)}>
+              <BaseActionButtonControl buttonRef="ACT-BTN-P02-1" onClick={() => setConfirmOpen(false)}>
                 رجوع
               </BaseActionButtonControl>
-              <BaseActionButtonControl buttonRef="ACT-BTN-PSA02" size="default" onClick={handleConfirm}>
+              <BaseActionButtonControl buttonRef="ACT-BTN-PSA02-1" onClick={handleConfirm}>
                 تأكيد
               </BaseActionButtonControl>
             </DialogFooter>
@@ -249,8 +259,7 @@ export const ActionMenu: React.FC<{
       <DropdownMenuTrigger asChild>
         {trigger ?? (
           <BaseActionButtonControl
-            buttonRef="ACT-BTN-S03"
-            size="sm"
+            buttonRef="ACT-BTN-S03-2"
             className={className}
             ariaLabel="المزيد من الإجراءات"
             icon={<MoreHorizontal />}
