@@ -46,7 +46,8 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
   );
 
   const headerButtonRefs = actionButtonRefs.filter((ref) => {
-    const cfg = ACTION_BUTTON_REFERENCE_MAP[ref as keyof typeof ACTION_BUTTON_REFERENCE_MAP];
+    if (!isActionButtonRef(ref)) return false;
+    const cfg = ACTION_BUTTON_REFERENCE_MAP[ref];
     return cfg.family === 'secondary' && cfg.content === 'iconOnly';
   });
   const bodyButtonRefs = actionButtonRefs.filter((ref) => !headerButtonRefs.includes(ref));
