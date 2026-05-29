@@ -19,6 +19,7 @@ export interface BoxRendererProps {
 }
 
 const PRIMITIVE_RE = /^(DAV|IPF|ACT|MDL)-/;
+const BOX_ICON_ONLY_BASE_REFS = new Set(['ACT-BTN-P03', 'ACT-BTN-S03', 'ACT-BTN-PSA03', 'ACT-BTN-SSA03']);
 
 type LayoutMode = 'default' | 'form' | 'action-panel' | 'content-with-actions';
 
@@ -65,6 +66,13 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
       !statusRefs.includes(ref),
   );
 
+  const resolveBoxScopedComponentRef = (ref: string) => {
+    if (BOX_ICON_ONLY_BASE_REFS.has(ref)) {
+      return `${ref}-1`;
+    }
+    return ref;
+  };
+
   const renderPrimitive = (ref: string, extraClassName?: string) => {
     const Cmp = resolveBoxKitComponent(ref);
     const supplied = slotProps?.[ref];
@@ -72,7 +80,7 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
     return (
       <Cmp
         key={ref}
-        componentRef={ref}
+        componentRef={resolveBoxScopedComponentRef(ref)}
         {...supplied}
         className={cn((supplied as { className?: string }).className, extraClassName)}
       />
