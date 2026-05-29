@@ -17,7 +17,7 @@ set search_path = public, private
 as $$
   select auth.uid() is not null
     and case entity_type
-      when 'board' then exists (
+      when 'central_board' then exists (
         select 1
         from public.central_boards b
         where b.id = entity_id
