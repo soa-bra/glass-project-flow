@@ -5,7 +5,6 @@
  * @specRef Section 4.0.1 (Workspace Shell) + Section 4.1–4.6
  */
 import React from 'react';
-import { Plus } from 'lucide-react';
 import { BoxRenderer } from './BoxRenderer';
 import type { TabSpec } from '@/config/app-spec';
 import { cn } from '@/lib/utils';
@@ -18,22 +17,15 @@ import {
   resolveBoxLayoutRef,
 } from '@/config/box-kit/layout-reference-map';
 import { KPIStatsSection, type KPIStat } from '@/components/shared/KPIStatsSection';
-import { ActionButton } from '@/components/box-kit/primitives/action';
 
 export interface TabRendererProps {
   tab: TabSpec;
   dashboardKey: string;
+  /** Per-box slot props keyed by Box Ref. */
   boxData?: Record<string, Record<string, Record<string, unknown>>>;
+  /** Override default responsive grid */
   className?: string;
 }
-
-type TabPrimaryActionConfig = {
-  title?: string;
-  label?: string;
-  componentRef?: string;
-  icon?: React.ReactNode;
-  onClick?: () => void;
-};
 
 function extractOverviewStats(tab: TabSpec, boxData?: Record<string, Record<string, Record<string, unknown>>>): KPIStat[] {
   const stats = tab.boxes.flatMap((box) => {
@@ -51,44 +43,6 @@ function extractOverviewStats(tab: TabSpec, boxData?: Record<string, Record<stri
   return stats.slice(0, 4);
 }
 
-function getDefaultWorkflowTitle(tab: TabSpec) {
-  return `إدارة ${tab.name}`;
-}
-
-function getDefaultPrimaryActionLabel(tab: TabSpec) {
-  const singularMap: Record<string, string> = {
-    contracts: 'عقد جديد',
-    budgets: 'ميزانية جديدة',
-    transactions: 'معاملة جديدة',
-    invoices: 'فاتورة جديدة',
-    payments: 'دفعة جديدة',
-    reports: 'تقرير جديد',
-    members: 'عضو جديد',
-    agreements: 'اتفاقية جديدة',
-    articles: 'مقال جديد',
-    assets: 'أصل جديد',
-    policies: 'سياسة جديدة',
-    templates: 'قالب جديد',
-  };
-  return singularMap[tab.code] ?? `${tab.name} جديد`;
-}
-
-function resolveTabPrimaryAction(
-  tab: TabSpec,
-  boxData?: Record<string, Record<string, Record<string, unknown>>>,
-): TabPrimaryActionConfig | null {
-  const meta = boxData?.__tabMeta as Record<string, unknown> | undefined;
-  const action = meta?.primaryAction as TabPrimaryActionConfig | undefined;
-  if (action) return action;
-  if ((tab.code ?? '').toLowerCase().includes('overview')) return null;
-  return {
-    title: getDefaultWorkflowTitle(tab),
-    label: getDefaultPrimaryActionLabel(tab),
-    componentRef: 'ACT-BTN-P01',
-    icon: <Plus />,
-  };
-}
-
 export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, boxData, className }) => {
   if (!tab.boxes.length) {
     return (
@@ -104,23 +58,11 @@ export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, box
   const gridLayout = LAYOUT_GRID_MAP[dashboardLayout.gridRef];
   const overviewStats = tabLayout.showKpiRow ? extractOverviewStats(tab, boxData) : [];
   const gridClass = gridLayout.columns === 4 ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4' : 'grid-cols-1 xl:grid-cols-2';
-  const primaryAction = !tabLayout.showKpiRow ? resolveTabPrimaryAction(tab, boxData) : null;
 
   return (
     <div className="flex flex-col gap-6" dir="rtl">
-      {tabLayout.showKpiRow && overviewStats.length > 0 ? <KPIStatsSection stats={overviewStats} /> : null}
-
-      {primaryAction ? (
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h3 className="text-[22px] font-semibold text-black">{primaryAction.title ?? getDefaultWorkflowTitle(tab)}</h3>
-          <ActionButton
-            componentRef={(primaryAction.componentRef as string) ?? 'ACT-BTN-P01'}
-            icon={primaryAction.icon ?? <Plus />}
-            onClick={primaryAction.onClick}
-          >
-            {primaryAction.label ?? getDefaultPrimaryActionLabel(tab)}
-          </ActionButton>
-        </div>
+      {tabLayout.showKpiRow && overviewStats.length > 0 ? (
+        <KPIStatsSection stats={overviewStats} />
       ) : null}
 
       <div
