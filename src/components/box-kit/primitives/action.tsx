@@ -259,7 +259,7 @@ export const ActionMenu: React.FC<{
       <DropdownMenuTrigger asChild>
         {trigger ?? (
           <BaseActionButtonControl
-            buttonRef="ACT-BTN-S03-2"
+            buttonRef="ACT-BTN-S03-1"
             className={className}
             ariaLabel="المزيد من الإجراءات"
             icon={<MoreHorizontal />}
