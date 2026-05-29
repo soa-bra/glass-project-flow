@@ -24,9 +24,7 @@ import { ModalShell } from './primitives/modal';
 export interface TabRendererProps {
   tab: TabSpec;
   dashboardKey: string;
-  /** Per-box slot props keyed by Box Ref. */
   boxData?: Record<string, Record<string, Record<string, unknown>>>;
-  /** Override default responsive grid */
   className?: string;
 }
 
@@ -90,6 +88,7 @@ export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, box
   const overviewStats = tabLayout.showKpiRow ? extractOverviewStats(tab, boxData) : [];
   const gridClass = gridLayout.columns === 4 ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4' : 'grid-cols-1 xl:grid-cols-2';
   const primaryTabAction = dashboardLayoutKey === 'departments' && tabLayoutRef === 'LAY-TAB-W01' ? derivePrimaryTabAction(tab) : null;
+  const gridAutoRows = dashboardLayoutKey === 'departments' ? gridLayout.minRowHeight : `minmax(${gridLayout.minRowHeight}, auto)`;
 
   return (
     <div className="flex flex-col gap-6" dir="rtl">
@@ -129,7 +128,7 @@ export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, box
 
       <div
         className={cn('grid gap-4', gridClass, className)}
-        style={{ gridAutoRows: `minmax(${gridLayout.minRowHeight}, auto)` }}
+        style={{ gridAutoRows }}
         data-grid-ref={dashboardLayout.gridRef}
         data-tab-layout-ref={tabLayoutRef}
       >
