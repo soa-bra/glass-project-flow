@@ -30,7 +30,6 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
   const renderedPrimitives = primitiveRefs.filter((r) => resolveBoxKitComponent(r));
   const boxLayoutRef = resolveBoxLayoutRef(box);
   const boxLayout = LAYOUT_BOX_ROLE_MAP[boxLayoutRef];
-  const fixedHeight = boxLayout.minHeight;
 
   const wiredCount = renderedPrimitives.filter((r) => slotProps?.[r]).length;
   const hasAnyWiring = wiredCount > 0;
@@ -128,20 +127,20 @@ export const BoxRenderer: React.FC<BoxRendererProps> = ({ box, slotProps, fallba
         boxLayout.rowSpan === 2 && 'md:row-span-2',
         boxLayout.rowSpan === 3 && 'md:row-span-3',
       )}
-      style={{ height: fixedHeight, minHeight: fixedHeight, maxHeight: fixedHeight }}
+      style={{ minHeight: boxLayout.minHeight }}
     >
       <BaseBox
         title={box.name ?? undefined}
         headerActions={headerActions}
         variant="standard"
         size="md"
-        overflow="hidden"
+        overflow="visible"
         className="flex h-full flex-col"
       >
         {renderedPrimitives.length === 0 && (fallback ?? <EmptyHint purpose={box.purpose} />)}
 
         {hasAnyWiring ? (
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pr-1">
+          <div className="flex min-h-0 flex-1 flex-col gap-4">
             {layoutMode === 'form' ? statusRow : null}
 
             {contentRefs.map((ref) => {
