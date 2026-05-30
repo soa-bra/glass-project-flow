@@ -103,6 +103,7 @@ function applyProjectFilters(projects: Project[], filters: ProjectFilterOptions)
 }
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
+  // Central DB remains the single source of truth for projects.
   const { data: centralProjects } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
@@ -279,7 +280,26 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
         });
       },
+      {
+        onSuccess: () => {
+          toast.success('تمت أرشفة المشروع');
+          closePanel();
+          void AuditService.log({
+            action: 'central.project.archive',
+            resource_type: 'project',
+            resource_id: projectId,
+          }).catch((err) => {
+            // eslint-disable-next-line no-console
+            console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
+          });
+        },
+        onError: (err) => {
+          // eslint-disable-next-line no-console
+          console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
+        });
+      },
       onError: (err) => {
+        // eslint-disable-next-line no-console
         console.error('[ProjectWorkspace] archiveProject failed:', err);
         toast.error('تعذّرت أرشفة المشروع', {
           description: err instanceof Error ? err.message : 'خطأ غير معروف',
@@ -294,6 +314,39 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
 
   const handleApplySort = (sortOptions: ProjectSortOptions) => {
     setCurrentSort(sortOptions);
+
+    setProjects(prev => [...prev].sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortOptions.sortBy) {
+        case 'name':
+          comparison = a.title.localeCompare(b.title, 'ar');
+          break;
+        case 'status':
+          const statusOrder = { success: 1, info: 2, warning: 3, error: 4 };
+          comparison = statusOrder[a.status] - statusOrder[b.status];
+          break;
+        case 'manager':
+          comparison = a.owner.localeCompare(b.owner, 'ar');
+          break;
+        case 'tasks':
+          comparison = (a.tasksCount || 0) - (b.tasksCount || 0);
+          break;
+        case 'team':
+          comparison = (a.team?.length || 0) - (b.team?.length || 0);
+          break;
+        case 'budget':
+          // استخدام value كميزانية المشروع لأن budget غير موجود في نموذج Project
+          comparison = parseFloat(a.value || '0') - parseFloat(b.value || '0');
+          break;
+        case 'deadline':
+        default:
+          comparison = a.daysLeft - b.daysLeft;
+          break;
+      }
+
+      return sortOptions.direction === 'desc' ? -comparison : comparison;
+    }));
   };
 
   const projectsColumnRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
