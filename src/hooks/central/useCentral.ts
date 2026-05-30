@@ -81,6 +81,17 @@ export function useUpdateProject() {
   });
 }
 
+export function useArchiveProject() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => ProjectsService.archiveProject(id),
+    onSuccess: (p) => {
+      qc.invalidateQueries({ queryKey: centralKeys.projects });
+      qc.invalidateQueries({ queryKey: centralKeys.project(p.id) });
+    },
+  });
+}
+
 export function useDeleteProject() {
   const qc = useQueryClient();
   return useMutation({

@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
-import ProjectPanel from '@/components/ProjectPanel';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
 import { useProjectPanelAnimation } from '@/hooks/useProjectPanelAnimation';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
@@ -9,7 +8,13 @@ import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
-import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/central';
+import {
+  useArchiveProject,
+  useProjects,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
+} from '@/hooks/central';
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService, PermissionsService } from '@/services/central';
 import { toast } from 'sonner';
@@ -18,11 +23,91 @@ interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
 }
 
+const STATUS_FILTER_MAP: Record<string, Project['status'][]> = {
+  'on-track': ['success'],
+  delayed: ['warning'],
+  'in-progress': ['info'],
+  paused: ['error'],
+  'not-started': ['info'],
+};
+
+const REMAINING_DAYS_LIMITS: Record<string, number> = {
+  week: 7,
+  'two-weeks': 14,
+  month: 30,
+  'two-months': 60,
+  'six-months': 180,
+};
+
+function sortProjects(projects: Project[], sortOptions: ProjectSortOptions): Project[] {
+  return [...projects].sort((a, b) => {
+    let comparison = 0;
+
+    switch (sortOptions.sortBy) {
+      case 'name':
+        comparison = a.title.localeCompare(b.title, 'ar');
+        break;
+      case 'status': {
+        const statusOrder = { success: 1, info: 2, warning: 3, error: 4 };
+        comparison = statusOrder[a.status] - statusOrder[b.status];
+        break;
+      }
+      case 'manager':
+        comparison = a.owner.localeCompare(b.owner, 'ar');
+        break;
+      case 'tasks':
+        comparison = (a.tasksCount || 0) - (b.tasksCount || 0);
+        break;
+      case 'team':
+        comparison = (a.team?.length || 0) - (b.team?.length || 0);
+        break;
+      case 'budget':
+        comparison = parseFloat(a.value || '0') - parseFloat(b.value || '0');
+        break;
+      case 'deadline':
+      default:
+        comparison = a.daysLeft - b.daysLeft;
+        break;
+    }
+
+    return sortOptions.direction === 'desc' ? -comparison : comparison;
+  });
+}
+
+function applyProjectFilters(projects: Project[], filters: ProjectFilterOptions): Project[] {
+  return projects.filter((project) => {
+    if (filters.status) {
+      const allowedStatuses = STATUS_FILTER_MAP[filters.status] ?? [];
+      if (allowedStatuses.length > 0 && !allowedStatuses.includes(project.status)) {
+        return false;
+      }
+    }
+
+    if (filters.projectManager) {
+      const normalizedFilter = filters.projectManager.replace(/-/g, ' ').trim().toLowerCase();
+      const normalizedOwner = project.owner.trim().toLowerCase();
+      if (!normalizedOwner.includes(normalizedFilter)) {
+        return false;
+      }
+    }
+
+    if (filters.remainingDays) {
+      const maxDays = REMAINING_DAYS_LIMITS[filters.remainingDays];
+      if (maxDays && project.daysLeft > maxDays) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  // مصدر البيانات: mock (P0/P1) أو central (P3.1).
+  // Central DB remains the single source of truth for projects.
   const { data: centralProjects } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
+  const archiveProject = useArchiveProject();
   const deleteProject = useDeleteProject();
 
   const centralUiProjects = useMemo<Project[]>(
@@ -30,14 +115,8 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     [centralProjects],
   );
 
-  // Central DB هي المصدر الوحيد. الفلترة/الترتيب يطبقان على نسخة محلية تُعاد مزامنتها من DB.
-  const [projects, setProjects] = useState<Project[]>([]);
-
-  useEffect(() => {
-    setProjects(centralUiProjects);
-  }, [centralUiProjects]);
-
   const [currentSort, setCurrentSort] = useState<ProjectSortOptions>({ sortBy: 'deadline', direction: 'asc' });
+  const [currentFilters, setCurrentFilters] = useState<ProjectFilterOptions>({});
 
   const {
     panelStage,
@@ -49,12 +128,16 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     closePanel,
   } = useProjectPanelAnimation();
 
+  const projects = useMemo(
+    () => sortProjects(applyProjectFilters(centralUiProjects, currentFilters), currentSort),
+    [centralUiProjects, currentFilters, currentSort],
+  );
+
   const denyProjectAction = (err: unknown, fallback: string) => {
     const description = err instanceof Error ? err.message : 'غير مصرح بتنفيذ هذا الإجراء';
     toast.error(fallback, { description });
   };
 
-  // إضافة مشروع: تُكتب مباشرة في DB المركزي، invalidation يُحدّث القائمة.
   const handleProjectAdded = async (newProject: ProjectData) => {
     try {
       await PermissionsService.requirePermission('central.project.create', {
@@ -83,12 +166,10 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
             resource_id: created.id,
             metadata: { name: created.name },
           }).catch((err) => {
-            // eslint-disable-next-line no-console
             console.error('[ProjectWorkspace] AuditService.log(create) failed:', err);
           });
         },
         onError: (err) => {
-          // eslint-disable-next-line no-console
           console.error('[ProjectWorkspace] createProject failed:', err);
           toast.error('تعذّر إنشاء المشروع', {
             description: err instanceof Error ? err.message : 'خطأ غير معروف',
@@ -98,7 +179,6 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     );
   };
 
-  // تحديث مشروع
   const handleProjectUpdated = async (updatedProject: ProjectData) => {
     try {
       await PermissionsService.requirePermission('central.project.update', {
@@ -130,12 +210,10 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
             resource_type: 'project',
             resource_id: p.id,
           }).catch((err) => {
-            // eslint-disable-next-line no-console
             console.error('[ProjectWorkspace] AuditService.log(update) failed:', err);
           });
         },
         onError: (err) => {
-          // eslint-disable-next-line no-console
           console.error('[ProjectWorkspace] updateProject failed:', err);
           toast.error('تعذّر حفظ تعديلات المشروع', {
             description: err instanceof Error ? err.message : 'خطأ غير معروف',
@@ -166,12 +244,10 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           resource_type: 'project',
           resource_id: projectId,
         }).catch((err) => {
-          // eslint-disable-next-line no-console
           console.error('[ProjectWorkspace] AuditService.log(delete) failed:', err);
         });
       },
       onError: (err) => {
-        // eslint-disable-next-line no-console
         console.error('[ProjectWorkspace] deleteProject failed:', err);
         toast.error('تعذّر حذف المشروع', {
           description: err instanceof Error ? err.message : 'خطأ غير معروف',
@@ -192,10 +268,17 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       return;
     }
 
-    updateProject.mutate(
-      {
-        id: projectId,
-        patch: { state: 'archived' },
+    archiveProject.mutate(projectId, {
+      onSuccess: () => {
+        toast.success('تمت أرشفة المشروع');
+        closePanel();
+        void AuditService.log({
+          action: 'central.project.archive',
+          resource_type: 'project',
+          resource_id: projectId,
+        }).catch((err) => {
+          console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
+        });
       },
       {
         onSuccess: () => {
@@ -212,28 +295,29 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         },
         onError: (err) => {
           // eslint-disable-next-line no-console
-          console.error('[ProjectWorkspace] archiveProject failed:', err);
-          toast.error('تعذّرت أرشفة المشروع', {
-            description: err instanceof Error ? err.message : 'خطأ غير معروف',
-          });
-        },
+          console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
+        });
       },
-    );
+      onError: (err) => {
+        // eslint-disable-next-line no-console
+        console.error('[ProjectWorkspace] archiveProject failed:', err);
+        toast.error('تعذّرت أرشفة المشروع', {
+          description: err instanceof Error ? err.message : 'خطأ غير معروف',
+        });
+      },
+    });
   };
 
-  // دالة تطبيق الفلترة
   const handleApplyFilter = (filters: ProjectFilterOptions) => {
-    // TODO: Implement filtering logic
-    console.log('تطبيق الفلترة:', filters);
+    setCurrentFilters(filters);
   };
 
-  // دالة تطبيق الترتيب
   const handleApplySort = (sortOptions: ProjectSortOptions) => {
     setCurrentSort(sortOptions);
-    
+
     setProjects(prev => [...prev].sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortOptions.sortBy) {
         case 'name':
           comparison = a.title.localeCompare(b.title, 'ar');
@@ -260,25 +344,22 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           comparison = a.daysLeft - b.daysLeft;
           break;
       }
-      
+
       return sortOptions.direction === 'desc' ? -comparison : comparison;
     }));
   };
 
-  // Dynamically set right offsets depending on collapsed state
   const projectsColumnRight = isSidebarCollapsed ? 'var(--projects-right-collapsed)' : 'var(--projects-right-expanded)';
   const projectsColumnWidth = 'var(--projects-width)';
   const operationsBoardRight = isSidebarCollapsed ? 'var(--operations-right-collapsed)' : 'var(--operations-right-expanded)';
   const operationsBoardWidth = isSidebarCollapsed ? 'var(--operations-width-collapsed)' : 'var(--operations-width-expanded)';
 
-  // panel content switches: always mount ProjectPanel but swap inner content with fade
   const shownProject = displayedProjectId
     ? projects.find((p) => p.id === displayedProjectId)
     : null;
 
   return (
     <ProjectTasksProvider>
-      {/* Projects Column: shifts left when panel slides in */}
       <div
         className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
         style={{
@@ -306,7 +387,6 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         </div>
       </div>
 
-      {/* Operations Board: slides out when panel slides in */}
       <div
         style={{
           right: operationsBoardRight,
@@ -318,12 +398,11 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
 
-      {/* Project Management Board: slides in/out and crossfades content */}
       {shownProject && (
         <ProjectManagementBoard
-          key={shownProject.id} // إضافة key لإعادة التحديث عند تغيير المشروع
+          key={shownProject.id}
           project={shownProject}
-          isVisible={panelStage === "open" || panelStage === "changing-content"}
+          isVisible={panelStage === 'open' || panelStage === 'changing-content'}
           onClose={closePanel}
           isSidebarCollapsed={isSidebarCollapsed}
           onProjectUpdated={handleProjectUpdated}
