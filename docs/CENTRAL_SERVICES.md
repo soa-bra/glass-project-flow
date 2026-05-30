@@ -6,26 +6,26 @@
 
 ```ts
 import { ProjectsService, TasksService } from "@/services/central";
-
-const projects = await ProjectsService.list({ ownerId });
 ```
 
-كل خدمة تتعامل مع جدول واحد + علاقاته القريبة فقط، وتعيد صفوفًا مطابقة لـ `Database["public"]["Tables"]`.
+كل خدمة تتعامل مع جدول واحد أو حدّ مجال مركزي واحد، وتعيد صفوفًا متوافقة مع أنواع `Database["public"]["Tables"]` أو عقودها المشتقة.
 
-## الخدمات المتاحة
+## الخدمات المتاحة حاليًا
 
-| Service | الجدول | العمليات |
+| Service | المسؤولية الحالية | ملاحظات |
 |---|---|---|
-| `ProjectsService` | `projects` | `list, get, create, update, archive, delete` |
-| `TasksService` | `tasks` | `listByProject, get, create, update, complete, delete` |
-| `DepartmentsService` | `departments` | `list, get, create, update, archive` |
-| `CentralBoardsService` | `central_boards` | `list, get, create, update` |
-| `ToolsService` | `tools` | `listByBoard, get, create, update, retire` |
-| `EngineJobsService` | `engine_jobs` | `list, get, create, transition` |
-| `DependenciesService` | `dependencies` | `listFor, create, delete` |
-| `SearchService` | متعدد | `crossWorkspace(query)` |
-| `RolesService` | `user_roles` | `list, assign, revoke` |
-| `AuditService` | `audit_events` | `log, query` |
+| `ProjectsService` | CRUD على `projects` | الأرشفة تتم حاليًا عبر `updateProject({ state: "archived" })` وليس عبر دالة `archive` مستقلة. |
+| `TasksService` | CRUD مرتبط بالمهام | يستخدم لاحقًا كأساس لمواءمة تدفقات التنفيذ. |
+| `DepartmentsService` | CRUD على `departments` | جزء من المسار المركزي للمساحات الوظيفية. |
+| `CentralBoardsService` | CRUD على `central_boards` | يمثل المسار التشغيلي المركزي خارج Planning canvas. |
+| `ToolsService` | CRUD على `tools` | مرتبط بالـ central boards والمهام. |
+| `EngineJobsService` | CRUD وانتقالات على `engine_jobs` | مرتبط بالنموذج الحدثي والتشغيل غير المتزامن. |
+| `DependenciesService` | CRUD على `dependencies` | يمثل علاقات cross-entity المركزية. |
+| `SearchService` | بحث متعدد المساحات | واجهة بحث مركزية. |
+| `RolesService` | إدارة `user_roles` | جزء من RBAC التشغيلي. |
+| `PermissionsService` | فحص `has_permission` وفرضه | الحدّ الأمامي الموحد للصلاحيات. |
+| `AuditService` | كتابة وقراءة `audit_events` | يسجل القرارات والعمليات الحساسة. |
+| `PlanningBoardsService` | CRUD على `planning_boards` و`planning_elements` | هو الحدّ المركزي الحاكم لـ Planning persistence. |
 
 ## React Query Hooks
 
@@ -33,35 +33,18 @@ const projects = await ProjectsService.list({ ownerId });
 
 ```ts
 import { useProjects, useCreateProject } from "@/hooks/central";
-
-const { data, isLoading } = useProjects();
-const create = useCreateProject();
 ```
 
-`centralKeys` يوحّد مفاتيح الـ cache ويُمكِّن invalidation الذكي.
+`centralKeys` يوحّد مفاتيح الـ cache ويدعم invalidation المنضبط.
 
-## Command Gateway
+## قواعد ملزمة
 
-العمليات الكاتبة الحساسة تُلَفّ بـ `withAuthorizationAndAudit`:
+- لا `supabase.from(...)` داخل `src/components` أو `src/features` للمجال المركزي؛ مرّ عبر Service أو Hook.
+- لا تعريف أنواع يدوية موازية لجداول central عندما يمكن الاعتماد على أنواع Supabase المولدة أو العقود المشتقة منها.
+- كل mutation يجب أن يملك مسار invalidation واضحًا.
+- كل عملية حساسة يجب أن تمر عبر صلاحيات وتسجيل تدقيقي عند الحاجة.
 
-```ts
-import { withAuthorizationAndAudit } from "@/services/central/withAuthorizationAndAudit";
+## ملاحظة تنفيذية
 
-export const archiveProject = withAuthorizationAndAudit(
-  { permission: "project:archive", resource_type: "project", action: "project.archive" },
-  (id: string) => ProjectsService.archive(id),
-  { resolveResourceId: ([id]) => id },
-);
-```
-
-السلوك:
-1. فحص `has_permission` (RPC).
-2. تنفيذ.
-3. كتابة `audit_events` (allowed/denied).
-4. إن فشل audit log لا تُسقَط العملية الأصلية.
-
-## قواعد ملزِمة
-
-- ✗ لا `supabase.from(...)` داخل `src/components` أو `src/features` — مرّ دائمًا عبر Service أو Hook.
-- ✗ لا تعريف types يدويًا لجداول central — استخدم `Database["public"]["Tables"][...]["Row"]`.
-- ✓ كل mutation يجب أن تستدعي `queryClient.invalidateQueries({ queryKey: centralKeys.x })`.
+هذا الملف يصف **الحقيقة الحالية القابلة للتنفيذ**، لا الحالة المثالية المستقبلية.
+أي سلوك لم يُنفذ بعد يجب أن يوثق في مسار spec alignment، لا أن يُعرض هنا وكأنه موجود بالفعل.
