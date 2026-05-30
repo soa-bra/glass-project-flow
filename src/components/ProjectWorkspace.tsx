@@ -9,7 +9,13 @@ import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { ProjectFilterOptions } from './custom/ProjectsFilterDialog';
 import { ProjectSortOptions } from './custom/ProjectsSortDialog';
-import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/central';
+import {
+  useArchiveProject,
+  useProjects,
+  useCreateProject,
+  useUpdateProject,
+  useDeleteProject,
+} from '@/hooks/central';
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService } from '@/services/central/audit.service';
 import { toast } from 'sonner';
@@ -19,10 +25,11 @@ interface ProjectWorkspaceProps {
 }
 
 const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed }) => {
-  // مصدر البيانات: mock (P0/P1) أو central (P3.1).
+  // Central DB remains the single source of truth for projects.
   const { data: centralProjects } = useProjects();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
+  const archiveProject = useArchiveProject();
   const deleteProject = useDeleteProject();
 
   const centralUiProjects = useMemo<Project[]>(
@@ -142,33 +149,27 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   };
 
   const handleProjectArchived = (projectId: string) => {
-    updateProject.mutate(
-      {
-        id: projectId,
-        patch: { state: 'archived' },
-      },
-      {
-        onSuccess: () => {
-          toast.success('تمت أرشفة المشروع');
-          closePanel();
-          void AuditService.log({
-            action: 'central.project.archive',
-            resource_type: 'project',
-            resource_id: projectId,
-          }).catch((err) => {
-            // eslint-disable-next-line no-console
-            console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
-          });
-        },
-        onError: (err) => {
+    archiveProject.mutate(projectId, {
+      onSuccess: () => {
+        toast.success('تمت أرشفة المشروع');
+        closePanel();
+        void AuditService.log({
+          action: 'central.project.archive',
+          resource_type: 'project',
+          resource_id: projectId,
+        }).catch((err) => {
           // eslint-disable-next-line no-console
-          console.error('[ProjectWorkspace] archiveProject failed:', err);
-          toast.error('تعذّرت أرشفة المشروع', {
-            description: err instanceof Error ? err.message : 'خطأ غير معروف',
-          });
-        },
+          console.error('[ProjectWorkspace] AuditService.log(archive) failed:', err);
+        });
       },
-    );
+      onError: (err) => {
+        // eslint-disable-next-line no-console
+        console.error('[ProjectWorkspace] archiveProject failed:', err);
+        toast.error('تعذّرت أرشفة المشروع', {
+          description: err instanceof Error ? err.message : 'خطأ غير معروف',
+        });
+      },
+    });
   };
 
   // دالة تطبيق الفلترة
@@ -180,10 +181,10 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   // دالة تطبيق الترتيب
   const handleApplySort = (sortOptions: ProjectSortOptions) => {
     setCurrentSort(sortOptions);
-    
+
     setProjects(prev => [...prev].sort((a, b) => {
       let comparison = 0;
-      
+
       switch (sortOptions.sortBy) {
         case 'name':
           comparison = a.title.localeCompare(b.title, 'ar');
@@ -210,7 +211,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           comparison = a.daysLeft - b.daysLeft;
           break;
       }
-      
+
       return sortOptions.direction === 'desc' ? -comparison : comparison;
     }));
   };
