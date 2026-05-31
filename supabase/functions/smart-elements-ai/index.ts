@@ -447,6 +447,9 @@ serve(async (req) => {
       targetType: context?.targetType
     });
     const humanApprovalProvided = context?.humanApproval?.approved === true;
+    const approvalReason = typeof context?.humanApproval?.approvalReason === 'string'
+      ? context.humanApproval.approvalReason.slice(0, 500)
+      : null;
 
     // Enforce human approval for sensitive transformations before model execution
     if (action === 'transform' && sensitivityAssessment.isSensitive && !humanApprovalProvided) {
@@ -465,7 +468,8 @@ serve(async (req) => {
           required: true,
           provided: false,
           approverId: null,
-          approvedAt: null
+          approvedAt: null,
+          approvalReason: null
         },
         outputSummary: null
       });
@@ -573,10 +577,24 @@ serve(async (req) => {
         required: action === 'transform' ? sensitivityAssessment.isSensitive : false,
         provided: humanApprovalProvided,
         approverId: context?.humanApproval?.approverId ?? null,
-        approvedAt: context?.humanApproval?.approvedAt ?? null
+        approvedAt: context?.humanApproval?.approvedAt ?? null,
+        approvalReason
       },
       outputSummary: summarizeOutput(toolResult)
     });
+
+    if (action === 'transform' && humanApprovalProvided) {
+      await storeHumanApprovalAuditEvent(supabaseClient, {
+        userId,
+        selectedTool,
+        targetType: context?.targetType,
+        selectedElements,
+        sensitivity: sensitivityAssessment,
+        approvedAt: context?.humanApproval?.approvedAt ?? null,
+        approverId: context?.humanApproval?.approverId ?? null,
+        approvalReason
+      });
+    }
 
     return new Response(JSON.stringify({
       success: true,
@@ -661,6 +679,7 @@ type ExplainabilityTraceInput = {
     provided: boolean;
     approverId: string | null;
     approvedAt: string | null;
+    approvalReason: string | null;
   };
   outputSummary: {
     elementsCount: number;
@@ -738,6 +757,43 @@ function determineEscalationGate(
   return 'human_escalation_required';
 }
 
+async function storeHumanApprovalAuditEvent(
+  supabaseClient: ReturnType<typeof createClient>,
+  input: {
+    userId: string;
+    selectedTool: string;
+    targetType?: string;
+    selectedElements?: unknown[];
+    sensitivity: ExplainabilityTraceInput['sensitivity'];
+    approvedAt: string | null;
+    approverId: string | null;
+    approvalReason: string | null;
+  }
+) {
+  const { error } = await supabaseClient.from('audit_events').insert({
+    actor_id: input.userId,
+    action: 'smart_elements.transform.approved',
+    resource_type: 'smart_elements_transform',
+    decision: 'allowed',
+    reason: input.approvalReason || 'Human approval confirmed for sensitive smart element transformation',
+    metadata: {
+      selectedTool: input.selectedTool,
+      targetType: input.targetType || null,
+      selectedElementsCount: Array.isArray(input.selectedElements) ? input.selectedElements.length : 0,
+      sensitivity: input.sensitivity,
+      humanApproval: {
+        approvedAt: input.approvedAt,
+        approverId: input.approverId,
+        approvalReason: input.approvalReason,
+      }
+    }
+  });
+
+  if (error) {
+    console.error('[smart-elements-ai] Failed to store human approval audit event:', error);
+  }
+}
+
 function summarizeOutput(toolResult: any): ExplainabilityTraceInput['outputSummary'] {
   return {
     elementsCount: Array.isArray(toolResult?.elements) ? toolResult.elements.length : 0,
@@ -778,6 +834,7 @@ async function storeExplainabilityTrace(supabaseClient: ReturnType<typeof create
       confidenceSummary: input.confidenceSummary,
       sensitivity: input.sensitivity,
       approval: input.approval,
+      approvalReason: input.approval.approvalReason,
       outputSummary: input.outputSummary,
     }
   };

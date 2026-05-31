@@ -1,7 +1,14 @@
-import { useState, useCallback } from 'react';
+import { createElement, useCallback, useState } from 'react';
+import type { ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  SmartTransformationApprovalDialog,
+  type SmartTransformationApprovalRequest,
+  type TransformationSensitivity,
+} from '@/components/smart-elements/SmartTransformationApprovalDialog';
 
 interface GeneratedElement {
   id: string;
@@ -47,14 +54,53 @@ interface AnalysisResult {
 interface UseSmartElementAIReturn {
   isLoading: boolean;
   error: string | null;
+  approvalDialog: ReactNode;
   generateElements: (prompt: string, preferredType?: SmartElementType) => Promise<GenerationResult | null>;
   analyzeSelection: (elements: any[], additionalPrompt?: string) => Promise<AnalysisResult | null>;
   transformElements: (elements: any[], targetType: SmartElementType, prompt?: string) => Promise<GenerationResult | null>;
 }
 
+interface ApprovalPayload {
+  approved: boolean;
+  approvedAt: string;
+  approverId: string;
+  approvalReason: string;
+}
+
+interface ApprovalDialogState extends SmartTransformationApprovalRequest {
+  resolve: (approval: { approved: boolean; approvalReason?: string }) => void;
+}
+
+class HumanApprovalRequiredError extends Error {
+  sensitivity: TransformationSensitivity;
+
+  constructor(message: string, sensitivity: TransformationSensitivity) {
+    super(message);
+    this.name = 'HumanApprovalRequiredError';
+    this.sensitivity = sensitivity;
+  }
+}
+
+async function readFunctionErrorPayload(fnError: any): Promise<any | null> {
+  const context = fnError?.context;
+  if (!context || typeof context.json !== 'function') return null;
+
+  try {
+    return await context.clone().json();
+  } catch {
+    try {
+      return await context.json();
+    } catch {
+      return null;
+    }
+  }
+}
+
 export function useSmartElementAI(): UseSmartElementAIReturn {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [approvalRequest, setApprovalRequest] = useState<ApprovalDialogState | null>(null);
 
   const callAI = useCallback(async (
     action: 'generate' | 'analyze' | 'transform',
@@ -77,8 +123,17 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
         }
       });
 
+      const errorPayload = fnError ? await readFunctionErrorPayload(fnError) : null;
+      const responsePayload = errorPayload || data;
+
       if (fnError) {
-        throw new Error(fnError.message);
+        if (responsePayload?.code === 'HUMAN_APPROVAL_REQUIRED') {
+          throw new HumanApprovalRequiredError(
+            responsePayload.error || 'التحويل حساس ويتطلب موافقة بشرية قبل التنفيذ',
+            responsePayload.sensitivity || { isSensitive: true, score: 1, reasons: [] }
+          );
+        }
+        throw new Error(responsePayload?.error || fnError.message);
       }
 
       if (!data.success) {
@@ -94,9 +149,10 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
             description: 'يرجى إضافة رصيد لاستخدام الذكاء الاصطناعي'
           });
         } else if (data.code === 'HUMAN_APPROVAL_REQUIRED') {
-          toast.error('مطلوب اعتماد بشري', {
-            description: 'هذا التحويل حساس ويتطلب موافقة بشرية قبل التنفيذ'
-          });
+          throw new HumanApprovalRequiredError(
+            errorMessage,
+            data.sensitivity || { isSensitive: true, score: 1, reasons: [] }
+          );
         }
         
         throw new Error(errorMessage);
@@ -104,6 +160,10 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
 
       return data.result;
     } catch (err) {
+      if (err instanceof HumanApprovalRequiredError) {
+        throw err;
+      }
+
       const message = err instanceof Error ? err.message : 'حدث خطأ غير متوقع';
       setError(message);
       console.error('[useSmartElementAI] Error:', err);
@@ -111,6 +171,26 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  const requestHumanApproval = useCallback((request: SmartTransformationApprovalRequest) => {
+    return new Promise<{ approved: boolean; approvalReason?: string }>((resolve) => {
+      setApprovalRequest({ ...request, resolve });
+    });
+  }, []);
+
+  const handleApprove = useCallback((approvalReason: string) => {
+    setApprovalRequest((current) => {
+      current?.resolve({ approved: true, approvalReason });
+      return null;
+    });
+  }, []);
+
+  const handleCancelApproval = useCallback(() => {
+    setApprovalRequest((current) => {
+      current?.resolve({ approved: false });
+      return null;
+    });
   }, []);
 
   const generateElements = useCallback(async (
@@ -156,29 +236,55 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
       return null;
     }
 
-    let result = await callAI('transform', {
-      selectedElements: elements,
-      prompt,
-      context: { targetType }
-    });
+    let result: GenerationResult | null = null;
 
-    // Human-in-the-loop enforcement for sensitive transformations.
-    if (!result) {
-      const shouldApprove = window.confirm('التحويل حساس. هل تريد تأكيد الموافقة البشرية ومتابعة التنفيذ؟');
-      if (shouldApprove) {
-        result = await callAI('transform', {
-          selectedElements: elements,
-          prompt,
-          context: {
-            targetType,
-            humanApproval: {
-              approved: true,
-              approvedAt: new Date().toISOString(),
-              approverId: 'local-user'
-            }
-          }
-        });
+    try {
+      result = await callAI('transform', {
+        selectedElements: elements,
+        prompt,
+        context: { targetType }
+      });
+    } catch (err) {
+      if (!(err instanceof HumanApprovalRequiredError)) {
+        const message = err instanceof Error ? err.message : 'حدث خطأ غير متوقع';
+        setError(message);
+        return null;
       }
+
+      const approval = await requestHumanApproval({
+        targetType,
+        selectedElements: elements,
+        prompt,
+        sensitivity: err.sensitivity,
+      });
+
+      if (!approval.approved) {
+        toast.info('تم إلغاء التحويل الحساس قبل إرسال الاعتماد');
+        return null;
+      }
+
+      if (!user?.id) {
+        toast.error('تعذر تحديد المستخدم المعتمد', {
+          description: 'يرجى تسجيل الدخول ثم إعادة المحاولة'
+        });
+        return null;
+      }
+
+      const humanApproval: ApprovalPayload = {
+        approved: true,
+        approvedAt: new Date().toISOString(),
+        approverId: user.id,
+        approvalReason: approval.approvalReason || 'اعتماد بشري من واجهة التحويل الذكي',
+      };
+
+      result = await callAI('transform', {
+        selectedElements: elements,
+        prompt,
+        context: {
+          targetType,
+          humanApproval
+        }
+      });
     }
 
     if (result) {
@@ -188,11 +294,18 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     }
 
     return result;
-  }, [callAI]);
+  }, [callAI, requestHumanApproval, user?.id]);
+
+  const approvalDialog = createElement(SmartTransformationApprovalDialog, {
+    request: approvalRequest,
+    onApprove: handleApprove,
+    onCancel: handleCancelApproval,
+  });
 
   return {
     isLoading,
     error,
+    approvalDialog,
     generateElements,
     analyzeSelection,
     transformElements
