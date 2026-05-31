@@ -6,6 +6,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, LayoutGrid, Network, Calendar, Table2, Zap } from "lucide-react";
 import type { SmartElementType } from "@/types/smart-elements";
+import { useCanvasAIPermissions } from "@/features/planning/hooks/useCanvasAIPermissions";
 
 // خيارات التحويل للعناصر الذكية
 const TRANSFORM_OPTIONS = [
@@ -40,6 +41,9 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
   const [localPrompt, setLocalPrompt] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const aiPermissions = useCanvasAIPermissions();
+  const isAIDisabled = isLoading || !aiPermissions.canUseAI;
+  const disabledReason = aiPermissions.denialReason || "الذكاء الاصطناعي غير متاح حالياً";
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -55,6 +59,8 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
   }, [isOpen]);
 
   const handleSubmit = () => {
+    if (isAIDisabled) return;
+
     if (localPrompt.trim()) {
       onCustomTransform(localPrompt);
       setLocalPrompt("");
@@ -62,13 +68,24 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
     }
   };
 
+  useEffect(() => {
+    if (!aiPermissions.canUseAI) {
+      setIsOpen(false);
+    }
+  }, [aiPermissions.canUseAI]);
+
   return (
-    <div ref={menuRef} className="relative">
+    <div ref={menuRef} className="relative group">
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 transition-opacity"
-        title="الذكاء الاصطناعي"
+        onClick={() => {
+          if (isAIDisabled) return;
+          setIsOpen(!isOpen);
+        }}
+        disabled={isAIDisabled}
+        aria-label={isAIDisabled ? disabledReason : "الذكاء الاصطناعي"}
+        className="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 transition-opacity disabled:cursor-not-allowed disabled:opacity-50"
+        title={isAIDisabled ? disabledReason : "الذكاء الاصطناعي"}
       >
         {isLoading ? (
           <Loader2 size={16} className="text-white animate-spin" />
@@ -76,6 +93,12 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
           <Sparkles size={16} className="text-white" />
         )}
       </button>
+
+      {!aiPermissions.canUseAI && (
+        <div className="hidden group-hover:block group-focus-within:block absolute top-full left-1/2 mt-2 w-56 -translate-x-1/2 rounded-lg border border-[hsl(var(--border))] bg-white px-3 py-2 text-center text-[11px] text-[hsl(var(--ink-70))] shadow-[0_8px_24px_rgba(0,0,0,0.12)] z-[var(--z-tooltip)]">
+          {disabledReason}
+        </div>
+      )}
 
       <AnimatePresence>
         {isOpen && (
@@ -93,7 +116,7 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
                   onQuickGenerate();
                   setIsOpen(false);
                 }}
-                disabled={isLoading}
+                disabled={isAIDisabled}
                 className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-lg disabled:opacity-50"
               >
                 {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
@@ -111,7 +134,7 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
                     onTransform(option.type);
                     setIsOpen(false);
                   }}
-                  disabled={isLoading}
+                  disabled={isAIDisabled}
                   className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50"
                 >
                   <span className="text-[#3DBE8B]">
@@ -135,18 +158,18 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
                   onChange={(e) => setLocalPrompt(e.target.value)}
                   onKeyDown={(e) => {
                     e.stopPropagation();
-                    if (e.key === "Enter" && !isLoading && localPrompt.trim()) {
+                    if (e.key === "Enter" && !isAIDisabled && localPrompt.trim()) {
                       handleSubmit();
                     }
                   }}
                   placeholder="وصف التحويل..."
                   className="flex-1 h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
-                  disabled={isLoading}
+                  disabled={isAIDisabled}
                 />
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={isLoading || !localPrompt.trim()}
+                  disabled={isAIDisabled || !localPrompt.trim()}
                   className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}

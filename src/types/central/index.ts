@@ -45,6 +45,11 @@ const complexitySchema = z.enum(["trivial", "simple", "moderate", "complex", "cr
 const toolKindSchema = z.enum([
   "board_widget", "dashboard_panel", "workflow_tool", "analysis_tool", "integration_tool",
 ]);
+export const CENTRAL_DEPENDENCY_TYPES: readonly CentralDependencyType[] = [
+  "execution", "data", "technical", "operational", "time",
+  "depends_on", "causes", "blocks", "references", "funds", "delivers", "belongs_to",
+] as const;
+
 const engineJobKindSchema = z.enum([
   "automation", "data_processing", "orchestration", "sync", "analytics", "validation",
 ]);
@@ -62,6 +67,7 @@ export type TaskToolEngineLink =
 export type ProjectCard = Database["public"]["Tables"]["project_cards"]["Row"];
 export type TaskCard = Database["public"]["Tables"]["task_cards"]["Row"];
 export type Dependency = Database["public"]["Tables"]["dependencies"]["Row"];
+export type SmartConnector = Database["public"]["Tables"]["smart_connectors"]["Row"];
 
 // ── Zod input schemas (for create/update) ───────────────────────────────────
 export const projectCreateSchema = z.object({
