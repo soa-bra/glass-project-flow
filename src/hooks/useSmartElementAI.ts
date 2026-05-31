@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { SmartElementType } from '@/types/smart-elements';
+import { SmartElementType, type SmartDocument, type SmartDocumentDocType } from '@/types/smart-elements';
 import { toast } from 'sonner';
 
 interface GeneratedElement {
@@ -50,6 +50,7 @@ interface UseSmartElementAIReturn {
   generateElements: (prompt: string, preferredType?: SmartElementType) => Promise<GenerationResult | null>;
   analyzeSelection: (elements: any[], additionalPrompt?: string) => Promise<AnalysisResult | null>;
   transformElements: (elements: any[], targetType: SmartElementType, prompt?: string) => Promise<GenerationResult | null>;
+  generateDocument: (elements: any[], prompt?: string, docType?: SmartDocumentDocType) => Promise<SmartDocument | null>;
 }
 
 export function useSmartElementAI(): UseSmartElementAIReturn {
@@ -57,7 +58,7 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
   const [error, setError] = useState<string | null>(null);
 
   const callAI = useCallback(async (
-    action: 'generate' | 'analyze' | 'transform',
+    action: 'generate' | 'analyze' | 'transform' | 'generate_document',
     payload: {
       prompt?: string;
       selectedElements?: any[];
@@ -190,11 +191,43 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     return result;
   }, [callAI]);
 
+
+  const generateDocument = useCallback(async (
+    elements: any[],
+    prompt?: string,
+    docType?: SmartDocumentDocType
+  ): Promise<SmartDocument | null> => {
+    if (!elements || elements.length === 0) {
+      toast.error('حدد عناصر من الكانفس أولاً لتوليد وثيقة ذكية');
+      return null;
+    }
+
+    if (elements.length > 50) {
+      toast.error('يمكن توليد الوثيقة من 50 عنصرًا كحد أقصى');
+      return null;
+    }
+
+    const result = await callAI('generate_document', {
+      selectedElements: elements,
+      prompt,
+      context: docType ? { docType } : undefined,
+    });
+
+    if (result) {
+      toast.success('تم توليد مسودة الوثيقة', {
+        description: 'راجع العنوان والمحتوى ثم احفظها على الكانفس',
+      });
+    }
+
+    return result as SmartDocument | null;
+  }, [callAI]);
+
   return {
     isLoading,
     error,
     generateElements,
     analyzeSelection,
-    transformElements
+    transformElements,
+    generateDocument
   };
 }

@@ -20,6 +20,7 @@ import {
   SMART_DOC_SCHEMA_VERSION,
   validateSmartDocContent,
 } from "@/features/planning/elements/smart-doc/contract";
+import type { SmartDocument } from "@/types/smart-elements";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 export type PlanningBoard = Database["public"]["Tables"]["planning_boards"]["Row"];
@@ -252,6 +253,60 @@ export async function updatePlanningElement(
     .single();
   if (error) throw error;
   return data;
+}
+
+
+export interface SaveReviewedSmartDocumentInput {
+  board_id: string;
+  document: SmartDocument;
+  position?: { x: number; y: number };
+  size?: { width: number; height: number };
+  style?: Record<string, unknown>;
+}
+
+export async function saveReviewedSmartDocument(
+  input: SaveReviewedSmartDocumentInput,
+): Promise<PlanningElement> {
+  const sourceElementIds = Array.from(new Set(input.document.sourceElementIds)).slice(0, 50);
+  const content = {
+    version: SMART_DOC_SCHEMA_VERSION,
+    format: "rich-text" as const,
+    title: input.document.title,
+    blocks: [
+      {
+        id: crypto.randomUUID(),
+        type: "paragraph" as const,
+        text: input.document.content,
+      },
+    ],
+    meta: {
+      sourceElementIds,
+      docType: input.document.docType,
+      generatedByAi: input.document.generatedByAi,
+      reviewedAt: new Date().toISOString(),
+    },
+  };
+
+  return createPlanningElement({
+    board_id: input.board_id,
+    element_type: "smart_doc",
+    position: input.position,
+    size: input.size ?? { width: 520, height: 420 },
+    content,
+    style: input.style,
+    metadata: {
+      smartType: "smart_text_doc",
+      smartDoc: {
+        sourceElementIds,
+        docType: input.document.docType,
+        generatedByAi: input.document.generatedByAi,
+        storage: "planning_elements",
+      },
+      sourceElementIds,
+      linkedSourceElementIds: sourceElementIds,
+    },
+    schema_version: SMART_DOC_SCHEMA_VERSION,
+  });
 }
 
 export async function deletePlanningElement(id: string): Promise<void> {

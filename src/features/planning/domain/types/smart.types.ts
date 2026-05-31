@@ -743,9 +743,30 @@ export type RootConnectorData = z.infer<typeof RootConnectorDataSchema>;
 // 15. Smart Text Document - مستند نصي ذكي
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const SmartTextDocDataSchema = z.object({
-  title: z.string().default('مستند جديد'),
+
+export const SmartDocumentDocTypeSchema = z.enum([
+  'summary',
+  'requirements',
+  'meeting_notes',
+  'proposal',
+  'report',
+  'specification',
+  'custom',
+]);
+
+export const SmartDocumentSchema = z.object({
+  sourceElementIds: z.array(z.string()).max(50).default([]),
+  title: z.string().min(1).max(500).default('وثيقة ذكية'),
   content: z.string().default(''),
+  docType: SmartDocumentDocTypeSchema.default('summary'),
+  generatedByAi: z.boolean().default(false),
+});
+
+export type SmartDocumentDocType = z.infer<typeof SmartDocumentDocTypeSchema>;
+export type SmartDocument = z.infer<typeof SmartDocumentSchema>;
+
+
+export const SmartTextDocDataSchema = SmartDocumentSchema.extend({
   format: z.enum(['plain', 'rich', 'markdown']).default('rich'),
   aiAssist: z.boolean().default(true),
   readOnly: z.boolean().default(false),
