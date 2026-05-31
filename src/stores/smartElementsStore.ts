@@ -1862,7 +1862,8 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     const entry = get().smartElements[elementId];
     if (!entry) return;
     
-    if (!SmartCardTypes.includes(entry.smartType as typeof SmartCardTypes[number])) return;
+    const cardTypes: SmartElementType[] = ['project_card', 'task_card', 'finance_card', 'csr_card', 'crm_card'];
+    if (!cardTypes.includes(entry.smartType)) return;
     
     const data = entry.data as Record<string, unknown>;
     const key = entry.smartType === 'task_card' || entry.smartType === 'project_card'

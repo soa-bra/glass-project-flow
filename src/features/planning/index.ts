@@ -30,3 +30,22 @@ export type { PlanningStore } from './state/store';
 
 // Integration Layer
 export * from './integration';
+
+// Hooks Layer
+export { usePlanningElements } from './hooks/usePlanningElements';
+export { usePlanningRealtime } from './hooks/usePlanningRealtime';
+export { usePlanningStoreSync } from './hooks/usePlanningStoreSync';
+export {
+  planningElementToCanvas,
+  canvasToPlanningInsert,
+} from './state/planningElementMapper';
+export { useElementLock } from './hooks/useElementLock';
+export { useAutoUnlockStaleLocks } from './hooks/useAutoUnlockStaleLocks';
+export type { UseAutoUnlockStaleLocksOptions } from './hooks/useAutoUnlockStaleLocks';
+export { useElementLockState } from './hooks/useElementLockState';
+export type { ElementLockState, ElementLockStatus } from './hooks/useElementLockState';
+export { useElementLockAcquire } from './hooks/useElementLockAcquire';
+export type { LockFailureInfo, AcquireFn } from './hooks/useElementLockAcquire';
+export type { PresencePeer } from './hooks/usePlanningRealtime';
+export type { UsePlanningElementsResult } from './hooks/usePlanningElements';
+

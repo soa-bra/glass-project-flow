@@ -20,14 +20,30 @@ import { CanvasPropertiesPopover } from '../overlays/CanvasPropertiesPopover';
 import { FileMenuPopover } from '../overlays/FileMenuPopover';
 import { LayersMenuPopover } from '../overlays/LayersMenuPopover';
 import { useBoardSaveState, formatBoardSaveStatusLabel } from '@/features/planning/hooks/useBoardSaveState';
+import { PresenceAvatars } from '../collaboration/PresenceAvatars';
+import { RealtimeStatusBadge } from '../collaboration/RealtimeStatusBadge';
+import type { PresencePeer, RealtimeConnectionStatus } from '../../hooks/usePlanningRealtime';
+import { Users } from 'lucide-react';
 
 interface CanvasToolbarProps {
   board: CanvasBoard;
   onBack: () => void;
   onOpenAI: () => void;
+  peers?: PresencePeer[];
+  selfName?: string;
+  realtimeStatus?: RealtimeConnectionStatus;
+  lastSyncAt?: number | null;
 }
 
-const CanvasToolbar: React.FC<CanvasToolbarProps> = ({ board, onBack, onOpenAI }) => {
+const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
+  board,
+  onBack,
+  onOpenAI,
+  peers = [],
+  selfName,
+  realtimeStatus = 'idle',
+  lastSyncAt = null,
+}) => {
   const { undo, redo, history } = useCanvasStore();
   const { renameBoard } = usePlanningStore();
   const { status, lastSavedAt, canSave, saveBoardState, isDirty } = useBoardSaveState(board);
@@ -117,6 +133,26 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({ board, onBack, onOpenAI }
       </div>
 
       <div className="flex items-center gap-2">
+        <RealtimeStatusBadge status={realtimeStatus} lastSyncAt={lastSyncAt} />
+
+        <div
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sb-panel-bg border border-sb-border"
+          aria-label="المتعاونون النشِطون"
+          dir="rtl"
+        >
+          <Users size={14} className="text-sb-ink/70" />
+          <span className="text-[12px] font-semibold text-sb-ink">
+            {peers.length + 1}
+          </span>
+          {selfName && (
+            <span className="text-[12px] text-sb-ink/70 max-w-[140px] truncate">
+              أنت: {selfName}
+            </span>
+          )}
+          <PresenceAvatars peers={peers} />
+        </div>
+
+        <div className="h-6 w-px bg-sb-border" />
         <div className="relative">
           <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-2 px-4 py-1.5 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
             <Share2 size={18} />

@@ -1,31 +1,21 @@
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
+
 interface FeatureTaskCardDaysCircleProps {
   daysLeft: number;
 }
 
 const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   return (
     <div
-      className="w-11 h-11 sm:w-12 sm:h-12 lg:w-[52px] lg:h-[52px] rounded-full border border-black bg-transparent flex flex-col items-center justify-center shrink-0"
+      className="shrink-0 rounded-full bg-[#F5F7FA] border border-[#111111] flex flex-col items-center justify-center text-center"
+      style={{ width: tokens.circleSizePx, height: tokens.circleSizePx }}
     >
-      <span
-        style={{
-          fontWeight: 700,
-          color: '#000000',
-          lineHeight: 1,
-          fontFamily: 'IBM Plex Sans Arabic'
-        }}
-        className="text-sm sm:text-[15px]"
-      >
-        {daysLeft.toString().padStart(2, '0')}
+      <span className="font-semibold text-[#0B0F12] leading-none" style={{ fontSize: tokens.daysNumberFontSizePx }}>
+        {daysLeft}
       </span>
-      <span
-        style={{
-          fontWeight: 400,
-          color: '#000000',
-          fontFamily: 'IBM Plex Sans Arabic'
-        }}
-        className="text-[9px] sm:text-[10px] mt-0.5"
-      >
+      <span className="text-[#0B0F12]/70 leading-none mt-0.5" style={{ fontSize: tokens.daysLabelFontSizePx }}>
         يوم
       </span>
     </div>

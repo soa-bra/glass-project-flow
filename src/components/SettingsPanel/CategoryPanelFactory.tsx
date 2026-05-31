@@ -8,6 +8,18 @@ import { AISettingsPanel } from './categories/AISettingsPanel';
 import { ThemeSettingsPanel } from './categories/ThemeSettingsPanel';
 import { DataGovernanceSettingsPanel } from './categories/DataGovernanceSettingsPanel';
 import { UsersRolesSettingsPanel } from './categories/UsersRolesSettingsPanel';
+import { AuditCenterPanel } from './categories/AuditCenterPanel';
+import { EngineJobsDashboard } from '@/features/engine-jobs';
+import { DependencyGraphVisualizer } from '@/features/dependency-graph';
+import { ToolsMarketplace } from '@/features/tools-marketplace';
+import { AdminRolesPanel } from '@/features/admin-roles';
+import { SpecSettingsShell } from './SpecSettingsShell';
+
+const wrapTechnical = (Component: React.ComponentType, title: string, subtitle?: string) => () => (
+  <SpecSettingsShell title={title} subtitle={subtitle}>
+    <Component />
+  </SpecSettingsShell>
+);
 
 export class CategoryPanelFactory {
   static getComponent(category: string): React.ComponentType<any> {
@@ -28,7 +40,17 @@ export class CategoryPanelFactory {
         return DataGovernanceSettingsPanel;
       case 'users-roles':
         return UsersRolesSettingsPanel;
-      
+      case 'audit':
+        return AuditCenterPanel;
+      case 'engine-jobs':
+        return wrapTechnical(EngineJobsDashboard, 'محرك المهام', 'مراقبة Engine Jobs الحية');
+      case 'dependency-graph':
+        return wrapTechnical(DependencyGraphVisualizer, 'خريطة الاعتماديات', 'علاقات الكيانات المركزية');
+      case 'tools-marketplace':
+        return wrapTechnical(ToolsMarketplace, 'سوق الأدوات', 'إدارة الأدوات والإضافات');
+      case 'admin-roles':
+        return wrapTechnical(AdminRolesPanel, 'الأدوار الإدارية', 'إدارة الأدوار والصلاحيات المتقدمة');
+
       default:
         return (props: any) => <GenericSettingsPanel category={category} {...props} />;
     }

@@ -33,11 +33,15 @@ const BaseTaskCardLayout = ({
       width: '100%',
       backgroundColor,
       borderRadius: '32px',
+      minHeight: '120px',
+      maxHeight: 'min(70vh, 420px)',
       paddingBlock: '12px',
       paddingInline: 'clamp(10px, 2vw, 14px)',
       direction: 'rtl',
       fontFamily: 'IBM Plex Sans Arabic',
       opacity,
+      overflowY: 'auto',
+      overflowX: 'hidden',
       transition: 'opacity 0.2s ease-in-out'
     } as CSSProperties;
   };
@@ -47,9 +51,18 @@ const BaseTaskCardLayout = ({
 
   return (
     <div
-
-        ) : null}
-      </div>
+      className={className}
+      style={getCardStyle()}
+      data-task-id={id}
+      data-selected={isSelected || undefined}
+    >
+      {headerSection}
+      {footerSection}
+      {extraSections.length > 0 ? (
+        <div className="mt-2 flex flex-col gap-2">
+          {extraSections}
+        </div>
+      ) : null}
     </div>
   );
 };
