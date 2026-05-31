@@ -9,11 +9,22 @@ src/features/planning/
 ├── ui/           → واجهة المستخدم (React Components)
 ├── canvas/       → مكونات اللوحة التفاعلية
 ├── elements/     → عناصر اللوحة (MindMap, Diagram, Smart)
+├── ai/           → ميزات AI العامة للتخطيط (عند الحاجة)
+├── connectors/   → ربط العناصر/الأدوات/المساحات (عند الحاجة)
+├── execution/    → توسعات التنفيذ داخل التخطيط (عند الحاجة)
 ├── domain/       → منطق الأعمال (Commands, Policies)
 ├── state/        → إدارة الحالة (Zustand Slices)
 ├── integration/  → تكامل خارجي (Collaboration, Export)
 └── index.ts      → Barrel Export
 ```
+
+
+## 🧭 نقاط الدمج المعتمدة
+
+- `ui/PlanningCanvas.tsx` هو المضيف الفعلي للميزات الجديدة داخل Workspace التخطيط؛ أي smart conversion أو execution expansion يجب أن يُركّب منه أو من مكوّن فرعي داخل `ui/` يستدعيه.
+- `canvas/viewport/InfiniteCanvas.tsx` هو مضيف تفاعل اللوحة المباشر: pan/zoom، selection، gestures، drop/paste، وعرض عناصر canvas. لا تُنقل هذه المسؤوليات إلى مسار جديد.
+- لا تنشئ `src/features/planning-canvas/` إلا بعد توثيق فجوة لا يمكن تغطيتها في `src/features/planning/` وشرح سبب عدم كفاية `PlanningCanvas` و`InfiniteCanvas`.
+- المسارات الجديدة المسموحة للتوسّع يجب أن تبقى داخل `src/features/planning/`: استخدم `ai/` للذكاء، `connectors/` للربط، و`execution/` لتوسعات التنفيذ.
 
 ## 📊 مخطط التبعيات
 
@@ -106,6 +117,15 @@ integration/
 └── telemetry/      → تتبع الأحداث
 ```
 
+### AI / Connectors / Execution (`ai/`, `connectors/`, `execution/`)
+```
+ai/           → واجهات وخدمات AI العامة التي يركّبها PlanningCanvas
+connectors/   → منطق ربط العناصر أو تحويل العلاقات إلى إجراءات
+execution/    → execution expansion، job affordances، وحالات التنفيذ داخل التخطيط
+```
+
+هذه المجلدات اختيارية وتُنشأ عند وجود ميزة فعلية، لكنها تبقى داخل `src/features/planning/` ولا تستبدل `ui/PlanningCanvas.tsx` أو `canvas/viewport/InfiniteCanvas.tsx`.
+
 ## ✅ أمثلة صحيحة
 
 ```typescript
@@ -141,9 +161,10 @@ import { KanbanBoard } from '@/components/Planning/SmartElements';
 ## 🔄 كيفية الإضافة
 
 ### إضافة مكون UI جديد
-1. أنشئ الملف في `ui/panels/` أو `ui/widgets/`
-2. أضف التصدير في `ui/panels/index.ts`
-3. استورده عبر `@/features/planning/ui`
+1. راجع أولًا `ui/PlanningCanvas.tsx` لتحديد نقطة التركيب، و`canvas/viewport/InfiniteCanvas.tsx` إذا كان التغيير يخص تفاعل اللوحة.
+2. أنشئ الملف في `ui/panels/` أو `ui/widgets/` أو أحد المسارات المتخصصة (`ai/`, `connectors/`, `execution/`) حسب المسؤولية.
+3. أضف التصدير المناسب في أقرب `index.ts`.
+4. استورده عبر `@/features/planning/...` ولا تستخدم مسارًا جديدًا خارج `src/features/planning/`.
 
 ### إضافة عنصر ذكي جديد
 1. أنشئ الملف في `elements/smart/`
