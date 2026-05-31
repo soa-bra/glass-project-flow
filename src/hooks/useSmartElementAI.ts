@@ -2,7 +2,8 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
-import { CanvasAIPermissionScope, getCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
+import { buildAIContext } from '@/features/ai/context/contextBuilder';
+import { sanitizeAIContext } from '@/features/ai/context/contextSanitizer';
 
 interface GeneratedElement {
   id: string;
@@ -87,12 +88,26 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     setError(null);
 
     try {
+      const rawContext = payload.context ?? {};
+      const unifiedContext = buildAIContext({
+        boardId: rawContext.boardId,
+        selectedElements: payload.selectedElements,
+        activeSection: rawContext.activeSection,
+        activeTab: rawContext.activeTab,
+        permissions: rawContext.permissions,
+        availableLinks: rawContext.availableLinks,
+        extraContext: rawContext,
+      });
+      const sanitizedContext = sanitizeAIContext(unifiedContext);
+
       const { data, error: fnError } = await supabase.functions.invoke('smart-elements-ai', {
         body: {
           action,
           prompt: payload.prompt,
-          selectedElements: payload.selectedElements,
-          context: payload.context
+          selectedElements: Array.isArray(payload.selectedElements)
+            ? sanitizedContext.selectedElements
+            : payload.selectedElements,
+          context: sanitizedContext
         }
       });
 
