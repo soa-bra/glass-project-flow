@@ -1,3 +1,5 @@
+import type { UnifiedRelationshipType } from '@/features/planning/integration/connectors/relationshipTypes';
+
 // Mind Map Canvas Types - Independent Nodes System
 // كل عقدة عنصر مستقل على الكانفس
 
@@ -27,7 +29,8 @@ export interface MindMapConnectorData {
   color: string;
   strokeWidth: number;
   label?: string;
-  labelPosition?: number; // 0-1 على المسار
+  labelPosition?: number;
+  relationshipType?: UnifiedRelationshipType;
 }
 
 // نقاط الربط على العقدة

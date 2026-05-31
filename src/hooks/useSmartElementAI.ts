@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
+import { buildAIContext } from '@/features/ai/context/contextBuilder';
+import { sanitizeAIContext } from '@/features/ai/context/contextSanitizer';
 
 interface GeneratedElement {
   id: string;
@@ -56,24 +58,56 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const ensureAIPermission = useCallback((scope: CanvasAIPermissionScope): boolean => {
+    void scope;
+    const permissions = getCanvasAIPermissions();
+
+    if (permissions.canUseAI) return true;
+
+    const message = permissions.denialReason || 'لا تملك صلاحية استخدام الذكاء الاصطناعي';
+    setError(message);
+    toast.error('تعذر بدء إجراء الذكاء الاصطناعي', {
+      description: message
+    });
+    return false;
+  }, []);
+
   const callAI = useCallback(async (
-    action: 'generate' | 'analyze' | 'transform',
+    action: CanvasAIPermissionScope,
     payload: {
       prompt?: string;
       selectedElements?: any[];
       context?: Record<string, any>;
     }
   ) => {
+    if (!ensureAIPermission(action)) {
+      return null;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
+      const rawContext = payload.context ?? {};
+      const unifiedContext = buildAIContext({
+        boardId: rawContext.boardId,
+        selectedElements: payload.selectedElements,
+        activeSection: rawContext.activeSection,
+        activeTab: rawContext.activeTab,
+        permissions: rawContext.permissions,
+        availableLinks: rawContext.availableLinks,
+        extraContext: rawContext,
+      });
+      const sanitizedContext = sanitizeAIContext(unifiedContext);
+
       const { data, error: fnError } = await supabase.functions.invoke('smart-elements-ai', {
         body: {
           action,
           prompt: payload.prompt,
-          selectedElements: payload.selectedElements,
-          context: payload.context
+          selectedElements: Array.isArray(payload.selectedElements)
+            ? sanitizedContext.selectedElements
+            : payload.selectedElements,
+          context: sanitizedContext
         }
       });
 
@@ -111,7 +145,7 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [ensureAIPermission]);
 
   const generateElements = useCallback(async (
     prompt: string,
@@ -156,6 +190,10 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
       return null;
     }
 
+    if (!ensureAIPermission('transform')) {
+      return null;
+    }
+
     let result = await callAI('transform', {
       selectedElements: elements,
       prompt,
@@ -188,7 +226,7 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     }
 
     return result;
-  }, [callAI]);
+  }, [callAI, ensureAIPermission]);
 
   return {
     isLoading,
