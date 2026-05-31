@@ -628,13 +628,19 @@ panel: smart_elements_panel
 
 ## رابعاً: الخطة العامة للتطوير
 
-### المرحلة الأولى: البنية الأساسية ✅ جاهز للتنفيذ
+### المرحلة الأولى: البنية الأساسية ✅ منفذة ومثبتة كمسار دمج
+
+**قرار الدمج الحالي:**
+- `src/features/planning/ui/PlanningCanvas.tsx` هو المضيف الفعلي لأي ميزات تخطيط جديدة، وهو نقطة تركيب الشريط العلوي، الشريط السفلي، منطقة الأدوات، الطبقات الطافية، وSmart Command Bar.
+- `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` هو نقطة دمج تفاعل اللوحة نفسها: viewport، pan/zoom، selection، drop، paste، layers، gestures، وRealtime sync.
+- لا يُنشأ مسار مستقل مثل `src/features/planning-canvas/` إلا إذا وُثّقت فجوة معمارية صريحة لا يمكن تغطيتها داخل `src/features/planning/`، ويجب أن يتضمن التوثيق سبب عدم كفاية `PlanningCanvas` و`InfiniteCanvas`.
+- أي مكونات جديدة للـ smart conversion أو execution expansion تُضاف داخل نطاق `src/features/planning/` بمسارات منسجمة مثل `src/features/planning/ai/`, `src/features/planning/connectors/`, أو `src/features/planning/execution/` حسب مسؤوليتها.
 
 **المهام:**
-1. إعداد المكونات الأساسية:
-   - إنشاء `PlanningWorkspace` كبنية عامة
-   - إنشاء `InfiniteCanvas` مع دعم Zoom/Pan
-   - تهيئة نظام إدارة الحالة (State Management)
+1. تثبيت المكونات الأساسية القائمة بدل إعادة إنشائها:
+   - استخدام `PlanningCanvas` الموجود كبنية الاستضافة العامة.
+   - استخدام `InfiniteCanvas` الموجود كطبقة viewport والتفاعل.
+   - تهيئة نظام إدارة الحالة (State Management) عبر المتاجر الحالية قبل إضافة أي store جديد.
 
 2. هيكلة البيانات:
    - تصميم Types/Interfaces للعناصر
@@ -644,12 +650,12 @@ panel: smart_elements_panel
    - بناء طبقة للتعامل مع أحداث الفأرة والكيبورد
    - وضع واجهات داخلية قابلة للتوسعة
 
-**الملفات المطلوبة:**
-- `src/components/planning/PlanningWorkspace.tsx`
-- `src/components/planning/InfiniteCanvas.tsx`
-- `src/components/planning/state/ToolingContext.tsx`
-- `src/types/planning.ts`
-- `src/hooks/usePlanningCanvas.ts`
+**الملفات/النطاقات المعتمدة:**
+- `src/components/PlanningWorkspace.tsx` يحمّل مساحة التخطيط الحالية.
+- `src/features/planning/ui/PlanningCanvas.tsx` هو المضيف الأساسي للميزات الجديدة.
+- `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` هو مضيف viewport والتفاعل.
+- `src/stores/canvasStore.ts` و`src/stores/planningStore.ts` لإدارة الحالة الحالية.
+- `src/types/planning.ts` لتعريفات التخطيط العامة.
 
 ---
 
@@ -660,10 +666,9 @@ panel: smart_elements_panel
 2. بناء شبكة المشاريع/اللوحات المحفوظة
 3. تنفيذ وظائف الحذف، النسخ، إعادة التسمية
 
-**الملفات المطلوبة:**
-- `src/components/planning/EntryInterface.tsx`
-- `src/components/planning/BoardsGrid.tsx`
-- `src/components/planning/NewBoardDialog.tsx`
+**الملفات/النطاقات المعتمدة:**
+- `src/features/planning/ui/PlanningEntryScreen.tsx` لواجهة الدخول الحالية أو امتداداتها.
+- `src/features/planning/ui/` لأي dialogs أو grids جديدة مرتبطة بدخول التخطيط.
 
 ---
 
@@ -675,11 +680,10 @@ panel: smart_elements_panel
 3. دعم إضافة/حذف المكونات والتوسع التلقائي
 4. إدارة الطبقات
 
-**الملفات المطلوبة:**
-- `src/components/planning/canvas/CanvasLayer.tsx`
-- `src/components/planning/canvas/LayersManager.tsx`
-- `src/hooks/useCanvasZoom.ts`
-- `src/hooks/useCanvasPan.ts`
+**الملفات/النطاقات المعتمدة:**
+- `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` لتجميع pan/zoom والتفاعل.
+- `src/features/planning/canvas/layers/` لإضافات الطبقات.
+- `src/features/planning/canvas/controllers/` لأي controller جديد مرتبط بالتفاعل أو viewport.
 
 ---
 
@@ -694,16 +698,11 @@ panel: smart_elements_panel
 6. أداة الشكل
 7. أداة العناصر الذكية
 
-**الملفات المطلوبة:**
-- `src/components/planning/toolbar/BottomToolbar.tsx`
-- `src/components/planning/tools/SelectionTool.tsx`
-- `src/components/planning/tools/SmartPenTool.tsx`
-- `src/components/planning/tools/FrameTool.tsx`
-- `src/components/planning/tools/FileUploaderTool.tsx`
-- `src/components/planning/tools/TextTool.tsx`
-- `src/components/planning/tools/ShapesTool.tsx`
-- `src/components/planning/tools/SmartElementTool.tsx`
-- `src/components/planning/panels/[tool]_panel.tsx` (لكل أداة)
+**الملفات/النطاقات المعتمدة:**
+- `src/features/planning/ui/toolbars/` لأشرطة الأدوات.
+- `src/features/planning/ui/panels/` للّوحات المرتبطة بالأدوات.
+- `src/features/planning/canvas/gestures/` و`src/features/planning/canvas/controllers/` لمنطق الإدخال.
+- `src/features/planning/elements/` لعناصر اللوحة الذكية أو المرئية.
 
 ---
 
@@ -715,10 +714,11 @@ panel: smart_elements_panel
 3. أزرار التنفيذ الذكية (مشروع ذكي، المراجعة، التنظيف)
 4. دمج المقترحات الذكية
 
-**الملفات المطلوبة:**
-- `src/components/planning/ai/AIAssistant.tsx`
-- `src/components/planning/ai/AIChatbox.tsx`
-- `src/components/planning/ai/SmartActions.tsx`
+**الملفات/النطاقات المعتمدة:**
+- `src/features/planning/ai/` لمكونات وخدمات AI الجديدة التي لا تنتمي مباشرة إلى عنصر Canvas.
+- `src/features/planning/elements/smart/` لعناصر smart elements القائمة أو امتداداتها.
+- `src/features/planning/execution/` لتوسعات التنفيذ، engine job affordances، أو execution expansion داخل التخطيط.
+- `PlanningCanvas` يركّب واجهات هذه المزايا، و`InfiniteCanvas` يتلقى فقط ما يخص التفاعل المباشر مع اللوحة.
 
 ---
 
@@ -729,10 +729,10 @@ panel: smart_elements_panel
 2. شريط الملاحة السفلي (Zoom controls، Pan، Minimap، Expand)
 3. شريط التحرير الطافي
 
-**الملفات المطلوبة:**
-- `src/components/planning/toolbar/TopControlBar.tsx`
-- `src/components/planning/toolbar/BottomNavigationBar.tsx`
-- `src/components/planning/toolbar/FloatingEditBar.tsx`
+**الملفات/النطاقات المعتمدة:**
+- `src/features/planning/ui/toolbars/CanvasToolbar.tsx` للشريط العلوي الحالي أو امتداداته.
+- `src/features/planning/ui/toolbars/BottomToolbar.tsx` و`NavigationBar.tsx` للشريط السفلي والملاحة.
+- `src/features/planning/ui/toolbars/ContextualToolbarManager.tsx` للتحرير الطافي والسياقي.
 
 ---
 

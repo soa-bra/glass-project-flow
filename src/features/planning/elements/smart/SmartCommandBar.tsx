@@ -25,12 +25,17 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useSmartElementAI } from '@/hooks/useSmartElementAI';
 import { SmartElementType } from '@/types/smart-elements';
+import type { SmartConversionTargetEntityType } from '@/features/planning/services/smartConversion.service';
 import { cn } from '@/lib/utils';
 
 interface SmartCommandBarProps {
   isOpen: boolean;
   onClose: () => void;
   onElementsGenerated?: (elements: any[], layout: string) => void;
+  onSmartConversionSuggested?: (payload: {
+    targetEntityType: SmartConversionTargetEntityType;
+    suggestedData: Record<string, unknown>;
+  }) => void;
   position?: { x: number; y: number };
 }
 
@@ -129,10 +134,28 @@ const ELEMENT_TYPE_KEYWORDS: Record<string, SmartElementType> = {
   'عملاء': 'crm_card'
 };
 
+const EXECUTABLE_ENTITY_TARGETS: Partial<Record<SmartElementType, SmartConversionTargetEntityType>> = {
+  project_card: 'project',
+  task_card: 'task',
+  finance_card: 'financial_budget',
+};
+
+const getSuggestedConversionData = (element: any): Record<string, unknown> => ({
+  ...(typeof element?.data === 'object' && element.data !== null ? element.data : {}),
+  ...(typeof element === 'object' && element !== null
+    ? {
+        name: element.title ?? element.name,
+        title: element.title,
+        description: element.description,
+      }
+    : {}),
+});
+
 export function SmartCommandBar({ 
   isOpen, 
   onClose, 
   onElementsGenerated,
+  onSmartConversionSuggested,
   position 
 }: SmartCommandBarProps) {
   const [input, setInput] = useState('');
@@ -215,7 +238,15 @@ export function SmartCommandBar({
     const result = await generateElements(prompt, preferredType);
     
     if (result && result.elements?.length > 0) {
-      onElementsGenerated?.(result.elements, result.layout);
+      const targetEntityType = preferredType ? EXECUTABLE_ENTITY_TARGETS[preferredType] : undefined;
+      if (targetEntityType && onSmartConversionSuggested) {
+        onSmartConversionSuggested({
+          targetEntityType,
+          suggestedData: getSuggestedConversionData(result.elements[0]),
+        });
+      } else {
+        onElementsGenerated?.(result.elements, result.layout);
+      }
       onClose();
     }
   };
@@ -229,7 +260,15 @@ export function SmartCommandBar({
       const prompt = example.command.replace('/ai ', '');
       generateElements(prompt, example.type).then(result => {
         if (result && result.elements?.length > 0) {
-          onElementsGenerated?.(result.elements, result.layout);
+          const targetEntityType = example.type ? EXECUTABLE_ENTITY_TARGETS[example.type] : undefined;
+          if (targetEntityType && onSmartConversionSuggested) {
+            onSmartConversionSuggested({
+              targetEntityType,
+              suggestedData: getSuggestedConversionData(result.elements[0]),
+            });
+          } else {
+            onElementsGenerated?.(result.elements, result.layout);
+          }
           onClose();
         }
       });
