@@ -59,6 +59,10 @@ export async function updateProject(
   return data;
 }
 
+export async function archiveProject(id: string): Promise<Project> {
+  return updateProject(id, { state: "archived" });
+}
+
 export async function deleteProject(id: string): Promise<void> {
   const { error } = await supabase.from("projects").delete().eq("id", id);
   if (error) throw error;

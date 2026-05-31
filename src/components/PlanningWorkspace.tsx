@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PlanningEntryScreen from '@/features/planning/ui/PlanningEntryScreen';
 import PlanningCanvas from '@/features/planning/ui/PlanningCanvas';
 import { usePlanningStore } from '@/stores/planningStore';
@@ -10,7 +10,11 @@ interface PlanningWorkspaceProps {
 const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   isSidebarCollapsed
 }) => {
-  const { currentBoard } = usePlanningStore();
+  const { currentBoard, loadBoards } = usePlanningStore();
+
+  useEffect(() => {
+    void loadBoards();
+  }, [loadBoards]);
 
   return (
     <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${

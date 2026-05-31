@@ -16,8 +16,13 @@ export interface PolicyAttributes {
   isTrustedSession: boolean;
 }
 
+export type CanvasCommand =
+  | 'canvas.smart-elements.generate'
+  | 'canvas.smart-doc.create'
+  | 'canvas.smart-doc.ai-assist';
+
 export interface CommandAuthorizationRequest {
-  command: 'canvas.smart-elements.generate';
+  command: CanvasCommand;
   actor: CommandActor;
   attributes: PolicyAttributes;
 }
@@ -40,15 +45,17 @@ export function evaluateCommandAuthorization(request: CommandAuthorizationReques
     return { allowed: false, reason: 'Board is archived and does not allow mutations.' };
   }
 
-  if (attributes.generatedElementCount <= 0) {
-    return { allowed: false, reason: 'Command generated no elements.' };
-  }
-
-  if (attributes.generatedElementCount > SMART_ELEMENT_LIMIT_PER_COMMAND) {
-    return {
-      allowed: false,
-      reason: `Generated elements exceed policy limit (${SMART_ELEMENT_LIMIT_PER_COMMAND}).`,
-    };
+  // Generation-volume guards apply only to bulk-generation commands.
+  if (request.command === 'canvas.smart-elements.generate') {
+    if (attributes.generatedElementCount <= 0) {
+      return { allowed: false, reason: 'Command generated no elements.' };
+    }
+    if (attributes.generatedElementCount > SMART_ELEMENT_LIMIT_PER_COMMAND) {
+      return {
+        allowed: false,
+        reason: `Generated elements exceed policy limit (${SMART_ELEMENT_LIMIT_PER_COMMAND}).`,
+      };
+    }
   }
 
   if (actor.role === 'host') {

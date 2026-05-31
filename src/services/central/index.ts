@@ -14,3 +14,5 @@ export * as EngineJobsService from "./engineJobs.service";
 export * as DependenciesService from "./dependencies.service";
 export * as SearchService from "./search.service";
 export * as RolesService from "./roles.service";
+export * as PermissionsService from "./permissions.service";
+export * as PlanningBoardsService from "./planningBoards.service";

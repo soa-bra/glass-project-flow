@@ -142,7 +142,7 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
         savedAt: savedAt.toISOString(),
       };
 
-      saveBoard(board.id, savedAt, canvasState);
+      await saveBoard(board.id, savedAt, canvasState);
 
       lastSavedFingerprintRef.current = fingerprint;
       setLastSavedAt(savedAt);

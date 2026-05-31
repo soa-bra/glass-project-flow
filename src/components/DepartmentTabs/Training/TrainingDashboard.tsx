@@ -7,6 +7,7 @@ import { LMSTab } from './LMSTab';
 import { SchedulingTab } from './SchedulingTab';
 import { CertificationsTab } from './CertificationsTab';
 import { AnalyticsTab } from './AnalyticsTab';
+import { DevelopmentPathsTab } from './DevelopmentPathsTab';
 import { CorporateTab } from './CorporateTab';
 import { PartnershipsTab } from './PartnershipsTab';
 import { TemplatesTab } from './TemplatesTab';
@@ -21,6 +22,7 @@ export const TrainingDashboard: React.FC = () => {
     { value: 'scheduling', label: 'الجدولة والتسجيل' },
     { value: 'certifications', label: 'الشهادات والمهارات' },
     { value: 'analytics', label: 'التحليلات والأداء' },
+    { value: 'development-paths', label: 'مسارات التطوير' },
     { value: 'corporate', label: 'البرامج المؤسسية' },
     { value: 'partnerships', label: 'الشراكات الأكاديمية' },
     { value: 'templates', label: 'النماذج والقوالب' },
@@ -34,45 +36,17 @@ export const TrainingDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
-      <BaseTabContent value="overview">
-        <OverviewTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="courses">
-        <CoursesTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="lms">
-        <LMSTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="scheduling">
-        <SchedulingTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="certifications">
-        <CertificationsTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="analytics">
-        <AnalyticsTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="corporate">
-        <CorporateTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="partnerships">
-        <PartnershipsTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="templates">
-        <TemplatesTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="reports">
-        <ReportsTab />
-      </BaseTabContent>
+      <BaseTabContent value="overview"><OverviewTab /></BaseTabContent>
+      <BaseTabContent value="courses"><CoursesTab /></BaseTabContent>
+      <BaseTabContent value="lms"><LMSTab /></BaseTabContent>
+      <BaseTabContent value="scheduling"><SchedulingTab /></BaseTabContent>
+      <BaseTabContent value="certifications"><CertificationsTab /></BaseTabContent>
+      <BaseTabContent value="analytics"><AnalyticsTab /></BaseTabContent>
+      <BaseTabContent value="development-paths"><DevelopmentPathsTab /></BaseTabContent>
+      <BaseTabContent value="corporate"><CorporateTab /></BaseTabContent>
+      <BaseTabContent value="partnerships"><PartnershipsTab /></BaseTabContent>
+      <BaseTabContent value="templates"><TemplatesTab /></BaseTabContent>
+      <BaseTabContent value="reports"><ReportsTab /></BaseTabContent>
     </DashboardLayout>
   );
 };

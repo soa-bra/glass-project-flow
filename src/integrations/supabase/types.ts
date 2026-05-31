@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      archive_documents: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          file_url: string | null
+          id: string
+          metadata: Json
+          owner_id: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          metadata?: Json
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          metadata?: Json
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
       audit_events: {
         Row: {
           action: string
@@ -53,6 +98,48 @@ export type Database = {
           resource_type?: string
           scope_id?: string | null
           scope_type?: Database["public"]["Enums"]["role_scope_type"] | null
+        }
+        Relationships: []
+      }
+      bcm_members: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          joined_at: string | null
+          metadata: Json | null
+          name: string
+          notes: string | null
+          owner_id: string
+          segment: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          joined_at?: string | null
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          owner_id: string
+          segment?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          joined_at?: string | null
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          segment?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -278,6 +365,78 @@ export type Database = {
         }
         Relationships: []
       }
+      brand_assets: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          file_url: string | null
+          id: string
+          name: string
+          owner_id: string
+          status: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          name: string
+          owner_id: string
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          file_url?: string | null
+          id?: string
+          name?: string
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      brand_guidelines: {
+        Row: {
+          body_md: string | null
+          created_at: string
+          id: string
+          owner_id: string
+          status: string
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          body_md?: string | null
+          created_at?: string
+          id?: string
+          owner_id: string
+          status?: string
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          body_md?: string | null
+          created_at?: string
+          id?: string
+          owner_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
       central_boards: {
         Row: {
           code: string
@@ -313,6 +472,264 @@ export type Database = {
           owner_id?: string
           priority?: Database["public"]["Enums"]["central_priority"]
           state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_activities: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          due_date: string | null
+          id: string
+          notes: string | null
+          opportunity_id: string | null
+          owner_id: string
+          status: string
+          subject: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          opportunity_id?: string | null
+          owner_id: string
+          status?: string
+          subject: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          opportunity_id?: string | null
+          owner_id?: string
+          status?: string
+          subject?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_customers: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          notes: string | null
+          owner_id: string
+          phone: string | null
+          segment: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          owner_id: string
+          phone?: string | null
+          segment?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          phone?: string | null
+          segment?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_opportunities: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          expected_close: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          probability: number | null
+          stage: string
+          updated_at: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          expected_close?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          probability?: number | null
+          stage?: string
+          updated_at?: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          expected_close?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          probability?: number | null
+          stage?: string
+          updated_at?: string
+          value?: number | null
+        }
+        Relationships: []
+      }
+      crm_service_tickets: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          customer_id: string | null
+          description: string | null
+          id: string
+          owner_id: string
+          priority: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          owner_id: string
+          priority?: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          owner_id?: string
+          priority?: string
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      csr_initiatives: {
+        Row: {
+          beneficiaries_count: number | null
+          budget: number | null
+          created_at: string
+          end_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          start_date: string | null
+          status: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          beneficiaries_count?: number | null
+          budget?: number | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          start_date?: string | null
+          status?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          beneficiaries_count?: number | null
+          budget?: number | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          start_date?: string | null
+          status?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      csr_tickets: {
+        Row: {
+          assignee_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          initiative_id: string | null
+          owner_id: string
+          priority: string
+          requester_email: string | null
+          requester_name: string
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          initiative_id?: string | null
+          owner_id: string
+          priority?: string
+          requester_email?: string | null
+          requester_name: string
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          initiative_id?: string | null
+          owner_id?: string
+          priority?: string
+          requester_email?: string | null
+          requester_name?: string
+          status?: string
+          subject?: string
           updated_at?: string
         }
         Relationships: []
@@ -563,6 +980,354 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_budgets: {
+        Row: {
+          created_at: string
+          currency: string
+          department_id: string | null
+          end_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          period: string
+          planned_amount: number
+          project_id: string | null
+          spent_amount: number
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          department_id?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          period?: string
+          planned_amount?: number
+          project_id?: string | null
+          spent_amount?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          department_id?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          period?: string
+          planned_amount?: number
+          project_id?: string | null
+          spent_amount?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_transactions: {
+        Row: {
+          amount: number
+          budget_id: string | null
+          category: string | null
+          created_at: string
+          currency: string
+          date: string
+          id: string
+          kind: string
+          notes: string | null
+          owner_id: string
+          project_id: string | null
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          amount?: number
+          budget_id?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string
+          date?: string
+          id?: string
+          kind: string
+          notes?: string | null
+          owner_id: string
+          project_id?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          budget_id?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string
+          date?: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          owner_id?: string
+          project_id?: string | null
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: []
+      }
+      hr_attendance: {
+        Row: {
+          check_in: string | null
+          check_out: string | null
+          created_at: string
+          date: string
+          employee_id: string
+          id: string
+          notes: string | null
+          owner_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          date: string
+          employee_id: string
+          id?: string
+          notes?: string | null
+          owner_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          check_in?: string | null
+          check_out?: string | null
+          created_at?: string
+          date?: string
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_employees: {
+        Row: {
+          created_at: string
+          department_id: string | null
+          email: string | null
+          hire_date: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          phone: string | null
+          role: string | null
+          salary: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department_id?: string | null
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          role?: string | null
+          salary?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department_id?: string | null
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          role?: string | null
+          salary?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_partners: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          status: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          status?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          status?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_performance_reviews: {
+        Row: {
+          created_at: string
+          employee_id: string
+          id: string
+          notes: string | null
+          owner_id: string
+          period: string
+          rating: string | null
+          reviewer_id: string | null
+          score: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          employee_id: string
+          id?: string
+          notes?: string | null
+          owner_id: string
+          period: string
+          rating?: string | null
+          reviewer_id?: string | null
+          score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          owner_id?: string
+          period?: string
+          rating?: string | null
+          reviewer_id?: string | null
+          score?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_training_courses: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_hours: number | null
+          end_date: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          provider: string | null
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          provider?: string | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_hours?: number | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          provider?: string | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_training_enrollments: {
+        Row: {
+          completion_date: string | null
+          course_id: string
+          created_at: string
+          employee_id: string
+          id: string
+          owner_id: string
+          score: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completion_date?: string | null
+          course_id: string
+          created_at?: string
+          employee_id: string
+          id?: string
+          owner_id: string
+          score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completion_date?: string | null
+          course_id?: string
+          created_at?: string
+          employee_id?: string
+          id?: string
+          owner_id?: string
+          score?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       invoice_items: {
         Row: {
           created_at: string | null
@@ -747,6 +1512,180 @@ export type Database = {
         }
         Relationships: []
       }
+      kmpa_documents: {
+        Row: {
+          category: string | null
+          content_md: string | null
+          created_at: string
+          id: string
+          owner_id: string
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          category?: string | null
+          content_md?: string | null
+          created_at?: string
+          id?: string
+          owner_id: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          category?: string | null
+          content_md?: string | null
+          created_at?: string
+          id?: string
+          owner_id?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      knowledge_articles: {
+        Row: {
+          body_md: string | null
+          category: string | null
+          created_at: string
+          id: string
+          owner_id: string
+          status: string
+          summary: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          body_md?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          owner_id: string
+          status?: string
+          summary?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          body_md?: string | null
+          category?: string | null
+          created_at?: string
+          id?: string
+          owner_id?: string
+          status?: string
+          summary?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      legal_cases: {
+        Row: {
+          client_name: string | null
+          closed_at: string | null
+          created_at: string
+          external_reference: string | null
+          id: string
+          notes: string | null
+          opened_at: string | null
+          owner_id: string
+          status: string
+          title: string
+          type: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_name?: string | null
+          closed_at?: string | null
+          created_at?: string
+          external_reference?: string | null
+          id?: string
+          notes?: string | null
+          opened_at?: string | null
+          owner_id: string
+          status?: string
+          title: string
+          type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_name?: string | null
+          closed_at?: string | null
+          created_at?: string
+          external_reference?: string | null
+          id?: string
+          notes?: string | null
+          opened_at?: string | null
+          owner_id?: string
+          status?: string
+          title?: string
+          type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      legal_contracts: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          expires_at: string | null
+          file_url: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          party: string | null
+          project_id: string | null
+          signed_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          file_url?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          party?: string | null
+          project_id?: string | null
+          signed_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          file_url?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          party?: string | null
+          project_id?: string | null
+          signed_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       links: {
         Row: {
           board_id: string
@@ -802,6 +1741,96 @@ export type Database = {
           },
         ]
       }
+      marketing_campaigns: {
+        Row: {
+          budget: number | null
+          channel: string | null
+          created_at: string
+          end_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          spent: number | null
+          start_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          channel?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          spent?: number | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          channel?: string | null
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          spent?: number | null
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      marketing_leads: {
+        Row: {
+          campaign_id: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string
+          phone: string | null
+          score: number | null
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id: string
+          phone?: string | null
+          score?: number | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          phone?: string | null
+          score?: number | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       op_log: {
         Row: {
           board_id: string
@@ -843,6 +1872,54 @@ export type Database = {
           },
         ]
       }
+      partnership_agreements: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          notes: string | null
+          owner_id: string
+          partner_name: string | null
+          start_date: string | null
+          status: string
+          type: string | null
+          updated_at: string
+          value: number | null
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          notes?: string | null
+          owner_id: string
+          partner_name?: string | null
+          start_date?: string | null
+          status?: string
+          type?: string | null
+          updated_at?: string
+          value?: number | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          notes?: string | null
+          owner_id?: string
+          partner_name?: string | null
+          start_date?: string | null
+          status?: string
+          type?: string | null
+          updated_at?: string
+          value?: number | null
+        }
+        Relationships: []
+      }
       permissions: {
         Row: {
           code: string
@@ -863,6 +1940,140 @@ export type Database = {
           module?: string
         }
         Relationships: []
+      }
+      planning_boards: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          settings: Json
+          state: Database["public"]["Enums"]["central_state"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          settings?: Json
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          settings?: Json
+          state?: Database["public"]["Enums"]["central_state"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      planning_element_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          board_id: string
+          changed_fields: Json
+          created_at: string
+          element_id: string
+          id: string
+          snapshot: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          board_id: string
+          changed_fields?: Json
+          created_at?: string
+          element_id: string
+          id?: string
+          snapshot?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          board_id?: string
+          changed_fields?: Json
+          created_at?: string
+          element_id?: string
+          id?: string
+          snapshot?: Json | null
+        }
+        Relationships: []
+      }
+      planning_elements: {
+        Row: {
+          board_id: string
+          content: Json
+          created_at: string
+          created_by: string
+          element_type: Database["public"]["Enums"]["planning_element_type"]
+          id: string
+          locked_at: string | null
+          locked_by: string | null
+          metadata: Json
+          position: Json
+          rotation: number
+          schema_version: number
+          size: Json
+          style: Json
+          updated_at: string
+          z_index: number
+        }
+        Insert: {
+          board_id: string
+          content?: Json
+          created_at?: string
+          created_by: string
+          element_type: Database["public"]["Enums"]["planning_element_type"]
+          id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          metadata?: Json
+          position?: Json
+          rotation?: number
+          schema_version?: number
+          size?: Json
+          style?: Json
+          updated_at?: string
+          z_index?: number
+        }
+        Update: {
+          board_id?: string
+          content?: Json
+          created_at?: string
+          created_by?: string
+          element_type?: Database["public"]["Enums"]["planning_element_type"]
+          id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          metadata?: Json
+          position?: Json
+          rotation?: number
+          schema_version?: number
+          size?: Json
+          style?: Json
+          updated_at?: string
+          z_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planning_elements_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1131,6 +2342,54 @@ export type Database = {
         }
         Relationships: []
       }
+      spec_tab_items: {
+        Row: {
+          created_at: string
+          department_code: string
+          details: Json
+          id: string
+          kpis: Json
+          meta: string | null
+          owner_id: string
+          position: number
+          status: string | null
+          subtitle: string | null
+          tab_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department_code: string
+          details?: Json
+          id?: string
+          kpis?: Json
+          meta?: string | null
+          owner_id?: string
+          position?: number
+          status?: string | null
+          subtitle?: string | null
+          tab_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department_code?: string
+          details?: Json
+          id?: string
+          kpis?: Json
+          meta?: string | null
+          owner_id?: string
+          position?: number
+          status?: string | null
+          subtitle?: string | null
+          tab_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       task_cards: {
         Row: {
           central_board_id: string | null
@@ -1377,6 +2636,45 @@ export type Database = {
           },
         ]
       }
+      template_items: {
+        Row: {
+          body_md: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          metadata: Json | null
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          body_md?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tools: {
         Row: {
           central_board_id: string
@@ -1466,6 +2764,33 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           scope_id?: string | null
           scope_type?: Database["public"]["Enums"]["role_scope_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          payload: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          payload?: Json
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -1604,6 +2929,16 @@ export type Database = {
         | "validation"
       invoice_status: "draft" | "pending" | "paid" | "overdue"
       operation_type: "create" | "update" | "delete" | "move" | "resize"
+      planning_element_type:
+        | "sticky"
+        | "shape"
+        | "text"
+        | "smart_doc"
+        | "interactive_sheet"
+        | "mindmap_node"
+        | "frame"
+        | "connector"
+        | "entity_card"
       project_status:
         | "planning"
         | "active"
@@ -1838,6 +3173,17 @@ export const Constants = {
       ],
       invoice_status: ["draft", "pending", "paid", "overdue"],
       operation_type: ["create", "update", "delete", "move", "resize"],
+      planning_element_type: [
+        "sticky",
+        "shape",
+        "text",
+        "smart_doc",
+        "interactive_sheet",
+        "mindmap_node",
+        "frame",
+        "connector",
+        "entity_card",
+      ],
       project_status: [
         "planning",
         "active",
