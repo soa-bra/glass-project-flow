@@ -234,33 +234,6 @@ const tools = [
   {
     type: "function",
     function: {
-      name: "generate_smart_document",
-      description: "Generate one reviewed smart document from up to 50 selected canvas elements.",
-      parameters: {
-        type: "object",
-        properties: {
-          sourceElementIds: {
-            type: "array",
-            items: { type: "string" },
-            maxItems: 50,
-            description: "IDs of source canvas elements used to create this document"
-          },
-          title: { type: "string", description: "Document title" },
-          content: { type: "string", description: "Editable document body in Arabic unless requested otherwise" },
-          docType: {
-            type: "string",
-            enum: ["summary", "requirements", "meeting_notes", "proposal", "report", "specification", "custom"],
-            description: "Document type"
-          },
-          generatedByAi: { type: "boolean", description: "Must be true for AI-generated drafts" }
-        },
-        required: ["sourceElementIds", "title", "content", "docType", "generatedByAi"]
-      }
-    }
-  },
-  {
-    type: "function",
-    function: {
       name: "analyze_selection",
       description: "Analyze selected canvas elements and suggest smart element transformations",
       parameters: {
@@ -358,10 +331,6 @@ const systemPrompt = `أنت مساعد ذكي متخصص في نظام سوبر
 
 ### عناصر الربط:
 - **root_connector**: رابط ذكي بين المكونات
-
-### الوثائق الذكية:
-- وثيقة موحدة تتكون من: sourceElementIds, title, content, docType, generatedByAi
-- عند توليد وثيقة من عناصر محددة اربطها دائماً بمعرفات المصدر ولا تتجاوز 50 عنصرًا
 
 ## قواعد التوليد:
 1. دائماً استخدم اللغة العربية في العناوين والوصف إلا إذا طُلب غير ذلك
@@ -636,14 +605,6 @@ serve(async (req) => {
     }
 
     const toolResult = JSON.parse(toolCall.function.arguments);
-    if (action === 'generate_document') {
-      const sourceElementIds = Array.from(new Set((toolResult.sourceElementIds || (selectedElements || []).map((element: any) => element?.id || element)).map(String).filter(Boolean))).slice(0, 50);
-      toolResult.sourceElementIds = sourceElementIds;
-      toolResult.title = toolResult.title || 'وثيقة ذكية';
-      toolResult.content = toolResult.content || '';
-      toolResult.docType = toolResult.docType || context?.docType || 'summary';
-      toolResult.generatedByAi = true;
-    }
     const confidenceSummary = getConfidenceSummary(toolResult);
     const escalation = determineEscalationGate(confidenceSummary);
     

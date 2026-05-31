@@ -1,15 +1,12 @@
-import React, { useState } from "react";
-import { FileText, FileSpreadsheet, Lock, Sparkles } from "lucide-react";
+import React from "react";
+import { FileText, FileSpreadsheet, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useCanvasStore } from "@/stores/canvasStore";
-import type { SmartDocument, SmartElementType } from "@/types/smart-elements";
+import type { SmartElementType } from "@/types/smart-elements";
 import {
   canMutateCanvas,
   useCurrentBoardRole,
 } from "@/features/planning/hooks/useCurrentBoardRole";
-import { useSmartElementAI } from "@/hooks/useSmartElementAI";
-import { PlanningBoardsService } from "@/services/central";
-import { Textarea } from "@/components/ui/textarea";
 
 interface SmartDocOption {
   id: SmartElementType;
@@ -41,96 +38,10 @@ interface SmartDocToolZoneProps {
 }
 
 const SmartDocToolZone: React.FC<SmartDocToolZoneProps> = ({ boardId }) => {
-  const { selectedSmartDoc, selectedElementIds, elements, viewport } = useCanvasStore();
+  const { selectedSmartDoc } = useCanvasStore();
   const { role } = useCurrentBoardRole(boardId ?? null);
   const allowed = canMutateCanvas(role);
-  const { generateDocument, isLoading } = useSmartElementAI();
-  const [reviewDraft, setReviewDraft] = useState<SmartDocument | null>(null);
-  const [reviewPrompt, setReviewPrompt] = useState("");
 
-  const selectedElements = elements.filter((element) => selectedElementIds.includes(element.id));
-
-
-  const handleGenerateDocument = async () => {
-    if (!allowed) {
-      toast.error("هذا الإجراء غير مصرّح لدورك على هذه اللوحة");
-      return;
-    }
-    const draft = await generateDocument(selectedElements, reviewPrompt, "summary");
-    if (draft) setReviewDraft(draft);
-  };
-
-  const handleSaveReviewedDocument = async () => {
-    if (!reviewDraft) return;
-    const position = {
-      x: 120 - viewport.pan.x / viewport.zoom,
-      y: 120 - viewport.pan.y / viewport.zoom,
-    };
-
-    if (boardId) {
-      try {
-        const saved = await PlanningBoardsService.saveReviewedSmartDocument({
-          board_id: boardId,
-          document: reviewDraft,
-          position,
-        });
-        useCanvasStore.getState().addElement({
-          id: saved.id,
-          type: "smart_doc",
-          position,
-          size: { width: 520, height: 420 },
-          style: {},
-          data: {
-            smartType: "smart_text_doc",
-            title: reviewDraft.title,
-            content: reviewDraft.content,
-            format: "rich",
-            aiAssist: true,
-            readOnly: false,
-            showToolbar: true,
-            sourceElementIds: reviewDraft.sourceElementIds,
-            docType: reviewDraft.docType,
-            generatedByAi: reviewDraft.generatedByAi,
-          },
-          metadata: saved.metadata as Record<string, unknown>,
-        });
-        toast.success("تم حفظ الوثيقة وربطها بعناصر المصدر");
-        setReviewDraft(null);
-        return;
-      } catch (error) {
-        console.error("[SmartDocToolZone] Failed to save reviewed smart document", error);
-        toast.error("تعذر الحفظ في قاعدة البيانات، سيتم إضافتها محليًا على الكانفس");
-      }
-    }
-
-    useCanvasStore.getState().addElement({
-      type: "smart",
-      smartType: "smart_text_doc",
-      position,
-      size: { width: 520, height: 420 },
-      style: {},
-      data: {
-        smartType: "smart_text_doc",
-        ...reviewDraft,
-        format: "rich",
-        aiAssist: true,
-        readOnly: false,
-        showToolbar: true,
-      },
-      metadata: {
-        smartDoc: {
-          storage: "canvas_local",
-          sourceElementIds: reviewDraft.sourceElementIds,
-          docType: reviewDraft.docType,
-          generatedByAi: reviewDraft.generatedByAi,
-        },
-        sourceElementIds: reviewDraft.sourceElementIds,
-        linkedSourceElementIds: reviewDraft.sourceElementIds,
-      },
-    });
-    toast.success("تمت إضافة الوثيقة وربطها بعناصر المصدر");
-    setReviewDraft(null);
-  };
   const handleSelectOption = (option: SmartDocOption) => {
     if (!allowed) {
       toast.error("هذا الإجراء غير مصرّح لدورك على هذه اللوحة", {
@@ -154,51 +65,6 @@ const SmartDocToolZone: React.FC<SmartDocToolZoneProps> = ({ boardId }) => {
           ? "اختر نوع المستند ثم انقر على الكانفس لإضافته"
           : "العرض فقط — لا تملك صلاحية إنشاء المستندات على هذه اللوحة"}
       </p>
-
-      <div className="rounded-[16px] border border-[hsl(var(--border))] bg-white p-4 space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div>
-            <h4 className="text-[13px] font-bold text-[hsl(var(--ink))]">توليد وثيقة من العناصر المحددة</h4>
-            <p className="text-[11px] text-[hsl(var(--ink-60))]">
-              المحدد الآن: {selectedElements.length} / 50 عنصر
-            </p>
-          </div>
-          <button
-            onClick={handleGenerateDocument}
-            disabled={!allowed || isLoading || selectedElements.length === 0 || selectedElements.length > 50}
-            className="inline-flex items-center gap-2 rounded-[10px] bg-[hsl(var(--accent-blue))] px-3 py-2 text-[11px] font-bold text-white disabled:opacity-50"
-          >
-            <Sparkles size={14} />
-            توليد
-          </button>
-        </div>
-        <Textarea
-          value={reviewPrompt}
-          onChange={(event) => setReviewPrompt(event.target.value)}
-          placeholder="تعليمات اختيارية للوثيقة (مثلاً: لخّص كمحضر اجتماع)..."
-          className="min-h-[72px] text-xs"
-        />
-        {reviewDraft && (
-          <div className="space-y-2 rounded-[12px] bg-[hsl(var(--panel))] p-3">
-            <input
-              value={reviewDraft.title}
-              onChange={(event) => setReviewDraft({ ...reviewDraft, title: event.target.value })}
-              className="w-full rounded-md border border-[hsl(var(--border))] px-2 py-1 text-xs font-bold"
-            />
-            <Textarea
-              value={reviewDraft.content}
-              onChange={(event) => setReviewDraft({ ...reviewDraft, content: event.target.value })}
-              className="min-h-[120px] text-xs"
-            />
-            <button
-              onClick={handleSaveReviewedDocument}
-              className="w-full rounded-[10px] bg-[hsl(var(--accent-green))] px-3 py-2 text-[11px] font-bold text-white"
-            >
-              حفظ الوثيقة بعد المراجعة وربط المصادر
-            </button>
-          </div>
-        )}
-      </div>
 
       <div className="grid grid-cols-1 gap-3">
         {SMART_DOC_OPTIONS.map((option) => {

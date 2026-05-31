@@ -70,7 +70,7 @@ export interface CanvasSmartElement extends CanvasElementBase {
   type: 'smart';
   smartType: 'thinking_board' | 'kanban' | 'voting' | 'brainstorming' | 'timeline' 
     | 'decisions_matrix' | 'gantt' | 'interactive_sheet' | 'mind_map' 
-    | 'project_card' | 'task_card' | 'finance_card' | 'csr_card' | 'crm_card' | 'root_connector' | 'visual_diagram' | 'smart_text_doc';
+    | 'project_card' | 'finance_card' | 'csr_card' | 'crm_card' | 'root_connector';
   data: any;
 }
 
