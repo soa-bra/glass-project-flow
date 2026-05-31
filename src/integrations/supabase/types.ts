@@ -2463,6 +2463,80 @@ export type Database = {
           },
         ]
       }
+      smart_connectors: {
+        Row: {
+          board_id: string
+          connector_element_id: string
+          connector_kind: string
+          created_at: string
+          id: string
+          label: string | null
+          metadata: Json
+          relationship_type: string
+          source_element_id: string
+          style: Json
+          target_element_id: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          connector_element_id: string
+          connector_kind: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          relationship_type: string
+          source_element_id: string
+          style?: Json
+          target_element_id: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          connector_element_id?: string
+          connector_kind?: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          relationship_type?: string
+          source_element_id?: string
+          style?: Json
+          target_element_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_connectors_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_connector_element_id_fkey"
+            columns: ["connector_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_source_element_id_fkey"
+            columns: ["source_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_target_element_id_fkey"
+            columns: ["target_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_tool_engine_links: {
         Row: {
           created_at: string
@@ -2899,6 +2973,13 @@ export type Database = {
         | "technical"
         | "operational"
         | "time"
+        | "depends_on"
+        | "causes"
+        | "blocks"
+        | "references"
+        | "funds"
+        | "delivers"
+        | "belongs_to"
       central_entity_type:
         | "central_board"
         | "department"
@@ -2936,6 +3017,10 @@ export type Database = {
         | "smart_doc"
         | "interactive_sheet"
         | "mindmap_node"
+        | "mindmap_connector"
+        | "visual_node"
+        | "visual_connector"
+        | "root_connector"
         | "frame"
         | "connector"
         | "entity_card"
@@ -3139,6 +3224,13 @@ export const Constants = {
         "technical",
         "operational",
         "time",
+        "depends_on",
+        "causes",
+        "blocks",
+        "references",
+        "funds",
+        "delivers",
+        "belongs_to",
       ],
       central_entity_type: [
         "central_board",
@@ -3180,6 +3272,10 @@ export const Constants = {
         "smart_doc",
         "interactive_sheet",
         "mindmap_node",
+        "mindmap_connector",
+        "visual_node",
+        "visual_connector",
+        "root_connector",
         "frame",
         "connector",
         "entity_card",

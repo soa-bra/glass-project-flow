@@ -16,3 +16,4 @@ export * as SearchService from "./search.service";
 export * as RolesService from "./roles.service";
 export * as PermissionsService from "./permissions.service";
 export * as PlanningBoardsService from "./planningBoards.service";
+export * as SmartConnectorsService from "./smartConnectors.service";

@@ -20,6 +20,8 @@ import {
   SMART_DOC_SCHEMA_VERSION,
   validateSmartDocContent,
 } from "@/features/planning/elements/smart-doc/contract";
+import { planningElementToConnectorLogicalRecord } from "@/features/planning/integration/connectors";
+import { upsertSmartConnector, upsertSmartConnectors } from "./smartConnectors.service";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 export type PlanningBoard = Database["public"]["Tables"]["planning_boards"]["Row"];
@@ -61,7 +63,8 @@ export type PlanningBoardUpdateInput = z.infer<typeof planningBoardUpdateSchema>
 
 const planningElementTypeSchema = z.enum([
   "sticky", "shape", "text", "smart_doc", "interactive_sheet",
-  "mindmap_node", "frame", "connector", "entity_card",
+  "mindmap_node", "mindmap_connector", "visual_node", "visual_connector",
+  "root_connector", "frame", "connector", "entity_card",
 ]);
 
 const positionSchema = z.object({ x: z.number(), y: z.number() });
@@ -220,6 +223,8 @@ export async function createPlanningElement(
     .select("*")
     .single();
   if (error) throw error;
+  const connectorRecord = planningElementToConnectorLogicalRecord(data);
+  if (connectorRecord) await upsertSmartConnector(connectorRecord);
   return data;
 }
 
@@ -251,6 +256,8 @@ export async function updatePlanningElement(
     .select("*")
     .single();
   if (error) throw error;
+  const connectorRecord = planningElementToConnectorLogicalRecord(data);
+  if (connectorRecord) await upsertSmartConnector(connectorRecord);
   return data;
 }
 
@@ -272,7 +279,12 @@ export async function upsertPlanningElements(
     .upsert(rows)
     .select("*");
   if (error) throw error;
-  return data ?? [];
+  const savedRows = data ?? [];
+  const connectorRecords = savedRows
+    .map((row) => planningElementToConnectorLogicalRecord(row))
+    .filter((record): record is NonNullable<typeof record> => Boolean(record));
+  await upsertSmartConnectors(connectorRecords);
+  return savedRows;
 }
 
 // ── Element locking (UR-005) ────────────────────────────────────────────────
