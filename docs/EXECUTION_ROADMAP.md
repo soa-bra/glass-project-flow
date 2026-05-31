@@ -14,6 +14,7 @@
 | 3 | **ترتيب ربط Workspaces في P3** | **Projects → Tasks → Departments → Planning → Operations**. |
 | 4 | **migration `20260430090000`** | **معتمدة كما هي**، لا تعديلات قبل P2. |
 | 5 | **Compliance** | لم يُحدَّد بعد — يُراجع قبل P5 (Hardening). |
+| 6 | **مسار توسعة Planning Canvas** | **`src/features/planning/ui/PlanningCanvas.tsx` هو مضيف الميزات الجديدة، و`src/features/planning/canvas/viewport/InfiniteCanvas.tsx` هو مضيف تفاعل اللوحة؛ لا يُنشأ `src/features/planning-canvas/` إلا بفجوة موثّقة، وتوضع إضافات AI/connectors/execution داخل `src/features/planning/`.** |
 
 ---
 
@@ -76,7 +77,7 @@
 1. **Projects ⇆ `projects`** — إزالة `mockProjects` خلف flag.
 2. **Tasks ⇆ `tasks` + `task_tool_engine_links`** — `ProjectTasksContext` يقرأ من DB.
 3. **Departments ⇆ `departments` + `department_projects`**.
-4. **Planning Boards ⇆ `boards` + `tools`** — `PlanningEntryScreen` يعرض السبورات الحقيقية.
+4. **Planning Boards ⇆ `boards` + `tools`** — `PlanningEntryScreen` يعرض السبورات الحقيقية، و`PlanningCanvas` الموجود يبقى مضيف أي Smart Conversion أو Execution Expansion جديدة بينما يبقى `InfiniteCanvas` مسؤولًا عن تفاعل اللوحة.
 5. **Operations ⇆ aggregations حقيقية** — استبدال `mockData.ts`.
 6. **Invoices ⇆ project_id المركزي**.
 
