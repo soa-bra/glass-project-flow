@@ -58,14 +58,32 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const ensureAIPermission = useCallback((scope: CanvasAIPermissionScope): boolean => {
+    void scope;
+    const permissions = getCanvasAIPermissions();
+
+    if (permissions.canUseAI) return true;
+
+    const message = permissions.denialReason || 'لا تملك صلاحية استخدام الذكاء الاصطناعي';
+    setError(message);
+    toast.error('تعذر بدء إجراء الذكاء الاصطناعي', {
+      description: message
+    });
+    return false;
+  }, []);
+
   const callAI = useCallback(async (
-    action: 'generate' | 'analyze' | 'transform',
+    action: CanvasAIPermissionScope,
     payload: {
       prompt?: string;
       selectedElements?: any[];
       context?: Record<string, any>;
     }
   ) => {
+    if (!ensureAIPermission(action)) {
+      return null;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -127,7 +145,7 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [ensureAIPermission]);
 
   const generateElements = useCallback(async (
     prompt: string,
@@ -172,6 +190,10 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
       return null;
     }
 
+    if (!ensureAIPermission('transform')) {
+      return null;
+    }
+
     let result = await callAI('transform', {
       selectedElements: elements,
       prompt,
@@ -204,7 +226,7 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
     }
 
     return result;
-  }, [callAI]);
+  }, [callAI, ensureAIPermission]);
 
   return {
     isLoading,
