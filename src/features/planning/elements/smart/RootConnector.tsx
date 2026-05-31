@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { UNIFIED_RELATIONSHIP_TYPES, type UnifiedRelationshipType } from '@/features/planning/integration/connectors/relationshipTypes';
 import { Link2, Sparkles, X, Edit2, Save, ArrowRight, Wand2, Plus, Trash2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -40,7 +41,7 @@ export interface RootConnectorData {
   color?: string;
   strokeWidth?: number;
   style?: 'solid' | 'dashed' | 'dotted' | 'animated';
-  connectionType?: 'component-component' | 'component-frame' | 'frame-frame' | 'part-part';
+  connectionType?: UnifiedRelationshipType;
   aiSuggestions?: AISuggestion[];
   createdAt?: string;
   updatedAt?: string;
@@ -54,6 +55,20 @@ export interface RootConnectorProps {
   onAISuggest?: (connector: RootConnectorData) => Promise<AISuggestion[]>;
   onInsertSuggestion?: (suggestion: AISuggestion) => void;
 }
+
+
+const getRelationshipTypeLabel = (type?: string) => {
+  switch (type) {
+    case 'depends_on': return 'يعتمد على';
+    case 'causes': return 'يسبب';
+    case 'blocks': return 'يعطل';
+    case 'references': return 'يشير إلى';
+    case 'funds': return 'يمول';
+    case 'delivers': return 'يسلم';
+    case 'belongs_to': return 'ينتمي إلى';
+    default: return 'رابط';
+  }
+};
 
 // ============= Connection Anchors Component =============
 interface ConnectionAnchorsProps {
@@ -165,16 +180,6 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
     setEditedDescription(data.description || '');
   }, [data.title, data.description]);
 
-  const getConnectionTypeLabel = (type?: string) => {
-    switch (type) {
-      case 'component-component': return 'مكون ↔ مكون';
-      case 'component-frame': return 'مكون ↔ إطار';
-      case 'frame-frame': return 'إطار ↔ إطار';
-      case 'part-part': return 'جزء ↔ جزء';
-      default: return 'رابط';
-    }
-  };
-
   return (
     <foreignObject
       x={x - 180}
@@ -203,7 +208,7 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
                     {data.title || 'رابط ذكي'}
                   </h4>
                   <span className="text-xs text-muted-foreground">
-                    {getConnectionTypeLabel(data.connectionType)}
+                    {getRelationshipTypeLabel(data.connectionType)}
                   </span>
                 </div>
               </div>
@@ -601,7 +606,7 @@ export const RootConnectorCreator: React.FC<RootConnectorCreatorProps> = ({
 }) => {
   const [startPoint, setStartPoint] = useState<ConnectorPoint | null>(null);
   const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
-  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('component-component');
+  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('references');
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -673,10 +678,9 @@ export const RootConnectorCreator: React.FC<RootConnectorCreatorProps> = ({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="component-component">مكون ↔ مكون</SelectItem>
-              <SelectItem value="component-frame">مكون ↔ إطار</SelectItem>
-              <SelectItem value="frame-frame">إطار ↔ إطار</SelectItem>
-              <SelectItem value="part-part">جزء ↔ جزء</SelectItem>
+              {UNIFIED_RELATIONSHIP_TYPES.map((type) => (
+                <SelectItem key={type} value={type}>{getRelationshipTypeLabel(type)}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
