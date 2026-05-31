@@ -36,6 +36,69 @@ const getColumnLabel = (index: number): string => {
 
 const getCellId = (row: number, col: number): string => `${getColumnLabel(col)}${row + 1}`;
 
+const safeEvaluateArithmetic = (expression: string): number | null => {
+  const sanitizedExpression = expression.replace(/\s+/g, '');
+  if (!/^[\d+\-*/().]+$/.test(sanitizedExpression)) return null;
+
+  const tokens = sanitizedExpression.match(/\d*\.?\d+|[()+\-*/]/g);
+  if (!tokens || tokens.join('') !== sanitizedExpression) return null;
+
+  const precedence: Record<string, number> = { '+': 1, '-': 1, '*': 2, '/': 2 };
+  const values: number[] = [];
+  const operators: string[] = [];
+
+  const applyTopOperator = () => {
+    const op = operators.pop();
+    const b = values.pop();
+    const a = values.pop();
+    if (!op || a === undefined || b === undefined) return false;
+
+    if (op === '+') values.push(a + b);
+    if (op === '-') values.push(a - b);
+    if (op === '*') values.push(a * b);
+    if (op === '/') values.push(b === 0 ? NaN : a / b);
+
+    return true;
+  };
+
+  for (const token of tokens) {
+    if (/^\d*\.?\d+$/.test(token)) {
+      values.push(parseFloat(token));
+      continue;
+    }
+
+    if (token === '(') {
+      operators.push(token);
+      continue;
+    }
+
+    if (token === ')') {
+      while (operators.length && operators[operators.length - 1] !== '(') {
+        if (!applyTopOperator()) return null;
+      }
+      if (operators.pop() !== '(') return null;
+      continue;
+    }
+
+    while (
+      operators.length &&
+      operators[operators.length - 1] !== '(' &&
+      precedence[operators[operators.length - 1]] >= precedence[token]
+    ) {
+      if (!applyTopOperator()) return null;
+    }
+    operators.push(token);
+  }
+
+  while (operators.length) {
+    if (operators[operators.length - 1] === '(') return null;
+    if (!applyTopOperator()) return null;
+  }
+
+  if (values.length !== 1 || !Number.isFinite(values[0])) return null;
+  return values[0];
+};
+
 const parseCellRef = (ref: string): { row: number; col: number } | null => {
   const match = ref.match(/^([A-Z]+)(\d+)$/);
   if (!match) return null;
@@ -45,6 +108,93 @@ const parseCellRef = (ref: string): { row: number; col: number } | null => {
     col = col * 26 + (match[1].charCodeAt(i) - 64);
   }
   return { row: parseInt(match[2]) - 1, col: col - 1 };
+};
+
+const evaluateArithmeticExpression = (expression: string): number | null => {
+  const normalized = expression.replace(/\s+/g, '');
+  if (!normalized) return null;
+  if (!/^[\d+\-*/().]+$/.test(normalized)) return null;
+
+  const tokens = normalized.match(/\d*\.?\d+|[()+\-*/]/g);
+  if (!tokens) return null;
+
+  const values: number[] = [];
+  const operators: string[] = [];
+  const precedence: Record<string, number> = { '+': 1, '-': 1, '*': 2, '/': 2 };
+
+  const applyOperator = (): boolean => {
+    const operator = operators.pop();
+    const right = values.pop();
+    const left = values.pop();
+    if (!operator || right === undefined || left === undefined) return false;
+
+    switch (operator) {
+      case '+':
+        values.push(left + right);
+        break;
+      case '-':
+        values.push(left - right);
+        break;
+      case '*':
+        values.push(left * right);
+        break;
+      case '/':
+        if (right === 0) return false;
+        values.push(left / right);
+        break;
+      default:
+        return false;
+    }
+    return true;
+  };
+
+  let expectValue = true;
+  for (const token of tokens) {
+    if (/^\d*\.?\d+$/.test(token)) {
+      values.push(parseFloat(token));
+      expectValue = false;
+      continue;
+    }
+
+    if (token === '(') {
+      operators.push(token);
+      expectValue = true;
+      continue;
+    }
+
+    if (token === ')') {
+      while (operators.length && operators[operators.length - 1] !== '(') {
+        if (!applyOperator()) return null;
+      }
+      if (operators.pop() !== '(') return null;
+      expectValue = false;
+      continue;
+    }
+
+    if (expectValue && token === '-') {
+      values.push(0);
+    } else if (expectValue) {
+      return null;
+    }
+
+    while (
+      operators.length &&
+      operators[operators.length - 1] !== '(' &&
+      precedence[operators[operators.length - 1]] >= precedence[token]
+    ) {
+      if (!applyOperator()) return null;
+    }
+    operators.push(token);
+    expectValue = true;
+  }
+
+  if (expectValue) return null;
+  while (operators.length) {
+    if (operators[operators.length - 1] === '(') return null;
+    if (!applyOperator()) return null;
+  }
+
+  return values.length === 1 && Number.isFinite(values[0]) ? values[0] : null;
 };
 
 export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpdate }) => {
@@ -132,15 +282,11 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
         expr = expr.replace(/([A-Z]+\d+)/gi, (match) => {
           const ref = parseCellRef(match.toUpperCase());
           if (!ref) return '0';
-          return cells[getCellId(ref.row, ref.col)]?.value || '0';
+          const referencedValue = parseFloat(cells[getCellId(ref.row, ref.col)]?.value || '0');
+          return Number.isFinite(referencedValue) ? referencedValue.toString() : '0';
         });
-        // Evaluate (simple cases only)
-        try {
-          // eslint-disable-next-line no-eval
-          return eval(expr).toString();
-        } catch {
-          return '#ERROR!';
-        }
+        const result = safeEvaluateArithmetic(expr);
+        return result === null ? '#ERROR!' : result.toString();
       }
 
       return formula;

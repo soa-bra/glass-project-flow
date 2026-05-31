@@ -389,6 +389,20 @@ INSERT INTO event_outbox (event_name, event_version, payload, retry_count)
 SELECT event_name, event_version, payload, 0 FROM event_dlq WHERE id = 'dlq-id';
 ```
 
+### إعادة التشغيل الموجّه (Replay)
+
+```bash
+# محاكاة الاسترجاع من DLQ بدون كتابة
+node scripts/replay-events.ts --dry-run --limit=50
+
+# إعادة تشغيل نوع حدث محدد
+node scripts/replay-events.ts --event=InvoicePosted --limit=200
+```
+
+راجع أيضاً:
+- `docs/EVENT_RECOVERY.md`
+- `docs/INCIDENT_RUNBOOKS.md`
+
 ### مراقبة الأداء
 
 ```bash

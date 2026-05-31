@@ -36,6 +36,9 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizingRef.current) return;
 
+    const element = useCanvasStore.getState().elements.find((el) => el.id === elementId);
+    if (!element) return;
+
     const deltaX = (e.clientX - startRef.current.x) / viewport.zoom;
     const deltaY = (e.clientY - startRef.current.y) / viewport.zoom;
 
@@ -81,10 +84,25 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
         break;
     }
 
-    updateElement(elementId, {
+    const baseUpdates = {
       size: { width: newWidth, height: newHeight },
       position: { x: newX, y: newY }
-    });
+    };
+
+    if (element.type === 'text') {
+      updateElement(elementId, {
+        ...baseUpdates,
+        data: {
+          ...(element.data || {}),
+          autoGrow: false,
+          minWidth: Math.min(Number(element.data?.minWidth ?? 50), newWidth),
+          minHeight: Math.min(Number(element.data?.minHeight ?? 20), newHeight),
+        },
+      });
+      return;
+    }
+
+    updateElement(elementId, baseUpdates);
   }, [elementId, updateElement, viewport.zoom, position]);
 
   const handleMouseUp = useCallback(() => {
@@ -95,6 +113,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({ position, elementId 
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
 

@@ -1,41 +1,41 @@
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
+
 interface FeatureTaskCardTitleProps {
   title: string;
   description: string;
 }
+
 const FeatureTaskCardTitle = ({
   title,
   description
 }: FeatureTaskCardTitleProps) => {
-  return <div className="px-0 my-[15px] mx-[15px]">
-      <h4 style={{
-      fontSize: '16px',
-      fontWeight: 700,
-      color: '#000000',
-      marginBottom: '2px',
-      lineHeight: 1.1,
-      fontFamily: 'IBM Plex Sans Arabic',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      maxWidth: '100%'
-    }} className="text-right font-bold text-base my-0 mx-[4px] min-w-0" data-overflow-guard="true" title={title}>
+  const tokens = useTaskCardSizeTokens();
+
+  return (
+    <div className="min-w-0 overflow-hidden">
+      <h3
+        title={title}
+        className="min-w-0 overflow-hidden text-ellipsis break-words leading-snug line-clamp-2"
+        style={{
+          fontSize: tokens.titleFontSizePx,
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word'
+        }}
+      >
         {title}
-      </h4>
-      
-      <p style={{
-      fontSize: '12px',
-      fontWeight: 400,
-      color: '#858789',
-      marginBottom: '0px',
-      lineHeight: 1.1,
-      fontFamily: 'IBM Plex Sans Arabic',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'nowrap',
-      maxWidth: '100%'
-    }} className="text-right my-[3px] text-sm font-normal text-gray-600 mx-[4px] min-w-0" data-overflow-guard="true" title={description}>
+      </h3>
+      <p
+        className="mt-1 min-w-0 overflow-hidden text-[rgba(11,15,18,0.55)] break-words leading-snug line-clamp-2"
+        style={{
+          fontSize: tokens.descriptionFontSizePx,
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word'
+        }}
+      >
         {description}
       </p>
-    </div>;
+    </div>
+  );
 };
+
 export default FeatureTaskCardTitle;

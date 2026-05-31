@@ -28,6 +28,7 @@ export const SmartElementTypes = [
   'mind_map',
   'visual_diagram',
   'project_card',
+  'task_card',
   'finance_card',
   'csr_card',
   'crm_card',
@@ -564,6 +565,30 @@ export const ProjectCardDataSchema = z.object({
 export type ProjectCardFields = z.infer<typeof ProjectCardFieldsSchema>;
 export type ProjectCardData = z.infer<typeof ProjectCardDataSchema>;
 
+export const TaskCardFieldsSchema = z.enum([
+  'name', 'state', 'priority', 'complexity', 'estimatedDuration',
+  'estimatedCost', 'requiredTeamSize', 'owner', 'assignee',
+  'startDate', 'dueDate', 'actualDuration', 'actualCost'
+]);
+
+export const TaskCardDataSchema = z.object({
+  taskId: z.string().uuid().optional(),
+  projectId: z.string().uuid().optional(),
+  displayFields: z.array(TaskCardFieldsSchema).default([
+    'name', 'state', 'priority', 'complexity', 'dueDate'
+  ]),
+  compactMode: z.boolean().default(false),
+  showAlerts: z.boolean().default(true),
+  alertThresholds: z.object({
+    dueSoonHours: z.number().default(24),
+    overdueHours: z.number().default(1),
+    costWarning: z.number().default(80), // % of estimated
+  }).default({}),
+});
+
+export type TaskCardFields = z.infer<typeof TaskCardFieldsSchema>;
+export type TaskCardData = z.infer<typeof TaskCardDataSchema>;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 11. Finance Card - بطاقة الوضع المالي
 // ─────────────────────────────────────────────────────────────────────────────
@@ -758,6 +783,7 @@ export const SmartElementDataSchemaMap = {
   mind_map: MindMapDataSchema,
   visual_diagram: MindMapDataSchema, // يستخدم نفس schema الخريطة الذهنية
   project_card: ProjectCardDataSchema,
+  task_card: TaskCardDataSchema,
   finance_card: FinanceCardDataSchema,
   csr_card: CsrCardDataSchema,
   crm_card: CrmCardDataSchema,
@@ -785,6 +811,7 @@ export type AnySmartElementData =
   | InteractiveSheetData
   | MindMapData
   | ProjectCardData
+  | TaskCardData
   | FinanceCardData
   | CsrCardData
   | CrmCardData
@@ -863,6 +890,7 @@ export const SmartElementLabels: Record<SmartElementType, string> = {
   mind_map: 'خريطة ذهنية',
   visual_diagram: 'مخطط بصري',
   project_card: 'بطاقة مشروع',
+  task_card: 'بطاقة مهمة',
   finance_card: 'بطاقة مالية',
   csr_card: 'بطاقة CSR',
   crm_card: 'بطاقة CRM',
@@ -885,6 +913,7 @@ export const SmartElementCategories: Record<SmartElementType, 'collaboration' | 
   mind_map: 'analysis',
   visual_diagram: 'analysis',
   project_card: 'cards',
+  task_card: 'cards',
   finance_card: 'cards',
   csr_card: 'cards',
   crm_card: 'cards',

@@ -24,6 +24,9 @@ export * from './smart.types';
 // Event Types
 export * from './event.types';
 
+// Central System Model Types
+export * from './system-model.types';
+
 // Hook Types
 export * from './hook.types';
 

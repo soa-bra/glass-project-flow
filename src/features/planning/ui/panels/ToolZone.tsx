@@ -11,6 +11,7 @@ import SmartDocToolZone from './SmartDocToolZone';
 interface ToolZoneProps {
   activeTool: ToolId;
   onClose?: () => void;
+  boardId?: string;
 }
 
 const panelTitles: Record<ToolId, string> = {
@@ -37,7 +38,7 @@ const toolsWithoutPanel: ToolId[] = [
   'text_tool', // تم نقل أدوات النص إلى FloatingBar
 ];
 
-const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
+const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   
   // الحصول على حالة التحرير
@@ -67,7 +68,7 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose }) => {
       case 'research_tool':
         return <ResearchToolZone />;
       case 'smart_doc_tool':
-        return <SmartDocToolZone />;
+        return <SmartDocToolZone boardId={boardId} />;
       // الأدوات بدون panel (تستخدم FloatingBar)
       case 'selection_tool':
       case 'smart_pen':

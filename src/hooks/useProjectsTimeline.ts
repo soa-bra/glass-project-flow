@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+/**
+ * NOTE (P1): The legacy `project_phases` table was dropped during the central
+ * model migration. This hook now reads from the central `projects` table and
+ * exposes an empty `phases` array — the timeline UI keeps working but only
+ * shows project start/end markers until a real phases concept lands in P3.
+ */
 export interface ProjectWithPhases {
   id: string;
   name: string;
@@ -47,31 +53,28 @@ export const useProjectsTimeline = () => {
     setError(null);
     
     try {
-      // جلب المشاريع
       const { data: projectsData, error: projectsError } = await supabase
         .from('projects')
-        .select('*')
+        .select('id, name, description, state, start_date, due_date, budget')
         .order('created_at', { ascending: false });
 
       if (projectsError) throw projectsError;
 
-      // جلب المراحل لكل مشروع
-      const projectsWithPhases: ProjectWithPhases[] = await Promise.all(
-        (projectsData || []).map(async (project) => {
-          const { data: phasesData } = await supabase
-            .from('project_phases')
-            .select('*')
-            .eq('project_id', project.id)
-            .order('order_index', { ascending: true });
+      // Map central `projects` shape to the legacy ProjectWithPhases shape.
+      // `state` -> `status`, `due_date` -> `end_date`, phases stay empty until
+      // a real phases concept is added in P3.
+      const mapped: ProjectWithPhases[] = (projectsData ?? []).map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        status: p.state,
+        start_date: p.start_date,
+        end_date: p.due_date,
+        budget: p.budget == null ? null : Number(p.budget),
+        phases: [],
+      }));
 
-          return {
-            ...project,
-            phases: phasesData || []
-          };
-        })
-      );
-
-      setProjects(projectsWithPhases);
+      setProjects(mapped);
     } catch (err) {
       console.error('Error fetching projects:', err);
       setError('فشل في جلب المشاريع');

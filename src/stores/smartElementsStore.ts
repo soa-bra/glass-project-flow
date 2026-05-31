@@ -634,6 +634,7 @@ const DEFAULT_SMART_ELEMENT_SIZES: Record<SmartElementType, { width: number; hei
   interactive_sheet: { width: 600, height: 400 },
   mind_map: { width: 600, height: 500 },
   project_card: { width: 320, height: 200 },
+  task_card: { width: 320, height: 200 },
   finance_card: { width: 320, height: 200 },
   csr_card: { width: 320, height: 200 },
   crm_card: { width: 320, height: 200 },
@@ -1852,7 +1853,7 @@ export const useSmartElementsStore = create<SmartElementsState>((set, get) => ({
     const entry = get().smartElements[elementId];
     if (!entry) return;
     
-    const cardTypes: SmartElementType[] = ['project_card', 'finance_card', 'csr_card', 'crm_card'];
+    const cardTypes: SmartElementType[] = ['project_card', 'task_card', 'finance_card', 'csr_card', 'crm_card'];
     if (!cardTypes.includes(entry.smartType)) return;
     
     const data = entry.data as any;

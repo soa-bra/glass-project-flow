@@ -8,7 +8,7 @@ const ProjectCardDaysCircle = ({
 }: ProjectCardDaysCircleProps) => {
   return (
     <div 
-      className="w-[75px] h-[75px] rounded-full bg-transparent border border-[#000000] flex flex-col items-center justify-center"
+      className="w-[64px] h-[64px] sm:w-[75px] sm:h-[75px] rounded-full bg-transparent border border-[#000000] flex flex-col items-center justify-center"
     >
       <span 
         className="text-sm font-bold leading-none"

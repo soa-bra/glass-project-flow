@@ -1,0 +1,163 @@
+export type LayoutHeaderRef = 'LAY-HDR-D01';
+
+export type LayoutTabRef = 'LAY-TAB-O01' | 'LAY-TAB-W01';
+
+export type LayoutKpiRef = 'LAY-KPI-O01';
+
+export type LayoutGridRef = 'LAY-GRD-D01' | 'LAY-GRD-A01' | 'LAY-GRD-S01';
+
+export type LayoutBoxRef =
+  | 'LAY-BOX-SUM01'
+  | 'LAY-BOX-FW101'
+  | 'LAY-BOX-FW201'
+  | 'LAY-BOX-FW301'
+  | 'LAY-BOX-FW401';
+
+export const LAYOUT_HEADER_MAP = {
+  'LAY-HDR-D01': {
+    component: 'DashboardLayout',
+    titleMode: 'standard-dashboard-title',
+    tabsMode: 'standard-dashboard-tabs',
+    shell: 'shared-dashboard-shell',
+  },
+} as const;
+
+export const LAYOUT_TAB_MAP = {
+  'LAY-TAB-O01': {
+    mode: 'overview',
+    showKpiRow: true,
+    showBoxesGrid: true,
+    kpiRef: 'LAY-KPI-O01',
+  },
+  'LAY-TAB-W01': {
+    mode: 'workflow',
+    showKpiRow: false,
+    showBoxesGrid: true,
+    kpiRef: null,
+  },
+} as const;
+
+export const LAYOUT_KPI_MAP = {
+  'LAY-KPI-O01': {
+    component: 'KPIStatsSection',
+    minItems: 2,
+    maxItems: 4,
+    placement: 'before-grid',
+    allowedTabs: ['overview'],
+  },
+} as const;
+
+export const LAYOUT_GRID_MAP = {
+  'LAY-GRD-D01': {
+    density: 'spacious',
+    minRowHeight: '200px',
+    columns: 4,
+  },
+  'LAY-GRD-A01': {
+    density: 'compact',
+    minRowHeight: '120px',
+    columns: 4,
+  },
+  'LAY-GRD-S01': {
+    density: 'spacious',
+    minRowHeight: 'auto',
+    columns: 2,
+  },
+} as const;
+
+export const LAYOUT_BOX_ROLE_MAP = {
+  'LAY-BOX-SUM01': {
+    role: 'summary-half-1',
+    minHeight: '200px',
+    rowSpan: 1,
+    columnsSpan: 2,
+  },
+  'LAY-BOX-FW101': {
+    role: 'feature-half-1',
+    minHeight: '200px',
+    rowSpan: 1,
+    columnsSpan: 2,
+  },
+  'LAY-BOX-FW201': {
+    role: 'feature-half-2',
+    minHeight: '416px',
+    rowSpan: 2,
+    columnsSpan: 2,
+  },
+  'LAY-BOX-FW301': {
+    role: 'feature-full-2',
+    minHeight: '416px',
+    rowSpan: 2,
+    columnsSpan: 4,
+  },
+  'LAY-BOX-FW401': {
+    role: 'feature-full-3',
+    minHeight: '632px',
+    rowSpan: 3,
+    columnsSpan: 4,
+  },
+} as const;
+
+export const LAYOUT_RUNTIME_MAP = {
+  departments: {
+    headerRef: 'LAY-HDR-D01',
+    gridRef: 'LAY-GRD-D01',
+    overviewTabRef: 'LAY-TAB-O01',
+    workflowTabRef: 'LAY-TAB-W01',
+  },
+  archive: {
+    headerRef: 'LAY-HDR-D01',
+    gridRef: 'LAY-GRD-A01',
+    overviewTabRef: 'LAY-TAB-O01',
+    workflowTabRef: 'LAY-TAB-W01',
+  },
+  settings: {
+    headerRef: 'LAY-HDR-D01',
+    gridRef: 'LAY-GRD-S01',
+    overviewTabRef: 'LAY-TAB-W01',
+    workflowTabRef: 'LAY-TAB-W01',
+  },
+} as const;
+
+export function resolveDashboardLayoutKey(dashboardKey: string): keyof typeof LAYOUT_RUNTIME_MAP {
+  if (dashboardKey === 'archive') return 'archive';
+  if (dashboardKey === 'settings') return 'settings';
+  return 'departments';
+}
+
+export function resolveTabLayoutRef(tab: { code?: string | null; name?: string | null }): LayoutTabRef {
+  const code = (tab.code ?? '').toLowerCase();
+  const name = (tab.name ?? '').toLowerCase();
+  if (code.includes('overview') || name.includes('نظرة عامة')) {
+    return 'LAY-TAB-O01';
+  }
+  return 'LAY-TAB-W01';
+}
+
+export function resolveBoxLayoutRef(box: { componentRefs?: readonly string[]; purpose?: string | null; ref?: string | null; name?: string | null }): LayoutBoxRef {
+  const refs = box.componentRefs ?? [];
+  const inputCount = refs.filter((ref) => ref.startsWith('IPF-')).length;
+  const actionCount = refs.filter((ref) => ref.startsWith('ACT-BTN-') || ref.startsWith('ACT-MNU-')).length;
+  const hasTable = refs.includes('DAV-TBL-01');
+  const hasChart = refs.includes('DAV-CHT-01');
+  const hasDetail = refs.includes('DAV-DTL-01');
+  const hasKpi = refs.includes('DAV-KPI-01');
+  const hasTextarea = refs.includes('IPF-TXA-01');
+  const hasList = refs.includes('DAV-LST-01');
+  const signals = `${box.ref ?? ''} ${box.name ?? ''} ${box.purpose ?? ''}`.toLowerCase();
+  const isHeavyEditor = /(editor|template|generator|governance|configuration|policy|audit|library|report|form|model|asset|محرر|نموذج|نماذج|قالب|قوالب|تكوين|إعداد|سياسة|تدقيق|مكتبة|تقرير)/.test(signals);
+
+  if (hasTable) return 'LAY-BOX-FW401';
+  if (hasChart) return 'LAY-BOX-FW301';
+  if (hasKpi) return 'LAY-BOX-SUM01';
+  if (hasTextarea || inputCount >= 4 || (isHeavyEditor && (inputCount >= 2 || hasList || hasDetail || actionCount >= 2))) {
+    return 'LAY-BOX-FW401';
+  }
+  if (hasDetail || inputCount >= 3 || (inputCount >= 2 && actionCount >= 2) || (hasList && actionCount >= 2) || isHeavyEditor) {
+    return 'LAY-BOX-FW301';
+  }
+  if (inputCount >= 2 || actionCount >= 3) {
+    return 'LAY-BOX-FW201';
+  }
+  return 'LAY-BOX-FW101';
+}

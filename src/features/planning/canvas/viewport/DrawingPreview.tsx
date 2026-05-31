@@ -1,6 +1,6 @@
 import React from 'react';
 import type { CanvasElement } from '@/types/canvas';
-import { ShapeRenderer } from '@/features/planning/elements/diagram/ShapeRenderer';
+import { ShapeRenderer } from '@/features/planning/elements/shared';
 
 interface DrawingPreviewProps {
   element: CanvasElement | null;
@@ -19,6 +19,7 @@ const DrawingPreview: React.FC<DrawingPreviewProps> = ({ element }) => {
         return (
           <div style={{ opacity: 0.7, pointerEvents: 'none' }}>
             <ShapeRenderer
+              context="diagram"
               shapeType={(element as any).shapeType || 'rectangle'}
               width={element.size.width}
               height={element.size.height}

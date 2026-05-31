@@ -5,7 +5,7 @@
 import { StateCreator } from 'zustand';
 import { BoardSnapshot, captureBoardSnapshot, restoreBoardSnapshot } from '../history/boardSnapshot';
 
-const MAX_HISTORY_ENTRIES = 20;
+const MAX_HISTORY_ENTRIES = 50;
 
 export interface HistorySlice {
   history: {

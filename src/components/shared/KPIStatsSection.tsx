@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 import { cn } from '@/lib/utils';
 
-interface KPIStat {
+export interface KPIStat {
   title: string;
   value: string | number;
   unit?: string;
@@ -54,12 +54,10 @@ export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
           viewport={{ once: true, amount: 0.2 }}
           className="p-6 sm:p-7 flex flex-col gap-3 min-h-[140px] sm:min-h-[150px] md:min-h-[160px]"
         >
-          {/* Title — small, muted, secondary */}
           <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic">
             {stat.title}
           </span>
 
-          {/* Value + unit — dominant */}
           <div className="mt-auto">
             <div className="flex items-baseline gap-1.5">
               <motion.span

@@ -32,6 +32,7 @@ export interface BaseBoxProps {
   title?: string;
   icon?: React.ReactNode;
   header?: React.ReactNode;
+  headerActions?: React.ReactNode;
   size?: Size;
   /** 
    * نوع المظهر. 
@@ -107,6 +108,7 @@ export const BaseBox: React.FC<BaseBoxProps> = ({
   title,
   icon,
   header,
+  headerActions,
   size = 'lg',
   variant = 'standard',
   color,
@@ -119,7 +121,7 @@ export const BaseBox: React.FC<BaseBoxProps> = ({
   const boxContent = (
     <div
       className={cn(
-        'transition-all duration-300',
+        'flex min-h-0 flex-col transition-all duration-300',
         roundedClasses[rounded],
         sizeClasses[size],
         variantClasses[variant],
@@ -130,22 +132,33 @@ export const BaseBox: React.FC<BaseBoxProps> = ({
       )}
       style={style}
     >
-      {(title || header) && (
+      {(title || header || headerActions) && (
         <div className="mb-6">
           {title ? (
-            <h3 className={buildTitleClasses()}>
-              {icon && (
-                <div className={LAYOUT.ICON_CONTAINER}>
-                  {icon}
+            <div dir="rtl" className="flex items-start justify-between gap-4">
+              <div className="min-w-0 flex-1">
+                <h3 className={cn(buildTitleClasses(), 'min-w-0')}>
+                  {icon && (
+                    <div className={LAYOUT.ICON_CONTAINER}>
+                      {icon}
+                    </div>
+                  )}
+                  {title}
+                </h3>
+              </div>
+              {headerActions ? (
+                <div className="flex shrink-0 flex-wrap items-center justify-start gap-2">
+                  {headerActions}
                 </div>
-              )}
-              {title}
-            </h3>
-          ) : header}
+              ) : null}
+            </div>
+          ) : header ? header : (
+            <div className="flex flex-wrap items-center gap-2">{headerActions}</div>
+          )}
         </div>
       )}
       
-      <div className="min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col">
         {children}
       </div>
     </div>

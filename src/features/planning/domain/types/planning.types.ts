@@ -1,3 +1,19 @@
+import type { CanvasElement, LayerInfo } from '@/types/canvas';
+
+export interface CanvasViewportSnapshot {
+  zoom: number;
+  pan: { x: number; y: number };
+}
+
+export interface CanvasBoardStateSnapshot {
+  elements: CanvasElement[];
+  layers: LayerInfo[];
+  selectedElementIds: string[];
+  viewport: CanvasViewportSnapshot;
+  activeLayerId: string | null;
+  savedAt?: string;
+}
+
 // أنواع اللوحات
 export interface CanvasBoard {
   id: string;
@@ -11,6 +27,7 @@ export interface CanvasBoard {
   owner: string;
   collaborators?: string[];
   tags?: string[];
+  canvasState?: CanvasBoardStateSnapshot;
 }
 
 // أنواع القوالب

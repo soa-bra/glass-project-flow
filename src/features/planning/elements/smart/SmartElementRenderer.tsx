@@ -12,6 +12,7 @@ import { GanttChart } from './GanttChart';
 import { MindMap } from './MindMap';
 import { VisualDiagram } from './VisualDiagram';
 import { ProjectCard as SmartProjectCard } from './SmartProjectCard';
+import { TaskCard } from './TaskCard';
 import { FinanceCard } from './FinanceCard';
 import { CsrCard } from './CsrCard';
 import { CrmCard } from './CrmCard';
@@ -20,7 +21,7 @@ import { SmartDocRenderer } from '../smart-doc';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, GitBranch, FolderKanban, Wallet,
-  HeartHandshake, Users, Link2, Share2 
+  HeartHandshake, Users, Link2, Share2, CheckSquare
 } from 'lucide-react';
 
 interface SmartElementRendererProps {
@@ -39,6 +40,7 @@ const ICONS: Record<string, React.ElementType> = {
   mind_map: GitBranch,
   visual_diagram: Share2,
   project_card: FolderKanban,
+  task_card: CheckSquare,
   finance_card: Wallet,
   csr_card: HeartHandshake,
   crm_card: Users,
@@ -164,6 +166,16 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
       <SmartProjectCard 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+      />
+    );
+  }
+
+  // Task Card
+  if (smartType === 'task_card') {
+    return (
+      <TaskCard
+        data={data as any}
+        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })}
       />
     );
   }

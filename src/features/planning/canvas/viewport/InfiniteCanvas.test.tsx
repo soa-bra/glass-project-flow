@@ -177,7 +177,10 @@ vi.mock('@/features/planning/canvas/gestures/StrokesLayer', () => ({ default: ()
 vi.mock('@/features/planning/canvas/gestures/PenInputLayer', () => ({ default: ({ active }: any) => <div data-testid="pen-input">{String(active)}</div> }));
 vi.mock('@/features/planning/canvas/gestures/FrameInputLayer', () => ({ default: ({ active }: any) => <div data-testid="frame-input">{String(active)}</div> }));
 vi.mock('@/features/planning/canvas/selection/BoundingBox', () => ({ BoundingBox: () => <div data-testid="bounding-box" /> }));
-vi.mock('@/features/planning/canvas/transforms/SnapGuides', () => ({ SnapGuides: () => <div data-testid="snap-guides" /> }));
+vi.mock('@/features/planning/canvas', async () => {
+  const actual = await vi.importActual<typeof import('@/features/planning/canvas')>('@/features/planning/canvas');
+  return { ...actual, SnapGuides: () => <div data-testid="snap-guides" /> };
+});
 vi.mock('@/components/ui/penToolbar', () => ({ PenFloatingToolbar: ({ isVisible }: any) => <div data-testid="pen-toolbar">{String(isVisible)}</div> }));
 vi.mock('@/features/planning/canvas/viewport/CanvasGridLayer', () => ({ CanvasGridLayer: () => <div data-testid="grid-layer" /> }));
 vi.mock('@/features/planning/integration/collaboration', () => ({

@@ -418,3 +418,38 @@ function logMemoryUsage() {
 
 ---
 *آخر تحديث: 2024-12*
+
+## Collaboration SLOs & Error Budgets
+
+### p50/p95 Targets
+
+| Objective | p50 target | p95 target |
+|---|---:|---:|
+| Board sync latency | 120ms | 350ms |
+| Domain command processing latency | 15ms | 60ms |
+
+Reference constants are defined in `src/features/planning/integration/telemetry/sloTargets.ts`.
+
+### Error budget policy
+
+- Availability SLO: **99.9%** (monthly).
+- Monthly error budget: **0.1%**.
+- Burn-rate alert windows:
+  - `1d` >= 10x budget burn (critical)
+  - `7d` >= 4x budget burn (critical)
+  - `30d` >= 1x budget burn (exhausting budget)
+
+### Instrumentation and emitted metrics
+
+Added metrics include:
+
+- `SoaBra_board_sync_operations_total`
+- `SoaBra_board_sync_latency_seconds`
+- `SoaBra_board_sync_errors_total`
+- `SoaBra_domain_commands_total`
+- `SoaBra_domain_command_duration_seconds`
+- `SoaBra_domain_command_queue_depth`
+- `SoaBra_error_budget_remaining_percent`
+- `SoaBra_error_budget_burn_rate`
+
+Use helpers in `src/features/planning/integration/telemetry/collaborationMetrics.ts` to record these consistently.

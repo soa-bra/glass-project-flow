@@ -4,10 +4,16 @@ import { toast } from 'sonner';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
+import { SmartElementTypeSchema, type SmartElementType } from '@/types/smart-elements';
 
 interface UseCanvasDropControllerOptions {
   containerRef: RefObject<HTMLDivElement>;
   viewport: { zoom: number; pan: { x: number; y: number } };
+}
+
+function normalizeSmartElementType(value: unknown): SmartElementType | null {
+  const result = SmartElementTypeSchema.safeParse(value);
+  return result.success ? result.data : null;
 }
 
 export function useCanvasDropController({ containerRef, viewport }: UseCanvasDropControllerOptions) {
@@ -24,11 +30,20 @@ export function useCanvasDropController({ containerRef, viewport }: UseCanvasDro
       const smartElementData = e.dataTransfer.getData('application/smart-element');
       if (smartElementData) {
         try {
-          const parsed = JSON.parse(smartElementData) as { type: string; name: string };
-          useSmartElementsStore.getState().addSmartElement(parsed.type, canvasPoint, { title: parsed.name });
-          toast.success(`تم إدراج ${parsed.name}`);
+          const parsed = JSON.parse(smartElementData) as { type?: unknown; name?: unknown };
+          const smartType = normalizeSmartElementType(parsed.type);
+          const smartName = typeof parsed.name === 'string' ? parsed.name : 'عنصر ذكي';
+
+          if (!smartType) {
+            toast.error('تعذر إدراج العنصر الذكي: النوع غير مدعوم');
+            return;
+          }
+
+          useSmartElementsStore.getState().addSmartElement(smartType, canvasPoint, { title: smartName });
+          toast.success(`تم إدراج ${smartName}`);
           return;
         } catch {
+          toast.error('تعذر قراءة بيانات العنصر الذكي');
           return;
         }
       }

@@ -18,19 +18,4 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
-    css: false,
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "html"],
-      include: [
-        "src/features/planning/state/**/*.ts",
-        "src/hooks/useCanvasPaste.ts",
-      ],
-    },
-  },
 }));

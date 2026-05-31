@@ -6,6 +6,7 @@ import { StateCreator } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
 import { calculateElementsBounds } from '../helpers';
+import { DEFAULT_LAYER } from '../types';
 import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
 import {
   moveFrameWithChildren,
@@ -105,6 +106,22 @@ const collectDeletionIds = (elementIds: string[], elements: CanvasElement[]): st
   return Array.from(ids);
 };
 
+const ensureLayers = (layers: LayerInfo[]): LayerInfo[] => (
+  layers.length > 0 ? layers : [{ ...DEFAULT_LAYER, elements: [] }]
+);
+
+const resolveLayerId = (
+  requestedLayerId: string | undefined,
+  activeLayerId: string | null,
+  layers: LayerInfo[],
+): string => {
+  const layerIds = new Set(layers.map((layer) => layer.id));
+
+  if (requestedLayerId && layerIds.has(requestedLayerId)) return requestedLayerId;
+  if (activeLayerId && layerIds.has(activeLayerId)) return activeLayerId;
+  return layers[0]?.id ?? DEFAULT_LAYER.id;
+};
+
 export const createElementsSlice: StateCreator<
   CanvasStoreState,
   [],
@@ -114,24 +131,31 @@ export const createElementsSlice: StateCreator<
   elements: [],
 
   addElement: (elementData) => {
-    const element: CanvasElement = {
-      type: elementData.type || 'text',
-      position: elementData.position || { x: 0, y: 0 },
-      size: elementData.size || { width: 200, height: 100 },
-      style: elementData.style || {},
-      ...elementData,
-      id: elementData.id || nanoid(),
-      layerId: elementData.layerId ?? get().activeLayerId ?? 'default',
-      visible: elementData.visible ?? true,
-      locked: elementData.locked ?? false,
-    };
+    runCanvasTransaction(set, (state: any) => {
+      const layers = ensureLayers(state.layers || []);
+      const layerId = resolveLayerId(elementData.layerId, state.activeLayerId, layers);
+      const element: CanvasElement = {
+        type: elementData.type || 'text',
+        position: elementData.position || { x: 0, y: 0 },
+        size: elementData.size || { width: 200, height: 100 },
+        style: elementData.style || {},
+        ...elementData,
+        id: elementData.id || nanoid(),
+        layerId,
+        visible: elementData.visible ?? true,
+        locked: elementData.locked ?? false,
+      };
 
-    set((state: any) => {
-      const updatedLayers = state.layers.map((layer: LayerInfo) =>
-        layer.id === element.layerId
-          ? { ...layer, elements: [...layer.elements, element.id] }
-          : layer,
-      );
+      const updatedLayers = layers.map((layer: LayerInfo) => {
+        if (layer.id !== element.layerId || layer.elements.includes(element.id)) return layer;
+
+        return {
+          ...layer,
+          elements: element.type === 'frame'
+            ? [element.id, ...layer.elements]
+            : [...layer.elements, element.id],
+        };
+      });
 
       const newElements = element.type === 'frame'
         ? [element, ...state.elements]
@@ -140,10 +164,11 @@ export const createElementsSlice: StateCreator<
       return {
         elements: newElements,
         layers: updatedLayers,
+        activeLayerId: state.activeLayerId && updatedLayers.some((layer: LayerInfo) => layer.id === state.activeLayerId)
+          ? state.activeLayerId
+          : layerId,
       };
     });
-
-    get().pushHistory();
   },
 
   updateElement: (elementId, updates) => {
@@ -170,7 +195,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (state: any) => {
       const idsToDelete = collectDeletionIds(Array.from(new Set(elementIds)), state.elements);
-      const updatedLayers = state.layers.map((layer: LayerInfo) => ({
+      const updatedLayers = ensureLayers(state.layers || []).map((layer: LayerInfo) => ({
         ...layer,
         elements: layer.elements.filter((id: string) => !idsToDelete.includes(id)),
       }));
@@ -179,6 +204,9 @@ export const createElementsSlice: StateCreator<
         elements: state.elements.filter((el: CanvasElement) => !idsToDelete.includes(el.id)),
         selectedElementIds: state.selectedElementIds.filter((id: string) => !idsToDelete.includes(id)),
         layers: updatedLayers,
+        activeLayerId: state.activeLayerId && updatedLayers.some((layer: LayerInfo) => layer.id === state.activeLayerId)
+          ? state.activeLayerId
+          : updatedLayers[0]?.id ?? DEFAULT_LAYER.id,
       };
     });
   },
@@ -307,7 +335,9 @@ export const createElementsSlice: StateCreator<
   },
 
   flipHorizontally: (elementIds) => {
-    const selectedElements = get().elements.filter((el: CanvasElement) => elementIds.includes(el.id));
+    const state = get();
+    const expandedIds = getGroupElementIds(elementIds, state.elements);
+    const selectedElements = state.elements.filter((el: CanvasElement) => expandedIds.includes(el.id));
     if (selectedElements.length === 0) return;
 
     const bounds = calculateElementsBounds(selectedElements);
@@ -315,7 +345,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (currentState: any) => {
       let updatedElements = currentState.elements.map((el: CanvasElement) => {
-        if (!elementIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || el.locked) return el;
         const distFromCenter = el.position.x + el.size.width / 2 - centerX;
         return {
           ...el,
@@ -324,7 +354,7 @@ export const createElementsSlice: StateCreator<
         };
       });
 
-      const synced = syncAttachedTextsForElements(updatedElements, elementIds);
+      const synced = syncAttachedTextsForElements(updatedElements, expandedIds);
       updatedElements = recomputeDependentGeometry(synced.elements, synced.changedIds);
 
       return { elements: updatedElements };
@@ -332,7 +362,9 @@ export const createElementsSlice: StateCreator<
   },
 
   flipVertically: (elementIds) => {
-    const selectedElements = get().elements.filter((el: CanvasElement) => elementIds.includes(el.id));
+    const state = get();
+    const expandedIds = getGroupElementIds(elementIds, state.elements);
+    const selectedElements = state.elements.filter((el: CanvasElement) => expandedIds.includes(el.id));
     if (selectedElements.length === 0) return;
 
     const bounds = calculateElementsBounds(selectedElements);
@@ -340,7 +372,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (currentState: any) => {
       let updatedElements = currentState.elements.map((el: CanvasElement) => {
-        if (!elementIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || el.locked) return el;
         const distFromCenter = el.position.y + el.size.height / 2 - centerY;
         return {
           ...el,
@@ -349,7 +381,7 @@ export const createElementsSlice: StateCreator<
         };
       });
 
-      const synced = syncAttachedTextsForElements(updatedElements, elementIds);
+      const synced = syncAttachedTextsForElements(updatedElements, expandedIds);
       updatedElements = recomputeDependentGeometry(synced.elements, synced.changedIds);
 
       return { elements: updatedElements };

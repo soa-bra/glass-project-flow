@@ -119,6 +119,8 @@ const ELEMENT_TYPE_KEYWORDS: Record<string, SmartElementType> = {
   'جدول': 'interactive_sheet',
   'project': 'project_card',
   'مشروع': 'project_card',
+  'task': 'task_card',
+  'مهمة': 'task_card',
   'finance': 'finance_card',
   'مالي': 'finance_card',
   'csr': 'csr_card',
