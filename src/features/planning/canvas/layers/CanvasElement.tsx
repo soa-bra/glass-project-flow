@@ -148,33 +148,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     if (element.type === 'smart') {
       return (element as any).smartType || element.data?.smartType || element.metadata?.smartType || null;
     }
-    if (element.type === 'smart_doc') {
-      return 'smart_text_doc';
-    }
-    if (element.type === 'interactive_sheet') {
-      return 'interactive_sheet';
-    }
     return null;
-  }, [element]);
-
-  const smartRenderableData = useMemo(() => {
-    if (element.type !== 'smart_doc') return element.data;
-    const blocks = Array.isArray(element.data?.blocks) ? element.data.blocks : [];
-    const content = blocks.map((block: any) => block?.text || '').filter(Boolean).join('<br />');
-    const meta = (element.data?.meta || {}) as Record<string, any>;
-    return {
-      smartType: 'smart_text_doc',
-      title: element.data?.title || 'وثيقة ذكية',
-      content,
-      format: 'rich',
-      aiAssist: true,
-      readOnly: false,
-      showToolbar: true,
-      autoSave: true,
-      sourceElementIds: meta.sourceElementIds || element.metadata?.sourceElementIds || [],
-      docType: meta.docType || 'summary',
-      generatedByAi: meta.generatedByAi ?? false,
-    };
   }, [element]);
 
   const getGroupElementIds = useCallback((): string[] => {
@@ -530,8 +504,8 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
       {smartRenderableType && (
         <div {...selectionAnchorProps} className="w-full h-full">
           <SmartElementRenderer
-            element={{ ...(element as CanvasSmartElement), smartType: smartRenderableType, type: 'smart', data: smartRenderableData } as CanvasSmartElement}
-            onUpdate={(data) => updateElement(element.id, { smartType: smartRenderableType, data: { ...smartRenderableData, ...data, smartType: smartRenderableType } })}
+            element={{ ...(element as CanvasSmartElement), smartType: smartRenderableType } as CanvasSmartElement}
+            onUpdate={(data) => updateElement(element.id, { smartType: smartRenderableType, data: { ...element.data, ...data, smartType: smartRenderableType } })}
           />
         </div>
       )}

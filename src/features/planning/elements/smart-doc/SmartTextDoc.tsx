@@ -9,15 +9,12 @@ import {
   AlignCenter,
   AlignLeft,
   Sparkles,
-  Maximize2,
   List,
   ListOrdered,
   Pilcrow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
 import { sanitizeHTML } from "@/utils/sanitize";
 
 interface SmartTextDocData {
@@ -29,9 +26,6 @@ interface SmartTextDocData {
   showToolbar: boolean;
   fontSize?: number;
   direction?: "rtl" | "ltr";
-  sourceElementIds?: string[];
-  docType?: string;
-  generatedByAi?: boolean;
 }
 
 interface SmartTextDocProps {
@@ -51,7 +45,6 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const [content, setContent] = useState(data.content || "");
   const [currentFontSize, setCurrentFontSize] = useState(data.fontSize || 14);
   const [direction, setDirection] = useState<"rtl" | "ltr">(data.direction || "rtl");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeFormats, setActiveFormats] = useState<ActiveFormats>({
     bold: false,
     italic: false,
@@ -125,18 +118,6 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const handleTitleChange = useCallback(
     (title: string) => {
       onUpdate({ title });
-    },
-    [onUpdate],
-  );
-
-  const handlePlainContentChange = useCallback(
-    (newContent: string) => {
-      const safeContent = sanitizeHTML(newContent);
-      setContent(safeContent);
-      if (editorRef.current) {
-        editorRef.current.innerHTML = safeContent;
-      }
-      onUpdate({ content: safeContent });
     },
     [onUpdate],
   );
@@ -274,18 +255,12 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setIsDialogOpen(true)}>
-            <Maximize2 className="h-3 w-3" />
-            فتح/تحرير
+        {data.aiAssist && (
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+            <Sparkles className="h-3 w-3" />
+            مساعد AI
           </Button>
-          {data.aiAssist && (
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
-              <Sparkles className="h-3 w-3" />
-              مساعد AI
-            </Button>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Toolbar */}
@@ -402,43 +377,8 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
         <p className="text-xs text-muted-foreground">{getWordCount()} كلمة</p>
         <p className="text-xs text-muted-foreground">
           {data.format === "rich" ? "تنسيق غني" : data.format === "markdown" ? "Markdown" : "نص عادي"}
-          {data.sourceElementIds?.length ? ` · مرتبط بـ ${data.sourceElementIds.length} عنصر` : ""}
         </p>
       </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-4xl h-[80vh] grid-rows-[auto_1fr]">
-          <DialogHeader>
-            <div>
-              <DialogTitle>{data.title || "وثيقة ذكية"}</DialogTitle>
-              <DialogDescription>
-                تحرير الوثيقة من داخل الكانفس · النوع: {data.docType || "summary"} · المصادر: {data.sourceElementIds?.length || 0}
-              </DialogDescription>
-            </div>
-          </DialogHeader>
-          <div className="min-h-0 flex flex-col gap-3">
-            <input
-              type="text"
-              value={data.title || ""}
-              onChange={(event) => handleTitleChange(event.target.value)}
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm font-semibold outline-none"
-              placeholder="عنوان الوثيقة"
-            />
-            <Textarea
-              value={content.replace(/<br\s*\/?>/gi, "\n")}
-              onChange={(event) => handlePlainContentChange(event.target.value.replace(/\n/g, "<br />"))}
-              className="min-h-0 flex-1 resize-none text-sm leading-7"
-              dir={direction}
-              placeholder="محتوى الوثيقة"
-            />
-            {data.sourceElementIds?.length ? (
-              <p className="text-xs text-muted-foreground">
-                عناصر المصدر: {data.sourceElementIds.join("، ")}
-              </p>
-            ) : null}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
