@@ -1,3 +1,5 @@
+import type { UnifiedRelationshipType } from '@/features/planning/integration/connectors/relationshipTypes';
+
 // Visual Diagram Canvas Types - Independent Nodes System
 // كل عقدة عنصر مستقل على الكانفس - مخطط بصري
 
@@ -29,6 +31,7 @@ export interface VisualConnectorData {
   strokeWidth: number;
   label?: string;
   labelPosition?: number;
+  relationshipType?: UnifiedRelationshipType;
   diagramType: 'visual_diagram';
 }
 

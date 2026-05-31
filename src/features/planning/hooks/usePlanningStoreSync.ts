@@ -18,6 +18,7 @@ import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import { usePlanningStore } from "@/features/planning/state/store";
 import { planningElementToCanvas } from "@/features/planning/state/planningElementMapper";
+import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 
 function sortByZ(rows: PlanningElement[]): PlanningElement[] {
@@ -79,7 +80,20 @@ export function usePlanningStoreSync(
   const onElementDelete = useCallback((id: string) => {
     usePlanningStore.setState((state) => {
       if (!state.elements.some((e) => e.id === id)) return state;
-      return { elements: state.elements.filter((e) => e.id !== id) };
+      const idsToDelete = new Set<string>([id]);
+      state.elements.forEach((element) => {
+        if (!isPlanningConnectorElement(element)) return;
+        const data = element.data as any;
+        if (
+          data?.startNodeId === id ||
+          data?.endNodeId === id ||
+          data?.startPoint?.elementId === id ||
+          data?.endPoint?.elementId === id
+        ) {
+          idsToDelete.add(element.id);
+        }
+      });
+      return { elements: state.elements.filter((e) => !idsToDelete.has(e.id)) };
     });
   }, []);
 

@@ -119,6 +119,7 @@ export function useMindMapConnectionController({
           curveStyle: 'bezier',
           color: sourceNode.data?.color || '#3DA8F5',
           strokeWidth: 2,
+          relationshipType: 'references',
         } as MindMapConnectorData,
       });
 

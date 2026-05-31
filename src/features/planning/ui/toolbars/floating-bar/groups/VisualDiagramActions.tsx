@@ -145,6 +145,7 @@ export const VisualDiagramActions: React.FC<VisualDiagramActionsProps> = ({
         curveStyle: 'bezier',
         color: nodeData?.color || '#3DA8F5',
         strokeWidth: 2,
+        relationshipType: 'belongs_to',
         diagramType: 'visual_diagram'
       }
     });

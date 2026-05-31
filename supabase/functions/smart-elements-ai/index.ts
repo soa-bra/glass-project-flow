@@ -14,7 +14,8 @@ const SMART_ELEMENT_TYPES = [
   'mind_map', 'project_card', 'task_card', 'finance_card', 'csr_card', 'crm_card', 'root_connector'
 ] as const;
 
-const VALID_ACTIONS = ['generate', 'analyze', 'transform', 'generate_document'] as const;
+const VALID_ACTIONS = ['generate', 'analyze', 'transform'] as const;
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const AUTO_APPROVE_CONFIDENCE_THRESHOLD = 0.85;
 const REVIEW_CONFIDENCE_THRESHOLD = 0.6;
 const SENSITIVE_TRANSFORMATION_KEYWORDS = [
@@ -414,7 +415,22 @@ serve(async (req) => {
 
     // ✅ 2. Parse and validate input
     const body = await req.json();
-    const { prompt, action, selectedElements, context } = body;
+    if (!body || typeof body !== 'object' || Array.isArray(body)) {
+      return new Response(JSON.stringify({ error: 'Invalid request body', code: 'INVALID_INPUT' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { prompt, action, selectedElements } = body;
+    const contextValidation = validateAiContext(body.context);
+    if (!contextValidation.valid) {
+      return new Response(JSON.stringify({ error: contextValidation.error, code: 'INVALID_INPUT' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const context = contextValidation.context;
 
     // Validate action
     if (action && !VALID_ACTIONS.includes(action)) {
@@ -440,6 +456,49 @@ serve(async (req) => {
       });
     }
 
+    let selectedTool = 'generate_smart_elements';
+    if (action === 'analyze') {
+      selectedTool = 'analyze_selection';
+    }
+
+    const permissionCheck = await checkAiPermission(supabaseClient, userId, context);
+    if (!permissionCheck.allowed) {
+      await storeExplainabilityTrace(supabaseClient, {
+        userId,
+        action: action || 'generate',
+        selectedTool,
+        model: 'google/gemini-2.5-flash',
+        prompt,
+        selectedElements,
+        targetType: context?.targetType,
+        confidenceSummary: null,
+        escalation: 'permission_denied',
+        sensitivity: { isSensitive: false, score: 0, reasons: [`Missing permission: ${permissionCheck.permissionCode}`] },
+        approval: {
+          required: false,
+          provided: false,
+          approverId: null,
+          approvedAt: null
+        },
+        outputSummary: null,
+        denial: {
+          code: 'AI_PERMISSION_DENIED',
+          requiredPermission: permissionCheck.permissionCode,
+          boardId: context?.boardId ?? null,
+          projectId: context?.projectId ?? null,
+        }
+      });
+
+      return new Response(JSON.stringify({
+        success: false,
+        code: 'AI_PERMISSION_DENIED',
+        error: 'ليست لديك صلاحية استخدام الذكاء الاصطناعي في هذا السياق',
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
@@ -447,7 +506,6 @@ serve(async (req) => {
 
     // Build the user message based on action type
     let userMessage = '';
-    let selectedTool = 'generate_smart_elements';
     
     if (action === 'generate') {
       userMessage = `أنشئ عناصر ذكية بناءً على الوصف التالي:\n${prompt}`;
@@ -455,7 +513,6 @@ serve(async (req) => {
         userMessage += `\n\nنوع العنصر المفضل: ${context.preferredType}`;
       }
     } else if (action === 'analyze') {
-      selectedTool = 'analyze_selection';
       userMessage = `حلل العناصر المحددة التالية واقترح تحويلها إلى عناصر ذكية:\n${JSON.stringify(selectedElements, null, 2)}`;
       if (prompt) {
         userMessage += `\n\nتعليمات إضافية: ${prompt}`;
@@ -478,6 +535,9 @@ serve(async (req) => {
       targetType: context?.targetType
     });
     const humanApprovalProvided = context?.humanApproval?.approved === true;
+    const approvalReason = typeof context?.humanApproval?.approvalReason === 'string'
+      ? context.humanApproval.approvalReason.slice(0, 500)
+      : null;
 
     // Enforce human approval for sensitive transformations before model execution
     if (action === 'transform' && sensitivityAssessment.isSensitive && !humanApprovalProvided) {
@@ -496,7 +556,8 @@ serve(async (req) => {
           required: true,
           provided: false,
           approverId: null,
-          approvedAt: null
+          approvedAt: null,
+          approvalReason: null
         },
         outputSummary: null
       });
@@ -612,10 +673,24 @@ serve(async (req) => {
         required: action === 'transform' ? sensitivityAssessment.isSensitive : false,
         provided: humanApprovalProvided,
         approverId: context?.humanApproval?.approverId ?? null,
-        approvedAt: context?.humanApproval?.approvedAt ?? null
+        approvedAt: context?.humanApproval?.approvedAt ?? null,
+        approvalReason
       },
       outputSummary: summarizeOutput(toolResult)
     });
+
+    if (action === 'transform' && humanApprovalProvided) {
+      await storeHumanApprovalAuditEvent(supabaseClient, {
+        userId,
+        selectedTool,
+        targetType: context?.targetType,
+        selectedElements,
+        sensitivity: sensitivityAssessment,
+        approvedAt: context?.humanApproval?.approvedAt ?? null,
+        approverId: context?.humanApproval?.approverId ?? null,
+        approvalReason
+      });
+    }
 
     return new Response(JSON.stringify({
       success: true,
@@ -675,6 +750,153 @@ function calculatePosition(index: number, total: number, layout: string): { x: n
   }
 }
 
+
+type ValidatedAiContext = {
+  boardId?: string;
+  projectId?: string;
+  preferredType?: typeof SMART_ELEMENT_TYPES[number];
+  targetType?: typeof SMART_ELEMENT_TYPES[number];
+  humanApproval?: {
+    approved: boolean;
+    approverId?: string;
+    approvedAt?: string;
+  };
+};
+
+function validateAiContext(context: unknown): { valid: true; context?: ValidatedAiContext } | { valid: false; error: string } {
+  if (context === undefined || context === null) {
+    return { valid: true, context: undefined };
+  }
+
+  if (typeof context !== 'object' || Array.isArray(context)) {
+    return { valid: false, error: 'Invalid context' };
+  }
+
+  const rawContext = context as Record<string, unknown>;
+  const allowedKeys = new Set(['boardId', 'projectId', 'preferredType', 'targetType', 'humanApproval']);
+  for (const key of Object.keys(rawContext)) {
+    if (key.toLowerCase().includes('role')) {
+      return { valid: false, error: 'Client-supplied roles are not accepted' };
+    }
+    if (!allowedKeys.has(key)) {
+      return { valid: false, error: `Unsupported context field: ${key}` };
+    }
+  }
+
+  const boardId = validateOptionalUuid(rawContext.boardId, 'boardId');
+  if (!boardId.valid) return boardId;
+
+  const projectId = validateOptionalUuid(rawContext.projectId, 'projectId');
+  if (!projectId.valid) return projectId;
+
+  if (boardId.value && projectId.value) {
+    return { valid: false, error: 'Provide either boardId or projectId, not both' };
+  }
+
+  const preferredType = validateOptionalSmartElementType(rawContext.preferredType, 'preferredType');
+  if (!preferredType.valid) return preferredType;
+
+  const targetType = validateOptionalSmartElementType(rawContext.targetType, 'targetType');
+  if (!targetType.valid) return targetType;
+
+  const humanApproval = validateOptionalHumanApproval(rawContext.humanApproval);
+  if (!humanApproval.valid) return humanApproval;
+
+  return {
+    valid: true,
+    context: {
+      ...(boardId.value ? { boardId: boardId.value } : {}),
+      ...(projectId.value ? { projectId: projectId.value } : {}),
+      ...(preferredType.value ? { preferredType: preferredType.value } : {}),
+      ...(targetType.value ? { targetType: targetType.value } : {}),
+      ...(humanApproval.value ? { humanApproval: humanApproval.value } : {}),
+    }
+  };
+}
+
+function validateOptionalUuid(value: unknown, fieldName: string): { valid: true; value?: string } | { valid: false; error: string } {
+  if (value === undefined || value === null) return { valid: true };
+  if (typeof value !== 'string' || !UUID_PATTERN.test(value)) {
+    return { valid: false, error: `Invalid ${fieldName}` };
+  }
+  return { valid: true, value };
+}
+
+function validateOptionalSmartElementType(
+  value: unknown,
+  fieldName: string
+): { valid: true; value?: typeof SMART_ELEMENT_TYPES[number] } | { valid: false; error: string } {
+  if (value === undefined || value === null) return { valid: true };
+  if (typeof value !== 'string' || !SMART_ELEMENT_TYPES.includes(value as typeof SMART_ELEMENT_TYPES[number])) {
+    return { valid: false, error: `Invalid ${fieldName}` };
+  }
+  return { valid: true, value: value as typeof SMART_ELEMENT_TYPES[number] };
+}
+
+function validateOptionalHumanApproval(
+  value: unknown
+): { valid: true; value?: ValidatedAiContext['humanApproval'] } | { valid: false; error: string } {
+  if (value === undefined || value === null) return { valid: true };
+  if (typeof value !== 'object' || Array.isArray(value)) {
+    return { valid: false, error: 'Invalid humanApproval' };
+  }
+
+  const rawApproval = value as Record<string, unknown>;
+  const allowedKeys = new Set(['approved', 'approverId', 'approvedAt']);
+  for (const key of Object.keys(rawApproval)) {
+    if (key.toLowerCase().includes('role')) {
+      return { valid: false, error: 'Client-supplied roles are not accepted' };
+    }
+    if (!allowedKeys.has(key)) {
+      return { valid: false, error: `Unsupported humanApproval field: ${key}` };
+    }
+  }
+
+  if (typeof rawApproval.approved !== 'boolean') {
+    return { valid: false, error: 'Invalid humanApproval.approved' };
+  }
+
+  if (rawApproval.approverId !== undefined && rawApproval.approverId !== null) {
+    if (typeof rawApproval.approverId !== 'string' || rawApproval.approverId.length > 128) {
+      return { valid: false, error: 'Invalid humanApproval.approverId' };
+    }
+  }
+
+  if (rawApproval.approvedAt !== undefined && rawApproval.approvedAt !== null) {
+    if (typeof rawApproval.approvedAt !== 'string' || Number.isNaN(Date.parse(rawApproval.approvedAt))) {
+      return { valid: false, error: 'Invalid humanApproval.approvedAt' };
+    }
+  }
+
+  return {
+    valid: true,
+    value: {
+      approved: rawApproval.approved,
+      ...(typeof rawApproval.approverId === 'string' ? { approverId: rawApproval.approverId } : {}),
+      ...(typeof rawApproval.approvedAt === 'string' ? { approvedAt: rawApproval.approvedAt } : {}),
+    }
+  };
+}
+
+async function checkAiPermission(
+  supabaseClient: ReturnType<typeof createClient>,
+  userId: string,
+  context?: ValidatedAiContext
+): Promise<{ allowed: boolean; permissionCode: 'canvas.ai.use' | 'project.ai.use' }> {
+  const permissionCode = context?.projectId ? 'project.ai.use' : 'canvas.ai.use';
+  const { data, error } = await supabaseClient.rpc('has_permission', {
+    _user_id: userId,
+    _permission_code: permissionCode,
+  });
+
+  if (error) {
+    console.error(`[smart-elements-ai] Failed to check permission ${permissionCode}:`, error);
+    return { allowed: false, permissionCode };
+  }
+
+  return { allowed: data === true, permissionCode };
+}
+
 type ExplainabilityTraceInput = {
   userId: string;
   action: string;
@@ -689,7 +911,7 @@ type ExplainabilityTraceInput = {
     average: number;
     count: number;
   } | null;
-  escalation: 'auto_apply' | 'review_recommended' | 'human_escalation_required' | 'blocked_pending_human_approval';
+  escalation: 'auto_apply' | 'review_recommended' | 'human_escalation_required' | 'blocked_pending_human_approval' | 'permission_denied';
   sensitivity: {
     isSensitive: boolean;
     score: number;
@@ -700,6 +922,7 @@ type ExplainabilityTraceInput = {
     provided: boolean;
     approverId: string | null;
     approvedAt: string | null;
+    approvalReason: string | null;
   };
   outputSummary: {
     elementsCount: number;
@@ -707,6 +930,12 @@ type ExplainabilityTraceInput = {
     entityCount: number;
     relationshipCount: number;
   } | null;
+  denial?: {
+    code: string;
+    requiredPermission: string;
+    boardId: string | null;
+    projectId: string | null;
+  };
 };
 
 function assessTransformationSensitivity(input: {
@@ -777,6 +1006,43 @@ function determineEscalationGate(
   return 'human_escalation_required';
 }
 
+async function storeHumanApprovalAuditEvent(
+  supabaseClient: ReturnType<typeof createClient>,
+  input: {
+    userId: string;
+    selectedTool: string;
+    targetType?: string;
+    selectedElements?: unknown[];
+    sensitivity: ExplainabilityTraceInput['sensitivity'];
+    approvedAt: string | null;
+    approverId: string | null;
+    approvalReason: string | null;
+  }
+) {
+  const { error } = await supabaseClient.from('audit_events').insert({
+    actor_id: input.userId,
+    action: 'smart_elements.transform.approved',
+    resource_type: 'smart_elements_transform',
+    decision: 'allowed',
+    reason: input.approvalReason || 'Human approval confirmed for sensitive smart element transformation',
+    metadata: {
+      selectedTool: input.selectedTool,
+      targetType: input.targetType || null,
+      selectedElementsCount: Array.isArray(input.selectedElements) ? input.selectedElements.length : 0,
+      sensitivity: input.sensitivity,
+      humanApproval: {
+        approvedAt: input.approvedAt,
+        approverId: input.approverId,
+        approvalReason: input.approvalReason,
+      }
+    }
+  });
+
+  if (error) {
+    console.error('[smart-elements-ai] Failed to store human approval audit event:', error);
+  }
+}
+
 function summarizeOutput(toolResult: any): ExplainabilityTraceInput['outputSummary'] {
   return {
     elementsCount: Array.isArray(toolResult?.elements) ? toolResult.elements.length : 0,
@@ -817,7 +1083,9 @@ async function storeExplainabilityTrace(supabaseClient: ReturnType<typeof create
       confidenceSummary: input.confidenceSummary,
       sensitivity: input.sensitivity,
       approval: input.approval,
+      approvalReason: input.approval.approvalReason,
       outputSummary: input.outputSummary,
+      denial: input.denial,
     }
   };
 

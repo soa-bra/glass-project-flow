@@ -812,6 +812,80 @@ export type Database = {
         }
         Relationships: []
       }
+      data_links: {
+        Row: {
+          board_id: string | null
+          created_at: string
+          created_by: string
+          id: string
+          label: string | null
+          link_kind: Database["public"]["Enums"]["data_link_kind"]
+          mapping: Json
+          metadata: Json
+          project_id: string | null
+          source_element_id: string | null
+          target_element_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          board_id?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          label?: string | null
+          link_kind?: Database["public"]["Enums"]["data_link_kind"]
+          mapping?: Json
+          metadata?: Json
+          project_id?: string | null
+          source_element_id?: string | null
+          target_element_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          label?: string | null
+          link_kind?: Database["public"]["Enums"]["data_link_kind"]
+          mapping?: Json
+          metadata?: Json
+          project_id?: string | null
+          source_element_id?: string | null
+          target_element_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_links_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_links_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_links_source_element_id_fkey"
+            columns: ["source_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_links_target_element_id_fkey"
+            columns: ["target_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dependencies: {
         Row: {
           created_at: string
@@ -850,6 +924,76 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      element_transformations: {
+        Row: {
+          board_id: string
+          config: Json
+          created_at: string
+          created_by: string
+          id: string
+          last_error: string | null
+          metadata: Json
+          result: Json | null
+          source_element_id: string
+          status: Database["public"]["Enums"]["sync_queue_status"]
+          target_element_id: string | null
+          transformation_type: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          config?: Json
+          created_at?: string
+          created_by: string
+          id?: string
+          last_error?: string | null
+          metadata?: Json
+          result?: Json | null
+          source_element_id: string
+          status?: Database["public"]["Enums"]["sync_queue_status"]
+          target_element_id?: string | null
+          transformation_type: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          config?: Json
+          created_at?: string
+          created_by?: string
+          id?: string
+          last_error?: string | null
+          metadata?: Json
+          result?: Json | null
+          source_element_id?: string
+          status?: Database["public"]["Enums"]["sync_queue_status"]
+          target_element_id?: string | null
+          transformation_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "element_transformations_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "element_transformations_source_board_fkey"
+            columns: ["source_element_id", "board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id", "board_id"]
+          },
+          {
+            foreignKeyName: "element_transformations_target_board_fkey"
+            columns: ["target_element_id", "board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id", "board_id"]
+          },
+        ]
       }
       engine_jobs: {
         Row: {
@@ -2165,6 +2309,72 @@ export type Database = {
           },
         ]
       }
+      project_events: {
+        Row: {
+          actor_id: string | null
+          aggregate_id: string | null
+          aggregate_type: string | null
+          board_id: string | null
+          causation_id: string | null
+          correlation_id: string | null
+          created_at: string
+          event_kind: Database["public"]["Enums"]["project_event_kind"]
+          event_type: string
+          event_version: number
+          id: string
+          metadata: Json
+          payload: Json
+          project_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          aggregate_id?: string | null
+          aggregate_type?: string | null
+          board_id?: string | null
+          causation_id?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          event_kind?: Database["public"]["Enums"]["project_event_kind"]
+          event_type: string
+          event_version?: number
+          id?: string
+          metadata?: Json
+          payload?: Json
+          project_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          aggregate_id?: string | null
+          aggregate_type?: string | null
+          board_id?: string | null
+          causation_id?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          event_kind?: Database["public"]["Enums"]["project_event_kind"]
+          event_type?: string
+          event_version?: number
+          id?: string
+          metadata?: Json
+          payload?: Json
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_events_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           budget: number | null
@@ -2270,6 +2480,150 @@ export type Database = {
             columns: ["board_object_id"]
             isOneToOne: true
             referencedRelation: "board_objects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_connectors: {
+        Row: {
+          board_id: string
+          connector_element_id: string | null
+          connector_kind: Database["public"]["Enums"]["smart_connector_kind"]
+          created_at: string
+          created_by: string
+          id: string
+          label: string | null
+          metadata: Json
+          routing: Json
+          source_element_id: string
+          style: Json
+          target_element_id: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          connector_element_id?: string | null
+          connector_kind?: Database["public"]["Enums"]["smart_connector_kind"]
+          created_at?: string
+          created_by: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          routing?: Json
+          source_element_id: string
+          style?: Json
+          target_element_id: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          connector_element_id?: string | null
+          connector_kind?: Database["public"]["Enums"]["smart_connector_kind"]
+          created_at?: string
+          created_by?: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          routing?: Json
+          source_element_id?: string
+          style?: Json
+          target_element_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_connectors_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_connector_board_fkey"
+            columns: ["connector_element_id", "board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id", "board_id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_source_board_fkey"
+            columns: ["source_element_id", "board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id", "board_id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_target_board_fkey"
+            columns: ["target_element_id", "board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id", "board_id"]
+          },
+        ]
+      }
+      smart_docs: {
+        Row: {
+          board_id: string
+          content: Json
+          created_at: string
+          created_by: string
+          element_id: string
+          id: string
+          metadata: Json
+          project_id: string | null
+          status: Database["public"]["Enums"]["smart_doc_status"]
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          board_id: string
+          content?: Json
+          created_at?: string
+          created_by: string
+          element_id: string
+          id?: string
+          metadata?: Json
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["smart_doc_status"]
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          board_id?: string
+          content?: Json
+          created_at?: string
+          created_by?: string
+          element_id?: string
+          id?: string
+          metadata?: Json
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["smart_doc_status"]
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_docs_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_docs_element_board_fkey"
+            columns: ["element_id", "board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id", "board_id"]
+          },
+          {
+            foreignKeyName: "smart_docs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -2390,6 +2744,78 @@ export type Database = {
         }
         Relationships: []
       }
+      sync_queue: {
+        Row: {
+          attempts: number
+          available_at: string
+          board_id: string | null
+          created_at: string
+          created_by: string
+          entity_id: string
+          entity_table: string
+          id: string
+          last_error: string | null
+          locked_at: string | null
+          locked_by: string | null
+          operation: string
+          payload: Json
+          project_id: string | null
+          status: Database["public"]["Enums"]["sync_queue_status"]
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          available_at?: string
+          board_id?: string | null
+          created_at?: string
+          created_by: string
+          entity_id: string
+          entity_table: string
+          id?: string
+          last_error?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
+          operation: string
+          payload?: Json
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["sync_queue_status"]
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          available_at?: string
+          board_id?: string | null
+          created_at?: string
+          created_by?: string
+          entity_id?: string
+          entity_table?: string
+          id?: string
+          last_error?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
+          operation?: string
+          payload?: Json
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["sync_queue_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_queue_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sync_queue_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_cards: {
         Row: {
           central_board_id: string | null
@@ -2459,6 +2885,80 @@ export type Database = {
             columns: ["linked_task_id"]
             isOneToOne: false
             referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_connectors: {
+        Row: {
+          board_id: string
+          connector_element_id: string
+          connector_kind: string
+          created_at: string
+          id: string
+          label: string | null
+          metadata: Json
+          relationship_type: string
+          source_element_id: string
+          style: Json
+          target_element_id: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          connector_element_id: string
+          connector_kind: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          relationship_type: string
+          source_element_id: string
+          style?: Json
+          target_element_id: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          connector_element_id?: string
+          connector_kind?: string
+          created_at?: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          relationship_type?: string
+          source_element_id?: string
+          style?: Json
+          target_element_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_connectors_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_connector_element_id_fkey"
+            columns: ["connector_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_source_element_id_fkey"
+            columns: ["source_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "smart_connectors_target_element_id_fkey"
+            columns: ["target_element_id"]
+            isOneToOne: false
+            referencedRelation: "planning_elements"
             referencedColumns: ["id"]
           },
         ]
@@ -2899,6 +3399,13 @@ export type Database = {
         | "technical"
         | "operational"
         | "time"
+        | "depends_on"
+        | "causes"
+        | "blocks"
+        | "references"
+        | "funds"
+        | "delivers"
+        | "belongs_to"
       central_entity_type:
         | "central_board"
         | "department"
@@ -2919,6 +3426,7 @@ export type Database = {
         | "cancelled"
         | "archived"
         | "failed"
+      data_link_kind: "reference" | "dependency" | "sync" | "embed" | "derivation"
       department_project_role: "owner" | "supervisor"
       engine_job_kind:
         | "automation"
@@ -2936,6 +3444,10 @@ export type Database = {
         | "smart_doc"
         | "interactive_sheet"
         | "mindmap_node"
+        | "mindmap_connector"
+        | "visual_node"
+        | "visual_connector"
+        | "root_connector"
         | "frame"
         | "connector"
         | "entity_card"
@@ -2945,6 +3457,14 @@ export type Database = {
         | "on_hold"
         | "completed"
         | "cancelled"
+      project_event_kind:
+        | "created"
+        | "updated"
+        | "deleted"
+        | "status_changed"
+        | "commented"
+        | "synced"
+        | "custom"
       role_scope_type: "global" | "department" | "project" | "board"
       service_type:
         | "brand_strategy"
@@ -2955,6 +3475,14 @@ export type Database = {
         | "consulting"
         | "training"
         | "other"
+      sync_queue_status:
+        | "pending"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "cancelled"
+      smart_connector_kind: "line" | "arrow" | "data_flow" | "dependency" | "sequence"
+      smart_doc_status: "draft" | "published" | "archived"
       task_priority: "low" | "medium" | "high" | "urgent"
       task_status: "todo" | "in_progress" | "review" | "completed"
       task_tool_engine_relation_type: "produces" | "binds" | "executes"
@@ -3139,6 +3667,13 @@ export const Constants = {
         "technical",
         "operational",
         "time",
+        "depends_on",
+        "causes",
+        "blocks",
+        "references",
+        "funds",
+        "delivers",
+        "belongs_to",
       ],
       central_entity_type: [
         "central_board",
@@ -3180,6 +3715,10 @@ export const Constants = {
         "smart_doc",
         "interactive_sheet",
         "mindmap_node",
+        "mindmap_connector",
+        "visual_node",
+        "visual_connector",
+        "root_connector",
         "frame",
         "connector",
         "entity_card",

@@ -10,6 +10,7 @@
  */
 
 import { z } from 'zod';
+import { UNIFIED_RELATIONSHIP_TYPES } from '@/features/planning/integration/connectors/relationshipTypes';
 import { migrateKanbanLegacyData } from '@/utils/kanbanLegacyMigration';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -729,9 +730,10 @@ export const RootConnectorDataSchema = z.object({
   showAIPanel: z.boolean().default(false),
   // Connection type for semantic meaning
   connectionType: z.enum([
+    ...UNIFIED_RELATIONSHIP_TYPES,
     'relates-to', 'leads-to', 'depends-on', 'contains',
     'derives-from', 'contradicts', 'supports', 'custom'
-  ]).default('relates-to'),
+  ]).default('references'),
 });
 
 export type ConnectorAnchor = z.infer<typeof ConnectorAnchorSchema>;

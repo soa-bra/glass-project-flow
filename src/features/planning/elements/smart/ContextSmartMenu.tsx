@@ -67,7 +67,7 @@ const ContextSmartMenu: React.FC = () => {
 
   const { elements, selectedElementIds, viewport } = useCanvasStore();
   const { addSmartElement } = useSmartElementsStore();
-  const { analyzeSelection, transformElements, isLoading } = useSmartElementAI();
+  const { analyzeSelection, transformElements, isLoading, approvalDialog } = useSmartElementAI();
 
   // Get selected elements
   const selectedElements = useMemo(() => {
@@ -192,11 +192,13 @@ const ContextSmartMenu: React.FC = () => {
   };
 
   if (!isVisible || selectedElements.length < 2) {
-    return null;
+    return <>{approvalDialog}</>;
   }
 
   return createPortal(
-    <AnimatePresence>
+    <>
+      {approvalDialog}
+      <AnimatePresence>
       <motion.div
         initial={{ opacity: 0, y: 10, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -295,7 +297,8 @@ const ContextSmartMenu: React.FC = () => {
           </AnimatePresence>
         </div>
       </motion.div>
-    </AnimatePresence>,
+      </AnimatePresence>
+    </>,
     document.body
   );
 };

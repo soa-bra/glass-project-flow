@@ -72,27 +72,23 @@ const getConnectedConnectorIds = (elementId: string, elements: CanvasElement[]):
   const element = elements.find((el) => el.id === elementId);
   if (!element) return [];
 
-  if (element.type === 'mindmap_node') {
-    return elements
-      .filter((el) => {
-        if (el.type !== 'mindmap_connector') return false;
-        const data = el.data as any;
-        return data?.startNodeId === elementId || data?.endNodeId === elementId;
-      })
-      .map((el) => el.id);
-  }
+  return elements
+    .filter((el) => {
+      if (el.id === elementId) return false;
+      if (!['mindmap_connector', 'visual_connector', 'root_connector', 'smart'].includes(el.type)) return false;
 
-  if (element.type === 'visual_node') {
-    return elements
-      .filter((el) => {
-        if (el.type !== 'visual_connector') return false;
-        const data = el.data as any;
+      const data = el.data as any;
+      if (data?.startNodeId || data?.endNodeId) {
         return data?.startNodeId === elementId || data?.endNodeId === elementId;
-      })
-      .map((el) => el.id);
-  }
+      }
 
-  return [];
+      if (data?.startPoint?.elementId || data?.endPoint?.elementId) {
+        return data?.startPoint?.elementId === elementId || data?.endPoint?.elementId === elementId;
+      }
+
+      return false;
+    })
+    .map((el) => el.id);
 };
 
 const collectDeletionIds = (elementIds: string[], elements: CanvasElement[]): string[] => {
