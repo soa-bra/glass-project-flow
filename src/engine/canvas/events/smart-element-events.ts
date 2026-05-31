@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { SmartElementTypeSchema } from '@/types/smart-elements';
+import { SmartCardTypes, SmartElementTypeSchema } from '@/types/smart-elements';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Base Event Schema

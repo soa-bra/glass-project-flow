@@ -38,6 +38,7 @@ export const SmartElementTypes = [
 
 export const SmartElementTypeSchema = z.enum(SmartElementTypes);
 export type SmartElementType = z.infer<typeof SmartElementTypeSchema>;
+export const SmartCardTypes = ['project_card', 'task_card', 'finance_card', 'csr_card', 'crm_card'] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Base Smart Element Schema
