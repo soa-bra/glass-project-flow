@@ -1,61 +1,29 @@
-
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, Clock, Bell, BarChart, TrendingUp } from 'lucide-react';
-import { LineChart, Line, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Bell } from 'lucide-react';
+import { ResponsiveContainer, BarChart as RechartsBarChart, Bar, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { BaseCard, BaseListItem } from '@/components/shared';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
+import { BaseListItem } from '@/components/shared';
 import { mockBudgetData, mockCashFlowData } from './data';
 import { formatCurrency } from './utils';
 import { Alert } from './types';
-import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
+import { SPACING } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
   const [alerts] = useState<Alert[]>([
-    {
-      id: 1,
-      type: 'warning',
-      message: 'تجاوز ميزانية التسويق بنسبة 15%',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      type: 'info',
-      message: 'موعد دفع الرواتب خلال 3 أيام',
-      priority: 'medium'
-    },
-    {
-      id: 3,
-      type: 'success',
-      message: 'تم استلام دفعة من مشروع XYZ',
-      priority: 'low'
-    }
+    { id: 1, type: 'warning', message: 'تجاوز ميزانية التسويق بنسبة 15%', priority: 'high' },
+    { id: 2, type: 'info', message: 'موعد دفع الرواتب خلال 3 أيام', priority: 'medium' },
+    { id: 3, type: 'success', message: 'تم استلام دفعة من مشروع XYZ', priority: 'low' },
   ]);
 
   const kpiStats = [
-    {
-      title: 'الإيرادات الشهرية',
-      value: '2.5',
-      unit: 'مليون ر.س',
-      description: 'إجمالي الإيرادات لهذا الشهر'
-    },
-    {
-      title: 'النفقات الشهرية',
-      value: '1.8',
-      unit: 'مليون ر.س',
-      description: 'إجمالي النفقات لهذا الشهر'
-    },
-    {
-      title: 'الربح الصافي',
-      value: '700',
-      unit: 'ألف ر.س',
-      description: 'الأرباح بعد خصم النفقات'
-    },
-    {
-      title: 'التدفق النقدي',
-      value: '+12%',
-      unit: 'نمو',
-      description: 'مقارنة بالشهر السابق'
-    }
+    { title: 'الإيرادات الشهرية', value: '2.5', unit: 'مليون ر.س', description: 'إجمالي الإيرادات لهذا الشهر' },
+    { title: 'النفقات الشهرية', value: '1.8', unit: 'مليون ر.س', description: 'إجمالي النفقات لهذا الشهر' },
+    { title: 'الربح الصافي', value: '700', unit: 'ألف ر.س', description: 'الأرباح بعد خصم النفقات' },
+    { title: 'التدفق النقدي', value: '+12%', unit: 'نمو', description: 'مقارنة بالشهر السابق' },
   ];
 
   const getBadgeVariant = (priority: string): 'success' | 'warning' | 'error' | 'info' | 'default' => {
@@ -68,95 +36,70 @@ export const OverviewTab: React.FC = () => {
   };
 
   return (
-    <div className={`space-y-6 ${SPACING.SECTION_MARGIN}`}>
-      {/* مؤشرات الأداء الأساسية */}
+    <div className={`space-y-5 ${SPACING.SECTION_MARGIN}`}>
       <KPIStatsSection stats={kpiStats} />
-      
-      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
-        {/* Budget vs Actual Chart */}
-        <BaseCard
-          title="الميزانية مقابل الفعلي (شهري)"
-          icon={<BarChart className={LAYOUT.ICON_SIZE} />}
-          className="p-6"
-        >
-          <ResponsiveContainer width="100%" height={300}>
-            <RechartsBarChart data={mockBudgetData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
-              <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <Tooltip 
-                formatter={value => formatCurrency(Number(value))} 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '12px',
-                  color: '#000000'
-                }}
-                labelStyle={{ color: '#000000' }}
-              />
-              <Legend wrapperStyle={{ color: '#000000' }} />
-              <Bar dataKey="budget" fill="#bdeed3" name="الميزانية" />
-              <Bar dataKey="actual" fill="#a4e2f6" name="الفعلي" />
-            </RechartsBarChart>
-          </ResponsiveContainer>
-        </BaseCard>
 
-        {/* Cash Flow Forecast */}
-        <BaseCard
-          title="توقعات التدفق النقدي"
-          icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
-          className="p-6"
-        >
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={mockCashFlowData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#000000" opacity={0.1} />
-              <XAxis dataKey="month" stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <YAxis stroke="#000000" tick={{ fill: '#000000', fontSize: 12 }} />
-              <Tooltip 
-                formatter={value => formatCurrency(Number(value))} 
-                contentStyle={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '12px',
-                  color: '#000000'
-                }}
-                labelStyle={{ color: '#000000' }}
-              />
-              <Legend wrapperStyle={{ color: '#000000' }} />
-              <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} name="التدفق الداخل" />
-              <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} name="التدفق الخارج" />
-            </LineChart>
-          </ResponsiveContainer>
-        </BaseCard>
-      </div>
+      {/* Charts + Alerts in unified grid — eliminates dead zone */}
+      <AppDashboardGrid columns={12} density="default">
+        <AppGridItem colSpan={5} tabletSpan={6}>
+          <DataCardFrame title="الميزانية مقابل الفعلي">
+            <div style={{ height: 220 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsBarChart data={mockBudgetData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+                  <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
+                  <Bar dataKey="budget" fill="rgba(189,238,211,0.4)" radius={[999, 999, 999, 999]} barSize={20} />
+                  <Bar dataKey="actual" fill="#bdeed3" radius={[999, 999, 999, 999]} barSize={20} />
+                </RechartsBarChart>
+              </ResponsiveContainer>
+            </div>
+          </DataCardFrame>
+        </AppGridItem>
 
-      {/* AI Alerts */}
-      <BaseCard
-        title="تنبيهات الذكاء الاصطناعي"
-        icon={<Bell className={LAYOUT.ICON_SIZE} />}
-        className="p-6"
-      >
-        <div className="space-y-3">
-          {alerts.map(alert => (
-            <BaseListItem
-              key={alert.id}
-              icon={
-                alert.type === 'warning' ? <AlertTriangle className={LAYOUT.ICON_SIZE} /> :
-                alert.type === 'info' ? <Clock className={LAYOUT.ICON_SIZE} /> :
-                <CheckCircle className={LAYOUT.ICON_SIZE} />
-              }
-              badge={{
-                text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
-                variant: getBadgeVariant(alert.priority)
-              }}
-            >
-              {alert.message}
-            </BaseListItem>
-          ))}
-        </div>
-      </BaseCard>
+        <AppGridItem colSpan={4} tabletSpan={6}>
+          <DataCardFrame title="توقعات التدفق النقدي">
+            <div style={{ height: 220 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={mockCashFlowData} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+                  <Tooltip content={<ChartTooltipShell formatValue={(v) => formatCurrency(Number(v))} />} cursor={CHART_CURSOR_STYLE} />
+                  <Line type="monotone" dataKey="inflow" stroke="#d9d2fd" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="outflow" stroke="#f1b5b9" strokeWidth={3} dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex items-center gap-4 mt-3">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-1 rounded-full bg-[#d9d2fd]" />
+                <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الداخل</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-1 rounded-full bg-[#f1b5b9]" />
+                <span className="text-[10px] text-[rgba(11,15,18,0.40)] font-arabic">التدفق الخارج</span>
+              </div>
+            </div>
+          </DataCardFrame>
+        </AppGridItem>
+
+        {/* Alerts occupy remaining 3 columns — no dead zone */}
+        <AppGridItem colSpan={3} tabletSpan={6}>
+          <DataCardFrame title="تنبيهات" icon={<Bell className="h-4 w-4" />}>
+            <div className="space-y-2">
+              {alerts.map(alert => (
+                <BaseListItem
+                  key={alert.id}
+                  badge={{
+                    text: alert.priority === 'high' ? 'عالي' : alert.priority === 'medium' ? 'متوسط' : 'منخفض',
+                    variant: getBadgeVariant(alert.priority),
+                  }}
+                >
+                  {alert.message}
+                </BaseListItem>
+              ))}
+            </div>
+          </DataCardFrame>
+        </AppGridItem>
+      </AppDashboardGrid>
     </div>
   );
 };

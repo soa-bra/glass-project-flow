@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import PlanningEntryScreen from '@/features/planning/ui/PlanningEntryScreen';
+import PlanningCanvas from '@/features/planning/ui/PlanningCanvas';
+import { usePlanningStore } from '@/stores/planningStore';
 
 interface PlanningWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -7,10 +10,24 @@ interface PlanningWorkspaceProps {
 const PlanningWorkspace: React.FC<PlanningWorkspaceProps> = ({
   isSidebarCollapsed
 }) => {
+  const { currentBoard, loadBoards } = usePlanningStore();
+
+  useEffect(() => {
+    void loadBoards();
+  }, [loadBoards]);
+
   return (
-    <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${isSidebarCollapsed ? 'right-[calc(var(--sidebar-width-collapsed)+8px)] w-[calc(100vw-var(--sidebar-width-collapsed)-16px)]' : 'right-[calc(var(--sidebar-width-expanded)+8px)] w-[calc(100vw-var(--sidebar-width-expanded)-16px)]'}`}>
+    <div className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] transition-all duration-300 ${
+      isSidebarCollapsed 
+        ? 'right-[calc(var(--sidebar-width-collapsed)+8px)] w-[calc(100vw-var(--sidebar-width-collapsed)-16px)]'
+        : 'right-[calc(var(--sidebar-width-expanded)+8px)] w-[calc(100vw-var(--sidebar-width-expanded)-16px)]'
+    }`}>
       <div className="h-full backdrop-blur-sm rounded-3xl overflow-hidden bg-white">
-        {/* Empty white board - ready for future content */}
+        {!currentBoard ? (
+          <PlanningEntryScreen />
+        ) : (
+          <PlanningCanvas board={currentBoard} />
+        )}
       </div>
     </div>
   );

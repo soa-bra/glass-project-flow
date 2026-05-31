@@ -1,10 +1,11 @@
 import React from 'react';
-import { AlertTriangle, FileText, Scale, Shield, Calendar, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
+import { AlertTriangle, FileText, Shield, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
-import { BaseCard, BaseStatsCard, BaseListItem } from '@/components/shared';
-import { BaseBadge as UnifiedBadge } from '@/components/ui/BaseBadge';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { BaseBox, BaseListItem } from '@/components/shared';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockLegalMetrics, mockAlerts } from './data';
-import { getStatusColor, getStatusText, getPriorityColor } from './utils';
 import { SPACING, LAYOUT } from '@/components/shared/design-system/constants';
 
 export const OverviewTab: React.FC = () => {
@@ -51,25 +52,25 @@ export const OverviewTab: React.FC = () => {
       {/* مؤشرات الأداء الأساسية */}
       <KPIStatsSection stats={kpiStats} />
       
-      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
+      <AppDashboardGrid columns={12} density="spacious">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* إحصائيات العقود */}
-        <BaseCard 
+        <BaseBox
           title="توزيع العقود حسب الحالة"
           icon={<FileText className={LAYOUT.ICON_SIZE} />}
         >
-          <BaseStatsCard 
-            stats={[
-              { title: 'موقعة', value: metrics.contractsCount.signed },
-              { title: 'في الانتظار', value: metrics.contractsCount.pending },
-              { title: 'منتهية', value: metrics.contractsCount.expired },
-              { title: 'قيد المراجعة', value: metrics.contractsCount.underReview }
-            ]}
-            columns={2}
-          />
-        </BaseCard>
+          <div className="grid grid-cols-2 gap-3">
+            <NumericStatCard title="موقعة" value={metrics.contractsCount.signed} size="sm" />
+            <NumericStatCard title="في الانتظار" value={metrics.contractsCount.pending} size="sm" />
+            <NumericStatCard title="منتهية" value={metrics.contractsCount.expired} size="sm" />
+            <NumericStatCard title="قيد المراجعة" value={metrics.contractsCount.underReview} size="sm" />
+          </div>
+        </BaseBox>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* درجة الامتثال ومؤشرات المخاطر */}
-        <BaseCard 
+        <BaseBox 
           title="مؤشرات الامتثال والمخاطر"
           icon={<Shield className={LAYOUT.ICON_SIZE} />}
         >
@@ -89,28 +90,29 @@ export const OverviewTab: React.FC = () => {
               <div className="text-sm font-medium text-black font-arabic">درجة المخاطر الإجمالية</div>
             </div>
           </div>
-        </BaseCard>
-      </div>
+        </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
-      <div className={LAYOUT.TWO_COLUMN_GRID} style={{ gap: '1.5rem' }}>
+      <AppDashboardGrid columns={12} density="spacious">
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* الإحصائيات الشهرية */}
-        <BaseCard 
+        <BaseBox
           title="الإنجازات الشهرية"
           icon={<TrendingUp className={LAYOUT.ICON_SIZE} />}
         >
-          <BaseStatsCard 
-            stats={[
-              { title: 'عقد موقع', value: metrics.monthlyStats.contractsSigned },
-              { title: 'قضية محلولة', value: metrics.monthlyStats.casesResolved },
-              { title: 'فحص امتثال', value: metrics.monthlyStats.complianceChecks },
-              { title: 'تقييم مخاطر', value: metrics.monthlyStats.riskAssessments }
-            ]}
-            columns={2}
-          />
-        </BaseCard>
+          <div className="grid grid-cols-2 gap-3">
+            <NumericStatCard title="عقد موقع" value={metrics.monthlyStats.contractsSigned} size="sm" />
+            <NumericStatCard title="قضية محلولة" value={metrics.monthlyStats.casesResolved} size="sm" />
+            <NumericStatCard title="فحص امتثال" value={metrics.monthlyStats.complianceChecks} size="sm" />
+            <NumericStatCard title="تقييم مخاطر" value={metrics.monthlyStats.riskAssessments} size="sm" />
+          </div>
+        </BaseBox>
+        </AppGridItem>
 
+        <AppGridItem colSpan={6} tabletSpan={6}>
         {/* التنبيهات القانونية */}
-        <BaseCard 
+        <BaseBox 
           title="تنبيهات قانونية عاجلة"
           icon={<Bell className={LAYOUT.ICON_SIZE} />}
         >
@@ -132,7 +134,8 @@ export const OverviewTab: React.FC = () => {
               </BaseListItem>
             ))}
           </div>
-        </BaseCard>
-      </div>
+        </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
     </div>;
 };

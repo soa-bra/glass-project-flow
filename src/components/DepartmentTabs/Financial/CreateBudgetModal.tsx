@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { 
   FileText, 
   X, 
   Calendar, 
+  CalendarIcon,
   DollarSign, 
   BarChart3, 
   Sparkles, 
@@ -16,6 +20,9 @@ import {
   Plus,
   Minus
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import { FormValidator, ValidationSchemas } from '@/utils/validation';
 import { toast } from 'sonner';
 
@@ -285,7 +292,8 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent 
         className="max-w-4xl max-h-[90vh] p-0 bg-white/40 backdrop-blur-[20px] border border-white/20 rounded-[24px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.1)]"
-        style={{ zIndex: 9999 }}
+        style={{
+ }}
       >
         {/* Header */}
         <DialogHeader className="flex flex-row items-center justify-between p-6 border-b border-white/20">
@@ -364,66 +372,115 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">نوع الميزانية *</label>
-                  <select
-                    value={formData.budgetType}
-                    onChange={(e) => handleInputChange('budgetType', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  >
-                    <option value="">اختر نوع الميزانية</option>
-                    {budgetTypes.map(type => (
-                      <option key={type.value} value={type.value}>{type.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.budgetType} onValueChange={(value) => handleInputChange('budgetType', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic">
+                      <SelectValue placeholder="اختر نوع الميزانية" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="text-[#0B0F12] font-arabic"
+                    >
+                      {budgetTypes.map(type => (
+                        <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">القسم *</label>
-                  <select
-                    value={formData.department}
-                    onChange={(e) => handleInputChange('department', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  >
-                    <option value="">اختر القسم</option>
-                    {departments.map(dept => (
-                      <option key={dept.value} value={dept.value}>{dept.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.department} onValueChange={(value) => handleInputChange('department', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic">
+                      <SelectValue placeholder="اختر القسم" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="text-[#0B0F12] font-arabic"
+                    >
+                      {departments.map(dept => (
+                        <SelectItem key={dept.value} value={dept.value}>{dept.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">العملة</label>
-                  <select
-                    value={formData.currency}
-                    onChange={(e) => handleInputChange('currency', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  >
-                    {currencies.map(currency => (
-                      <option key={currency.value} value={currency.value}>{currency.label}</option>
-                    ))}
-                  </select>
+                  <Select value={formData.currency} onValueChange={(value) => handleInputChange('currency', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic">
+                      <SelectValue placeholder="اختر العملة" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className="text-[#0B0F12] font-arabic"
+                    >
+                      {currencies.map(currency => (
+                        <SelectItem key={currency.value} value={currency.value}>{currency.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">تاريخ البداية *</label>
-                  <input
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleInputChange('startDate', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <BaseActionButton
+                        variant="outline"
+                        className={cn(
+                          "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                          !formData.startDate && "text-black/50"
+                        )}
+                      >
+                        <CalendarIcon className="ml-2 h-4 w-4" />
+                        {formData.startDate ? (
+                          format(new Date(formData.startDate), "PPP", { locale: ar })
+                        ) : (
+                          <span>اختر تاريخ البداية</span>
+                        )}
+                      </BaseActionButton>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent 
+                        mode="single" 
+                        selected={formData.startDate ? new Date(formData.startDate) : undefined} 
+                        onSelect={(date) => handleInputChange('startDate', date ? format(date, 'yyyy-MM-dd') : '')} 
+                        initialFocus 
+                        className="p-3 pointer-events-auto" 
+                      />
+                    </PopoverContent>
+                  </Popover>
                   {errors.startDate && <p className="text-xs text-red-500">{errors.startDate}</p>}
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-black font-arabic">تاريخ النهاية *</label>
-                  <input
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleInputChange('endDate', e.target.value)}
-                    className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-3xl focus:border-black focus:outline-none text-black font-arabic"
-                  />
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <BaseActionButton
+                        variant="outline"
+                        className={cn(
+                          "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                          !formData.endDate && "text-black/50"
+                        )}
+                      >
+                        <CalendarIcon className="ml-2 h-4 w-4" />
+                        {formData.endDate ? (
+                          format(new Date(formData.endDate), "PPP", { locale: ar })
+                        ) : (
+                          <span>اختر تاريخ النهاية</span>
+                        )}
+                      </BaseActionButton>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent 
+                        mode="single" 
+                        selected={formData.endDate ? new Date(formData.endDate) : undefined} 
+                        onSelect={(date) => handleInputChange('endDate', date ? format(date, 'yyyy-MM-dd') : '')} 
+                        initialFocus 
+                        className="p-3 pointer-events-auto" 
+                      />
+                    </PopoverContent>
+                  </Popover>
                   {errors.endDate && <p className="text-xs text-red-500">{errors.endDate}</p>}
                 </div>
               </div>
@@ -437,23 +494,23 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Button
+                <BaseActionButton
                   onClick={generateAIBudget}
                   disabled={isGenerating || !formData.budgetType || !formData.totalAmount}
                   className="w-full px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-full font-medium font-arabic flex items-center gap-2"
                 >
                   <Sparkles className="w-4 h-4" />
                   {isGenerating ? 'جاري التوليد...' : 'توليد ميزانية ذكية'}
-                </Button>
+                </BaseActionButton>
 
-                <Button
+                <BaseActionButton
                   onClick={optimizeBudget}
                   disabled={isGenerating || formData.items.length === 0}
                   className="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white rounded-full font-medium font-arabic flex items-center gap-2"
                 >
                   <TrendingUp className="w-4 h-4" />
                   {isGenerating ? 'جاري التحسين...' : 'تحسين الميزانية'}
-                </Button>
+                </BaseActionButton>
               </div>
 
               {formData.aiGenerated && (
@@ -485,14 +542,14 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                     placeholder="المبلغ"
                     className="px-4 py-3 bg-white/30 border border-black/20 rounded-2xl focus:border-black focus:outline-none text-black placeholder-black/50 font-arabic"
                   />
-                  <Button
+                  <BaseActionButton
                     onClick={addBudgetItem}
                     disabled={!newItemName.trim() || !newItemAmount.trim()}
                     className="px-4 py-3 bg-black/10 hover:bg-black/20 disabled:bg-black/5 disabled:cursor-not-allowed rounded-2xl text-sm font-medium font-arabic flex items-center gap-2"
                   >
                     <Plus className="w-4 h-4" />
                     إضافة عنصر
-                  </Button>
+                  </BaseActionButton>
                 </div>
               </div>
 
@@ -505,14 +562,14 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
                         <h4 className="text-sm font-medium text-black font-arabic">{item.name}</h4>
                         <p className="text-xs text-black/70 font-arabic">{item.amount} {formData.currency} ({item.percentage}%)</p>
                       </div>
-                      <Button
+                      <BaseActionButton
                         onClick={() => removeBudgetItem(item.id)}
-                        size="icon"
+                        size="sm"
                         variant="ghost"
                         className="w-6 h-6 bg-red-500 hover:bg-red-600 rounded-full text-white"
                       >
                         <Minus className="w-3 h-3" />
-                      </Button>
+                      </BaseActionButton>
                     </div>
                   ))}
                 </div>
@@ -523,18 +580,18 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
 
         {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-6 border-t border-white/20">
-          <Button
+          <BaseActionButton
             onClick={handleClose}
             className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic"
           >
             إلغاء
-          </Button>
-          <Button
+          </BaseActionButton>
+          <BaseActionButton
             onClick={handleSave}
             className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic"
           >
             حفظ الميزانية
-          </Button>
+          </BaseActionButton>
         </div>
       </DialogContent>
     </Dialog>

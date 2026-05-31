@@ -1,9 +1,12 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
-import { UserPlus, Briefcase, Users, Calendar, Star, Phone, Mail, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { UserPlus, Users, Calendar, Star, Phone, Mail, Eye, CheckCircle, XCircle } from 'lucide-react';
+import { NumericStatCard } from '@/components/shared/visual-data';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { mockJobPostings, mockCandidates } from './data';
 import { JobPosting, Candidate } from './types';
 import { getHRStatusColor, getHRStatusText } from './utils';
@@ -57,18 +60,18 @@ export const RecruitmentTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة المرشحين */}
         <div className="flex items-center gap-4">
-          <Button 
+          <BaseActionButton 
             variant="outline" 
             onClick={() => setSelectedCandidate(null)}
             className="flex items-center gap-2"
           >
             <span>← العودة</span>
-          </Button>
+          </BaseActionButton>
           <h3 className="text-2xl font-bold text-gray-800 font-arabic">ملف المرشح</h3>
         </div>
 
         {/* معلومات المرشح */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-6">
               <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
@@ -110,16 +113,16 @@ export const RecruitmentTab: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="font-arabic">السيرة الذاتية</span>
-                  <Button variant="ghost" size="sm">
+                  <BaseActionButton variant="ghost" size="sm">
                     <Eye className="h-4 w-4" />
-                  </Button>
+                  </BaseActionButton>
                 </div>
                 {selectedCandidate.coverLetter && (
                   <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="font-arabic">خطاب التقديم</span>
-                    <Button variant="ghost" size="sm">
+                    <BaseActionButton variant="ghost" size="sm">
                       <Eye className="h-4 w-4" />
-                    </Button>
+                    </BaseActionButton>
                   </div>
                 )}
               </div>
@@ -133,13 +136,13 @@ export const RecruitmentTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* المقابلات */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold text-gray-800 font-arabic">المقابلات</h3>
-            <Button className="font-arabic">جدولة مقابلة</Button>
+            <BaseActionButton className="font-arabic">جدولة مقابلة</BaseActionButton>
           </div>
           
           {selectedCandidate.interviews.length > 0 ? (
@@ -187,26 +190,26 @@ export const RecruitmentTab: React.FC = () => {
           ) : (
             <p className="text-center text-gray-500 font-arabic py-8">لا توجد مقابلات مجدولة</p>
           )}
-        </BaseCard>
+        </BaseBox>
 
         {/* إجراءات المرشح */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">الإجراءات</h3>
           <div className="flex gap-4">
-            <Button className="flex items-center gap-2">
+            <BaseActionButton className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               <span className="font-arabic">قبول المرشح</span>
-            </Button>
-            <Button variant="outline" className="flex items-center gap-2">
+            </BaseActionButton>
+            <BaseActionButton variant="outline" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <span className="font-arabic">جدولة مقابلة</span>
-            </Button>
-            <Button variant="destructive" className="flex items-center gap-2">
+            </BaseActionButton>
+            <BaseActionButton variant="delete" className="flex items-center gap-2">
               <XCircle className="h-4 w-4" />
               <span className="font-arabic">رفض المرشح</span>
-            </Button>
+            </BaseActionButton>
           </div>
-        </BaseCard>
+        </BaseBox>
       </div>
     );
   }
@@ -214,80 +217,46 @@ export const RecruitmentTab: React.FC = () => {
   return (
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات التوظيف */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">الوظائف النشطة</p>
-              <p className="text-2xl font-bold text-blue-600">{recruitmentStats.activeJobs}</p>
-            </div>
-            <Briefcase className="h-8 w-8 text-blue-600" />
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">إجمالي الطلبات</p>
-              <p className="text-2xl font-bold text-green-600">{recruitmentStats.totalApplications}</p>
-            </div>
-            <Users className="h-8 w-8 text-green-600" />
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">المقابلات المجدولة</p>
-              <p className="text-2xl font-bold text-purple-600">{recruitmentStats.scheduledInterviews}</p>
-            </div>
-            <Calendar className="h-8 w-8 text-purple-600" />
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">عروض العمل</p>
-              <p className="text-2xl font-bold text-orange-600">{recruitmentStats.offersExtended}</p>
-            </div>
-            <Star className="h-8 w-8 text-orange-600" />
-          </div>
-        </BaseCard>
-
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">التوظيف هذا الشهر</p>
-              <p className="text-2xl font-bold text-green-800">{recruitmentStats.newHiresThisMonth}</p>
-            </div>
-            <UserPlus className="h-8 w-8 text-green-800" />
-          </div>
-        </BaseCard>
-      </div>
+      <AppDashboardGrid columns={12} density="compact">
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <NumericStatCard title="الوظائف النشطة" value={recruitmentStats.activeJobs} size="sm" accentColor="#3DA8F5" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={4}>
+          <NumericStatCard title="إجمالي الطلبات" value={recruitmentStats.totalApplications} size="sm" accentColor="#3DBE8B" />
+        </AppGridItem>
+        <AppGridItem colSpan={3} tabletSpan={4}>
+          <NumericStatCard title="المقابلات المجدولة" value={recruitmentStats.scheduledInterviews} size="sm" />
+        </AppGridItem>
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <NumericStatCard title="عروض العمل" value={recruitmentStats.offersExtended} size="sm" accentColor="#F6C445" />
+        </AppGridItem>
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <NumericStatCard title="التوظيف هذا الشهر" value={recruitmentStats.newHiresThisMonth} size="sm" accentColor="#3DBE8B" />
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* التبويبات */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
             <UserPlus className="h-6 w-6 text-blue-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">إدارة التوظيف والمواهب</h3>
           </div>
           <div className="flex gap-2">
-            <Button
-              variant={selectedView === 'jobs' ? 'default' : 'outline'}
+            <BaseActionButton
+              variant={selectedView === 'jobs' ? 'primary' : 'outline'}
               onClick={() => setSelectedView('jobs')}
               className="font-arabic"
             >
               الوظائف المفتوحة
-            </Button>
-            <Button
-              variant={selectedView === 'candidates' ? 'default' : 'outline'}
+            </BaseActionButton>
+            <BaseActionButton
+              variant={selectedView === 'candidates' ? 'primary' : 'outline'}
               onClick={() => setSelectedView('candidates')}
               className="font-arabic"
             >
               المرشحون
-            </Button>
+            </BaseActionButton>
           </div>
         </div>
 
@@ -296,7 +265,7 @@ export const RecruitmentTab: React.FC = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center">
               <h4 className="text-lg font-medium font-arabic">الوظائف المفتوحة</h4>
-              <Button className="font-arabic">إضافة وظيفة جديدة</Button>
+              <BaseActionButton className="font-arabic">إضافة وظيفة جديدة</BaseActionButton>
             </div>
             <div className="grid gap-4">
               {mockJobPostings.map((job, index) => (
@@ -325,8 +294,8 @@ export const RecruitmentTab: React.FC = () => {
                       <span>آخر موعد: {job.applicationDeadline}</span>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="font-arabic">عرض الطلبات</Button>
-                      <Button variant="outline" size="sm" className="font-arabic">تعديل</Button>
+                      <BaseActionButton variant="outline" size="sm" className="font-arabic">عرض الطلبات</BaseActionButton>
+                      <BaseActionButton variant="outline" size="sm" className="font-arabic">تعديل</BaseActionButton>
                     </div>
                   </div>
                 </div>
@@ -378,14 +347,14 @@ export const RecruitmentTab: React.FC = () => {
                       ) : '-'}
                     </td>
                     <td className="py-3 px-4">
-                      <Button 
+                      <BaseActionButton 
                         variant="outline" 
                         size="sm"
                         onClick={() => setSelectedCandidate(candidate)}
                         className="font-arabic"
                       >
                         عرض الملف
-                      </Button>
+                      </BaseActionButton>
                     </td>
                   </tr>
                 ))}
@@ -393,7 +362,18 @@ export const RecruitmentTab: React.FC = () => {
             </table>
           </div>
         )}
-      </BaseCard>
+      </BaseBox>
+
+      {/* قمع التوظيف */}
+      <BaseBox variant="operations" className="p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Users className="h-6 w-6 text-blue-600" />
+          <h3 className="text-xl font-bold text-gray-800 font-arabic">قمع التوظيف</h3>
+        </div>
+        <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+          <p className="text-gray-500 font-arabic">سيتم إضافة الرسم البياني لقمع التوظيف هنا</p>
+        </div>
+      </BaseBox>
     </div>
   );
 };

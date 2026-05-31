@@ -10,7 +10,7 @@ export type {
   CanvasElementActions, 
   CanvasHelpers, 
   ToolConfig,
-  StylePreset,
-  TextStyle,
-  BorderStyle 
+  EnhancedStylePreset as StylePreset,
+  EnhancedTextStyle as TextStyle,
+  EnhancedBorderStyle as BorderStyle 
 } from '../types/enhanced-canvas';

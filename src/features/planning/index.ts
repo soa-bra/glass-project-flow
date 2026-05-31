@@ -1,0 +1,51 @@
+/**
+ * Planning Feature
+ * ميزة التخطيط والتصميم البصري
+ */
+
+// UI Layer
+export * from './ui';
+
+// Canvas Layer
+export * from './canvas';
+
+// Elements Layer - explicit exports to avoid conflicts
+export { 
+  MindMapNode, 
+  MindMapConnector, 
+  MindMapConnectionLine 
+} from './elements/mindmap';
+export * from './elements/diagram';
+export * from './elements/text';
+export * from './elements/smart';
+export * from './elements/shared';
+
+// Domain Layer - only policies and selectors (commands not implemented yet)
+export * from './domain/policies';
+export * from './domain/selectors';
+
+// State Layer - explicit exports to avoid conflicts
+export { usePlanningStore } from './state/store';
+export type { PlanningStore } from './state/store';
+
+// Integration Layer
+export * from './integration';
+
+// Hooks Layer
+export { usePlanningElements } from './hooks/usePlanningElements';
+export { usePlanningRealtime } from './hooks/usePlanningRealtime';
+export { usePlanningStoreSync } from './hooks/usePlanningStoreSync';
+export {
+  planningElementToCanvas,
+  canvasToPlanningInsert,
+} from './state/planningElementMapper';
+export { useElementLock } from './hooks/useElementLock';
+export { useAutoUnlockStaleLocks } from './hooks/useAutoUnlockStaleLocks';
+export type { UseAutoUnlockStaleLocksOptions } from './hooks/useAutoUnlockStaleLocks';
+export { useElementLockState } from './hooks/useElementLockState';
+export type { ElementLockState, ElementLockStatus } from './hooks/useElementLockState';
+export { useElementLockAcquire } from './hooks/useElementLockAcquire';
+export type { LockFailureInfo, AcquireFn } from './hooks/useElementLockAcquire';
+export type { PresencePeer } from './hooks/usePlanningRealtime';
+export type { UsePlanningElementsResult } from './hooks/usePlanningElements';
+

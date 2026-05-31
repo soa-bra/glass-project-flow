@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { FileText } from 'lucide-react';
 
 export const TemplateVariablesReference: React.FC = () => {
   return (
-    <GenericCard>
-      <h3 className="text-lg font-bold font-arabic mb-4">دليل المتغيرات المتاحة</h3>
+    <DataCardFrame title="دليل المتغيرات المتاحة" icon={<FileText className="h-5 w-5" />}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
           <h4 className="font-semibold font-arabic text-gray-900 mb-2">معلومات العميل</h4>
@@ -61,6 +61,6 @@ export const TemplateVariablesReference: React.FC = () => {
           </div>
         </div>
       </div>
-    </GenericCard>
+    </DataCardFrame>
   );
 };

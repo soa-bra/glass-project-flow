@@ -16,6 +16,7 @@ import { FileUploadModal } from '@/components/custom/FileUploadModal';
 import { FolderOrganizationModal } from '@/components/custom/FolderOrganizationModal';
 import { PermissionsModal } from '@/components/custom/PermissionsModal';
 import { getProjectFiles } from '@/data/projectFiles';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -115,7 +116,7 @@ export const FinancialTab = ({
 
       {/* الإحصائيات المالية */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المتبقي من الميزانية</h4>
           <p className="text-2xl font-bold text-black mb-1">{remainingBudget.toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">من إجمالي {financialData.totalBudget.toLocaleString()} ر.س</p>
@@ -124,8 +125,8 @@ export const FinancialTab = ({
               <span className="text-sm font-medium text-black">{remainingPercentage}% متبقية</span>
             </div>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي المصروفات</h4>
           <p className="text-2xl font-bold text-black mb-1">{financialData.totalExpenses.toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">{expensePercentage}% من الميزانية المخططة</p>
@@ -134,8 +135,8 @@ export const FinancialTab = ({
               <span className="text-sm font-medium text-black">ضمن الحدود</span>
             </div>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الربح المتوقع</h4>
           <p className="text-2xl font-bold text-black mb-1">{Math.max(0, expectedProfit).toLocaleString()} ر.س</p>
           <p className="text-sm font-normal text-black">{Math.round(expectedProfit / financialData.totalBudget * 100)}% هامش ربح متوقع</p>
@@ -144,11 +145,11 @@ export const FinancialTab = ({
               <span className="text-sm font-medium text-black">مربح</span>
             </div>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* تفاصيل المصروفات */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+      <AppCardSurface density="compact" className="text-center">
         <h3 className="text-lg font-semibold text-black mb-6">تفصيل المصروفات حسب الفئة</h3>
         <div className="space-y-4">
           {financialData.expenses.map((expense, index) => <div key={index} className="flex justify-between items-center p-4 bg-transparent border border-black/10 rounded-full">
@@ -163,10 +164,10 @@ export const FinancialTab = ({
               <span className="text-sm font-bold text-black">{expense.category}</span>
             </div>)}
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* التدفق النقدي المتوقع */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+      <AppCardSurface density="compact" className="text-center">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-black">التدفق النقدي المتوقع (الأشهر القادمة)</h3>
           <div className="flex gap-2">
@@ -177,28 +178,28 @@ export const FinancialTab = ({
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
-          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <h4 className="text-sm font-bold text-black mb-2">الشهر الحالي</h4>
             <p className="text-2xl font-bold text-black mb-1">8,000 ر.س</p>
             <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
               <span className="text-xs font-normal text-black">مدفوعات جزئية</span>
             </div>
           </div>
-          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <h4 className="text-sm font-bold text-black mb-2">الشهر القادم</h4>
             <p className="text-2xl font-bold text-black mb-1">12,000 ر.س</p>
             <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
               <span className="text-xs font-normal text-black">مرحلة متوسطة</span>
             </div>
           </div>
-          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <h4 className="text-sm font-bold text-black mb-2">بعد شهرين</h4>
             <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
             <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
               <span className="text-xs font-normal text-black">مرحلة نهائية</span>
             </div>
           </div>
-          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[41px]">
+          <div className="p-4 bg-transparent border border-[#DADCE0] rounded-[24px]">
             <h4 className="text-sm font-bold text-black mb-2">المتبقي بعد التسليم</h4>
             <p className="text-2xl font-bold text-black mb-1">15,000 ر.س</p>
             <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
@@ -206,27 +207,27 @@ export const FinancialTab = ({
             </div>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* أدوات إدارة الميزانية */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة ميزانية المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 border border-[#DADCE0] rounded-[41px] bg-transparent">
+          <div className="p-4 border border-[#DADCE0] rounded-[24px] bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">إضافة مصروف جديد</h4>
             <p className="text-xs text-black/70 mb-3">تسجيل مصروف جديد وتصنيفه حسب الفئة</p>
             <button onClick={() => setIsExpenseModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               إضافة مصروف
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">طلب موافقة على تعديل ميزانية المشروع</h4>
             <p className="text-xs text-black/70 mb-3">تقديم طلب موافقة على تعديل الميزانية</p>
             <button onClick={() => setIsApprovalRequestOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               طلب موافقة
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="font-bold text-black mb-3 text-base">تحليل الانحرافات</h4>
             <p className="text-xs text-black/70 mb-3">مراجعة الانحرافات عن الميزانية المخططة</p>
             <button onClick={() => setIsAnalysisModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
@@ -234,7 +235,7 @@ export const FinancialTab = ({
             </button>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       <ExpenseModal isOpen={isExpenseModalOpen} onClose={() => setIsExpenseModalOpen(false)} onSave={handleAddExpense} />
       
@@ -262,7 +263,7 @@ export const ClientTab = ({
   };
   return <div className="space-y-6">
       {/* حالة رضا العميل */}
-      <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6">
+      <AppCardSurface density="compact">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">رضا العميل</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -270,31 +271,31 @@ export const ClientTab = ({
           </div>
         </div>
         <p className="text-sm font-medium text-black">العميل راضٍ جداً عن سير المشروع والتسليم في المواعيد المحددة</p>
-      </div>
+      </AppCardSurface>
       
       {/* إحصائيات العميل */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] py-[35px]">
+        <AppCardSurface density="compact" className="text-center py-[35px]">
           <h4 className="text-xs text-black">تقييم العميل</h4>
           <p className="font-bold text-base my-[10px]">4.8/5</p>
           <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">تقييم ممتاز</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] py-[35px] px-0">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center py-[35px]">
           <h4 className="text-xs text-black">المشاريع السابقة</h4>
           <p className="font-bold text-base my-[10px]">5</p>
           <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">عميل دائم</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0] my-0 px-0 py-[35px]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center py-[35px]">
           <h4 className="text-xs text-black">معدل الاستجابة</h4>
           <p className="font-bold text-base my-[10px]">2.1 ساعة</p>
           <div className="bg-[#bdeed3] rounded-full inline-block py-0 px-[15px] my-0">
             <span className="text-xs text-black">سريع الاستجابة</span>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
       
       <ClientProfile client={mockClient} />
@@ -425,7 +426,7 @@ export const TeamTab = ({
   };
   return <div className="space-y-6">
       {/* حالة الفريق */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">حالة الفريق</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -433,44 +434,44 @@ export const TeamTab = ({
           </div>
         </div>
         <p className="text-sm font-medium text-black">الفريق يعمل بكفاءة عالية ومعدل الإنجاز يتجاوز التوقعات بنسبة 94%</p>
-      </div>
+      </AppCardSurface>
 
       {/* إحصائيات الفريق */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي الأعضاء</h4>
           <p className="text-2xl font-bold text-black mb-1">4</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">أعضاء نشطين</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">معدل الأداء العام</h4>
           <p className="text-2xl font-bold text-black mb-1">91%</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">أداء ممتاز</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">معدل الحمولة</h4>
           <p className="text-2xl font-bold text-black mb-1">83%</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">مثالي</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المهام المكتملة</h4>
           <p className="text-2xl font-bold text-black mb-1">47/50</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">94% مكتمل</span>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       <TeamRoster data={teamMembers} onRemoveMember={handleRemoveMember} />
 
       {/* أدوات إدارة الفريق */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة فريق المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 rounded-2xl border border-[#DADCE0] bg-transparent">
@@ -480,14 +481,14 @@ export const TeamTab = ({
               إضافة عضو
             </button>
           </div>
-          <div className="p-4 border border-[#DADCE0] rounded-[41px] bg-transparent">
+          <div className="p-4 border border-[#DADCE0] rounded-[24px] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">توزيع المهام</h4>
             <p className="text-xs text-black/70 mb-3">إعادة توزيع المهام بين أعضاء الفريق</p>
             <button onClick={() => setIsManualTaskDistributionModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               توزيع المهام
             </button>
           </div>
-          <div className="p-4 border border-[#DADCE0] rounded-[41px] bg-transparent">
+          <div className="p-4 border border-[#DADCE0] rounded-[24px] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
             <button onClick={() => {
@@ -504,10 +505,10 @@ export const TeamTab = ({
             </button>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       {/* تحليل توزيع المهارات */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <h3 className="text-lg font-semibold text-black mb-6">توزيع المهارات والكفاءات في الفريق</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
@@ -555,7 +556,7 @@ export const TeamTab = ({
             </div>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       <TaskAssignmentModal isOpen={isTaskAssignmentModalOpen} onClose={() => setIsTaskAssignmentModalOpen(false)} onSave={(employeeId, taskIds) => {
       // إسناد مهام
@@ -640,7 +641,7 @@ export const AttachmentsTab = ({
   const projectDocuments = getProjectFiles('current');
   return <div className="space-y-6">
       {/* حالة المرفقات */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">إدارة المرفقات</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -648,59 +649,59 @@ export const AttachmentsTab = ({
           </div>
         </div>
         <p className="text-sm font-medium text-black">جميع المستندات محدثة ومنظمة بشكل احترافي - آخر رفع منذ ساعتين</p>
-      </div>
+      </AppCardSurface>
 
       {/* إحصائيات المرفقات */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rounded-[41px] bg-[#FFFFFF] border border-[#DADCE0] p-6 text-center">
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي الملفات</h4>
           <p className="text-2xl font-bold text-black mb-1">23</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">ملف مرفوع</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الحجم الإجمالي</h4>
           <p className="text-2xl font-bold text-black mb-1">156 MB</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">مساحة مستخدمة</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الملفات المشتركة</h4>
           <p className="text-2xl font-bold text-black mb-1">8</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">ملفات مشتركة</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">المعدلة حديثاً</h4>
           <p className="text-2xl font-bold text-black mb-1">5</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">خلال اليوم</span>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* أدوات إدارة المرفقات */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة مرفقات المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع ملف جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة مستندات وملفات جديدة للمشروع</p>
             <button onClick={() => setIsFileUploadModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع ملف
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم المجلدات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم مجلدات المشروع</p>
             <button onClick={() => setIsFolderOrganizationModalOpen(true)} className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم المجلدات
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
             <button onClick={() => {
@@ -717,7 +718,7 @@ export const AttachmentsTab = ({
             </button>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
 
       <DocumentsGrid projectId="current" />
@@ -776,7 +777,7 @@ export const TemplatesTab = ({
   }];
   return <div className="space-y-6">
       {/* حالة مكتبة القوالب */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-black">مكتبة القوالب</h3>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
@@ -784,59 +785,59 @@ export const TemplatesTab = ({
           </div>
         </div>
         <p className="text-sm font-medium text-black">القوالب محدثة وجاهزة للاستخدام الفوري - 12 قالب احترافي متاح</p>
-      </div>
+      </AppCardSurface>
 
       {/* إحصائيات القوالب */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي القوالب</h4>
           <p className="text-2xl font-bold text-black mb-1">12</p>
           <div className="bg-[#bdeed3] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">قالب متاح</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">الأكثر استخداماً</h4>
           <p className="text-2xl font-bold text-black mb-1">6</p>
           <div className="bg-[#a4e2f6] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">قوالب شائعة</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">تم التحديث</h4>
           <p className="text-2xl font-bold text-black mb-1">3</p>
           <div className="bg-[#d9d2fd] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">هذا الأسبوع</span>
           </div>
-        </div>
-        <div className="bg-[#FFFFFF] rounded-[41px] p-6 text-center border border-[#DADCE0]">
+        </AppCardSurface>
+        <AppCardSurface density="compact" className="text-center">
           <h4 className="text-lg font-semibold text-black mb-2">إجمالي التحميلات</h4>
           <p className="text-2xl font-bold text-black mb-1">261</p>
           <div className="bg-[#fbe2aa] px-3 py-1 rounded-full inline-block">
             <span className="text-sm font-medium text-black">هذا الشهر</span>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* أدوات إدارة القوالب */}
-      <div className="bg-[#FFFFFF] rounded-[41px] p-6 border border-[#DADCE0]">
+      <AppCardSurface density="compact">
         <h3 className="text-lg font-semibold text-black mb-6">أدوات إدارة قوالب المشروع</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">رفع قالب جديد</h4>
             <p className="text-xs text-black/70 mb-3">إضافة قوالب ونماذج جديدة للمشروع</p>
             <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               رفع قالب
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">تنظيم الفئات</h4>
             <p className="text-xs text-black/70 mb-3">إنشاء وتنظيم فئات القوالب</p>
             <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
               تنظيم الفئات
             </button>
           </div>
-          <div className="p-4 rounded-[41px] border border-[#DADCE0] bg-transparent">
+          <div className="p-4 rounded-[24px] border border-[#DADCE0] bg-transparent">
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للقوالب</p>
             <button className="w-full px-3 py-2 bg-black text-white rounded-full text-sm hover:bg-black transition-colors">
@@ -844,7 +845,7 @@ export const TemplatesTab = ({
             </button>
           </div>
         </div>
-      </div>
+      </AppCardSurface>
 
       <TemplateLibrary templates={mockTemplates} />
     </div>;

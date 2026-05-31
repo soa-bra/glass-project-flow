@@ -1,7 +1,10 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
-import { BrainCircuit, Cpu, Database, Zap, Activity, Target, TrendingUp, Settings } from 'lucide-react';
+import { Database } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
-import { BaseActionButton } from '@/components/shared/BaseActionButton';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface AISettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -102,7 +105,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -111,11 +114,11 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Active Experiments Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🧪 التجارب النشطة
               <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Lab</span>
@@ -123,7 +126,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
             
             <div className="space-y-3">
               {activeExperiments.map(experiment => (
-                <div key={experiment.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={experiment.id}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-bold text-black">{experiment.name}</h4>
                     <span className={`text-xs px-2 py-1 rounded-full ${
@@ -144,20 +147,20 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                     <span>بدأ: {experiment.startDate}</span>
                     <span>متوقع: {experiment.estimatedCompletion}</span>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Training Wizard Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🚀 معالج التدريب
               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Training Wizard</span>
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">نوع المهمة</h4>
                 <select className="w-full p-2 rounded-lg border text-sm">
                   <option>تصنيف الوثائق</option>
@@ -165,9 +168,9 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   <option>استخراج المعلومات</option>
                   <option>توقع الاتجاهات</option>
                 </select>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">مصدر البيانات</h4>
                 <select className="w-full p-2 rounded-lg border text-sm">
                   <option>أرشيف المشاريع</option>
@@ -175,7 +178,7 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   <option>الوثائق القانونية</option>
                   <option>السجلات المالية</option>
                 </select>
-              </div>
+              </AppCardSurface>
             </div>
 
             <div className="mt-4 flex justify-end">
@@ -187,14 +190,14 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                 تدريب نموذج جديد من الأرشيف
               </button>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Model Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إدارة النماذج</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">معالجة اللغة</h4>
                   <label className="flex items-center gap-2">
@@ -210,9 +213,9 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   <div className="text-lg font-bold text-black">{(formData.models.nlp.confidence * 100).toFixed(0)}%</div>
                   <p className="text-xs text-gray-500">دقة النموذج</p>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">رؤية الحاسوب</h4>
                   <label className="flex items-center gap-2">
@@ -228,9 +231,9 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   <div className="text-lg font-bold text-black">{(formData.models.vision.confidence * 100).toFixed(0)}%</div>
                   <p className="text-xs text-gray-500">دقة النموذج</p>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">التحليلات</h4>
                   <label className="flex items-center gap-2">
@@ -246,16 +249,16 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   <div className="text-lg font-bold text-black">{(formData.models.analytics.confidence * 100).toFixed(0)}%</div>
                   <p className="text-xs text-gray-500">دقة النموذج</p>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Performance Settings Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إعدادات الأداء</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الاستعلامات المتزامنة</h4>
                 <input 
                   type="number"
@@ -269,9 +272,9 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   max="50"
                 />
                 <p className="text-xs text-gray-500 mt-2">الحد الأقصى للطلبات المتزامنة</p>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">مهلة الانتظار</h4>
                 <input 
                   type="number"
@@ -285,35 +288,25 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                   max="120"
                 />
                 <p className="text-xs text-gray-500 mt-2">المدة بالثواني قبل انتهاء الوقت</p>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Training Status Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">حالة التدريب</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
-                <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
-                  <Database className="w-5 h-5" />
-                  جودة البيانات
-                </h4>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-black mb-1">
-                    {(formData.training.dataQuality * 100).toFixed(1)}%
-                  </div>
-                  <p className="text-xs text-gray-500">نظافة وجودة البيانات</p>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
-                  <div 
-                    className="bg-green-600 h-2 rounded-full"
-                    style={{ width: `${formData.training.dataQuality * 100}%` }}
-                  ></div>
-                </div>
-              </div>
+              <NumericStatCard
+                size="sm"
+                title="جودة البيانات"
+                value={`${(formData.training.dataQuality * 100).toFixed(1)}%`}
+                description="نظافة وجودة البيانات"
+                icon={<Database className="w-4 h-4" />}
+                accentColor={formData.training.dataQuality >= 0.9 ? '#3DBE8B' : formData.training.dataQuality >= 0.7 ? '#F6C445' : '#E5564D'}
+              />
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الجدول الزمني</h4>
                 <div className="space-y-2">
                   <div className="text-xs text-gray-600">
@@ -336,29 +329,25 @@ export const AISettingsPanel: React.FC<AISettingsPanelProps> = () => {
                     <span className="text-sm text-black">إعادة التدريب التلقائي</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">3</div>
-              <p className="text-xs font-normal text-gray-400">نماذج نشطة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">87%</div>
-              <p className="text-xs font-normal text-gray-400">متوسط الدقة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">2.3s</div>
-              <p className="text-xs font-normal text-gray-400">متوسط الاستجابة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">15K</div>
-              <p className="text-xs font-normal text-gray-400">طلبات اليوم</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="نماذج نشطة" value={3} />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="متوسط الدقة" value="87%" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="متوسط الاستجابة" value="2.3s" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="طلبات اليوم" value="15K" />
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

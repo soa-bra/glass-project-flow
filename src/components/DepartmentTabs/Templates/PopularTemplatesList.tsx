@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Star, Download } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface PopularTemplate {
   name: string;
@@ -51,7 +51,7 @@ export const PopularTemplatesList: React.FC = () => {
   ];
 
   return (
-    <BaseCard variant="operations" className="p-6">
+    <BaseBox variant="operations" className="p-6">
       <div className="flex items-center gap-2 mb-6">
         <Star className="h-5 w-5 text-yellow-500" />
         <h3 className="text-xl font-bold text-gray-800 font-arabic">الأكثر استخداماً</h3>
@@ -72,9 +72,9 @@ export const PopularTemplatesList: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <Button size="sm" variant="ghost">
+              <BaseActionButton size="sm" variant="ghost">
                 <Download className="h-4 w-4" />
-              </Button>
+              </BaseActionButton>
             </div>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>{template.size}</span>
@@ -83,6 +83,6 @@ export const PopularTemplatesList: React.FC = () => {
           </div>
         ))}
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };

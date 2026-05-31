@@ -1,5 +1,9 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { ShieldCheck, Smartphone, Key, Monitor, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { RateLimiter } from '../../../utils/validation';
@@ -95,7 +99,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -104,7 +108,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
           
           {/* Security Disclaimer */}
@@ -114,7 +118,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
           />
           
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <ShieldCheck className="w-6 h-6 text-black" />
@@ -128,17 +132,17 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 <p className="text-xs font-normal text-gray-400">محمي</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* تنبيهات الأمان بالذكاء الاصطناعي */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 تنبيهات الأمان الذكي
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Anomaly Model</span>
             </h3>
             <div className="space-y-3">
               {securityAlerts.map(alert => (
-                <div key={alert.id} className="bg-white/50 rounded-lg p-3 flex items-center gap-3">
+                <div key={alert.id} className="bg-gray-50 rounded-lg p-3 flex items-center gap-3">
                   <AlertTriangle className={`w-5 h-5 ${alert.severity === 'high' ? 'text-red-500' : 'text-yellow-500'}`} />
                   <div className="flex-1">
                     <p className="text-sm font-medium text-black">{alert.message}</p>
@@ -148,10 +152,10 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 </div>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Two-Factor Authentication Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <SecurityDisclaimer 
               type="mock" 
               feature="المصادقة الثنائية"
@@ -160,7 +164,7 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             <h3 className="text-md font-bold text-black mb-4">التحقق الثنائي (MFA)</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-bold text-black">حالة MFA</h4>
                   <div className={`w-4 h-4 rounded-full ${formData.mfa.enabled ? 'bg-green-500' : 'bg-red-500'}`}></div>
@@ -181,9 +185,9 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                 >
                   {formData.mfa.enabled ? 'تعطيل MFA' : 'تفعيل MFA'}
                 </button>
-              </div>
+              </AppCardSurface>
 
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">طرق التحقق</h4>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2">
@@ -214,12 +218,12 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                     <span className="text-sm">رسائل SMS</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* إدارة مفاتيح API */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <SecurityDisclaimer 
               type="demo" 
               feature="مفاتيح API"
@@ -237,12 +241,12 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
             
             <div className="space-y-3">
               {formData.apiKeys.map(key => (
-                <div key={key.id} className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
+                <AppCardSurface density="compact" key={key.id}>
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">{key.name}</h4>
                     <p className="text-xs text-gray-500">أُنشئ: {key.created} | آخر استخدام: {key.lastUsed}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <code className="text-xs bg-white/50 p-1 rounded">
+                      <code className="text-xs bg-gray-50 p-1 rounded">
                         {showApiKey[key.id] ? 'sk-1234567890abcdef' : '••••••••••••••••'}
                       </code>
                       <button
@@ -258,18 +262,18 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                   >
                     إلغاء
                   </button>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* الأجهزة الموثوقة */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">الأجهزة الموثوقة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {formData.trustedDevices.map(device => (
-                <div key={device.id} className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+                <AppCardSurface density="compact" key={device.id}>
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-black">{device.name}</h4>
@@ -278,18 +282,18 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                     </div>
                     <Monitor className="w-5 h-5 text-gray-600" />
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Session Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">الجلسات النشطة</h3>
             
             <div className="space-y-3">
               {formData.activeSessions.map(session => (
-                <div key={session.id} className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] flex items-center justify-between">
+                <AppCardSurface density="compact" key={session.id}>
                   <div className="flex-1">
                     <h4 className="text-sm font-bold text-black">{session.device} - {session.browser}</h4>
                     <p className="text-xs text-gray-600">{session.ip} | {session.location}</p>
@@ -303,30 +307,26 @@ export const SecuritySettingsPanel: React.FC<SecuritySettingsPanelProps> = () =>
                       إنهاء الجلسة
                     </button>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* إحصائيات الأمان */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">98%</div>
-              <p className="text-xs font-normal text-gray-400">مستوى الأمان</p>
-            </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">2</div>
-              <p className="text-xs font-normal text-gray-400">تنبيهات نشطة</p>
-            </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">3</div>
-              <p className="text-xs font-normal text-gray-400">أجهزة موثوقة</p>
-            </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">5</div>
-              <p className="text-xs font-normal text-gray-400">مفاتيح API</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="مستوى الأمان" value="98%" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="تنبيهات نشطة" value={2} />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="أجهزة موثوقة" value={3} />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="مفاتيح API" value={5} />
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

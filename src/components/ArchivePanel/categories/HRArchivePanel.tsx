@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Users, Calendar, User, Award, BookOpen, FileText } from 'lucide-react';
@@ -63,7 +64,7 @@ export const HRArchivePanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col" >
       <div className="flex items-center justify-between px-6 py-6">
         <h2 className="font-medium text-black font-arabic text-3xl">
           أرشيف الموارد البشرية
@@ -82,7 +83,7 @@ export const HRArchivePanel: React.FC = () => {
 
       {/* Search */}
       <div className="px-6 mb-6">
-        <div className="p-4 rounded-[41px] ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+        <AppCardSurface density="compact">
           <div className="flex items-center gap-4">
             <div className="flex-1 relative">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -92,20 +93,20 @@ export const HRArchivePanel: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pr-12 pl-4 py-3 rounded-full ring-1 focus:outline-none focus:ring-2 focus:ring-black/20 font-arabic"
-                style={{ borderColor: 'var(--sb-box-border)' }}
+                style={{ borderColor: "#DADCE0" }}
               />
             </div>
           </div>
-        </div>
+        </AppCardSurface>
       </div>
 
       {/* HR Records List */}
-      <div className="flex-1 overflow-auto px-6 pb-6">
+      <div className="flex-1 px-6 pb-6">
         <div className="space-y-4">
           {mockHRRecords.map((record) => {
             const IconComponent = getTypeIcon(record.type);
             return (
-              <div key={record.id} className="p-6 rounded-[41px] ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+              <AppCardSurface key={record.id} interactive="hoverable" density="standard">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -192,7 +193,7 @@ export const HRArchivePanel: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </AppCardSurface>
             );
           })}
         </div>

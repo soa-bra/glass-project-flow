@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 📝 Commit Message Hook - Conventional Commits
+# يتحقق من صيغة رسائل الـ commit
+
+echo "📝 فحص صيغة رسالة الـ commit..."
+
+npx --no -- commitlint --edit ${1}
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ صيغة رسالة الـ commit غير صحيحة!"
+  echo ""
+  echo "📖 الصيغة المطلوبة: <type>(<scope>): <description>"
+  echo ""
+  echo "أنواع مسموحة:"
+  echo "  feat     → ميزة جديدة"
+  echo "  fix      → إصلاح خطأ"
+  echo "  docs     → تحديث وثائق"
+  echo "  style    → تنسيق (لا يؤثر على الكود)"
+  echo "  refactor → إعادة هيكلة"
+  echo "  perf     → تحسين أداء"
+  echo "  test     → إضافة اختبارات"
+  echo "  chore    → مهام صيانة"
+  echo ""
+  echo "أمثلة:"
+  echo "  feat(planning): add new smart element"
+  echo "  fix(canvas): resolve zoom issue"
+  echo "  refactor(state): migrate to Zustand"
+  echo ""
+  exit 1
+fi
+
+echo "✅ صيغة رسالة الـ commit صحيحة!"

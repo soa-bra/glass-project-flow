@@ -1,6 +1,10 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Database, Shield, FileText, Clock, AlertTriangle, CheckCircle, Lock, Unlock } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface DataGovernanceSettingsPanelProps {
   isMainSidebarCollapsed: boolean;
@@ -82,7 +86,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -91,13 +95,13 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
+              <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <Database className="w-6 h-6 text-black" />
               </div>
               <div className="flex-1">
@@ -109,10 +113,10 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                 <p className="text-xs font-normal text-gray-400">متوافق</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Compliance Monitor Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 مراقب الامتثال الذكي
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded-full">AI Compliance Monitor</span>
@@ -120,7 +124,7 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {complianceStatus.map(item => (
-                <div key={item.framework} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={item.framework}>
                   <div className="flex items-center gap-2 mb-2">
                     {getComplianceIcon(item.status)}
                     <h4 className="text-sm font-bold text-black">{item.framework}</h4>
@@ -129,18 +133,18 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     {item.status === 'compliant' ? 'متوافق' : 'يحتاج مراجعة'}
                   </p>
                   <p className="text-xs text-gray-500">آخر مراجعة: {item.lastReview}</p>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Data Retention Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">سياسات الاحتفاظ بالبيانات</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-3">
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">البيانات المالية (سنوات)</label>
                   <input 
                     type="number"
@@ -153,8 +157,8 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="20"
                   />
-                </div>
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                </AppCardSurface>
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">البيانات القانونية (سنوات)</label>
                   <input 
                     type="number"
@@ -167,11 +171,11 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="15"
                   />
-                </div>
+                </AppCardSurface>
               </div>
 
               <div className="space-y-3">
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">بيانات الموارد البشرية (سنوات)</label>
                   <input 
                     type="number"
@@ -184,8 +188,8 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="10"
                   />
-                </div>
-                <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                </AppCardSurface>
+                <AppCardSurface density="compact">
                   <label className="text-xs text-gray-600">بيانات المشاريع (سنوات)</label>
                   <input 
                     type="number"
@@ -198,17 +202,17 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     min="1"
                     max="7"
                   />
-                </div>
+                </AppCardSurface>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Backup Settings Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">النسخ الاحتياطي والاستعادة</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Clock className="w-5 h-5" />
                   الجدولة
@@ -241,9 +245,9 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     <span className="text-sm text-black">التشفير المتقدم</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Shield className="w-5 h-5" />
                   الموقع والأمان
@@ -276,29 +280,25 @@ export const DataGovernanceSettingsPanel: React.FC<DataGovernanceSettingsPanelPr
                     <span className="text-sm text-black">تفعيل النسخ التلقائي</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">99.8%</div>
-              <p className="text-xs font-normal text-gray-400">امتثال البيانات</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">24h</div>
-              <p className="text-xs font-normal text-gray-400">آخر نسخة احتياطية</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">2.3TB</div>
-              <p className="text-xs font-normal text-gray-400">حجم البيانات</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">0</div>
-              <p className="text-xs font-normal text-gray-400">مخالفات نشطة</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="امتثال البيانات" value="99.8%" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="آخر نسخة احتياطية" value="24h" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="حجم البيانات" value="2.3TB" />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="مخالفات نشطة" value={0} />
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

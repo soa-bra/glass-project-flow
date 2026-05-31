@@ -1,0 +1,330 @@
+/**
+ * High Contrast Mode Styles
+ * أنماط وضع التباين العالي
+ */
+
+/* ===== High Contrast Mode ===== */
+@media (prefers-contrast: high) {
+  :root {
+    /* Override with high contrast colors */
+    --sb-ink: #000000;
+    --sb-ink-80: rgba(0, 0, 0, 0.9);
+    --sb-ink-60: rgba(0, 0, 0, 0.8);
+    --sb-ink-30: rgba(0, 0, 0, 0.5);
+    --sb-ink-20: rgba(0, 0, 0, 0.4);
+    
+    --sb-white: #FFFFFF;
+    --sb-panel-bg: #F5F5F5;
+    --sb-border: #000000;
+    
+    /* High contrast accent colors */
+    --accent-green: 120 100% 25%;
+    --accent-red: 0 100% 40%;
+    --accent-yellow: 50 100% 40%;
+    --accent-blue: 210 100% 40%;
+    
+    /* Increased contrast for backgrounds */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    
+    /* Force dark borders */
+    --border: 0 0% 0%;
+  }
+  
+  /* High contrast element styles */
+  .canvas-element {
+    border: 2px solid #000000 !important;
+    outline: none;
+  }
+  
+  .canvas-element:focus,
+  .canvas-element:focus-visible {
+    outline: 3px solid #0000FF !important;
+    outline-offset: 2px;
+  }
+  
+  .canvas-element:hover {
+    outline: 2px solid #000000 !important;
+    outline-offset: 1px;
+  }
+  
+  .canvas-element.selected {
+    outline: 3px solid #0066CC !important;
+    outline-offset: 2px;
+  }
+  
+  /* High contrast buttons */
+  button {
+    border: 2px solid #000000 !important;
+  }
+  
+  button:focus,
+  button:focus-visible {
+    outline: 3px solid #0000FF !important;
+    outline-offset: 2px;
+  }
+  
+  button:hover {
+    background-color: #E0E0E0 !important;
+  }
+  
+  button:disabled {
+    opacity: 0.6;
+    border-style: dashed !important;
+  }
+  
+  /* High contrast inputs */
+  input,
+  textarea,
+  select {
+    border: 2px solid #000000 !important;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: 3px solid #0000FF !important;
+    outline-offset: 2px;
+  }
+  
+  /* High contrast links */
+  a {
+    color: #0000EE !important;
+    text-decoration: underline !important;
+  }
+  
+  a:visited {
+    color: #551A8B !important;
+  }
+  
+  a:focus {
+    outline: 3px solid #0000FF !important;
+    outline-offset: 2px;
+  }
+  
+  /* High contrast for selection box */
+  .selection-box {
+    border: 2px dashed #000000 !important;
+    background: rgba(0, 0, 255, 0.1) !important;
+  }
+  
+  /* High contrast for resize handles */
+  .resize-handle {
+    background: #000000 !important;
+    border: 2px solid #FFFFFF !important;
+  }
+  
+  /* High contrast for toolbars */
+  .toolbar {
+    background: #FFFFFF !important;
+    border: 2px solid #000000 !important;
+  }
+  
+  .toolbar button.active {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+  }
+  
+  /* High contrast grid */
+  .canvas-grid {
+    --grid-color: rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Text must be visible */
+  * {
+    text-shadow: none !important;
+  }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  /* Disable specific animations */
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce,
+  .animate-ping {
+    animation: none !important;
+  }
+  
+  /* Keep opacity transitions for essential feedback */
+  .essential-transition {
+    transition: opacity 0.1s ease-in-out !important;
+  }
+}
+
+/* ===== Dark Mode High Contrast ===== */
+@media (prefers-contrast: high) and (prefers-color-scheme: dark) {
+  :root {
+    --sb-ink: #FFFFFF;
+    --sb-ink-80: rgba(255, 255, 255, 0.9);
+    --sb-ink-60: rgba(255, 255, 255, 0.8);
+    --sb-ink-30: rgba(255, 255, 255, 0.5);
+    
+    --sb-white: #000000;
+    --sb-panel-bg: #1A1A1A;
+    --sb-border: #FFFFFF;
+    
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+  }
+  
+  .canvas-element {
+    border: 2px solid #FFFFFF !important;
+  }
+  
+  .canvas-element:focus,
+  .canvas-element:focus-visible {
+    outline: 3px solid #FFFF00 !important;
+    outline-offset: 2px;
+  }
+  
+  button {
+    border: 2px solid #FFFFFF !important;
+    color: #FFFFFF !important;
+  }
+  
+  button:hover {
+    background-color: #333333 !important;
+  }
+  
+  input,
+  textarea,
+  select {
+    border: 2px solid #FFFFFF !important;
+    background: #000000 !important;
+    color: #FFFFFF !important;
+  }
+  
+  a {
+    color: #FFFF00 !important;
+  }
+}
+
+/* ===== Focus Visible Styles ===== */
+:focus-visible {
+  outline: 2px solid hsl(var(--accent-blue));
+  outline-offset: 2px;
+}
+
+/* Remove default focus for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ===== Screen Reader Only ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Show on focus for skip links */
+.sr-only:focus,
+.sr-only:focus-within {
+  position: fixed;
+  width: auto;
+  height: auto;
+  padding: 1rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  z-index: 9999;
+  background: white;
+  color: black;
+  border: 2px solid black;
+}
+
+/* ===== RTL Support ===== */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .toolbar {
+  flex-direction: row-reverse;
+}
+
+/* ===== Keyboard Navigation Indicator ===== */
+.keyboard-nav-active *:focus {
+  outline: 2px solid hsl(var(--accent-blue)) !important;
+  outline-offset: 2px;
+}
+
+/* ===== Touch Target Size ===== */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ===== Color Blind Friendly ===== */
+/* Use patterns in addition to colors */
+.status-success {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 128, 0, 0.1) 5px,
+    rgba(0, 128, 0, 0.1) 10px
+  );
+}
+
+.status-error {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 5px,
+    rgba(255, 0, 0, 0.1) 5px,
+    rgba(255, 0, 0, 0.1) 10px
+  );
+}
+
+.status-warning {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 5px,
+    rgba(255, 165, 0, 0.1) 5px,
+    rgba(255, 165, 0, 0.1) 10px
+  );
+}
+
+/* ===== Print Styles ===== */
+@media print {
+  .no-print,
+  .toolbar,
+  .sidebar,
+  nav {
+    display: none !important;
+  }
+  
+  .canvas-element {
+    break-inside: avoid;
+  }
+  
+  body {
+    background: white !important;
+    color: black !important;
+  }
+}

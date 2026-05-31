@@ -1,50 +1,53 @@
 import React from 'react';
 import { Project } from '@/types/project';
-import { NotificationsCard } from './cards/NotificationsCard';
+import { NotificationsBox } from './cards/NotificationsBox';
 import { TaskListCard } from './cards/TaskListCard';
-import { BudgetCard } from './cards/BudgetCard';
-import { DataVisualizationCard } from './cards/DataVisualizationCard';
-import { AISuggestedPerformanceCard } from './cards/AISuggestedPerformanceCard';
+import { BudgetBox } from './cards/BudgetBox';
+import { AISuggestedPerformanceBox } from './cards/AISuggestedPerformanceBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+
 interface ProjectCardGridProps {
   project: Project;
 }
+
 export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
   project
 }) => {
-  return <div className="grid grid-cols-3 grid-rows-4 gap-2 h-[90%] py-0 my-0">
-      {/* العمود الأول - قائمة المهام (بعرض مساوي للأعمدة الأخرى) */}
-      <div className="col-span-1 row-span-4">
+  return (
+    <AppDashboardGrid columns={12} density="compact" minRowHeight="auto">
+      {/* العمود الأيمن - قائمة المهام: 5 أعمدة، 4 صفوف */}
+      <AppGridItem colSpan={5} rowSpan={4} tabletSpan={6} className="min-h-[300px] max-h-[65vh]">
         <TaskListCard project={project} />
-      </div>
+      </AppGridItem>
 
-      {/* الصف الأول - العمود الثاني والثالث - التنبيهات */}
-      <div className="col-span-2 row-span-1">
-        <NotificationsCard />
-      </div>
+      {/* التنبيهات: 7 أعمدة عرض */}
+      <AppGridItem colSpan={7} rowSpan={1} tabletSpan={6} className="min-h-[120px]">
+        <NotificationsBox />
+      </AppGridItem>
 
-      {/* الصف الثاني - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
-      </div>
+      {/* تحليل الأداء + النظرة المالية: صف واحد */}
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
+        <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
+      </AppGridItem>
 
-      {/* الصف الثاني والثالث - العمود الثالث - النظرة المالية */}
-      <div className="col-span-1 row-span-2">
-        <BudgetCard project={project} />
-      </div>
+      <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3} className="min-h-[280px]">
+        <BudgetBox project={project} />
+      </AppGridItem>
 
-      {/* الصف الثالث - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
-      </div>
+      {/* أداء الفريق + الأهداف */}
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
+        <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
+      </AppGridItem>
 
-      {/* الصف الرابع - العمود الثاني - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
-      </div>
+      {/* الأهداف + التقارير */}
+      <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
+        <AISuggestedPerformanceBox type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
+      </AppGridItem>
 
-      {/* الصف الرابع - العمود الثالث - بطاقة أداء ذكية */}
-      <div className="col-span-1 row-span-1">
-        <AISuggestedPerformanceCard type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
-      </div>
-    </div>;
+      <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
+        <AISuggestedPerformanceBox type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
+      </AppGridItem>
+    </AppDashboardGrid>
+  );
 };

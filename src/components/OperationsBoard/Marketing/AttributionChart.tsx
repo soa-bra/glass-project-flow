@@ -1,6 +1,7 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { RingMetricCard } from '@/components/shared/visual-data';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+
 interface Attribution {
   touchpoint: string;
   conversions: number;
@@ -10,51 +11,27 @@ interface Attribution {
 interface AttributionChartProps {
   attribution: Attribution[];
 }
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(220, 14%, 80%)', 'hsl(220, 14%, 60%)'];
-export const AttributionChart: React.FC<AttributionChartProps> = ({
-  attribution
-}) => {
-  const chartConfig = {
-    touchpoint: {
-      label: "نقطة التواصل"
-    },
-    percentage: {
-      label: "النسبة المئوية"
-    }
-  };
-  return <div className="rounded-[40px] bg-[#ffffff] border-[#DADCE0]">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-black font-arabic">تحليل نقاط التواصل</h3>
+
+const COLORS = ['#3DA8F5', '#3DBE8B', '#F6C445', '#E5564D', 'rgba(11,15,18,0.20)'];
+
+export const AttributionChart: React.FC<AttributionChartProps> = ({ attribution }) => {
+  const totalConversions = attribution.reduce((s, a) => s + a.conversions, 0);
+
+  return (
+    <DataCardFrame title="تحليل نقاط التواصل">
+      <div className="flex flex-col items-center">
+        <RingMetricCard
+          title=""
+          centerValue={totalConversions}
+          centerUnit="تحويل"
+          layers={attribution.map((item, i) => ({
+            value: item.percentage,
+            color: COLORS[i % COLORS.length],
+            label: item.touchpoint,
+          }))}
+          className="border-0 shadow-none bg-transparent p-0"
+        />
       </div>
-      
-      <ChartContainer config={chartConfig}>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie data={attribution} cx="50%" cy="50%" labelLine={false} label={({
-            percentage
-          }) => `${percentage}%`} outerRadius={80} fill="#8884d8" dataKey="percentage">
-              {attribution.map((entry, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
-            </Pie>
-            <Tooltip content={<ChartTooltipContent />} />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
-      </ChartContainer>
-      
-      <div className="mt-4 space-y-3">
-        {attribution.map((item, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/60 border border-black/5 rounded-3xl">
-            <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded-full" style={{
-            backgroundColor: COLORS[index % COLORS.length]
-          }} />
-              <span className="font-medium text-sm text-black font-arabic">{item.touchpoint}</span>
-            </div>
-            <div className="text-right">
-              <p className="font-bold text-black font-arabic">{item.percentage}%</p>
-              <p className="text-xs text-black/60 font-arabic">{item.conversions} تحويل</p>
-              <p className="text-xs text-black/60 font-arabic">{item.revenue.toLocaleString()} ر.س</p>
-            </div>
-          </div>)}
-      </div>
-    </div>;
+    </DataCardFrame>
+  );
 };

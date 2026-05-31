@@ -4,7 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { FileText, X, Plus, Sparkles, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { FileText, X, Plus, Sparkles, Loader2, CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { ar } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
 interface AccountingEntry {
@@ -203,16 +208,7 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className={cn(
-          "max-w-3xl max-h-[90vh] p-0 overflow-hidden",
-          "bg-white/40 backdrop-blur-[20px]",
-          "border border-white/20 rounded-[24px]",
-          "shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(255,255,255,0.1)]"
-        )}
-        style={{
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
-        }}
+        className="max-w-3xl max-h-[90vh] p-0 overflow-hidden font-arabic"
       >
         {/* Header */}
         <DialogHeader className="flex flex-row items-center justify-between p-6 pb-0">
@@ -229,14 +225,12 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
               </p>
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-transparent hover:bg-black/5 text-black"
+            className="absolute top-4 left-4 rounded-full bg-transparent hover:bg-black/10 border border-black w-[32px] h-[32px] flex items-center justify-center transition z-10"
           >
-            <X className="w-4 h-4" />
-          </Button>
+            <X className="w-4 h-4 text-black" />
+          </button>
         </DialogHeader>
 
         {/* Content */}
@@ -284,18 +278,20 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                   الفئة *
                 </Label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => handleInputChange('category', e.target.value)}
-                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                >
-                  <option value="">اختر الفئة</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+                <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                    <SelectValue placeholder="اختر الفئة" />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className=" text-[#0B0F12] font-arabic"
+                  >
+                    {categories.map((category) => (
+                      <SelectItem key={category} value={category}>
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -318,40 +314,44 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                   ربط بميزانية معتمدة *
                 </Label>
-                <select
-                  value={formData.linkedBudgetId || ''}
-                  onChange={(e) => handleInputChange('linkedBudgetId', e.target.value)}
-                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                >
-                  <option value="">اختر الميزانية المرتبطة</option>
-                  {approvedBudgets.map((budget) => (
-                    <option key={budget.id} value={budget.id}>
-                      {budget.name} - متبقي: {budget.remaining.toLocaleString()} ريال
-                    </option>
-                  ))}
-                </select>
+                <Select value={formData.linkedBudgetId || ''} onValueChange={(value) => handleInputChange('linkedBudgetId', value)}>
+                  <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                    <SelectValue placeholder="اختر الميزانية المرتبطة" />
+                  </SelectTrigger>
+                  <SelectContent 
+                    className=" text-[#0B0F12] font-arabic"
+                  >
+                    {approvedBudgets.map((budget) => (
+                      <SelectItem key={budget.id} value={budget.id}>
+                        {budget.name} - متبقي: {budget.remaining.toLocaleString()} ريال
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
             {/* خانة التكرار للنفقات الدورية */}
             {isExpenseType && formData.type === 'periodic_expense' && (
-              <div>
-                <Label className="text-sm font-bold text-black font-arabic mb-3 block">
-                  تكرار النفقة *
-                </Label>
-                <select
-                  value={formData.frequency || ''}
-                  onChange={(e) => handleInputChange('frequency', e.target.value)}
-                  className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                >
-                  <option value="">اختر تكرار النفقة</option>
-                  {frequencies.map((freq) => (
-                    <option key={freq.value} value={freq.value}>
-                      {freq.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                <div>
+                  <Label className="text-sm font-bold text-black font-arabic mb-3 block">
+                    تكرار النفقة *
+                  </Label>
+                  <Select value={formData.frequency || ''} onValueChange={(value) => handleInputChange('frequency', value)}>
+                    <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                      <SelectValue placeholder="اختر تكرار النفقة" />
+                    </SelectTrigger>
+                    <SelectContent 
+                      className=" text-[#0B0F12] font-arabic"
+                    >
+                      {frequencies.map((freq) => (
+                        <SelectItem key={freq.value} value={freq.value}>
+                          {freq.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
             )}
 
             {/* حقول خاصة بالإيرادات المتكررة */}
@@ -362,40 +362,84 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                       التكرار *
                     </Label>
-                    <select
-                      value={formData.frequency || ''}
-                      onChange={(e) => handleInputChange('frequency', e.target.value)}
-                      className="w-full bg-white/30 border border-black/20 rounded-3xl focus:border-black text-black px-4 py-3 font-arabic"
-                    >
-                      <option value="">اختر التكرار</option>
-                      {frequencies.map((freq) => (
-                        <option key={freq.value} value={freq.value}>
-                          {freq.label}
-                        </option>
-                      ))}
-                    </select>
+                    <Select value={formData.frequency || ''} onValueChange={(value) => handleInputChange('frequency', value)}>
+                      <SelectTrigger className="w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none">
+                        <SelectValue placeholder="اختر التكرار" />
+                      </SelectTrigger>
+                      <SelectContent 
+                        className=" text-[#0B0F12] font-arabic"
+                      >
+                        {frequencies.map((freq) => (
+                          <SelectItem key={freq.value} value={freq.value}>
+                            {freq.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                       تاريخ البداية *
                     </Label>
-                    <Input
-                      type="date"
-                      value={formData.startDate || formData.date}
-                      onChange={(e) => handleInputChange('startDate', e.target.value)}
-                      className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                            !(formData.startDate || formData.date) && "text-black/50"
+                          )}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {(formData.startDate || formData.date) ? (
+                            format(new Date(formData.startDate || formData.date), "PPP", { locale: ar })
+                          ) : (
+                            <span>اختر تاريخ البداية</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar 
+                          mode="single" 
+                          selected={(formData.startDate || formData.date) ? new Date(formData.startDate || formData.date) : undefined} 
+                          onSelect={(date) => handleInputChange('startDate', date ? format(date, 'yyyy-MM-dd') : '')} 
+                          initialFocus 
+                          className="p-3 pointer-events-auto" 
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                       تاريخ النهاية
                     </Label>
-                    <Input
-                      type="date"
-                      value={formData.endDate || ''}
-                      onChange={(e) => handleInputChange('endDate', e.target.value)}
-                      className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                            !formData.endDate && "text-black/50"
+                          )}
+                        >
+                          <CalendarIcon className="ml-2 h-4 w-4" />
+                          {formData.endDate ? (
+                            format(new Date(formData.endDate), "PPP", { locale: ar })
+                          ) : (
+                            <span>اختر تاريخ النهاية</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar 
+                          mode="single" 
+                          selected={formData.endDate ? new Date(formData.endDate) : undefined} 
+                          onSelect={(date) => handleInputChange('endDate', date ? format(date, 'yyyy-MM-dd') : '')} 
+                          initialFocus 
+                          className="p-3 pointer-events-auto" 
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </>
@@ -446,12 +490,33 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
                 <Label className="text-sm font-bold text-black font-arabic mb-3 block">
                   التاريخ *
                 </Label>
-                <Input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => handleInputChange('date', e.target.value)}
-                  className="bg-white/30 border-black/20 rounded-3xl focus:border-black text-black font-arabic px-4 py-3"
-                />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full px-4 py-3 rounded-3xl bg-white/30 border border-black/20 focus:border-black text-black placeholder-black/50 text-right font-arabic transition-colors outline-none justify-start text-left font-normal",
+                        !formData.date && "text-black/50"
+                      )}
+                    >
+                      <CalendarIcon className="ml-2 h-4 w-4" />
+                      {formData.date ? (
+                        format(new Date(formData.date), "PPP", { locale: ar })
+                      ) : (
+                        <span>اختر التاريخ</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar 
+                      mode="single" 
+                      selected={formData.date ? new Date(formData.date) : undefined} 
+                      onSelect={(date) => handleInputChange('date', date ? format(date, 'yyyy-MM-dd') : '')} 
+                      initialFocus 
+                      className="p-3 pointer-events-auto" 
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
@@ -574,20 +639,22 @@ export const AccountingEntryModal: React.FC<AccountingEntryModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 pt-0">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic"
-          >
-            إلغاء
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic"
-          >
-            حفظ القيد
-          </Button>
+        <div className="flex-shrink-0 px-8 pb-8">
+          <div className="flex gap-4 justify-start pt-6 border-t border-white/20">
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-3 bg-black hover:bg-black/90 rounded-full text-white font-medium font-arabic transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              حفظ القيد
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 bg-white/30 hover:bg-white/40 border border-black/20 rounded-full text-black font-medium font-arabic transition-colors"
+            >
+              إلغاء
+            </button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

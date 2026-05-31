@@ -31,9 +31,9 @@ export const BaseActionButton: React.FC<BaseActionButtonProps> = ({
     ghost: `bg-transparent ${COLORS.PRIMARY_TEXT} hover:bg-[${DESIGN_TOKENS.COLORS.SURFACE_MUTED}]`,
     view: 'bg-transparent border border-black text-black hover:bg-white/20',
     edit: 'bg-transparent border border-black text-black hover:bg-white/20',
-    delete: 'bg-transparent border border-red-600 text-red-600 hover:bg-red-50',
-    download: 'bg-transparent border border-green-600 text-green-600 hover:bg-green-50',
-    share: 'bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-50'
+    delete: 'bg-transparent border border-black text-black hover:bg-white/20',
+    download: 'bg-transparent border border-black text-black hover:bg-white/20',
+    share: 'bg-transparent border border-black text-black hover:bg-white/20'
   };
 
   const sizeClasses = {
@@ -52,11 +52,20 @@ export const BaseActionButton: React.FC<BaseActionButtonProps> = ({
   const renderIcon = () => {
     if (!icon) return null;
     
+    // Check if icon is a React element that was already rendered
+    if (React.isValidElement(icon)) {
+      return React.cloneElement(icon as React.ReactElement, {
+        className: iconSizes[size]
+      });
+    }
+    
+    // Check if icon is a component function (Lucide icons)
     if (typeof icon === 'function') {
       const IconComponent = icon as LucideIcon;
       return <IconComponent className={iconSizes[size]} />;
     }
     
+    // For any other case, try to render as JSX
     return <span className={`flex-shrink-0 ${iconSizes[size]}`}>{icon}</span>;
   };
 

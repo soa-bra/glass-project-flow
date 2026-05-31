@@ -17,13 +17,17 @@ interface ProjectManagementBoardProps {
   onClose: () => void;
   isSidebarCollapsed: boolean;
   onProjectUpdated?: (project: ProjectData) => void;
+  onProjectDeleted?: (projectId: string) => void;
+  onProjectArchived?: (projectId: string) => void;
 }
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
   isVisible,
   onClose,
   isSidebarCollapsed,
-  onProjectUpdated
+  onProjectUpdated,
+  onProjectDeleted,
+  onProjectArchived
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -31,15 +35,19 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   if (!isVisible) return null;
   const handleDeleteProject = () => {
-    // تنفيذ عملية حذف المشروع
     setShowDeleteDialog(false);
-    onProjectUpdated?.(editingProjectData);
+    if (onProjectDeleted) {
+      onProjectDeleted(project.id);
+      return;
+    }
     onClose();
   };
   const handleArchiveProject = () => {
-    // تنفيذ عملية أرشفة المشروع
     setShowArchiveDialog(false);
-    onProjectUpdated?.(editingProjectData);
+    if (onProjectArchived) {
+      onProjectArchived(project.id);
+      return;
+    }
     onClose();
   };
   const handleEditProject = () => {

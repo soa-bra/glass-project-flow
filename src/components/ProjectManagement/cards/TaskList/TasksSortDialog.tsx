@@ -48,15 +48,7 @@ export const TasksSortDialog: React.FC<TasksSortDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-md p-0 overflow-hidden z-[9998]"
-        style={{
-          background: 'rgba(255,255,255,0.4)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderRadius: '24px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        }}
+        className="sm:max-w-md p-0 overflow-hidden"
       >
         <DialogTitle className="sr-only">ترتيب المهام</DialogTitle>
         
@@ -88,7 +80,7 @@ export const TasksSortDialog: React.FC<TasksSortDialogProps> = ({
               <SelectTrigger className="w-full px-4 py-3 bg-white/30 border border-black/20 rounded-2xl text-black focus:outline-none focus:border-black transition-colors">
                 <SelectValue placeholder="اختر معيار الترتيب" />
               </SelectTrigger>
-              <SelectContent className="z-[9999] bg-white border border-black/20 shadow-lg">
+              <SelectContent>
                 {sortCriteria.map((criteria) => (
                   <SelectItem key={criteria.value} value={criteria.value}>
                     {criteria.label}

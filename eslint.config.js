@@ -19,11 +19,187 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "react-refresh/only-export-components": ["error", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // قواعد حوكمة معمارية Planning Feature
+  // ═══════════════════════════════════════════════════════════
+
+  // قاعدة 1: UI Layer لا تستورد من engine أو core مباشرة
+  {
+    files: ["src/features/planning/ui/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/engine/**", "@/engine/**"],
+              message:
+                "❌ UI layer لا يمكنها استيراد من engine مباشرة. استخدم canvas/ أو adapters/ بدلاً من ذلك.",
+            },
+            {
+              group: ["**/core/**", "@/core/**", "src/core/**"],
+              message: "❌ UI layer لا يمكنها استيراد من core مباشرة. استخدم canvas/ أو state/.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // قاعدة 2: Engine Layer لا تستخدم React
+  {
+    files: ["src/engine/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["react", "react-dom", "react-*", "@radix-ui/*", "framer-motion"],
+              message:
+                "❌ Engine layer يجب أن تكون خالية من React. استخدم TypeScript/JavaScript فقط.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // قاعدة 3: State Layer (slices) reducers فقط - لا business logic ولا engine imports
+  {
+    files: ["src/features/planning/state/slices/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/engine/**", "@/engine/**"],
+              message:
+                "❌ State slices يجب أن تكون reducers فقط. ضع business logic في domain/commands و domain/policies.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // قاعدة 4: Elements Layer لا تستورد من UI
+  {
+    files: ["src/features/planning/elements/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "**/features/planning/ui/**",
+                "@/features/planning/ui/**",
+                "**/ui/panels/**",
+                "**/ui/toolbars/**",
+                "**/ui/overlays/**",
+              ],
+              message:
+                "❌ Elements layer لا يمكنها استيراد من UI (panels/toolbars/overlays). استخدم props أو callbacks أو context.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // قاعدة 5: Canvas Layer لا تستورد من Integration
+  {
+    files: ["src/features/planning/canvas/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["**/features/planning/integration/**", "@/features/planning/integration/**", "**/integration/**"],
+              message:
+                "❌ Canvas layer لا يمكنها استيراد من integration مباشرة. استخدم state/ أو hooks/adapters.",
+            },
+            {
+              group: [
+                "@/features/planning/canvas/transforms/SnapGuides",
+                "@/features/planning/canvas/transforms/SnapGuides.tsx",
+                "@/features/planning/canvas/layers/SnapGuides",
+                "@/features/planning/canvas/layers/SnapGuides.tsx",
+                "**/canvas/transforms/SnapGuides",
+                "**/canvas/transforms/SnapGuides.tsx",
+                "**/canvas/layers/SnapGuides",
+                "**/canvas/layers/SnapGuides.tsx"
+              ],
+              message:
+                "❌ SnapGuides يجب استيراده فقط عبر نقطة الدخول الموحدة: @/features/planning/canvas.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // قاعدة 6: منع استيراد من components/Planning القديم
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "warn",
+        {
+          patterns: [
+            {
+              group: ["**/components/Planning/**", "@/components/Planning/**"],
+              message: "❌ مسار قديم محظور: استخدم @/features/planning/ بدلاً من @/components/Planning/",
+            },
+            {
+              group: ["**/modules/invoice/invoice.service", "@/modules/invoice/invoice.service", "**/lib/prisma", "@/lib/prisma"],
+              message: "❌ مسار invoice legacy/shadow ORM محظور في التطوير الجديد. استخدم services/invoices + Supabase active path.",
+            },
+            {
+              group: ["**/components/Financial/InvoicesDashboard", "@/components/Financial/InvoicesDashboard"],
+              message: "❌ InvoicesDashboard legacy path محظور. استخدم واجهات المسار النشط المعتمدة فقط.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  // قاعدة 7 (P7): منع الاستيراد العميق لمكوّنات Box-Kit الأولية.
+  // كل الاستهلاك يجب أن يمر عبر السجل (BOX_KIT_REGISTRY) ليبقى TabRenderer
+  // هو المصدر الوحيد لربط componentRef ↔ React component.
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/components/box-kit/**",
+      "src/__tests__/**",
+      "src/stories/**",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [
+                "**/components/box-kit/primitives/**",
+                "@/components/box-kit/primitives/**",
+              ],
+              message:
+                "❌ ممنوع الاستيراد العميق من box-kit/primitives. استخدم BOX_KIT_REGISTRY أو TabRenderer/BoxRenderer من @/components/box-kit.",
+            },
+          ],
+        },
+      ],
     },
   }
 );
+

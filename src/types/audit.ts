@@ -5,6 +5,7 @@ export type AuditEventType =
   | 'approval.created' | 'approval.approved' | 'approval.rejected'
   | 'file.uploaded' | 'file.downloaded' | 'file.deleted'
   | 'auth.login' | 'auth.logout' | 'auth.failed'
+  | 'authz.approved' | 'authz.denied'
   | 'system.error' | 'system.warning' | 'system.info';
 
 export type EventStatus = 'pending' | 'processing' | 'delivered' | 'failed' | 'retrying';

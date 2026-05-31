@@ -26,7 +26,7 @@ const ProjectCardLayout = ({
 
   const getCardClasses = () => {
     const baseClasses =
-      'project-card-hover rounded-[40px] p-2 mx-auto my-1 cursor-pointer';
+      'project-card-hover rounded-[24px] p-2 mx-auto my-1 cursor-pointer';
     
     if (isSelected) {
       return `${baseClasses} project-card-selected`;

@@ -1,3 +1,4 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Palette, Sun, Moon, Monitor, Contrast, Paintbrush, Eye, Zap } from 'lucide-react';
 import { useAutosave } from '../hooks/useAutosave';
@@ -72,7 +73,7 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -81,11 +82,11 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Theme Mode Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">وضع المظهر</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -108,10 +109,10 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Color Schemes Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">أنظمة الألوان</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -148,17 +149,17 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* AI Personalization Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4 flex items-center gap-2">
               🤖 التخصيص بالذكاء الاصطناعي
               <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full">AI Personalization</span>
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">الألوان التكيفية</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -171,9 +172,9 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                   />
                   <span className="text-sm text-black">تكيف الألوان حسب المحتوى</span>
                 </label>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">المظاهر السياقية</h4>
                 <label className="flex items-center gap-2">
                   <input 
@@ -186,16 +187,16 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                   />
                   <span className="text-sm text-black">مظاهر حسب نوع العمل</span>
                 </label>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Accessibility Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إعدادات إمكانية الوصول</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Eye className="w-5 h-5" />
                   البصر
@@ -224,9 +225,9 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                     <span className="text-sm text-black">خط مناسب لعسر القراءة</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
 
-              <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3 flex items-center gap-2">
                   <Zap className="w-5 h-5" />
                   الحركة
@@ -255,9 +256,9 @@ export const ThemeSettingsPanel: React.FC<ThemeSettingsPanelProps> = () => {
                     <span className="text-sm text-black">حدود التركيز المرئية</span>
                   </label>
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

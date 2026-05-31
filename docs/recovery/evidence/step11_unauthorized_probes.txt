@@ -1,0 +1,19 @@
+[STEP 11 - UNAUTHORIZED PROBES]
+Environment: controlled test environment
+Actor: unauthorized
+Execution: psql "$UNAUTH_DB_URL" -f scripts/recovery/permissions-probes.sql
+Timestamp: 2026-05-03T00:10:00Z
+
+current_user: NULL
+is_owner: f
+projects_visible: 0
+tasks_visible: 0
+invoices_visible: 0
+outbox_visible: ERROR permission denied for table event_outbox
+dlq_visible: ERROR permission denied for table event_dlq
+
+Result Summary:
+- auth.uid(): null/absent (PASS)
+- is_owner: false (PASS)
+- domain reads: no visibility (PASS)
+- restricted tables: denied (PASS)

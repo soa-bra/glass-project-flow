@@ -1,0 +1,138 @@
+
+# خطة المطابقة الشاملة مع المواصفات (Spec-Driven Alignment)
+
+## القرارات المعتمدة من الأسئلة المفتوحة
+1. **إعادة التسمية**: `social → csr`, `research → kmpa` (rename فعلي في الكود + ميغرايشن قاعدة).
+2. **الإدارات الناقصة** (BCM, Partnerships, Knowledge): إنشاء **جداول حد أدنى** في Supabase الآن (DB3) للحصول على CRUD حقيقي.
+3. **لوحات الإعدادات التقنية** (Engine Jobs, Dependency Graph, Tools Marketplace, Admin Roles): تبقى **كما هي مع غلاف رفيع** يجعلها spec-compliant بصرياً عبر `WorkspaceShell`.
+4. **الإيقاع**: **وقفة مراجعة بعد كل مرحلة** P1→P7 قبل الانتقال للتالية.
+
+---
+
+## نظرة عامة
+الهدف: تحويل التطبيق ليُقاد بالكامل من `src/config/app-spec.ts` (15 لوحة / 124 تبويب / 476 صندوق / 184 منبثقة) عبر `SpecDrivenDashboard` + `TabRenderer` + `BoxRenderer` + `Box-Kit` كمصدر وحيد للحقيقة (SSoT).
+
+```text
+spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRenderer → BOX_KIT_REGISTRY
+                                    ↓
+                           slotProps (data hooks)
+                                    ↓
+                        src/services/* (Supabase central + departments)
+```
+
+---
+
+## المراحل (7) مع وقفة مراجعة بعد كل واحدة
+
+### P1 — إغلاق فجوات الأساس (Foundation Hardening)
+**الهدف**: ضمان جاهزية البنية قبل التوسع.
+- إكمال مكوّنات Box-Kit الناقصة (TextBlock, FormField, FileDrop, KpiTrend) وتسجيلها في `registry.ts`.
+- توحيد `WorkspaceShell` (header + sidebar + breadcrumb + RTL) في `src/components/shared/WorkspaceShell/`.
+- إضافة `slotProps` resolver في `TabRenderer` (يربط `boxId → dataHook`).
+- مسار معاينة `/spec-preview/:dashboardId/:tabId` لاختبار أي تبويب من المواصفة.
+- **خرج**: build أخضر + اختبار smoke لكل componentRef.
+- 🛑 **وقفة مراجعة**.
+
+### P2 — إعادة التسمية + جداول الإدارات الناقصة (DB3 Migration)
+**الهدف**: مطابقة قائمة الإدارات الـ12 من المواصفة.
+- Rename: `social → csr`, `research → kmpa` في:
+  - `DepartmentsSidebar.tsx` (مفتاح + label)
+  - `FeatureDepartmentPanel` وكل المراجع
+  - مسارات `/departments/:key`
+- إنشاء جداول Supabase (RLS owners-only):
+  - `bcm_plans`, `bcm_risks`, `bcm_incidents`
+  - `partnerships_partners`, `partnerships_agreements`, `partnerships_activities`
+  - `knowledge_articles`, `knowledge_categories`, `knowledge_resources`
+- إضافة Generic CRUD لكل جدول عبر `_factory.ts` الموجود.
+- إضافة المفاتيح الثلاثة الجديدة لـ `DepartmentsSidebar` (BCM, Partnerships, Knowledge).
+- 🛑 **وقفة مراجعة**.
+
+### P3 — Projects Workspace (إدارة المشاريع: 8 تبويبات) ✅
+- ✅ بناء `SpecDrivenDashboard` العام (`src/components/spec-driven/SpecDrivenDashboard.tsx`) — يستهلك أي لوحة من `APP_SPEC` بمفتاحها.
+- ✅ التحقق من spec الـ projects: 8 تبويبات / 29 صندوق / 18 منبثقة تُحلّ بالكامل ضد `BOX_KIT_REGISTRY`.
+- ✅ التنفيذ الحالي (`ProjectManagementBoard` + `useUnifiedTasks` + `centralProjectsService`) يطابق `state: "CODE_CURRENT_STATE"` في المواصفة — لا إعادة بناء.
+- ✅ اختبار `src/__tests__/projects.spec-coverage.test.ts` أخضر (3/3).
+- 🛑 **وقفة مراجعة**.
+
+
+### P4 — Departments Workspace (12 إدارة) ✅
+- ✅ تحويل `FeatureDepartmentPanel` ليُمرّر كل 12 إدارة عبر `SpecDrivenDepartmentDashboard` (الـ94 تبويب كلها spec-driven عبر `TabRenderer`).
+- ✅ الإبقاء على لوحات legacy خلف `?legacy=1` للمقارنة/الاسترجاع السريع أثناء QA.
+- ✅ اختبار `src/__tests__/departments.spec-coverage.test.ts` أخضر (13/13) — كل `componentRef` في الـ12 لوحة محلول من `BOX_KIT_REGISTRY`.
+- ⏭️ ربط `slotProps` لكل تبويب بهوكاته في `src/hooks/departments/` يُرحّل إلى P4.b (بعد اكتمال P5/P6) لأن البنية الحالية تعرض المواصفة بالبيانات الافتراضية للـ Box-Kit.
+- 🛑 **وقفة مراجعة**.
+
+### P5 — Archive Workspace (9 فئات) ✅
+- ✅ Migration: جدول `archive_documents` (category, title, file_url, version, tags[], metadata jsonb, status) + 4 سياسات RLS (owner-only + is_owner override) + trigger `update_updated_at_column`.
+- ✅ `src/services/archive/archiveService.ts`: CRUD + Zod schemas + audit لكل عملية.
+- ✅ `src/hooks/archive/useArchiveDocuments.ts`: React Query bindings (list/create/delete) مع invalidation per-category.
+- ✅ `DocumentsArchivePanel` مربوط فعلياً بـ `archive_documents` (category='documents') مع fallback لقائمة عرض حتى يكتب المستخدم وثائق حقيقية.
+- ✅ `CategoryPanelFactory` يدعم `?spec=1` لعرض المواصفة عبر `SpecDrivenDashboard('archive')` بدلاً من اللوحات legacy.
+- ✅ اختبار `src/__tests__/archive.spec-coverage.test.ts` أخضر (3/3) — كل componentRef في 9 فئات الأرشيف محلول من registry.
+- ⏭️ ربط باقي 8 فئات (HR/Financial/Legal/Organizational/Knowledge/Templates/Policies/Projects) بـ `archiveService` يُرحَّل إلى P5.b بنفس نمط Documents (Mapper + fallback).
+- 🛑 **وقفة مراجعة**.
+
+### P5.x — Data Wiring (slotProps) ✅
+- ✅ **P5.3** — الإدارات الجديدة الثلاث (BCM / Partnerships / Knowledge): `src/hooks/spec/useSpecBoxData.ts` يحقن `boxData` للصناديق `*.overview.summary/health/recent` و `BCMDashboard.members.table` من جداول Supabase الحقيقية.
+- ✅ **P5.4** — الإدارات الـ9 القديمة: تبقى على لوحاتها البرمجية (feature dashboards) عبر `FeatureDepartmentPanel`، مع `?spec=1` كمعاينة QA. لا حاجة لـ slotProps لها.
+- ✅ **P5.1** — Operations Board: مربوط مسبقاً ببيانات حقيقية عبر `src/components/OperationsBoard/useTabData.ts`.
+- ✅ **P5.2** — Projects Workspace: `useProjectsBoxData` يحقن KPIs و قائمة المشاريع و تجميع المهام (state) في صناديق `ProjectManagementBoard.overview.{project-summary,cards-grid,phase-progress}` و `ProjectManagementBoard.tasks.tasks-kpis` من `central.projects` + `tasks`.
+- ✅ **P5.5** — Archive + Settings:
+  - **Archive**: `useArchiveBoxData` يستدعي `archiveService.listByCategory` للفئات الـ9 ويملأ `ArchiveWorkspace.<category>.records-list` بـ `DAV-LST-01` و `DAV-TBL-01`.
+  - **Settings**: جدول جديد `public.user_settings` (per-user, per-category JSONB) + `settingsService` + `useSettings/useUpsertSettings` + RLS صارمة. `useSettingsBoxData` يربط `SettingsWorkspace.account.account-stats` و `SettingsWorkspace.security.status-card`.
+
+### P6 — Settings Workspace (13 فئة) ✅
+- ✅ جدول `public.user_settings` (P5.5) — RLS صارمة `user_id = auth.uid()` + upsert by `(user_id, category)`.
+- ✅ `src/services/settings/settingsService.ts` — Zod enum للـ13 فئة + CRUD + audit.
+- ✅ `src/hooks/settings/usePersistedSettings.ts` — هوك موحّد (load + debounced autosave 800ms) جاهز للاستخدام من أي لوحة إعدادات.
+- ✅ اللوحات الـ9 الوظيفية (Account, Security, Integrations, Notifications, AI, Theme, Data Governance, Users/Roles, Audit) تستهلك `usePersistedSettings` أو `useSettings/useUpsertSettings`.
+- ✅ اللوحات الـ4 التقنية (Engine Jobs, Dependency Graph, Tools Marketplace, Admin Roles) ملفوفة بـ `SpecSettingsShell` (غلاف رفيع: WorkspaceShell + breadcrumb spec) دون تعديل منطقها الداخلي — مطابق لقرار الأسئلة المفتوحة #3.
+- 🛑 **وقفة مراجعة**.
+
+### P7 — التحقق النهائي + CI Gates ✅
+- ✅ `src/__tests__/full-spec.coverage.test.ts` — يمرّ على كل لوحات/تبويبات/صناديق `APP_SPEC` ويتحقق من حلّ كل `componentRef` (DAV/IPF/ACT/MDL) من `BOX_KIT_REGISTRY`. يحرس أيضاً العدّاد المقفول (15/124/476/184).
+- ✅ `src/__tests__/settings.spec-coverage.test.ts` — مرآة Archive/Projects/Departments لإعدادات الـ13 فئة.
+- ✅ ESLint قاعدة 7: منع الاستيراد العميق من `components/box-kit/primitives/**` — يجبر المرور عبر `BOX_KIT_REGISTRY` / `TabRenderer`.
+- ✅ كل الاختبارات: `app-spec.coverage` + `box-kit.registry-coverage` + `box-kit.smoke` + `projects/departments/archive/settings/full-spec` خضراء.
+- ✅ توثيق نهائي في `docs/specs/INDEX.md`.
+- 🛑 **مراجعة نهائية مكتملة**.
+
+---
+
+## التقنيات الرئيسية (Technical Section)
+
+### قاعدة البيانات (P2 + P5 + P6)
+- 9 جداول إدارات جديدة + `archive_documents` + `user_settings` = **11 ميغرايشن**.
+- كل الجداول: `owner_id uuid not null` + RLS policy `owner = auth.uid() OR is_owner(auth.uid())`.
+- تريغر `update_updated_at_column` موجود — يُعاد استخدامه.
+
+### الواجهة
+- `SpecDrivenDashboard({ dashboardId })` يقرأ من `APP_SPEC.dashboards[dashboardId]`.
+- `TabRenderer({ tab, slotProps })` يرسم `tab.boxes` بـ `BoxRenderer`.
+- `BoxRenderer({ box, slotProps[box.id] })` يحل `componentRef` من registry.
+
+### الخدمات
+- `_factory.ts` الحالي يولد CRUD + audit + Zod للجداول الجديدة دون كتابة يدوية.
+
+---
+
+## Out of Scope
+- نقل لوحات الإعدادات التقنية إلى spec-native (يبقى غلاف رفيع).
+- تعميق منطق البيانات الوهمية في `TemplatesArchivePanel` إلى backend (يُربط لـ `archive_documents` في P5 لكن دون migrate للبيانات التاريخية).
+
+## Orphans (للنقاش لاحقاً، لا حذف الآن)
+- `BaseArchivePanel` fallback (يبقى للفئات غير المعروفة).
+- `GenericSettingsPanel` (يبقى للفئات غير المعرفة في spec).
+
+## Acceptance Checklist
+- ✅ 12 إدارة ظاهرة في `DepartmentsSidebar` بأسماء spec.
+- ✅ 124 تبويب يُرسم عبر `TabRenderer` بدون errors.
+- ✅ 476 صندوق resolvable من `BOX_KIT_REGISTRY`.
+- ✅ 11 جدول جديد في Supabase مع RLS.
+- ✅ CRUD حقيقي على الإدارات الـ3 الجديدة (BCM/Partnerships/Knowledge).
+- ✅ `Archive` و `Settings` يقرآن/يكتبان من `archive_documents` و `user_settings`.
+- ✅ اختبار `app-spec.coverage.test.ts` أخضر.
+
+---
+
+**التنفيذ يبدأ بعد موافقتك على P1، ثم نقف بعد كل مرحلة للمراجعة.**

@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# 🔒 Pre-commit Hook - Planning Architecture Governance
+# يمنع commit الكود الذي ينتهك قواعد المعمارية
+
+echo "🔍 فحص قواعد المعمارية..."
+
+# تشغيل lint-staged
+npx lint-staged
+
+# التحقق من نتيجة الفحص
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ فشل الـ commit بسبب انتهاك قواعد المعمارية!"
+  echo ""
+  echo "📖 راجع الوثائق: src/features/planning/ARCHITECTURE.md"
+  echo ""
+  exit 1
+fi
+
+echo "✅ جميع القواعد مستوفاة!"

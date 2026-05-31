@@ -1,16 +1,16 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { FileText, BookOpen, ChevronDown, ChevronRight } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { BaseCard } from '@/components/shared/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { mockBudgetTree } from './data';
 import { formatCurrency, getStatusColor, getStatusText } from './utils';
 import { CreateBudgetModal } from './CreateBudgetModal';
 import { BudgetManagementModal } from './BudgetManagementModal';
 import { BudgetTreeItem } from './types';
+import { toast } from 'sonner';
 
 export const BudgetsTab: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -30,9 +30,6 @@ export const BudgetsTab: React.FC = () => {
   };
 
   const handleBudgetCreated = (budgetData: any) => {
-    // Budget created successfully
-    
-    // تحويل البيانات الجديدة لتنسيق شجرة الميزانيات
     const newBudgetTreeItem = {
       id: budgetData.id,
       name: budgetData.name,
@@ -45,8 +42,6 @@ export const BudgetsTab: React.FC = () => {
         status: 'approved'
       }))
     };
-    
-    // إضافة الميزانية الجديدة إلى شجرة الميزانيات
     setBudgetTree(prev => [...prev, newBudgetTreeItem]);
   };
 
@@ -56,8 +51,29 @@ export const BudgetsTab: React.FC = () => {
   };
 
   const handleBudgetUpdate = (budgetId: number, updateData: any) => {
-    // Budget updated successfully
-    // هنا يمكن تحديث بيانات الميزانية في القاعدة
+    setBudgetTree(prev => prev.map(b => {
+      if (b.id === budgetId) {
+        const newStatus = updateData.review?.status === 'approved' ? 'approved' :
+                          updateData.review?.status === 'rejected' ? 'overbudget' : b.status;
+        return {
+          ...b,
+          status: newStatus,
+          amount: updateData.review?.approvedAmount || b.amount,
+        };
+      }
+      if (b.children) {
+        return {
+          ...b,
+          children: b.children.map(c => c.id === budgetId ? {
+            ...c,
+            status: updateData.review?.status === 'approved' ? 'approved' : c.status,
+            amount: updateData.review?.approvedAmount || c.amount,
+          } : c)
+        };
+      }
+      return b;
+    }));
+    toast.success('تم تحديث الميزانية بنجاح');
   };
 
   const toggleExpand = (itemId: number) => {
@@ -85,7 +101,7 @@ export const BudgetsTab: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-[40px] border border-[#DADCE0]">
+      <div className="bg-white p-6 rounded-[24px] border border-[#DADCE0]">
         <div className="px-0 pt-0 mb-6">
           <h3 className="text-large font-semibold text-black font-arabic">شجرة الميزانيات</h3>
         </div>

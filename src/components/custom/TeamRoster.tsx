@@ -106,23 +106,23 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [], onRemoveMembe
     <div className="space-y-4">
       {/* إحصائيات سريعة */}
       <div className="grid grid-cols-4 gap-2 text-center text-xs">
-        <div className="p-2 bg-white/20 rounded-xl">
+        <div className="p-2 bg-gray-50 rounded-xl">
           <p className="font-bold text-lg">{teamData.length}</p>
           <p className="text-gray-600">إجمالي أعضاء الفريق</p>
         </div>
-        <div className="p-2 bg-white/20 rounded-xl">
+        <div className="p-2 bg-gray-50 rounded-xl">
           <p className="font-bold text-lg text-green-600">
             {teamData.filter(m => m.availability === 'available').length}
           </p>
           <p className="text-gray-600">متاح</p>
         </div>
-        <div className="p-2 bg-white/20 rounded-xl">
+        <div className="p-2 bg-gray-50 rounded-xl">
           <p className="font-bold text-lg text-red-600">
             {teamData.filter(m => m.availability === 'busy').length}
           </p>
           <p className="text-gray-600">مشغول</p>
         </div>
-        <div className="p-2 bg-white/20 rounded-xl">
+        <div className="p-2 bg-gray-50 rounded-xl">
           <p className="font-bold text-lg">
             {Math.round(teamData.reduce((sum, m) => sum + m.productivity, 0) / teamData.length)}%
           </p>
@@ -136,7 +136,7 @@ export const TeamRoster: React.FC<TeamRosterProps> = ({ data = [], onRemoveMembe
             const availabilityConfig = getAvailabilityConfig(member.availability);
             
             return (
-              <div key={member.id} className="bg-white/20 rounded-2xl p-4 hover:bg-white/30 transition-colors">
+              <div key={member.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
                 <div className="flex items-start gap-3">
                   <div className="relative">
                     <Avatar className="w-12 h-12">

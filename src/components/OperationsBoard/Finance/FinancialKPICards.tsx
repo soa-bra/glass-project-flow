@@ -1,5 +1,6 @@
 import React from 'react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
+
 interface FinancialKPI {
   id: string;
   title: string;
@@ -8,12 +9,12 @@ interface FinancialKPI {
   trend: 'up' | 'down' | 'stable';
   format: 'currency' | 'percentage' | 'number';
 }
+
 interface FinancialKPICardsProps {
   kpis: FinancialKPI[];
 }
-export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({
-  kpis
-}) => {
+
+export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({ kpis }) => {
   const formatValue = (value: number, format: string) => {
     switch (format) {
       case 'currency':
@@ -45,7 +46,7 @@ export const FinancialKPICards: React.FC<FinancialKPICardsProps> = ({
     title: kpi.title,
     value: formatValue(kpi.value, kpi.format),
     unit: getUnit(kpi.format),
-    description: getDescription(kpi)
+    description: getDescription(kpi),
   }));
 
   return <KPIStatsSection stats={statsData} />;

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { FileText } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 
 interface TemplateCategory {
@@ -40,7 +40,7 @@ export const TemplateCategoriesGrid: React.FC = () => {
   ];
 
   return (
-    <BaseCard variant="operations" className="p-6">
+    <BaseBox variant="operations" className="p-6">
       <h3 className="text-xl font-bold text-gray-800 mb-6 font-arabic">فئات النماذج والقوالب</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -56,6 +56,6 @@ export const TemplateCategoriesGrid: React.FC = () => {
           </div>
         ))}
       </div>
-    </BaseCard>
+    </BaseBox>
   );
 };

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -104,14 +104,14 @@ export const ReportsTab: React.FC = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">التقارير</h3>
         <div className="flex gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
+          <BaseActionButton variant="outline" className="flex items-center gap-2">
             <Brain className="h-4 w-4" />
             تقرير ذكي
-          </Button>
-          <Button className="flex items-center gap-2">
+          </BaseActionButton>
+          <BaseActionButton className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             إنشاء تقرير
-          </Button>
+          </BaseActionButton>
         </div>
       </div>
 
@@ -124,8 +124,8 @@ export const ReportsTab: React.FC = () => {
 
         <TabsContent value="reports" className="space-y-6">
           {/* Filters */}
-          <Card>
-            <CardContent className="p-4">
+          <BaseBox>
+            <div>
               <div className="flex gap-4 items-center">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-500" />
@@ -152,18 +152,18 @@ export const ReportsTab: React.FC = () => {
                   <option value="quarterly">ربع سنوي</option>
                   <option value="yearly">سنوي</option>
                 </select>
-                <Button variant="outline" size="sm">
+                <BaseActionButton variant="outline" size="sm">
                   <RefreshCw className="h-4 w-4" />
-                </Button>
+                </BaseActionButton>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
 
           {/* Reports List */}
           <div className="space-y-4">
             {reports.map((report) => (
-              <Card key={report.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
+              <BaseBox key={report.id} className="hover:shadow-md transition-shadow">
+                <div>
                   <div className="flex justify-between items-start">
                     <div className="flex items-start gap-4">
                       <div className="p-2 bg-gray-50 rounded-lg">
@@ -192,28 +192,28 @@ export const ReportsTab: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                      <BaseActionButton size="sm" variant="outline">
                         <Eye className="h-3 w-3 mr-1" />
                         معاينة
-                      </Button>
-                      <Button size="sm">
+                      </BaseActionButton>
+                      <BaseActionButton size="sm">
                         <Download className="h-3 w-3 mr-1" />
                         تحميل
-                      </Button>
+                      </BaseActionButton>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </BaseBox>
             ))}
           </div>
         </TabsContent>
 
         <TabsContent value="templates" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>قوالب التقارير</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">قوالب التقارير</h3>
+            </div>
+            <div>
               <div className="space-y-4">
                 {reportTemplates.map((template) => (
                   <div key={template.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
@@ -233,27 +233,27 @@ export const ReportsTab: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                      <BaseActionButton size="sm" variant="outline">
                         <Eye className="h-3 w-3 mr-1" />
                         معاينة
-                      </Button>
-                      <Button size="sm">
+                      </BaseActionButton>
+                      <BaseActionButton size="sm">
                         استخدام
-                      </Button>
+                      </BaseActionButton>
                     </div>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </TabsContent>
 
         <TabsContent value="scheduled" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>التقارير المجدولة</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">التقارير المجدولة</h3>
+            </div>
+            <div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center gap-4">
@@ -270,8 +270,8 @@ export const ReportsTab: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline">تحرير</Button>
-                    <Button size="sm" variant="outline">إيقاف</Button>
+                    <BaseActionButton size="sm" variant="outline">تحرير</BaseActionButton>
+                    <BaseActionButton size="sm" variant="outline">إيقاف</BaseActionButton>
                   </div>
                 </div>
 
@@ -290,19 +290,19 @@ export const ReportsTab: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline">تحرير</Button>
-                    <Button size="sm" variant="outline">إيقاف</Button>
+                    <BaseActionButton size="sm" variant="outline">تحرير</BaseActionButton>
+                    <BaseActionButton size="sm" variant="outline">إيقاف</BaseActionButton>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>إنشاء تقرير مجدول جديد</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <BaseBox>
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">إنشاء تقرير مجدول جديد</h3>
+            </div>
+            <div>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium">نوع التقرير</label>
@@ -331,10 +331,10 @@ export const ReportsTab: React.FC = () => {
                     placeholder="أدخل البريد الإلكتروني"
                   />
                 </div>
-                <Button className="w-full">إنشاء التقرير المجدول</Button>
+                <BaseActionButton className="w-full">إنشاء التقرير المجدول</BaseActionButton>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </BaseBox>
         </TabsContent>
       </Tabs>
     </div>

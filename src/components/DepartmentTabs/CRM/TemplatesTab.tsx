@@ -8,11 +8,31 @@ import {
   TemplateGrid,
   TemplateVariablesReference
 } from './Templates';
+import { GenericFormModal, FormField } from '../shared/GenericFormModal';
+import { toast } from 'sonner';
+
+const newTemplateFields: FormField[] = [
+  { name: 'name', label: 'اسم القالب', type: 'text', required: true, placeholder: 'أدخل اسم القالب' },
+  { name: 'category', label: 'التصنيف', type: 'select', required: true, options: [
+    { value: 'proposal', label: 'عرض تجاري' },
+    { value: 'contract', label: 'عقد' },
+    { value: 'email', label: 'رسالة إلكترونية' },
+    { value: 'report', label: 'تقرير' },
+    { value: 'survey', label: 'استطلاع' },
+  ]},
+  { name: 'description', label: 'الوصف', type: 'textarea', required: true, placeholder: 'وصف القالب...' },
+  { name: 'language', label: 'اللغة', type: 'select', options: [
+    { value: 'ar', label: 'العربية' },
+    { value: 'en', label: 'الإنجليزية' },
+    { value: 'both', label: 'ثنائي اللغة' },
+  ]},
+];
 
 export const TemplatesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const getCategoryText = (category: string) => {
     switch (category) {
@@ -50,17 +70,20 @@ export const TemplatesTab: React.FC = () => {
   };
 
   const handleCreateNew = () => {
-    // Handle create new template
+    setIsCreateOpen(true);
+  };
+
+  const handleCreateSubmit = (_data: Record<string, string>) => {
+    // Template created via GenericFormModal toast
   };
 
   const handleUploadSubmit = () => {
-    // Handle upload submit
+    toast.success('تم رفع القالب بنجاح');
     setShowUploadForm(false);
   };
 
   return (
     <div className="space-y-6">
-      {/* Header and Controls */}
       <TemplateSearchControls
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -70,7 +93,6 @@ export const TemplatesTab: React.FC = () => {
         onCreateNew={handleCreateNew}
       />
 
-      {/* Upload Form */}
       {showUploadForm && (
         <TemplateUploadForm
           onCancel={() => setShowUploadForm(false)}
@@ -78,21 +100,28 @@ export const TemplatesTab: React.FC = () => {
         />
       )}
 
-      {/* Statistics Cards */}
       <TemplateStatsCards
         stats={templateStats}
         filteredCount={filteredTemplates.length}
       />
 
-      {/* Templates Grid */}
       <TemplateGrid
         templates={filteredTemplates}
         getCategoryText={getCategoryText}
         getCategoryColor={getCategoryColor}
       />
 
-      {/* Variables Reference */}
       <TemplateVariablesReference />
+
+      <GenericFormModal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="إنشاء قالب جديد"
+        fields={newTemplateFields}
+        onSubmit={handleCreateSubmit}
+        submitLabel="إنشاء القالب"
+        successMessage="تم إنشاء القالب بنجاح"
+      />
     </div>
   );
 };

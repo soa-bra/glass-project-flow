@@ -1,9 +1,10 @@
 import React from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
-import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
+import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { Users, Star } from 'lucide-react';
 interface ResourceUtilization {
   employeeId: string;
@@ -33,7 +34,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
     if (utilization >= 60) return 'مثالي';
     return 'متاح';
   };
-  return <BaseCard
+  return <BaseBox
       variant="operations"
       size="md"
       className="w-full"
@@ -47,7 +48,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
       }
     >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {resourceData.map(resource => <div key={resource.employeeId} className="bg-white/20 rounded-2xl p-4">
+          {resourceData.map(resource => <div key={resource.employeeId} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="text-right">
                   <h4 className="font-medium">{resource.name}</h4>
@@ -96,7 +97,7 @@ export const ResourceHeatMap: React.FC<ResourceHeatMapProps> = ({
               </div>
             </div>)}
         </div>
-    </BaseCard>;
+    </BaseBox>;
 };
 interface SkillGap {
   skill: string;
@@ -145,7 +146,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
         return priority;
     }
   };
-  return <BaseCard
+  return <BaseBox
       variant="operations"
       size="md"
       className="w-full"
@@ -169,13 +170,13 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
             }} />
               <Radar name="الحالي" dataKey="current" stroke="var(--color-current)" fill="var(--color-current)" fillOpacity={0.3} />
               <Radar name="المطلوب" dataKey="required" stroke="var(--color-required)" fill="var(--color-required)" fillOpacity={0.3} />
-              <Tooltip content={<ChartTooltipContent />} />
+              <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
             </RadarChart>
           </ResponsiveContainer>
         </ChartContainer>
 
         <div className="mt-4 space-y-3">
-          {skillGaps.map((skill, index) => <div key={index} className="flex items-center justify-between p-3 bg-white/20 rounded-2xl">
+          {skillGaps.map((skill, index) => <div key={index} className="flex items-center justify-between p-3 bg-gray-50 border border-[#DADCE0] rounded-2xl">
               <div className="text-right">
                 <p className="font-medium text-sm">{skill.skill}</p>
                 <p className="text-xs text-gray-600">
@@ -193,7 +194,7 @@ export const SkillGapRadar: React.FC<SkillGapRadarProps> = ({
               </div>
             </div>)}
         </div>
-    </BaseCard>;
+    </BaseBox>;
 };
 interface WorkloadData {
   department: string;
@@ -217,7 +218,7 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
       color: "hsl(var(--secondary))"
     }
   };
-  return <BaseCard
+  return <BaseBox
       variant="operations"
       size="md"
       className="w-full"
@@ -237,14 +238,11 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
             left: 20,
             bottom: 5
           }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="department" tick={{
-              fontSize: 12
-            }} interval={0} angle={-45} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="current" fill="var(--color-current)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="capacity" fill="var(--color-capacity)" radius={[4, 4, 0, 0]} opacity={0.3} />
+               <XAxis dataKey="department" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} interval={0} angle={-45} textAnchor="end" height={80} />
+               <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: 'rgba(11,15,18,0.35)' }} />
+               <Tooltip content={<ChartTooltipShell />} cursor={CHART_CURSOR_STYLE} />
+               <Bar dataKey="current" fill="var(--color-current)" radius={[999, 999, 999, 999]} barSize={20} />
+               <Bar dataKey="capacity" fill="var(--color-capacity)" radius={[999, 999, 999, 999]} barSize={20} opacity={0.3} />
             </BarChart>
           </ResponsiveContainer>
         </ChartContainer>
@@ -253,7 +251,7 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
           {workloadData.map((dept, index) => {
           const utilizationRate = dept.current / dept.capacity * 100;
           const isOverloaded = utilizationRate > 90;
-          return <div key={index} className="bg-white/20 rounded-2xl p-4">
+          return <div key={index} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4">
                 <div className="text-right mb-2">
                   <h4 className="font-medium text-sm">{dept.department}</h4>
                   <p className="text-xs text-gray-600">كفاءة: {dept.efficiency}%</p>
@@ -277,5 +275,5 @@ export const WorkloadBalance: React.FC<WorkloadBalanceProps> = ({
               </div>;
         })}
         </div>
-    </BaseCard>;
+    </BaseBox>;
 };

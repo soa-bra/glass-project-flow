@@ -1,6 +1,10 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState, useEffect } from 'react';
-import { User, Shield, Bell, Settings, Database, Palette, Globe, Key, Monitor, CreditCard, Users, Building } from 'lucide-react';
+import { User, Shield, Bell, Settings, Database, Palette, Users } from 'lucide-react';
 import { useAutosave } from './hooks/useAutosave';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 
 interface GenericSettingsPanelProps {
   category: string;
@@ -136,7 +140,7 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -145,12 +149,12 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center border border-black/20">
+              <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <IconComponent className="w-6 h-6 text-black" />
               </div>
               <div className="flex-1">
@@ -162,26 +166,26 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                 <p className="text-xs font-normal text-gray-400">متصل</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Main Content Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <div className="space-y-6">
               {/* Settings Form Content */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div style={{ backgroundColor: '#bdeed3' }} className="rounded-2xl p-4 border border-black/10">
+                <AppCardSurface density="compact">
                   <h4 className="text-sm font-bold text-black mb-2">إعدادات أساسية</h4>
                   <p className="text-xs font-normal text-gray-400">الإعدادات الأساسية للـ {categoryInfo.title}</p>
-                </div>
-                <div style={{ backgroundColor: '#a4e2f6' }} className="rounded-2xl p-4 border border-black/10">
+                </AppCardSurface>
+                <AppCardSurface density="compact">
                   <h4 className="text-sm font-bold text-black mb-2">خيارات متقدمة</h4>
                   <p className="text-xs font-normal text-gray-400">إعدادات متقدمة للمستخدمين المتخصصين</p>
-                </div>
+                </AppCardSurface>
               </div>
 
               {/* AI Training Wizard (only for AI section) */}
               {categoryInfo.hasWizard && (
-                <div style={{ backgroundColor: '#96d8d0' }} className="rounded-2xl p-6 border border-black/10">
+                <AppCardSurface density="compact">
                   <div className="flex items-center justify-between">
                     <div>
                       <h4 className="text-sm font-bold text-black mb-2">معالج التدريب</h4>
@@ -195,26 +199,23 @@ export const GenericSettingsPanel: React.FC<GenericSettingsPanelProps> = ({
                       تدريب نموذج جديد من الأرشيف
                     </button>
                   </div>
-                </div>
+                </AppCardSurface>
               )}
 
               {/* Settings Preview */}
-              <div className="grid grid-cols-3 gap-4">
-                <div style={{ backgroundColor: '#d9d2fd' }} className="rounded-2xl p-4 border border-black/10 text-center">
-                  <div className="text-2xl font-bold text-black mb-1">12</div>
-                  <p className="text-xs font-normal text-gray-400">إعدادات مفعلة</p>
-                </div>
-                <div style={{ backgroundColor: '#f1b5b9' }} className="rounded-2xl p-4 border border-black/10 text-center">
-                  <div className="text-2xl font-bold text-black mb-1">3</div>
-                  <p className="text-xs font-normal text-gray-400">تحتاج مراجعة</p>
-                </div>
-                <div style={{ backgroundColor: '#fbe2aa' }} className="rounded-2xl p-4 border border-black/10 text-center">
-                  <div className="text-2xl font-bold text-black mb-1">5</div>
-                  <p className="text-xs font-normal text-gray-400">مسودات</p>
-                </div>
-              </div>
+              <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+                <AppGridItem colSpan={4}>
+                  <NumericStatCard size="sm" title="إعدادات مفعلة" value={12} />
+                </AppGridItem>
+                <AppGridItem colSpan={4}>
+                  <NumericStatCard size="sm" title="تحتاج مراجعة" value={3} />
+                </AppGridItem>
+                <AppGridItem colSpan={4}>
+                  <NumericStatCard size="sm" title="مسودات" value={5} />
+                </AppGridItem>
+              </AppDashboardGrid>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

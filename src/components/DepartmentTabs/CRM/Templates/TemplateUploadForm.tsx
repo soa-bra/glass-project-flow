@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { GenericCard } from '@/components/ui/GenericCard';
-import { Button } from '@/components/ui/button';
+import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Input } from '@/components/ui/input';
 import { Upload } from 'lucide-react';
 
@@ -15,8 +15,7 @@ export const TemplateUploadForm: React.FC<TemplateUploadFormProps> = ({
   onSubmit
 }) => {
   return (
-    <GenericCard>
-      <h3 className="text-lg font-bold font-arabic mb-4">رفع قالب جديد</h3>
+    <DataCardFrame title="رفع قالب جديد" icon={<Upload className="h-5 w-5" />}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label className="block text-sm font-semibold font-arabic mb-2">اسم القالب</label>
@@ -46,20 +45,20 @@ export const TemplateUploadForm: React.FC<TemplateUploadFormProps> = ({
         </div>
       </div>
       <div className="flex gap-2">
-        <Button 
+        <BaseActionButton 
           onClick={onSubmit}
           className="bg-green-600 hover:bg-green-700 text-white font-arabic"
         >
           رفع القالب
-        </Button>
-        <Button 
+        </BaseActionButton>
+        <BaseActionButton 
           variant="outline" 
           onClick={onCancel}
           className="font-arabic"
         >
           إلغاء
-        </Button>
+        </BaseActionButton>
       </div>
-    </GenericCard>
+    </DataCardFrame>
   );
 };

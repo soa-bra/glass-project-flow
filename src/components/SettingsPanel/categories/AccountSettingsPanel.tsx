@@ -1,5 +1,9 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { User, Camera, Key, Globe, Save } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
 import { SecurityDisclaimer } from '../../ui/security-disclaimer';
 import { ValidationSchemas, FormValidator, InputSanitizer, RateLimiter } from '../../../utils/validation';
@@ -117,7 +121,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -126,7 +130,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
           
           {/* Security Disclaimer */}
@@ -136,7 +140,7 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
           />
           
           {/* Header Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <div className="flex items-center gap-4 mb-3">
               <div className="w-12 h-12 bg-transparent rounded-full flex items-center justify-center ring-1 ring-[#DADCE0]">
                 <User className="w-6 h-6 text-black" />
@@ -150,15 +154,15 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                 <p className="text-xs font-normal text-gray-400">متصل</p>
               </div>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Basic Information Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">البيانات الشخصية</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* صورة المستخدم */}
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
                     <User className="w-8 h-8 text-gray-500" />
@@ -171,10 +175,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </AppCardSurface>
 
               {/* معلومات الاتصال */}
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">معلومات الاتصال</h4>
                 <div className="space-y-3">
                   <input 
@@ -229,16 +233,16 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     <p className="text-red-500 text-xs mt-1">{validationErrors.phone}</p>
                   )}
                 </div>
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Password Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إدارة كلمات المرور</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">تغيير كلمة المرور</h4>
                 <div className="space-y-3">
                   <input 
@@ -284,10 +288,10 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                     <p className="text-red-500 text-xs mt-1">{validationErrors.confirmPassword}</p>
                   )}
                 </div>
-              </div>
+              </AppCardSurface>
 
               {/* مولد كلمات المرور بالذكاء الاصطناعي */}
-              <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+              <AppCardSurface density="compact">
                 <h4 className="text-sm font-bold text-black mb-3">🤖 مولد كلمات المرور الذكي</h4>
                 <p className="text-xs text-black mb-3">اقتراح كلمة مرور قوية باستخدام GPT-Pass-Suggest</p>
                 <button
@@ -298,20 +302,20 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                   اقتراح كلمة مرور قوية
                 </button>
                 {suggestedPassword && (
-                  <div className="p-2 bg-white/50 rounded-lg">
+                  <div className="p-2 bg-gray-50 rounded-lg">
                     <p className="text-xs text-gray-600">مقترح:</p>
                     <code className="text-sm font-mono text-black">{suggestedPassword}</code>
                   </div>
                 )}
-              </div>
+              </AppCardSurface>
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Language Preferences Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">تفضيلات اللغة</h3>
             
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0]">
+            <AppCardSurface density="compact">
               <div className="flex items-center gap-4">
                 <Globe className="w-6 h-6 text-black" />
                 <div className="flex-1">
@@ -329,24 +333,21 @@ export const AccountSettingsPanel: React.FC<AccountSettingsPanelProps> = () => {
                   </select>
                 </div>
               </div>
-            </div>
-          </div>
+            </AppCardSurface>
+          </AppCardSurface>
 
           {/* إحصائيات الحساب */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">127</div>
-              <p className="text-xs font-normal text-gray-400">يوم في النظام</p>
-            </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">89%</div>
-              <p className="text-xs font-normal text-gray-400">معدل النشاط</p>
-            </div>
-            <div className="bg-transparent rounded-[40px] p-4 ring-1 ring-[#DADCE0] text-center">
-              <div className="text-2xl font-bold text-black mb-1">24</div>
-              <p className="text-xs font-normal text-gray-400">مشروع مكتمل</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={4}>
+              <NumericStatCard size="sm" title="يوم في النظام" value={127} />
+            </AppGridItem>
+            <AppGridItem colSpan={4}>
+              <NumericStatCard size="sm" title="معدل النشاط" value="89%" />
+            </AppGridItem>
+            <AppGridItem colSpan={4}>
+              <NumericStatCard size="sm" title="مشروع مكتمل" value={24} />
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* أزرار العمل */}
           <div className="flex justify-between items-center">

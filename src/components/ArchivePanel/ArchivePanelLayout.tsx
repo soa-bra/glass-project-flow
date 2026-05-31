@@ -1,23 +1,21 @@
-
 import React from 'react';
-import { COLORS, LAYOUT, SPACING } from '@/components/shared/design-system/constants';
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ArchivePanelLayoutProps {
   children: React.ReactNode;
 }
 
-export const ArchivePanelLayout: React.FC<ArchivePanelLayoutProps> = ({
-  children
-}) => {
+export const ArchivePanelLayout: React.FC<ArchivePanelLayoutProps> = ({ children }) => {
   return (
-    <div className={`h-full ${LAYOUT.CARD_ROUNDED} overflow-hidden`} style={{ background: 'var(--sb-column-3-bg)' }}>
-      <div className="h-full flex flex-col">
-        <div className={`flex-1 overflow-auto ${SPACING.CONTENT_PADDING}`}>
-          <div className={`h-full ${SPACING.SECTION_MARGIN} ${LAYOUT.CARD_ROUNDED} overflow-hidden`} style={{ background: 'var(--sb-column-3-bg)' }}>
+    <AppCardSurface density="standard" overflow="hidden" className="h-full">
+      <div className="h-full flex flex-col overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <ScrollArea className="h-full w-full">
             {children}
-          </div>
+          </ScrollArea>
         </div>
       </div>
-    </div>
+    </AppCardSurface>
   );
 };

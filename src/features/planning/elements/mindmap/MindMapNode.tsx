@@ -1,0 +1,342 @@
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { useCanvasStore } from "@/stores/canvasStore";
+import type { CanvasElement } from "@/types/canvas";
+import type { MindMapNodeData, NodeAnchorPoint } from "@/types/mindmap-canvas";
+import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from "@/types/mindmap-canvas";
+import { Plus, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Square, Circle, Pill, Edit, Diamond, Hexagon } from "lucide-react";
+import { redistributeUpwards } from "@/utils/mindmap-layout";
+interface MindMapNodeProps {
+  element: CanvasElement;
+  isSelected: boolean;
+  onSelect: (multiSelect: boolean) => void;
+  onStartConnection: (nodeId: string, anchor: "top" | "bottom" | "left" | "right", position: {
+    x: number;
+    y: number;
+  }) => void;
+  isConnecting: boolean;
+  nearestAnchor: NodeAnchorPoint | null;
+  activeTool: string;
+}
+const MindMapNode: React.FC<MindMapNodeProps> = ({
+  element,
+  isSelected,
+  onSelect,
+  onStartConnection,
+  isConnecting,
+  nearestAnchor,
+  activeTool
+}) => {
+  const {
+    updateElement,
+    deleteElement,
+    viewport,
+    addElement,
+    selectMindMapTree,
+    moveElementWithChildren,
+    autoResolveOverlapsForMindMap,
+    setActiveTool,
+    setLastSmartSelectedMindMapNode,
+    lastSmartSelectedMindMapNode,
+    selectedElementIds,
+    selectElement
+  } = useCanvasStore();
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState("");
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showStylePicker, setShowStylePicker] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isSingleNodeMode, setIsSingleNodeMode] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const nodeData = element.data as MindMapNodeData;
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isLongPressRef = useRef(false);
+  const LONG_PRESS_DELAY = 200;
+  const hasChildren = useCanvasStore(state => state.elements.some(el => el.type === "mindmap_connector" && (el.data as any)?.startNodeId === element.id));
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+    if (activeTool === 'selection_tool') {
+      setActiveTool('smart_element_tool');
+      selectElement(element.id, false);
+      setLastSmartSelectedMindMapNode(element.id);
+      return;
+    }
+    setIsSingleNodeMode(true);
+    onSelect(false);
+    setIsEditing(true);
+    setEditText(nodeData.label || "");
+  }, [nodeData.label, onSelect, activeTool, setActiveTool, selectElement, element.id, setLastSmartSelectedMindMapNode]);
+  const handleSaveEdit = useCallback(() => {
+    if (editText.trim()) {
+      updateElement(element.id, {
+        data: {
+          ...nodeData,
+          label: editText.trim()
+        }
+      });
+    }
+    setIsEditing(false);
+  }, [element.id, nodeData, editText, updateElement]);
+  const handleToggleCollapse = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    updateElement(element.id, {
+      data: {
+        ...nodeData,
+        isCollapsed: !nodeData.isCollapsed
+      }
+    });
+  }, [element.id, nodeData, updateElement]);
+  const handleAddBranch = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const parentCenterY = element.position.y + element.size.height / 2;
+    const offset = 200;
+    const newNodeHeight = 60;
+    const newNodeId = `mindmap-node-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    addElement({
+      id: newNodeId,
+      type: "mindmap_node",
+      position: {
+        x: element.position.x + element.size.width + offset,
+        y: parentCenterY - newNodeHeight / 2
+      },
+      size: {
+        width: 160,
+        height: newNodeHeight
+      },
+      data: {
+        label: "فرع جديد",
+        color: NODE_COLORS[Math.floor(Math.random() * NODE_COLORS.length)],
+        nodeStyle: "rounded",
+        isRoot: false
+      } as MindMapNodeData
+    });
+    const newNodeX = element.position.x + element.size.width + offset;
+    const newNodePos = { x: newNodeX, y: parentCenterY - newNodeHeight / 2 };
+    const newNodeSize = { width: 160, height: newNodeHeight };
+    const connectorBounds = calculateConnectorBounds({ position: element.position, size: element.size }, { position: newNodePos, size: newNodeSize });
+    addElement({
+      type: "mindmap_connector",
+      position: connectorBounds.position,
+      size: connectorBounds.size,
+      data: {
+        startNodeId: element.id,
+        endNodeId: newNodeId,
+        startAnchor: { nodeId: element.id, anchor: "right" },
+        endAnchor: { nodeId: newNodeId, anchor: "left" },
+        curveStyle: "bezier",
+        color: nodeData.color || "#3DA8F5",
+        strokeWidth: 2
+      }
+    });
+    setTimeout(() => {
+      const currentState = useCanvasStore.getState();
+      const adjustments = redistributeUpwards(element.id, currentState.elements, 80);
+      adjustments.forEach((newPos, nodeId) => {
+        currentState.updateElement(nodeId, { position: newPos });
+      });
+    }, 50);
+  }, [element, nodeData, addElement]);
+  const handleColorChange = useCallback((color: string) => {
+    updateElement(element.id, {
+      data: {
+        ...nodeData,
+        color,
+        updatedAt: Date.now()
+      }
+    });
+    setShowColorPicker(false);
+  }, [element.id, nodeData, updateElement]);
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (isEditing) return;
+    e.stopPropagation();
+    const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
+    if (activeTool !== "selection_tool" && activeTool !== "smart_element_tool") {
+      onSelect(multiSelect);
+      return;
+    }
+    if (activeTool === "smart_element_tool") {
+      setLastSmartSelectedMindMapNode(element.id);
+      onSelect(multiSelect);
+    } else if (activeTool === "selection_tool" && !isSingleNodeMode && !multiSelect) {
+      clickTimeoutRef.current = setTimeout(() => {
+        selectMindMapTree(element.id);
+      }, 200);
+    } else {
+      onSelect(multiSelect);
+    }
+    setIsDragging(true);
+    dragStartRef.current = { x: e.clientX, y: e.clientY, elementX: element.position.x, elementY: element.position.y };
+  }, [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree, setLastSmartSelectedMindMapNode]);
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const deltaX = (e.clientX - dragStartRef.current.x) / viewport.zoom;
+    const deltaY = (e.clientY - dragStartRef.current.y) / viewport.zoom;
+    const shouldMoveOnlyNode = activeTool === 'smart_element_tool' || isSingleNodeMode;
+    if (shouldMoveOnlyNode) {
+      updateElement(element.id, {
+        position: {
+          x: dragStartRef.current.elementX + deltaX,
+          y: dragStartRef.current.elementY + deltaY
+        }
+      });
+    } else {
+      const totalDeltaX = dragStartRef.current.elementX + deltaX - element.position.x;
+      const totalDeltaY = dragStartRef.current.elementY + deltaY - element.position.y;
+      moveElementWithChildren(element.id, totalDeltaX, totalDeltaY);
+    }
+  }, [element.id, element.position, viewport.zoom, updateElement, isSingleNodeMode, moveElementWithChildren, activeTool]);
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+  const handleAnchorMouseDown = useCallback((e: React.MouseEvent, anchor: "top" | "bottom" | "left" | "right") => {
+    e.stopPropagation();
+    e.preventDefault();
+    isLongPressRef.current = false;
+    longPressTimerRef.current = setTimeout(() => {
+      isLongPressRef.current = true;
+      const pos = getAnchorPosition(element.position, element.size, anchor);
+      onStartConnection(element.id, anchor, pos);
+    }, LONG_PRESS_DELAY);
+    const handleMouseMoveForDrag = (moveEvent: MouseEvent) => {
+      const dx = Math.abs(moveEvent.clientX - e.clientX);
+      const dy = Math.abs(moveEvent.clientY - e.clientY);
+      if ((dx > 5 || dy > 5) && !isLongPressRef.current) {
+        if (longPressTimerRef.current) {
+          clearTimeout(longPressTimerRef.current);
+          longPressTimerRef.current = null;
+        }
+        isLongPressRef.current = true;
+        const pos = getAnchorPosition(element.position, element.size, anchor);
+        onStartConnection(element.id, anchor, pos);
+        window.removeEventListener('mousemove', handleMouseMoveForDrag);
+      }
+    };
+    const handleMouseUpForDrag = () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+      window.removeEventListener('mousemove', handleMouseMoveForDrag);
+      window.removeEventListener('mouseup', handleMouseUpForDrag);
+    };
+    window.addEventListener('mousemove', handleMouseMoveForDrag);
+    window.addEventListener('mouseup', handleMouseUpForDrag);
+  }, [element, onStartConnection]);
+  useEffect(() => {
+    return () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+    };
+  }, []);
+  useEffect(() => {
+    if (!isDragging) return;
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
+  useEffect(() => {
+    if (!isSelected) {
+      setIsSingleNodeMode(false);
+    }
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, [isSelected]);
+  useEffect(() => {
+    if (!isSelected) return;
+    if (activeTool === 'selection_tool') {
+      selectMindMapTree(element.id);
+    } else if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
+      const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode) ? lastSmartSelectedMindMapNode : element.id;
+      selectElement(nodeToSelect, false);
+    }
+  }, [activeTool]);
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+  const getNodeStyle = () => {
+    const baseStyle: React.CSSProperties = {
+      backgroundColor: nodeData.color || "#3DA8F5",
+      color: nodeData.textColor || "#FFFFFF",
+      fontSize: nodeData.fontSize || 14
+    };
+    switch (nodeData.nodeStyle) {
+      case "pill":
+        return { ...baseStyle, borderRadius: "9999px" };
+      case "rectangle":
+        return { ...baseStyle, borderRadius: "4px" };
+      case "circle":
+        return { ...baseStyle, borderRadius: "50%" };
+      case "diamond":
+        return { ...baseStyle, borderRadius: "4px", transform: "rotate(45deg)", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" };
+      case "hexagon":
+        return { ...baseStyle, clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" };
+      case "rounded":
+      default:
+        return { ...baseStyle, borderRadius: "12px" };
+    }
+  };
+  const isNearestForConnection = nearestAnchor?.nodeId === element.id;
+  const isFullTreeSelected = activeTool === 'selection_tool' && selectedElementIds.length > 1;
+  return <div ref={nodeRef} data-element-id={element.id} className={`absolute select-none transition-shadow ${activeTool === "selection_tool" ? "cursor-move" : "cursor-default"} ${isSelected ? "ring-2 ring-[hsl(var(--accent-green))] ring-offset-2" : ""}`} style={{
+    left: element.position.x,
+    top: element.position.y,
+    width: element.size.width,
+    height: element.size.height,
+    zIndex: isSelected ? 100 : 10
+  }} onMouseDown={handleMouseDown} onDoubleClick={handleDoubleClick}>
+      <div data-selection-anchor-id={element.id} className="w-full h-full flex items-center justify-center px-4 py-2 shadow-md transition-all relative" style={getNodeStyle()}>
+        {isEditing ? <input ref={inputRef} type="text" value={editText} onChange={e => setEditText(e.target.value)} onBlur={handleSaveEdit} onKeyDown={e => {
+        if (e.key === "Enter") handleSaveEdit();
+        if (e.key === "Escape") setIsEditing(false);
+        e.stopPropagation();
+      }} className="w-full bg-transparent text-center outline-none text-inherit font-medium" dir="auto" /> : <span className="font-medium text-center truncate" dir="auto">
+            {nodeData.label || "عقدة جديدة"}
+          </span>}
+        {(nodeData.isRoot || hasChildren) && (
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (hasChildren) handleToggleCollapse(e);
+            }}
+            className={`absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-[hsl(var(--border))] transition-all z-[200] ${hasChildren ? "cursor-pointer hover:scale-110 text-[hsl(var(--ink-60))] hover:text-[hsl(var(--ink))]" : "cursor-default"}`}
+            style={{ pointerEvents: 'auto' }}
+            title={hasChildren ? nodeData.isCollapsed ? "توسيع الفروع" : "طي الفروع" : "العقدة الجذر"}
+          >
+            {hasChildren ? nodeData.isCollapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} /> : <div className="w-3 h-3 rounded-full bg-[hsl(var(--accent-green))]" />}
+          </button>
+        )}
+      </div>
+      {(isSelected || isConnecting) && !isFullTreeSelected && <>
+          {(["top", "bottom", "left", "right"] as const).map(anchor => {
+        const pos = getAnchorPosition({ x: 0, y: 0 }, element.size, anchor);
+        const isHighlighted = isNearestForConnection && nearestAnchor?.anchor === anchor;
+        return <div key={anchor} className={`absolute w-4 h-4 rounded-full border-2 transition-all cursor-crosshair ${isHighlighted ? "bg-[hsl(var(--accent-green))] border-white scale-125 shadow-lg" : "bg-white border-[hsl(var(--ink-30))] hover:border-[hsl(var(--ink-60))] hover:scale-110"}`} style={{ left: pos.x - 8, top: pos.y - 8 }} onMouseDown={e => handleAnchorMouseDown(e, anchor)} />;
+      })}
+        </>}
+      {/* ✅ تم حذف الشريط السفلي المحلي للعقدة الذهنية عمداً مع إبقاء زر الطي العلوي كما هو. */}
+    </div>;
+};
+export default MindMapNode;

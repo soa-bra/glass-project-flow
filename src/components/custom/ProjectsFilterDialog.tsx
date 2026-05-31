@@ -109,14 +109,7 @@ export const ProjectsFilterDialog: React.FC<ProjectsFilterDialogProps> = ({
     onClose();
   };
   return <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden" style={{
-      background: 'rgba(255,255,255,0.4)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.2)',
-      borderRadius: '24px',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)'
-    }}>
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden">
         <DialogTitle className="sr-only">فلترة المشاريع</DialogTitle>
         
         {/* Header */}

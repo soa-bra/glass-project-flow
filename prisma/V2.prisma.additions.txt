@@ -5,9 +5,11 @@ model EventOutbox {
   eventVersion Int
   payload     Json
   dedupKey    String?  @unique
+  idempotencyKey String? @unique
   status      String   @default("pending") // pending, sent, failed
   retryCount  Int      @default(0)
   maxRetries  Int      @default(3)
+  retryTier   String   @default("standard") // fast, standard, critical
   nextRetryAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -22,8 +24,12 @@ model EventDLQ {
   eventVersion Int
   payload     Json
   dedupKey    String?
+  idempotencyKey String?
   reason      String
   retryCount  Int
+  retryTier   String   @default("standard")
+  replayStatus String?
+  replayedAt  DateTime?
   createdAt   DateTime @default(now())
   
   @@map("event_dlq")

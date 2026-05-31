@@ -1,40 +1,21 @@
+import { useTaskCardSizeTokens } from './taskCardSizeTokens';
 
 interface FeatureTaskCardDaysCircleProps {
   daysLeft: number;
 }
 
 const FeatureTaskCardDaysCircle = ({ daysLeft }: FeatureTaskCardDaysCircleProps) => {
+  const tokens = useTaskCardSizeTokens();
+
   return (
-    <div style={{
-      position: 'absolute',
-      top: '0px',
-      left: '0px',
-      width: '60px',
-      height: '60px',
-      borderRadius: '50%',
-      border: '1px solid #000000',
-      backgroundColor: 'transparent',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <span style={{
-        fontSize: '16px',
-        fontWeight: 700,
-        color: '#000000',
-        lineHeight: 1,
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}>
-        {daysLeft.toString().padStart(2, '0')}
+    <div
+      className="shrink-0 rounded-full bg-[#F5F7FA] border border-[#111111] flex flex-col items-center justify-center text-center"
+      style={{ width: tokens.circleSizePx, height: tokens.circleSizePx }}
+    >
+      <span className="font-semibold text-[#0B0F12] leading-none" style={{ fontSize: tokens.daysNumberFontSizePx }}>
+        {daysLeft}
       </span>
-      <span style={{
-        fontSize: '10px',
-        fontWeight: 400,
-        color: '#000000',
-        marginTop: '2px',
-        fontFamily: 'IBM Plex Sans Arabic'
-      }}>
+      <span className="text-[#0B0F12]/70 leading-none mt-0.5" style={{ fontSize: tokens.daysLabelFontSizePx }}>
         يوم
       </span>
     </div>

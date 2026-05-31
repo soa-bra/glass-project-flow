@@ -1,6 +1,6 @@
 // Expense Service with Approvals Integration
 import { prisma, Expense } from '@/lib/prisma';
-import { createApprovalRequest, enhancedApprovalsService } from '@/core/approvals/approvals.service';
+import { createApprovalRequest, enhancedApprovalsService } from '@/shared/services/approvals/approvals.service';
 
 export class ExpenseService {
   constructor() {

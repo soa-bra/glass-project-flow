@@ -1,13 +1,12 @@
-
 export interface KnowledgeDocument {
   id: string;
   title: string;
-  type: 'research' | 'publication' | 'report' | 'guide' | 'template' | 'metric';
+  type: "research" | "publication" | "report" | "guide" | "template" | "metric";
   category: string;
   author: string;
   createdAt: string;
   updatedAt: string;
-  status: 'draft' | 'review' | 'published' | 'archived';
+  status: "draft" | "review" | "published" | "archived";
   tags: string[];
   content: string;
   readCount: number;
@@ -41,11 +40,11 @@ export interface KnowledgeMetrics {
   }[];
 }
 
-export interface SupraMetric {
+export interface SoaBraMetric {
   id: string;
   name: string;
   nameEn: string;
-  category: 'cultural_identity' | 'social_responsibility' | 'brand_community' | 'digital_communication' | 'independent';
+  category: "cultural_identity" | "social_responsibility" | "brand_community" | "digital_communication" | "independent";
   description: string;
   scale: {
     min: number;
@@ -75,7 +74,7 @@ export interface ResearchProject {
   id: string;
   title: string;
   description: string;
-  status: 'planning' | 'active' | 'completed' | 'paused';
+  status: "planning" | "active" | "completed" | "paused";
   startDate: string;
   endDate?: string;
   researchers: string[];
@@ -92,14 +91,14 @@ export interface ResearchProject {
 
 export interface AIRecommendation {
   id: string;
-  type: 'gap_analysis' | 'content_suggestion' | 'research_topic' | 'citation_opportunity';
+  type: "gap_analysis" | "content_suggestion" | "research_topic" | "citation_opportunity";
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
   confidence: number;
   relatedDocuments: string[];
   createdAt: string;
-  status: 'pending' | 'reviewed' | 'implemented' | 'dismissed';
+  status: "pending" | "reviewed" | "implemented" | "dismissed";
 }
 
 export interface DocumentClassification {
@@ -118,10 +117,10 @@ export interface KnowledgeGap {
   topic: string;
   description: string;
   searchQueries: string[];
-  priority: 'low' | 'medium' | 'high';
+  priority: "low" | "medium" | "high";
   suggestedResources: string[];
   identifiedAt: string;
-  status: 'identified' | 'addressing' | 'resolved';
+  status: "identified" | "addressing" | "resolved";
 }
 
 export interface ContentAnalytics {

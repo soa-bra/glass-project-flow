@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { Plus, Download } from 'lucide-react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 interface RecentTemplate {
   name: string;
@@ -35,7 +35,7 @@ export const RecentTemplatesList: React.FC = () => {
   ];
 
   return (
-    <BaseCard variant="operations" className="p-6">
+    <BaseBox variant="operations" className="p-6">
       <div className="flex items-center gap-2 mb-6">
         <Plus className="h-5 w-5 text-green-600" />
         <h3 className="text-xl font-bold text-gray-800 font-arabic">المضافة حديثاً</h3>
@@ -57,17 +57,17 @@ export const RecentTemplatesList: React.FC = () => {
                   <span>أُضيف في {template.addedDate}</span>
                 </div>
               </div>
-              <Button size="sm" variant="ghost">
+              <BaseActionButton size="sm" variant="ghost">
                 <Download className="h-4 w-4" />
-              </Button>
+              </BaseActionButton>
             </div>
           </div>
         ))}
       </div>
       
-      <Button variant="outline" className="w-full mt-4" size="sm">
+      <BaseActionButton variant="outline" className="w-full mt-4" size="sm">
         عرض المزيد
-      </Button>
-    </BaseCard>
+      </BaseActionButton>
+    </BaseBox>
   );
 };

@@ -1,5 +1,9 @@
+import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import React, { useState } from 'react';
 import { Users, UserPlus, Shield, Key, Crown, Edit3, Trash2, Eye } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { NumericStatCard } from '@/components/shared/visual-data/NumericStatCard';
 import { useAutosave } from '../hooks/useAutosave';
 
 interface UsersRolesSettingsPanelProps {
@@ -119,7 +123,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="h-full flex flex-col bg-white" >
       {/* Header with Title */}
       <div className="py-[45px] px-6">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -128,11 +132,11 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto pb-6 px-6" style={{ background: 'var(--sb-column-3-bg)' }}>
+      <div className="flex-1 pb-6 px-6" >
         <div className="space-y-6">
 
           {/* Users Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-md font-bold text-black">إدارة المستخدمين</h3>
               <button className="px-4 py-2 bg-black text-white rounded-full text-sm font-medium flex items-center gap-2">
@@ -143,7 +147,7 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
             
             <div className="space-y-3">
               {users.map(user => (
-                <div key={user.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={user.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -170,18 +174,18 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
                       </button>
                     </div>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Roles Management Card */}
-          <div className="rounded-[41px] p-6 ring-1" style={{ background: 'var(--sb-box-standard)', borderColor: 'var(--sb-box-border)' }}>
+          <AppCardSurface density="standard">
             <h3 className="text-md font-bold text-black mb-4">إدارة الأدوار</h3>
             
             <div className="space-y-3">
               {roles.map(role => (
-                <div key={role.id} className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4">
+                <AppCardSurface density="compact" key={role.id}>
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -206,32 +210,26 @@ export const UsersRolesSettingsPanel: React.FC<UsersRolesSettingsPanelProps> = (
                       </button>
                     </div>
                   </div>
-                </div>
+                </AppCardSurface>
               ))}
             </div>
-          </div>
+          </AppCardSurface>
 
           {/* Statistics */}
-          <div className="grid grid-cols-4 gap-4">
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">{users.length}</div>
-              <p className="text-xs font-normal text-gray-400">إجمالي المستخدمين</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">
-                {users.filter(u => u.status === 'active').length}
-              </div>
-              <p className="text-xs font-normal text-gray-400">مستخدمين نشطين</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">{roles.length}</div>
-              <p className="text-xs font-normal text-gray-400">أدوار مُعرّفة</p>
-            </div>
-            <div className="rounded-[24px] bg-[#FFFFFF] border border-[#DADCE0] p-4 text-center">
-              <div className="text-2xl font-bold text-black mb-1">15</div>
-              <p className="text-xs font-normal text-gray-400">صلاحيات فريدة</p>
-            </div>
-          </div>
+          <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="إجمالي المستخدمين" value={users.length} />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="مستخدمين نشطين" value={users.filter(u => u.status === 'active').length} />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="أدوار مُعرّفة" value={roles.length} />
+            </AppGridItem>
+            <AppGridItem colSpan={3}>
+              <NumericStatCard size="sm" title="صلاحيات فريدة" value={15} />
+            </AppGridItem>
+          </AppDashboardGrid>
 
           {/* Action Buttons */}
           <div className="flex justify-between items-center">

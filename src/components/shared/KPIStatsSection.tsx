@@ -1,48 +1,88 @@
 import React from 'react';
-import { Stagger } from './motion';
-interface KPIStat {
+import { motion } from 'framer-motion';
+
+import { cn } from '@/lib/utils';
+
+export interface KPIStat {
   title: string;
   value: string | number;
   unit?: string;
   description?: string;
 }
+
 interface KPIStatsSectionProps {
   stats: KPIStat[];
   className?: string;
 }
 
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay: i * 0.08 },
+  }),
+};
+
 /**
  * مكون موحد لعرض مؤشرات الأداء الأساسية
- * يعرض 4 مؤشرات في الصف الواحد، وإذا كان هناك أكثر من 4 يقسمها على صفين
+ * تصميم شفاف/عائم: بدون خلفية، بدون حدود، بدون ظل — أرقام ضخمة مع تسلسل هرمي قوي
  */
 export const KPIStatsSection: React.FC<KPIStatsSectionProps> = ({
   stats,
-  className = ""
+  className = "",
 }) => {
-  // حماية ضد البيانات غير المعرّفة
   if (!stats || stats.length === 0) {
-    return <div className={`grid grid-cols-4 gap-6 mb-6 my-0 px-[4px] mx-[10px] ${className}`}>
-        <div className="col-span-4 text-center py-8 text-gray-500 font-arabic">
+    return (
+      <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${className}`}>
+        <div className="col-span-full text-center py-8 text-[rgba(11,15,18,0.40)] font-arabic">
           جارٍ تحميل الإحصائيات...
         </div>
-      </div>;
+      </div>
+    );
   }
+
   return (
-    <Stagger delay={0.2} gap={0.15} className={`grid grid-cols-4 gap-6 mb-6 px-0 mx-0 ${className}`}>
+    <div className={cn('grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5', className)}>
       {stats.map((stat, index) => (
-        <Stagger.Item key={index} className="text-right p-0 py-0 my-0 mx-0 px-6">
-          <div className="mb-2">
-            <span className="text-base text-black font-arabic font-medium">{stat.title}</span>
-          </div>
-          <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
-            <div className="text-5xl font-bold text-black font-arabic">
-              {typeof stat.value === 'number' ? String(stat.value).padStart(2, '0') : stat.value}
+        <motion.div
+          key={index}
+          custom={index}
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          className="p-6 sm:p-7 flex flex-col gap-3 min-h-[140px] sm:min-h-[150px] md:min-h-[160px]"
+        >
+          <span className="text-xs font-semibold text-[rgba(11,15,18,0.50)] font-arabic">
+            {stat.title}
+          </span>
+
+          <div className="mt-auto">
+            <div className="flex items-baseline gap-1.5">
+              <motion.span
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.2 + index * 0.08, ease: [0.22, 1, 0.36, 1] as const }}
+                className="text-[32px] sm:text-[36px] md:text-[44px] font-bold leading-none text-[#0B0F12] tracking-tight"
+              >
+                {stat.value}
+              </motion.span>
+              {stat.unit && (
+                <span className="text-[13px] font-medium text-[rgba(11,15,18,0.40)] font-arabic">
+                  {stat.unit}
+                </span>
+              )}
             </div>
-            {stat.unit && <div className="text-sm text-black font-arabic font-bold">{stat.unit}</div>}
+            {stat.description && (
+              <p className="text-[11px] text-[rgba(11,15,18,0.40)] font-arabic mt-1.5 leading-snug line-clamp-2">
+                {stat.description}
+              </p>
+            )}
           </div>
-          {stat.description && <div className="text-sm font-normal text-black font-arabic">{stat.description}</div>}
-        </Stagger.Item>
+        </motion.div>
       ))}
-    </Stagger>
+    </div>
   );
 };

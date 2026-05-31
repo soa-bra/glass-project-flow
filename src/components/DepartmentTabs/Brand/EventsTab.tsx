@@ -1,7 +1,9 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { BaseBox } from '@/components/ui/BaseBox';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { Progress } from '@/components/ui/progress';
 import { 
@@ -109,63 +111,71 @@ export const EventsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Events Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">12</div>
-            <div className="text-sm text-gray-600">فعاليات هذا العام</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">2,847</div>
-            <div className="text-sm text-gray-600">إجمالي الحضور</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">4.7</div>
-            <div className="text-sm text-gray-600">تقييم الحضور</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-            <div className="text-2xl font-bold">89%</div>
-            <div className="text-sm text-gray-600">الأثر الثقافي</div>
-          </CardContent>
-        </Card>
-      </div>
+      <AppDashboardGrid columns={12}>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Calendar className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">12</div>
+              <div className="text-sm text-gray-600">فعاليات هذا العام</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">2,847</div>
+              <div className="text-sm text-gray-600">إجمالي الحضور</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">4.7</div>
+              <div className="text-sm text-gray-600">تقييم الحضور</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+        <AppGridItem colSpan={3}>
+          <BaseBox>
+            <div>
+              <TrendingUp className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <div className="text-2xl font-bold">89%</div>
+              <div className="text-sm text-gray-600">الأثر الثقافي</div>
+            </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          <Button 
-            variant={selectedFilter === 'all' ? 'default' : 'outline'}
+          <BaseActionButton 
+            variant={selectedFilter === 'all' ? 'primary' : 'outline'}
             onClick={() => setSelectedFilter('all')}
           >
             جميع الفعاليات
-          </Button>
-          <Button 
-            variant={selectedFilter === 'upcoming' ? 'default' : 'outline'}
+          </BaseActionButton>
+          <BaseActionButton 
+            variant={selectedFilter === 'upcoming' ? 'primary' : 'outline'}
             onClick={() => setSelectedFilter('upcoming')}
           >
             القادمة
-          </Button>
-          <Button 
-            variant={selectedFilter === 'past' ? 'default' : 'outline'}
+          </BaseActionButton>
+          <BaseActionButton 
+            variant={selectedFilter === 'past' ? 'primary' : 'outline'}
             onClick={() => setSelectedFilter('past')}
           >
             السابقة
-          </Button>
+          </BaseActionButton>
         </div>
-        <Button>
+        <BaseActionButton>
           <Plus className="h-4 w-4 mr-2" />
           فعالية جديدة
-        </Button>
+        </BaseActionButton>
       </div>
 
       {/* Upcoming Events */}
@@ -173,11 +183,11 @@ export const EventsTab: React.FC = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">الفعاليات القادمة</h3>
           {upcomingEvents.map((event) => (
-            <Card key={event.id}>
-              <CardHeader>
+            <BaseBox key={event.id}>
+              <div className="mb-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg mb-2">{event.title}</CardTitle>
+                    <h3 className="text-lg font-semibold flex items-center gap-2">{event.title}</h3>
                     <div className="flex items-center gap-2 mb-3">
                       <BaseBadge className={getEventTypeColor(event.type)}>
                         {event.type}
@@ -211,8 +221,8 @@ export const EventsTab: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
+              </div>
+              <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <h4 className="font-medium mb-2">المتحدثون</h4>
@@ -262,8 +272,8 @@ export const EventsTab: React.FC = () => {
                     نسبة التسجيل: {Math.round((event.registered / event.capacity) * 100)}%
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </BaseBox>
           ))}
         </div>
       )}
@@ -273,11 +283,11 @@ export const EventsTab: React.FC = () => {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">الفعاليات السابقة</h3>
           {pastEvents.map((event) => (
-            <Card key={event.id}>
-              <CardHeader>
+            <BaseBox key={event.id}>
+              <div className="mb-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg mb-2">{event.title}</CardTitle>
+                    <h3 className="text-lg font-semibold flex items-center gap-2">{event.title}</h3>
                     <div className="flex items-center gap-2 mb-3">
                       <BaseBadge className={getEventTypeColor(event.type)}>
                         {event.type}
@@ -298,8 +308,8 @@ export const EventsTab: React.FC = () => {
                     <div className="text-sm text-gray-600">تقييم الحضور</div>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
+              </div>
+              <div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <h4 className="font-medium mb-2">إحصائيات الحضور</h4>
@@ -336,8 +346,8 @@ export const EventsTab: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </BaseBox>
           ))}
         </div>
       )}

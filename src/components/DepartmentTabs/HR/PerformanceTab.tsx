@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
-import { BaseCard } from '@/components/ui/BaseCard';
+import { BaseBox } from '@/components/ui/BaseBox';
 import { Award, Target, TrendingUp, Star, Calendar, User } from 'lucide-react';
+import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
+import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BaseBadge } from '@/components/ui/BaseBadge';
-import { Button } from '@/components/ui/button';
+import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { mockPerformanceReviews, mockEmployees } from './data';
 import { PerformanceReview } from './types';
 import { getHRStatusColor, getHRStatusText } from './utils';
@@ -49,18 +51,18 @@ export const PerformanceTab: React.FC = () => {
       <div className="space-y-6 bg-transparent">
         {/* عودة إلى قائمة التقييمات */}
         <div className="flex items-center gap-4">
-          <Button 
+          <BaseActionButton 
             variant="outline" 
             onClick={() => setSelectedReview(null)}
             className="flex items-center gap-2"
           >
             <span>← العودة</span>
-          </Button>
+          </BaseActionButton>
           <h3 className="text-2xl font-bold text-gray-800 font-arabic">تقييم الأداء التفصيلي</h3>
         </div>
 
         {/* معلومات التقييم الأساسية */}
-        <BaseCard variant="operations" className="p-6">
+        <BaseBox variant="operations" className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-800 font-arabic mb-2">
@@ -137,18 +139,18 @@ export const PerformanceTab: React.FC = () => {
               </div>
             </div>
           </div>
-        </BaseCard>
+        </BaseBox>
 
         {/* التعليقات وخطة التطوير */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <BaseCard variant="operations" className="p-6">
+          <BaseBox variant="operations" className="p-6">
             <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">التعليقات</h3>
             <div className="p-4 bg-gray-50 rounded-lg">
               <p className="text-gray-700 font-arabic leading-relaxed">{selectedReview.feedback}</p>
             </div>
-          </BaseCard>
+          </BaseBox>
 
-          <BaseCard variant="operations" className="p-6">
+          <BaseBox variant="operations" className="p-6">
             <h3 className="text-xl font-bold text-gray-800 font-arabic mb-4">خطة التطوير</h3>
             <div className="space-y-2">
               {selectedReview.developmentPlan.map((item, index) => (
@@ -158,7 +160,7 @@ export const PerformanceTab: React.FC = () => {
                 </div>
               ))}
             </div>
-          </BaseCard>
+          </BaseBox>
         </div>
       </div>
     );
@@ -167,66 +169,76 @@ export const PerformanceTab: React.FC = () => {
   return (
     <div className="space-y-6 bg-transparent">
       {/* إحصائيات الأداء */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">التقييمات المكتملة</p>
-              <p className="text-2xl font-bold text-green-600">{performanceStats.completedReviews}</p>
+      <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <BaseBox variant="operations" className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-arabic">التقييمات المكتملة</p>
+                <p className="text-2xl font-bold text-green-600">{performanceStats.completedReviews}</p>
+              </div>
+              <Award className="h-8 w-8 text-green-600" />
             </div>
-            <Award className="h-8 w-8 text-green-600" />
-          </div>
-        </BaseCard>
+          </BaseBox>
+        </AppGridItem>
 
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">التقييمات المعلقة</p>
-              <p className="text-2xl font-bold text-orange-600">{performanceStats.pendingReviews}</p>
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <BaseBox variant="operations" className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-arabic">التقييمات المعلقة</p>
+                <p className="text-2xl font-bold text-orange-600">{performanceStats.pendingReviews}</p>
+              </div>
+              <Calendar className="h-8 w-8 text-orange-600" />
             </div>
-            <Calendar className="h-8 w-8 text-orange-600" />
-          </div>
-        </BaseCard>
+          </BaseBox>
+        </AppGridItem>
 
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">متوسط التقييم</p>
-              <p className="text-2xl font-bold text-blue-600">{performanceStats.averageRating}</p>
+        <AppGridItem colSpan={2} tabletSpan={4}>
+          <BaseBox variant="operations" className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-arabic">متوسط التقييم</p>
+                <p className="text-2xl font-bold text-blue-600">{performanceStats.averageRating}</p>
+              </div>
+              <Star className="h-8 w-8 text-blue-600" />
             </div>
-            <Star className="h-8 w-8 text-blue-600" />
-          </div>
-        </BaseCard>
+          </BaseBox>
+        </AppGridItem>
 
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">الأداء المتميز</p>
-              <p className="text-2xl font-bold text-purple-600">{performanceStats.highPerformers}</p>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <BaseBox variant="operations" className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-arabic">الأداء المتميز</p>
+                <p className="text-2xl font-bold text-purple-600">{performanceStats.highPerformers}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-purple-600" />
             </div>
-            <TrendingUp className="h-8 w-8 text-purple-600" />
-          </div>
-        </BaseCard>
+          </BaseBox>
+        </AppGridItem>
 
-        <BaseCard variant="operations" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 font-arabic">يحتاج تحسين</p>
-              <p className="text-2xl font-bold text-red-600">{performanceStats.improvementNeeded}</p>
+        <AppGridItem colSpan={3} tabletSpan={3}>
+          <BaseBox variant="operations" className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 font-arabic">يحتاج تحسين</p>
+                <p className="text-2xl font-bold text-red-600">{performanceStats.improvementNeeded}</p>
+              </div>
+              <User className="h-8 w-8 text-red-600" />
             </div>
-            <User className="h-8 w-8 text-red-600" />
-          </div>
-        </BaseCard>
-      </div>
+          </BaseBox>
+        </AppGridItem>
+      </AppDashboardGrid>
 
       {/* قائمة التقييمات */}
-      <BaseCard variant="operations" className="p-6">
+      <BaseBox variant="operations" className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
             <Award className="h-6 w-6 text-blue-600" />
             <h3 className="text-xl font-bold text-gray-800 font-arabic">تقييمات الأداء</h3>
           </div>
-          <Button className="font-arabic">إضافة تقييم جديد</Button>
+          <BaseActionButton className="font-arabic">إضافة تقييم جديد</BaseActionButton>
         </div>
 
         <div className="overflow-x-auto">
@@ -269,21 +281,21 @@ export const PerformanceTab: React.FC = () => {
                     </BaseBadge>
                   </td>
                   <td className="py-3 px-4">
-                    <Button 
+                    <BaseActionButton 
                       variant="outline" 
                       size="sm"
                       onClick={() => setSelectedReview(review)}
                       className="font-arabic"
                     >
                       عرض التفاصيل
-                    </Button>
+                    </BaseActionButton>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </BaseCard>
+      </BaseBox>
     </div>
   );
 };
