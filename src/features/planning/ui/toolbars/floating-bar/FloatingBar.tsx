@@ -81,7 +81,7 @@ export const FloatingBar: React.FC = () => {
   } = useCanvasStore();
 
   const activeTextEditor = useActiveTextEditor();
-  const { analyzeSelection, transformElements, isLoading: isAILoading } = useSmartElementAI();
+  const { analyzeSelection, transformElements, isLoading: isAILoading, approvalDialog } = useSmartElementAI();
   const [isTransforming, setIsTransforming] = useState(false);
   const selectionMeta = useSelectionMeta();
 
@@ -374,7 +374,7 @@ export const FloatingBar: React.FC = () => {
     addElement(element as CanvasElement);
   }, [addElement]);
 
-  if (!hasSelection || selectionType === null) return null;
+  if (!hasSelection || selectionType === null) return <>{approvalDialog}</>;
 
   const overlayRoot = typeof document !== "undefined"
     ? document.getElementById("planning-floating-overlay")
@@ -701,7 +701,9 @@ export const FloatingBar: React.FC = () => {
   };
 
   return createPortal(
-    <AnimatePresence>
+    <>
+      {approvalDialog}
+      <AnimatePresence>
       <div
         data-floating-toolbar="true"
         className="absolute pointer-events-auto"
@@ -720,7 +722,8 @@ export const FloatingBar: React.FC = () => {
           {renderContent()}
         </motion.div>
       </div>
-    </AnimatePresence>,
+      </AnimatePresence>
+    </>,
     overlayRoot,
   );
 };
