@@ -162,7 +162,7 @@ export function SmartCommandBar({
   const [showExamples, setShowExamples] = useState(true);
   const [selectedExample, setSelectedExample] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isLoading, error, generateElements } = useSmartElementAI();
+  const { isLoading, error, generateElements, approvalDialog } = useSmartElementAI();
 
   // Focus input when opened
   useEffect(() => {
@@ -283,7 +283,10 @@ export function SmartCommandBar({
       )
     : COMMAND_EXAMPLES;
 
-  if (!isOpen) return null;
+  // SmartCommandBar currently generates new elements only; it does not call transformElements,
+  // but rendering approvalDialog here keeps the human-approval UI available if the
+  // hook later routes any sensitive command-bar action through a transform flow.
+  if (!isOpen) return <>{approvalDialog}</>;
 
   return (
     <AnimatePresence>
@@ -429,6 +432,7 @@ export function SmartCommandBar({
             </div>
           </div>
         </motion.div>
+        {approvalDialog}
       </motion.div>
     </AnimatePresence>
   );
