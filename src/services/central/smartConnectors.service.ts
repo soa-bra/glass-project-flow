@@ -3,19 +3,24 @@
  * whose geometry is stored as `planning_elements` rows.
  */
 import { supabase } from '@/integrations/supabase/client';
-import type { Json } from '@/integrations/supabase/types';
+import type { Database, Json } from '@/integrations/supabase/types';
 import type { PlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
 
-export type SmartConnector = PlanningConnectorLogicalRecord & {
-  id: string;
-  created_at: string;
-  updated_at: string;
-};
+export type SmartConnector = Database['public']['Tables']['smart_connectors']['Row'];
+type SmartConnectorInsert = Database['public']['Tables']['smart_connectors']['Insert'];
 
-export async function upsertSmartConnector(
+async function requireUserId(): Promise<string> {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) throw error;
+  if (!data.user) throw new Error('Not authenticated');
+  return data.user.id;
+}
+
+function toSmartConnectorInsert(
   record: PlanningConnectorLogicalRecord,
-): Promise<SmartConnector | null> {
-  const payload = {
+  createdBy: string,
+): SmartConnectorInsert {
+  return {
     connector_element_id: record.connector_element_id,
     board_id: record.board_id,
     source_element_id: record.source_element_id,
@@ -25,7 +30,14 @@ export async function upsertSmartConnector(
     label: record.label ?? null,
     style: record.style as Json,
     metadata: record.metadata as Json,
+    created_by: createdBy,
   };
+}
+
+export async function upsertSmartConnector(
+  record: PlanningConnectorLogicalRecord,
+): Promise<SmartConnector | null> {
+  const payload = toSmartConnectorInsert(record, await requireUserId());
 
   const { data, error } = await supabase
     .from('smart_connectors')
@@ -34,7 +46,7 @@ export async function upsertSmartConnector(
     .single();
 
   if (error) throw error;
-  return data as SmartConnector | null;
+  return data;
 }
 
 export async function upsertSmartConnectors(
@@ -42,17 +54,10 @@ export async function upsertSmartConnectors(
 ): Promise<SmartConnector[]> {
   if (records.length === 0) return [];
 
-  const payload = records.map((record) => ({
-    connector_element_id: record.connector_element_id,
-    board_id: record.board_id,
-    source_element_id: record.source_element_id,
-    target_element_id: record.target_element_id,
-    relationship_type: record.relationship_type,
-    connector_kind: record.connector_kind,
-    label: record.label ?? null,
-    style: record.style as Json,
-    metadata: record.metadata as Json,
-  }));
+  const createdBy = await requireUserId();
+  const payload: SmartConnectorInsert[] = records.map((record) =>
+    toSmartConnectorInsert(record, createdBy),
+  );
 
   const { data, error } = await supabase
     .from('smart_connectors')
@@ -60,7 +65,7 @@ export async function upsertSmartConnectors(
     .select('*');
 
   if (error) throw error;
-  return (data ?? []) as SmartConnector[];
+  return data ?? [];
 }
 
 export async function deleteSmartConnectorByElementId(connectorElementId: string): Promise<void> {
