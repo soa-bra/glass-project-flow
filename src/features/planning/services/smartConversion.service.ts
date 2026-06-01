@@ -128,7 +128,7 @@ async function createTask(payload: SmartConversionPayload, ownerId: string): Pro
   const suggested = payload.suggestedData;
   const linkedProjectId = asString(suggested.linked_project_id ?? suggested.linkedProjectId ?? suggested.project_id);
   if (!linkedProjectId) {
-    throw new Error('Task conversion requires suggestedData.linked_project_id.');
+    throw new Error('اختر مشروعًا لربط المهمة قبل اعتماد التحويل.');
   }
 
   const { data, error } = await supabase

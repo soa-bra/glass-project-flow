@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, Loader2, ShieldCheck, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useProjects } from '@/hooks/central';
 import {
   approveSmartConversion,
   type SmartConversionPayload,
@@ -36,6 +38,11 @@ function formatSuggestedData(value: Record<string, unknown>): string {
   return JSON.stringify(value, null, 2);
 }
 
+function getSuggestedLinkedProjectId(suggestedData: Record<string, unknown>): string | undefined {
+  const value = suggestedData.linked_project_id ?? suggestedData.linkedProjectId ?? suggestedData.project_id;
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
 export function SmartConversionReviewDialog({
   open,
   payload,
@@ -43,20 +50,41 @@ export function SmartConversionReviewDialog({
   onApproved,
 }: SmartConversionReviewDialogProps) {
   const [approvalNote, setApprovalNote] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [isApproving, setIsApproving] = useState(false);
+  const { data: projects = [], isLoading: isLoadingProjects } = useProjects();
+
+  const requiresProjectSelection = Boolean(
+    payload?.targetEntityType === 'task' && !getSuggestedLinkedProjectId(payload.suggestedData),
+  );
 
   const suggestedDataPreview = useMemo(
     () => formatSuggestedData(payload?.suggestedData ?? {}),
     [payload?.suggestedData],
   );
 
+  useEffect(() => {
+    setSelectedProjectId('');
+  }, [payload, open]);
+
   const handleApprove = async () => {
     if (!payload || isApproving) return;
+
+    if (requiresProjectSelection && !selectedProjectId) {
+      toast.error('اختر مشروعًا لربط المهمة قبل اعتماد التحويل');
+      return;
+    }
+
     setIsApproving(true);
+
+    const suggestedData = requiresProjectSelection
+      ? { ...payload.suggestedData, linked_project_id: selectedProjectId }
+      : payload.suggestedData;
 
     try {
       const result = await approveSmartConversion({
         ...payload,
+        suggestedData,
         approval: {
           ...payload.approval,
           approved: true,
@@ -68,6 +96,7 @@ export function SmartConversionReviewDialog({
       onApproved?.(result);
       onOpenChange(false);
       setApprovalNote('');
+      setSelectedProjectId('');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'تعذر اعتماد التحويل';
       toast.error('فشل اعتماد التحويل', { description: message });
@@ -80,7 +109,10 @@ export function SmartConversionReviewDialog({
     toast.info('تم إلغاء التحويل قبل إنشاء أي سجل تنفيذي');
     onOpenChange(false);
     setApprovalNote('');
+    setSelectedProjectId('');
   };
+
+  const isApproveDisabled = !payload || isApproving || (requiresProjectSelection && !selectedProjectId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,6 +155,38 @@ export function SmartConversionReviewDialog({
               </pre>
             </div>
 
+            {requiresProjectSelection ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <label className="mb-2 block text-sm font-semibold" htmlFor="smart-conversion-linked-project">
+                  المشروع المرتبط بالمهمة <span className="text-red-600">*</span>
+                </label>
+                <Select
+                  value={selectedProjectId}
+                  onValueChange={setSelectedProjectId}
+                  disabled={isApproving || isLoadingProjects || projects.length === 0}
+                >
+                  <SelectTrigger id="smart-conversion-linked-project" aria-label="اختر مشروعًا لربط المهمة">
+                    <SelectValue
+                      placeholder={isLoadingProjects ? 'جاري تحميل المشاريع...' : 'اختر مشروعًا لربط المهمة'}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="mt-2 text-xs text-amber-800">
+                  لم تقترح AI مشروعًا لهذه المهمة. يجب اختيار مشروع حتى يتم إنشاء المهمة وربطها بشكل صحيح.
+                </p>
+                {!isLoadingProjects && projects.length === 0 ? (
+                  <p className="mt-1 text-xs text-red-700">لا توجد مشاريع متاحة للاختيار.</p>
+                ) : null}
+              </div>
+            ) : null}
+
             <div>
               <label className="mb-2 block text-sm font-semibold" htmlFor="smart-conversion-approval-note">
                 ملاحظة الاعتماد (اختياري)
@@ -143,7 +207,7 @@ export function SmartConversionReviewDialog({
             <XCircle className="ml-2 h-4 w-4" />
             رفض / إلغاء
           </Button>
-          <Button onClick={handleApprove} disabled={!payload || isApproving}>
+          <Button onClick={handleApprove} disabled={isApproveDisabled}>
             {isApproving ? <Loader2 className="ml-2 h-4 w-4 animate-spin" /> : <CheckCircle2 className="ml-2 h-4 w-4" />}
             اعتماد وإنشاء السجل
           </Button>
