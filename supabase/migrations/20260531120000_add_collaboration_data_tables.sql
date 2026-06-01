@@ -31,7 +31,7 @@ end $$;
 
 do $$
 begin
-  create type public.smart_connector_kind as enum ('line', 'arrow', 'data_flow', 'dependency', 'sequence');
+  create type public.smart_connector_kind as enum ('visual_connector', 'mindmap_connector', 'root_connector');
 exception
   when duplicate_object then null;
 end $$;
@@ -285,17 +285,21 @@ create table if not exists public.sync_queue (
 create table if not exists public.smart_connectors (
   id uuid primary key default gen_random_uuid(),
   board_id uuid not null references public.planning_boards(id) on delete cascade,
-  connector_element_id uuid references public.planning_elements(id) on delete cascade,
+  connector_element_id uuid not null references public.planning_elements(id) on delete cascade,
   source_element_id uuid not null,
   target_element_id uuid not null,
-  connector_kind public.smart_connector_kind not null default 'line',
+  relationship_type text not null default 'references' check (
+    relationship_type in ('depends_on','causes','blocks','references','funds','delivers','belongs_to')
+  ),
+  connector_kind public.smart_connector_kind not null default 'visual_connector',
   label text,
   routing jsonb not null default '{}'::jsonb,
   style jsonb not null default '{}'::jsonb,
   metadata jsonb not null default '{}'::jsonb,
-  created_by uuid not null,
+  created_by uuid not null default auth.uid(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
+  constraint smart_connectors_connector_element_unique unique (connector_element_id),
   constraint smart_connectors_distinct_elements_check check (source_element_id <> target_element_id),
   constraint smart_connectors_connector_board_fkey foreign key (connector_element_id, board_id)
     references public.planning_elements(id, board_id) on delete cascade,
@@ -366,6 +370,7 @@ create index if not exists idx_sync_queue_board on public.sync_queue(board_id) w
 create index if not exists idx_smart_connectors_board on public.smart_connectors(board_id);
 create index if not exists idx_smart_connectors_source on public.smart_connectors(source_element_id);
 create index if not exists idx_smart_connectors_target on public.smart_connectors(target_element_id);
+create index if not exists idx_smart_connectors_relationship on public.smart_connectors(relationship_type);
 
 create index if not exists idx_element_transformations_board on public.element_transformations(board_id);
 create index if not exists idx_element_transformations_source on public.element_transformations(source_element_id);
