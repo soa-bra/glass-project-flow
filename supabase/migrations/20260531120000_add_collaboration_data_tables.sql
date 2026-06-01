@@ -31,13 +31,6 @@ end $$;
 
 do $$
 begin
-  create type public.smart_connector_kind as enum ('line', 'arrow', 'data_flow', 'dependency', 'sequence');
-exception
-  when duplicate_object then null;
-end $$;
-
-do $$
-begin
   create type public.smart_doc_status as enum ('draft', 'published', 'archived');
 exception
   when duplicate_object then null;
@@ -282,29 +275,6 @@ create table if not exists public.sync_queue (
   constraint sync_queue_attempts_check check (attempts >= 0)
 );
 
-create table if not exists public.smart_connectors (
-  id uuid primary key default gen_random_uuid(),
-  board_id uuid not null references public.planning_boards(id) on delete cascade,
-  connector_element_id uuid references public.planning_elements(id) on delete cascade,
-  source_element_id uuid not null,
-  target_element_id uuid not null,
-  connector_kind public.smart_connector_kind not null default 'line',
-  label text,
-  routing jsonb not null default '{}'::jsonb,
-  style jsonb not null default '{}'::jsonb,
-  metadata jsonb not null default '{}'::jsonb,
-  created_by uuid not null,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  constraint smart_connectors_distinct_elements_check check (source_element_id <> target_element_id),
-  constraint smart_connectors_connector_board_fkey foreign key (connector_element_id, board_id)
-    references public.planning_elements(id, board_id) on delete cascade,
-  constraint smart_connectors_source_board_fkey foreign key (source_element_id, board_id)
-    references public.planning_elements(id, board_id) on delete cascade,
-  constraint smart_connectors_target_board_fkey foreign key (target_element_id, board_id)
-    references public.planning_elements(id, board_id) on delete cascade
-);
-
 create table if not exists public.element_transformations (
   id uuid primary key default gen_random_uuid(),
   board_id uuid not null references public.planning_boards(id) on delete cascade,
@@ -363,9 +333,6 @@ create index if not exists idx_sync_queue_pending on public.sync_queue(status, a
 create index if not exists idx_sync_queue_project on public.sync_queue(project_id) where project_id is not null;
 create index if not exists idx_sync_queue_board on public.sync_queue(board_id) where board_id is not null;
 
-create index if not exists idx_smart_connectors_board on public.smart_connectors(board_id);
-create index if not exists idx_smart_connectors_source on public.smart_connectors(source_element_id);
-create index if not exists idx_smart_connectors_target on public.smart_connectors(target_element_id);
 
 create index if not exists idx_element_transformations_board on public.element_transformations(board_id);
 create index if not exists idx_element_transformations_source on public.element_transformations(source_element_id);
@@ -388,11 +355,6 @@ create trigger trg_sync_queue_updated
   before update on public.sync_queue
   for each row execute function public.update_updated_at_column();
 
-drop trigger if exists trg_smart_connectors_updated on public.smart_connectors;
-create trigger trg_smart_connectors_updated
-  before update on public.smart_connectors
-  for each row execute function public.update_updated_at_column();
-
 drop trigger if exists trg_element_transformations_updated on public.element_transformations;
 create trigger trg_element_transformations_updated
   before update on public.element_transformations
@@ -409,7 +371,6 @@ create trigger trg_smart_docs_updated
 alter table public.data_links enable row level security;
 alter table public.project_events enable row level security;
 alter table public.sync_queue enable row level security;
-alter table public.smart_connectors enable row level security;
 alter table public.element_transformations enable row level security;
 alter table public.smart_docs enable row level security;
 
@@ -469,25 +430,6 @@ create policy "members can update sync_queue" on public.sync_queue
 create policy "members can delete sync_queue" on public.sync_queue
   for delete to authenticated
   using (private.can_write_project_board_scope(project_id, board_id));
-
--- smart_connectors
-drop policy if exists "members can read smart_connectors" on public.smart_connectors;
-drop policy if exists "members can insert smart_connectors" on public.smart_connectors;
-drop policy if exists "members can update smart_connectors" on public.smart_connectors;
-drop policy if exists "members can delete smart_connectors" on public.smart_connectors;
-create policy "members can read smart_connectors" on public.smart_connectors
-  for select to authenticated
-  using (private.can_read_planning_board(board_id));
-create policy "members can insert smart_connectors" on public.smart_connectors
-  for insert to authenticated
-  with check (created_by = auth.uid() and private.can_write_planning_board(board_id));
-create policy "members can update smart_connectors" on public.smart_connectors
-  for update to authenticated
-  using (private.can_write_planning_board(board_id))
-  with check (private.can_write_planning_board(board_id));
-create policy "members can delete smart_connectors" on public.smart_connectors
-  for delete to authenticated
-  using (private.can_write_planning_board(board_id));
 
 -- element_transformations
 drop policy if exists "members can read element_transformations" on public.element_transformations;

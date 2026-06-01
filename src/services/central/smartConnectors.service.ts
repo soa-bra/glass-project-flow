@@ -3,19 +3,16 @@
  * whose geometry is stored as `planning_elements` rows.
  */
 import { supabase } from '@/integrations/supabase/client';
-import type { Json } from '@/integrations/supabase/types';
+import type { Database, Json } from '@/integrations/supabase/types';
 import type { PlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
 
-export type SmartConnector = PlanningConnectorLogicalRecord & {
-  id: string;
-  created_at: string;
-  updated_at: string;
-};
+export type SmartConnector = Database['public']['Tables']['smart_connectors']['Row'];
+type SmartConnectorInsert = Database['public']['Tables']['smart_connectors']['Insert'];
 
 export async function upsertSmartConnector(
   record: PlanningConnectorLogicalRecord,
 ): Promise<SmartConnector | null> {
-  const payload = {
+  const payload: SmartConnectorInsert = {
     connector_element_id: record.connector_element_id,
     board_id: record.board_id,
     source_element_id: record.source_element_id,
@@ -42,7 +39,7 @@ export async function upsertSmartConnectors(
 ): Promise<SmartConnector[]> {
   if (records.length === 0) return [];
 
-  const payload = records.map((record) => ({
+  const payload: SmartConnectorInsert[] = records.map((record) => ({
     connector_element_id: record.connector_element_id,
     board_id: record.board_id,
     source_element_id: record.source_element_id,
