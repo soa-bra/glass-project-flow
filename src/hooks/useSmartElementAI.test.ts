@@ -1,12 +1,14 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useSmartElementAI } from './useSmartElementAI';
 import { useCollaborationStore } from '@/stores/collaborationStore';
 
-const { invokeMock, toastErrorMock, toastSuccessMock } = vi.hoisted(() => ({
+const { invokeMock, toastErrorMock, toastInfoMock, toastSuccessMock, authUserMock } = vi.hoisted(() => ({
   invokeMock: vi.fn(),
   toastErrorMock: vi.fn(),
+  toastInfoMock: vi.fn(),
   toastSuccessMock: vi.fn(),
+  authUserMock: vi.fn(),
 }));
 
 vi.mock('@/integrations/supabase/client', () => ({
@@ -28,15 +30,25 @@ vi.mock('@/integrations/supabase/client', () => ({
 vi.mock('sonner', () => ({
   toast: {
     error: toastErrorMock,
+    info: toastInfoMock,
     success: toastSuccessMock,
   },
+}));
+
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: authUserMock(),
+  }),
 }));
 
 describe('useSmartElementAI permissions', () => {
   beforeEach(() => {
     invokeMock.mockReset();
     toastErrorMock.mockReset();
+    toastInfoMock.mockReset();
     toastSuccessMock.mockReset();
+    authUserMock.mockReset();
+    authUserMock.mockReturnValue(null);
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     useCollaborationStore.setState({
       participants: [],
@@ -85,5 +97,80 @@ describe('useSmartElementAI permissions', () => {
     expect(invokeMock).not.toHaveBeenCalled();
     expect(window.confirm).not.toHaveBeenCalled();
     expect(toastErrorMock).toHaveBeenCalled();
+  });
+
+  it('waits for human approval before retrying a sensitive transformation', async () => {
+    authUserMock.mockReturnValue({ id: 'host-user' });
+    useCollaborationStore.setState({
+      currentUserId: 'host-user',
+      isHost: true,
+      participants: [],
+      isConnected: true,
+    });
+
+    const sensitivity = {
+      isSensitive: true,
+      score: 0.94,
+      reasons: ['contains confidential planning data'],
+    };
+    const approvedResult = {
+      elements: [],
+      layout: 'grid' as const,
+      summary: 'تم التحويل بعد الاعتماد',
+    };
+
+    invokeMock
+      .mockResolvedValueOnce({
+        data: {
+          success: false,
+          code: 'HUMAN_APPROVAL_REQUIRED',
+          error: 'التحويل حساس ويتطلب موافقة بشرية',
+          sensitivity,
+        },
+      })
+      .mockResolvedValueOnce({
+        data: {
+          success: true,
+          result: approvedResult,
+        },
+      });
+
+    const { result } = renderHook(() => useSmartElementAI());
+
+    let transformPromise!: Promise<typeof approvedResult | null>;
+    act(() => {
+      transformPromise = result.current.transformElements(
+        [{ id: 'element-1', title: 'Confidential roadmap' }],
+        'kanban',
+        'حوّلها إلى كانبان',
+      );
+    });
+
+    await waitFor(() => {
+      expect(invokeMock).toHaveBeenCalledTimes(1);
+      expect((result.current.approvalDialog as any).props.request).toMatchObject({
+        targetType: 'kanban',
+        sensitivity,
+      });
+    });
+
+    expect(invokeMock).toHaveBeenCalledTimes(1);
+
+    let transformed: typeof approvedResult | null = null;
+    await act(async () => {
+      (result.current.approvalDialog as any).props.onApprove('تمت مراجعة التحويل واعتماده');
+      transformed = await transformPromise;
+    });
+
+    expect(transformed).toEqual(approvedResult);
+    expect(invokeMock).toHaveBeenCalledTimes(2);
+    expect(invokeMock.mock.calls[1][1].body.context.humanApproval).toMatchObject({
+      approved: true,
+      approverId: 'host-user',
+      approvalReason: 'تمت مراجعة التحويل واعتماده',
+    });
+    expect(toastSuccessMock).toHaveBeenCalledWith('تم تحويل العناصر بنجاح', {
+      description: approvedResult.summary,
+    });
   });
 });
