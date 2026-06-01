@@ -288,9 +288,7 @@ create table if not exists public.smart_connectors (
   connector_element_id uuid not null references public.planning_elements(id) on delete cascade,
   source_element_id uuid not null,
   target_element_id uuid not null,
-  relationship_type text not null default 'references' check (
-    relationship_type in ('depends_on','causes','blocks','references','funds','delivers','belongs_to')
-  ),
+  relationship_type text not null default 'references',
   connector_kind public.smart_connector_kind not null default 'visual_connector',
   label text,
   routing jsonb not null default '{}'::jsonb,
@@ -300,6 +298,9 @@ create table if not exists public.smart_connectors (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint smart_connectors_connector_element_unique unique (connector_element_id),
+  constraint smart_connectors_relationship_type_check check (
+    relationship_type in ('depends_on','causes','blocks','references','funds','delivers','belongs_to')
+  ),
   constraint smart_connectors_distinct_elements_check check (source_element_id <> target_element_id),
   constraint smart_connectors_connector_board_fkey foreign key (connector_element_id, board_id)
     references public.planning_elements(id, board_id) on delete cascade,
