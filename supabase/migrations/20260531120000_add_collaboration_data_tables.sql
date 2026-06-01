@@ -296,7 +296,7 @@ create table if not exists public.smart_connectors (
   routing jsonb not null default '{}'::jsonb,
   style jsonb not null default '{}'::jsonb,
   metadata jsonb not null default '{}'::jsonb,
-  created_by uuid not null,
+  created_by uuid not null default auth.uid(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint smart_connectors_connector_element_unique unique (connector_element_id),

@@ -2506,11 +2506,11 @@ export type Database = {
           connector_element_id: string
           connector_kind?: Database["public"]["Enums"]["smart_connector_kind"]
           created_at?: string
-          created_by: string
+          created_by?: string
           id?: string
           label?: string | null
           metadata?: Json
-          relationship_type: string
+          relationship_type?: string
           routing?: Json
           source_element_id: string
           style?: Json
@@ -2542,9 +2542,16 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "smart_connectors_connector_element_id_fkey"
+            columns: ["connector_element_id"]
+            isOneToOne: true
+            referencedRelation: "planning_elements"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "smart_connectors_connector_board_fkey"
             columns: ["connector_element_id", "board_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "planning_elements"
             referencedColumns: ["id", "board_id"]
           },
@@ -3626,6 +3633,7 @@ export const Constants = {
         "archived",
         "failed",
       ],
+      data_link_kind: ["reference", "dependency", "sync", "embed", "derivation"],
       department_project_role: ["owner", "supervisor"],
       engine_job_kind: [
         "automation",
@@ -3659,6 +3667,15 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      project_event_kind: [
+        "created",
+        "updated",
+        "deleted",
+        "status_changed",
+        "commented",
+        "synced",
+        "custom",
+      ],
       role_scope_type: ["global", "department", "project", "board"],
       service_type: [
         "brand_strategy",
@@ -3670,12 +3687,6 @@ export const Constants = {
         "training",
         "other",
       ],
-      smart_connector_kind: [
-        "visual_connector",
-        "mindmap_connector",
-        "root_connector",
-      ],
-      smart_doc_status: ["draft", "published", "archived"],
       sync_queue_status: [
         "pending",
         "processing",
@@ -3683,6 +3694,12 @@ export const Constants = {
         "failed",
         "cancelled",
       ],
+      smart_connector_kind: [
+        "visual_connector",
+        "mindmap_connector",
+        "root_connector",
+      ],
+      smart_doc_status: ["draft", "published", "archived"],
       task_priority: ["low", "medium", "high", "urgent"],
       task_status: ["todo", "in_progress", "review", "completed"],
       task_tool_engine_relation_type: ["produces", "binds", "executes"],
