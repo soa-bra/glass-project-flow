@@ -60,6 +60,8 @@ interface AnalysisResult {
 interface UseSmartElementAIReturn {
   isLoading: boolean;
   error: string | null;
+  canUseAI: boolean;
+  denialReason: string | null;
   approvalDialog: ReactNode;
   generateElements: (prompt: string, preferredType?: SmartElementType) => Promise<GenerationResult | null>;
   analyzeSelection: (elements: any[], additionalPrompt?: string) => Promise<AnalysisResult | null>;
@@ -102,15 +104,16 @@ async function readFunctionErrorPayload(fnError: any): Promise<any | null> {
   }
 }
 
-export function useSmartElementAI(): UseSmartElementAIReturn {
+export function useSmartElementAI(boardId?: string | null): UseSmartElementAIReturn {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [approvalRequest, setApprovalRequest] = useState<ApprovalDialogState | null>(null);
+  const boardPermissions = useCanvasAIPermissions(boardId);
 
   const ensureAIPermission = useCallback((scope: CanvasAIPermissionScope): boolean => {
     void scope;
-    const permissions = getCanvasAIPermissions();
+    const permissions = boardId ? boardPermissions : getCanvasAIPermissions();
 
     if (permissions.canUseAI) return true;
 
@@ -120,7 +123,7 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
       description: message
     });
     return false;
-  }, []);
+  }, [boardId, boardPermissions]);
 
   const callAI = useCallback(async (
     action: CanvasAIPermissionScope,
@@ -347,6 +350,8 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
   return {
     isLoading,
     error,
+    canUseAI: boardId ? boardPermissions.canUseAI : getCanvasAIPermissions().canUseAI,
+    denialReason: boardId ? boardPermissions.denialReason : getCanvasAIPermissions().denialReason,
     approvalDialog,
     generateElements,
     analyzeSelection,

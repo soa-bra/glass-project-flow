@@ -5,6 +5,7 @@
 
 import React from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
+import ContextSmartMenu from "@/features/planning/elements/smart/ContextSmartMenu";
 import FloatingBar from "./floating-bar";
 import type { ToolbarMode } from "./floating-bar/types";
 
@@ -28,7 +29,11 @@ function determineToolbarMode(
   return "none";
 }
 
-const ContextualToolbarManager: React.FC = () => {
+interface ContextualToolbarManagerProps {
+  boardId?: string | null;
+}
+
+const ContextualToolbarManager: React.FC<ContextualToolbarManagerProps> = ({ boardId }) => {
   const activeTool = useCanvasStore((state) => state.activeTool);
   const editingTextId = useCanvasStore((state) => state.editingTextId);
   const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
@@ -37,7 +42,12 @@ const ContextualToolbarManager: React.FC = () => {
 
   switch (toolbarMode) {
     case "floating":
-      return <FloatingBar />;
+      return (
+        <>
+          <FloatingBar />
+          <ContextSmartMenu boardId={boardId} />
+        </>
+      );
     case "none":
     default:
       return null;

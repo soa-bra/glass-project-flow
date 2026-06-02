@@ -24,6 +24,15 @@ interface CreateTypedSmartElementOptions {
   viewport: { zoom: number; pan: { x: number; y: number } };
 }
 
+interface CreateSmartCanvasElementOptions {
+  smartType: SmartElementType;
+  position: { x: number; y: number };
+  data?: Record<string, any>;
+  title?: string;
+  description?: string;
+  metadata?: Record<string, any>;
+}
+
 const SMART_ELEMENT_SIZE_MAP: Record<SmartElementType, { width: number; height: number }> = {
   thinking_board: { width: 420, height: 300 },
   kanban: { width: 420, height: 320 },
@@ -115,6 +124,44 @@ export function createTypedSmartElement({
       source: 'smart-command-bar',
       description: element.description,
       connections: element.connections || [],
+    },
+  };
+}
+
+export function createSmartCanvasElement({
+  smartType,
+  position,
+  data = {},
+  title,
+  description,
+  metadata = {},
+}: CreateSmartCanvasElementOptions): Omit<CanvasElement, 'id'> & { id?: string } {
+  const parsedData = parseSmartElementData(smartType, {
+    ...data,
+    smartType,
+    title: title ?? data.title ?? smartType,
+    description: description ?? data.description,
+  });
+  const size = SMART_ELEMENT_SIZE_MAP[smartType];
+
+  return {
+    type: smartType,
+    smartType,
+    position,
+    size,
+    content: title ?? String(data.title ?? smartType),
+    style: {
+      backgroundColor: 'transparent',
+    },
+    data: {
+      ...parsedData,
+      smartType,
+    },
+    metadata: {
+      smartType,
+      source: 'planning-canvas',
+      description,
+      ...metadata,
     },
   };
 }
