@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-type Action = "create" | "update" | "delete";
+type Action = "list" | "create" | "update" | "delete";
 type AppRole =
   | "owner" | "ciso" | "dpo" | "infra_admin" | "finance_admin"
   | "department_manager" | "project_manager" | "team_member" | "guest";
