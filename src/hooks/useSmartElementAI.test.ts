@@ -119,20 +119,31 @@ describe('useSmartElementAI permissions', () => {
       summary: 'تم التحويل بعد الاعتماد',
     };
 
+    const approvalRequiredPayload = {
+      code: 'HUMAN_APPROVAL_REQUIRED',
+      error: 'التحويل حساس ويتطلب موافقة بشرية',
+      sensitivity,
+    };
+    const approvalRequiredError = Object.assign(new Error('Edge Function returned a non-2xx status code'), {
+      context: {
+        json: vi.fn().mockResolvedValue(approvalRequiredPayload),
+        clone: vi.fn(() => ({
+          json: vi.fn().mockResolvedValue(approvalRequiredPayload),
+        })),
+      },
+    });
+
     invokeMock
       .mockResolvedValueOnce({
-        data: {
-          success: false,
-          code: 'HUMAN_APPROVAL_REQUIRED',
-          error: 'التحويل حساس ويتطلب موافقة بشرية',
-          sensitivity,
-        },
+        data: null,
+        error: approvalRequiredError,
       })
       .mockResolvedValueOnce({
         data: {
           success: true,
           result: approvedResult,
         },
+        error: null,
       });
 
     const { result } = renderHook(() => useSmartElementAI());
@@ -154,6 +165,8 @@ describe('useSmartElementAI permissions', () => {
       });
     });
 
+    expect((result.current.approvalDialog as any).props.request).not.toBeNull();
+    expect(window.confirm).not.toHaveBeenCalled();
     expect(invokeMock).toHaveBeenCalledTimes(1);
 
     let transformed: typeof approvedResult | null = null;
@@ -169,6 +182,7 @@ describe('useSmartElementAI permissions', () => {
       approverId: 'host-user',
       approvalReason: 'تمت مراجعة التحويل واعتماده',
     });
+    expect(window.confirm).not.toHaveBeenCalled();
     expect(toastSuccessMock).toHaveBeenCalledWith('تم تحويل العناصر بنجاح', {
       description: approvedResult.summary,
     });

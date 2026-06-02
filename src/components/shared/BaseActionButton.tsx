@@ -59,14 +59,17 @@ export const BaseActionButton: React.FC<BaseActionButtonProps> = ({
       });
     }
     
-    // Check if icon is a component function (Lucide icons)
-    if (typeof icon === 'function') {
+    // Check if icon is a component (plain function OR forwardRef object — Lucide icons)
+    const isComponent =
+      typeof icon === 'function' ||
+      (typeof icon === 'object' && icon !== null && 'render' in (icon as object));
+    if (isComponent) {
       const IconComponent = icon as LucideIcon;
       return <IconComponent className={iconSizes[size]} />;
     }
-    
+
     // For any other case, try to render as JSX
-    return <span className={`flex-shrink-0 ${iconSizes[size]}`}>{icon}</span>;
+    return <span className={`flex-shrink-0 ${iconSizes[size]}`}>{icon as React.ReactNode}</span>;
   };
 
   const isIconOnly = !children && icon;

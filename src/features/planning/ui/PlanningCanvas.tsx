@@ -242,14 +242,12 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       result.linkedElements.forEach((element) => {
         const canvasElement = planningElementToCanvas(element);
         updateElement(element.id, {
-          type: canvasElement.type,
-          size: canvasElement.size,
-          layer: canvasElement.layer,
-          data: canvasElement.data,
-          metadata: canvasElement.metadata,
-          content: typeof canvasElement.content === 'object' && canvasElement.content !== null
-            ? { ...canvasElement.content }
-            : canvasElement.content,
+          metadata: {
+            ...(typeof element.metadata === 'object' && element.metadata !== null && !Array.isArray(element.metadata) ? (element.metadata as Record<string, unknown>) : {}),
+          },
+          content: (typeof element.content === 'object' && element.content !== null && !Array.isArray(element.content)
+            ? { ...(element.content as Record<string, unknown>) }
+            : element.content) as never,
         });
       });
     },

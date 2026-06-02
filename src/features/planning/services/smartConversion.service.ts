@@ -459,7 +459,7 @@ async function recordConversionAudit(
         targetEntityType: payload.targetEntityType,
         suggestedData: payload.suggestedData,
         approval: payload.approval,
-      } as Json,
+      } as unknown as Json,
     })
     .select('id')
     .single();
@@ -475,7 +475,7 @@ async function recordConversionAudit(
 export async function approveSmartConversion(
   payload: SmartConversionPayload,
 ): Promise<SmartConversionResult> {
-  const parsed = smartConversionPayloadSchema.parse(payload);
+  const parsed = smartConversionPayloadSchema.parse(payload) as SmartConversionPayload;
   if (!parsed.approval.approved) {
     throw new Error('Smart conversion must be approved before creating an executable record.');
   }
@@ -487,7 +487,7 @@ export async function approveSmartConversion(
     approverId: parsed.approval.approverId ?? ownerId,
     approvedAt: parsed.approval.approvedAt ?? new Date().toISOString(),
   };
-  const approvedPayload = { ...parsed, approval };
+  const approvedPayload: SmartConversionPayload = { ...parsed, approval };
 
   const entity = await createEntity(approvedPayload, ownerId);
   const linkedElements = await linkPlanningElements(approvedPayload, entity);

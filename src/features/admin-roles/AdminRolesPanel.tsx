@@ -1,116 +1,358 @@
 /**
- * AdminRolesPanel — لوحة إسناد الأدوار (Owner-only via RLS).
- * يستخدم RolesService لقراءة/إسناد/سحب الأدوار من user_roles.
+ * AdminRolesPanel — Owner-only user management with glass modal create/edit.
+ * Lists users via manage-users edge function. Supports create/edit/delete + role.
  */
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { RolesService } from "@/services/central";
-import type { AppRole } from "@/services/central/roles.service";
-import { AppCardSurface } from "@/components/shared/surfaces/AppCardSurface";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { BaseActionButton } from "@/components/shared/BaseActionButton";
 import { BaseBadge } from "@/components/ui/BaseBadge";
-import { Loader2, Crown, Plus, Trash2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { Eye, Pencil, Trash2, UserPlus, Loader2, X } from "lucide-react";
+import { toast } from "sonner";
+
+type AppRole =
+  | "owner" | "ciso" | "dpo" | "infra_admin" | "finance_admin"
+  | "department_manager" | "project_manager" | "team_member" | "guest";
+
+interface ManagedUser {
+  user_id: string;
+  email: string;
+  display_name: string | null;
+  last_sign_in_at: string | null;
+  roles: AppRole[];
+}
 
 const ROLE_OPTIONS: AppRole[] = [
   "owner", "ciso", "dpo", "infra_admin", "finance_admin",
   "department_manager", "project_manager", "team_member", "guest",
 ];
 
+const ROLE_LABEL: Record<AppRole, string> = {
+  owner: "Owner",
+  ciso: "CISO",
+  dpo: "DPO",
+  infra_admin: "Infra Admin",
+  finance_admin: "Finance Admin",
+  department_manager: "Department Manager",
+  project_manager: "Project Manager",
+  team_member: "Team Member",
+  guest: "Guest",
+};
+
+const ROLE_DESCRIPTION: Record<AppRole, string> = {
+  owner: "وصول كامل للنظام — تجاوز الموافقات",
+  ciso: "سياسات الأمن والحوادث وتدوير المفاتيح",
+  dpo: "الخصوصية والامتثال وطلبات المحو",
+  infra_admin: "البنية التحتية والنشر والسجلات",
+  finance_admin: "الحسابات والميزانيات والتقارير",
+  department_manager: "إدارة قسم ومهامه وميزانيته",
+  project_manager: "إدارة مشروع ومهامه ونفقاته",
+  team_member: "تنفيذ المهام المسندة وتسجيل الأوقات",
+  guest: "وصول مؤقت محدود لمرفقات مشروع",
+};
+
+async function invokeManageUsers<T = unknown>(payload: Record<string, unknown>): Promise<T> {
+  const { data, error } = await supabase.functions.invoke("manage-users", { body: payload });
+  if (error) throw error;
+  if (!data?.ok) throw new Error(data?.error ?? "operation_failed");
+  return data as T;
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export const AdminRolesPanel: React.FC = () => {
   const qc = useQueryClient();
-  const { data: users = [], isLoading, error } = useQuery({
-    queryKey: ["admin", "users-roles"],
-    queryFn: RolesService.listAllUsersWithRoles,
-  });
-  const [pendingRole, setPendingRole] = useState<Record<string, AppRole>>({});
+  const { user } = useAuth();
+  const [isOwner, setIsOwner] = useState<boolean | null>(null);
+  const [modalState, setModalState] = useState<
+    | { mode: "closed" }
+    | { mode: "create" }
+    | { mode: "edit"; user: ManagedUser }
+    | { mode: "view"; user: ManagedUser }
+  >({ mode: "closed" });
 
-  const assign = useMutation({
-    mutationFn: ({ userId, role }: { userId: string; role: AppRole }) =>
-      RolesService.assignRole(userId, role),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "users-roles"] }),
+  useEffect(() => {
+    if (!user) { setIsOwner(false); return; }
+    supabase
+      .rpc("has_role", { _user_id: user.id, _role: "owner" })
+      .then(({ data }) => setIsOwner(Boolean(data)));
+  }, [user]);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin", "manage-users"],
+    queryFn: () => invokeManageUsers<{ ok: true; users: ManagedUser[] }>({ action: "list" }),
+    enabled: isOwner === true,
   });
-  const revoke = useMutation({
-    mutationFn: ({ userId, role }: { userId: string; role: AppRole }) =>
-      RolesService.revokeRole(userId, role),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "users-roles"] }),
+  const users = data?.users ?? [];
+
+  const del = useMutation({
+    mutationFn: (user_id: string) => invokeManageUsers({ action: "delete", user_id }),
+    onSuccess: () => {
+      toast.success("تم حذف المستخدم");
+      qc.invalidateQueries({ queryKey: ["admin", "manage-users"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-12">
-        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+  if (isOwner === null) {
+    return <div className="flex justify-center p-12"><Loader2 className="w-6 h-6 animate-spin" /></div>;
   }
-  if (error) {
-    return (
-      <div className="p-6 text-sm text-red-600">
-        تعذّر التحميل — هذه اللوحة متاحة لمالك النظام (Owner) فقط.
-      </div>
-    );
+  if (!isOwner) {
+    return <div className="p-6 text-sm text-red-600">هذه اللوحة متاحة لمالك النظام (Owner) فقط.</div>;
   }
 
   return (
-    <div className="flex flex-col gap-4" dir="rtl">
-      <header className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center border border-border">
-          <Crown className="w-5 h-5 text-foreground" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">إدارة الأدوار</h2>
-          <p className="text-sm text-muted-foreground">
-            إسناد/سحب الأدوار للمستخدمين · {users.length} مستخدم
-          </p>
-        </div>
-      </header>
+    <div dir="rtl" className="flex flex-col gap-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-foreground">إدارة المستخدمين</h2>
+        <button
+          onClick={() => setModalState({ mode: "create" })}
+          className="flex items-center gap-2 bg-black text-white rounded-full px-5 py-2.5 text-sm font-medium hover:bg-black/90 transition-colors"
+        >
+          <UserPlus className="w-4 h-4" />
+          إضافة مستخدم جديد
+        </button>
+      </div>
 
-      <AppCardSurface className="divide-y divide-border">
-        {users.map((u) => (
-          <div key={u.user_id} className="p-4 flex flex-col md:flex-row md:items-center gap-3">
-            <div className="flex-1 min-w-0">
-              <div className="font-medium">{u.display_name ?? u.user_id.slice(0, 8)}</div>
-              <div className="text-xs text-muted-foreground font-mono">{u.user_id}</div>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {u.roles.length === 0 ? (
-                <span className="text-xs text-muted-foreground">بلا أدوار</span>
-              ) : u.roles.map((r) => (
-                <BaseBadge key={r} variant="secondary" className="flex items-center gap-1">
-                  {r}
-                  <button
-                    onClick={() => revoke.mutate({ userId: u.user_id, role: r })}
-                    className="hover:text-red-600"
-                  ><Trash2 className="w-3 h-3" /></button>
-                </BaseBadge>
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <Select
-                value={pendingRole[u.user_id] ?? ""}
-                onValueChange={(v) => setPendingRole((p) => ({ ...p, [u.user_id]: v as AppRole }))}
+      {/* List */}
+      {isLoading ? (
+        <div className="flex justify-center p-12"><Loader2 className="w-6 h-6 animate-spin" /></div>
+      ) : error ? (
+        <div className="p-6 text-sm text-red-600">تعذّر تحميل المستخدمين.</div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {users.map((u) => {
+            const primaryRole = u.roles[0];
+            return (
+              <div
+                key={u.user_id}
+                className="bg-white border border-border rounded-[24px] p-5 flex items-center justify-between gap-4"
               >
-                <SelectTrigger className="w-40"><SelectValue placeholder="إسناد دور" /></SelectTrigger>
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="font-bold text-base text-foreground truncate">
+                        {u.display_name ?? u.email.split("@")[0]}
+                      </span>
+                      <BaseBadge className="bg-emerald-100 text-emerald-700 border-emerald-200">نشط</BaseBadge>
+                      {primaryRole && (
+                        <BaseBadge className={primaryRole === "owner"
+                          ? "bg-violet-100 text-violet-700 border-violet-200"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200"}>
+                          {ROLE_LABEL[primaryRole]}
+                        </BaseBadge>
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{u.email}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      آخر دخول: {formatDate(u.last_sign_in_at)}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {/* ACT-BTN-S03 — view */}
+                  <BaseActionButton variant="view" size="sm" icon={Eye}
+                    onClick={() => setModalState({ mode: "view", user: u })} />
+                  {/* ACT-BTN-S03 — edit */}
+                  <BaseActionButton variant="edit" size="sm" icon={Pencil}
+                    onClick={() => setModalState({ mode: "edit", user: u })} />
+                  {/* ACT-BTN-PSA03 — delete (sensitive) */}
+                  <button
+                    onClick={() => {
+                      if (confirm(`حذف ${u.email}؟`)) del.mutate(u.user_id);
+                    }}
+                    disabled={del.isPending || u.user_id === user?.id}
+                    className="w-8 h-8 rounded-full bg-transparent border border-red-500 text-red-500 flex items-center justify-center hover:bg-red-50 transition-colors disabled:opacity-40"
+                    aria-label="حذف"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Modal */}
+      <UserFormModal
+        state={modalState}
+        onClose={() => setModalState({ mode: "closed" })}
+        onSaved={() => qc.invalidateQueries({ queryKey: ["admin", "manage-users"] })}
+      />
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────
+
+interface UserFormModalProps {
+  state:
+    | { mode: "closed" }
+    | { mode: "create" }
+    | { mode: "edit"; user: ManagedUser }
+    | { mode: "view"; user: ManagedUser };
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+const UserFormModal: React.FC<UserFormModalProps> = ({ state, onClose, onSaved }) => {
+  const isOpen = state.mode !== "closed";
+  const isEdit = state.mode === "edit";
+  const isView = state.mode === "view";
+  const existing = state.mode === "edit" || state.mode === "view" ? state.user : null;
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState<AppRole>("team_member");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setEmail(existing?.email ?? "");
+    setDisplayName(existing?.display_name ?? "");
+    setRole((existing?.roles[0] as AppRole) ?? "team_member");
+    setPassword("");
+  }, [isOpen, existing?.user_id]);
+
+  const title = useMemo(() => {
+    if (state.mode === "create") return "إضافة مستخدم جديد";
+    if (state.mode === "edit") return "تعديل المستخدم";
+    return "بيانات المستخدم";
+  }, [state.mode]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (state.mode === "create") {
+        if (!email || !password) { toast.error("البريد وكلمة المرور مطلوبان"); return; }
+        await invokeManageUsers({
+          action: "create", email, password, display_name: displayName, role,
+        });
+        toast.success("تم إنشاء المستخدم");
+      } else if (state.mode === "edit") {
+        await invokeManageUsers({
+          action: "update",
+          user_id: existing!.user_id,
+          email: email !== existing!.email ? email : undefined,
+          password: password || undefined,
+          display_name: displayName,
+          role,
+        });
+        toast.success("تم تحديث المستخدم");
+      }
+      onSaved();
+      onClose();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "فشل الحفظ");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        className="sb-modal-shell max-w-lg p-0 border-0 shadow-none [&>button]:hidden"
+        dir="rtl"
+      >
+        <div className="p-7">
+          <DialogHeader className="flex flex-row items-center justify-between mb-6 space-y-0">
+            <DialogTitle className="text-xl font-bold text-foreground">{title}</DialogTitle>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full border border-black/40 flex items-center justify-center hover:bg-white/40 transition"
+              aria-label="إغلاق"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4">
+            <div>
+              <Label htmlFor="display-name" className="text-sm font-medium mb-1.5 block">الاسم</Label>
+              <Input id="display-name" value={displayName} disabled={isView}
+                onChange={(e) => setDisplayName(e.target.value)}
+                className="bg-white/60 border-white/40" placeholder="اسم المستخدم" />
+            </div>
+            <div>
+              <Label htmlFor="email" className="text-sm font-medium mb-1.5 block">البريد الإلكتروني</Label>
+              <Input id="email" type="email" value={email} disabled={isView}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-white/60 border-white/40" placeholder="user@example.com" dir="ltr" />
+            </div>
+            {!isView && (
+              <div>
+                <Label htmlFor="password" className="text-sm font-medium mb-1.5 block">
+                  كلمة المرور {isEdit && <span className="text-xs text-muted-foreground">(اتركها فارغة لعدم التغيير)</span>}
+                </Label>
+                <Input id="password" type="password" value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="bg-white/60 border-white/40" placeholder="••••••" dir="ltr" />
+              </div>
+            )}
+            <div>
+              <Label className="text-sm font-medium mb-1.5 block">الصلاحية (الدور)</Label>
+              <Select value={role} onValueChange={(v) => setRole(v as AppRole)} disabled={isView}>
+                <SelectTrigger className="bg-white/60 border-white/40">
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {ROLE_OPTIONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                  {ROLE_OPTIONS.map((r) => (
+                    <SelectPrimitive.Item
+                      key={r}
+                      value={r}
+                      textValue={ROLE_LABEL[r]}
+                      className="relative flex w-full cursor-default select-none items-center rounded-full py-2 pl-8 pr-3 text-sm outline-none hover:bg-black hover:text-white focus:bg-black focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    >
+                      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                        <SelectPrimitive.ItemIndicator>
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><path d="M11.4669 3.72684C11.7558 3.91574 11.8362 4.31308 11.6474 4.60201L7.07741 11.902C6.89097 12.1864 6.50367 12.268 6.21925 12.0816C6.20157 12.0704 6.18458 12.0582 6.16834 12.0452L3.57433 10.0593C3.28746 9.86434 3.2137 9.46596 3.40867 9.17908C3.60365 8.89221 4.00203 8.81845 4.2889 9.01342L6.51874 10.6118L10.6991 3.92675C10.888 3.63782 11.2854 3.55748 11.5743 3.74638C11.605 3.76563 11.6348 3.78694 11.6637 3.81015L11.4669 3.72684Z" fill="currentColor" stroke="currentColor" strokeWidth="0.2"></path></svg>
+                        </SelectPrimitive.ItemIndicator>
+                      </span>
+                      <div className="flex flex-col">
+                        <SelectPrimitive.ItemText>{ROLE_LABEL[r]}</SelectPrimitive.ItemText>
+                        <span className="text-[11px] font-light opacity-70 leading-tight mt-0.5">{ROLE_DESCRIPTION[r]}</span>
+                      </div>
+                    </SelectPrimitive.Item>
+                  ))}
                 </SelectContent>
               </Select>
-              <button
-                onClick={() => {
-                  const r = pendingRole[u.user_id];
-                  if (!r) return;
-                  assign.mutate({ userId: u.user_id, role: r });
-                  setPendingRole((p) => ({ ...p, [u.user_id]: "" as AppRole }));
-                }}
-                disabled={!pendingRole[u.user_id] || assign.isPending}
-                className="flex items-center gap-1 bg-foreground text-background px-3 py-2 rounded-full text-xs disabled:opacity-50"
-              >
-                <Plus className="w-3 h-3" />
-                إسناد
-              </button>
             </div>
           </div>
-        ))}
-      </AppCardSurface>
-    </div>
+
+          {!isView && (
+            <DialogFooter className="mt-7 flex flex-row gap-3 sm:justify-start">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-black text-white rounded-full px-6 py-2.5 text-sm font-medium hover:bg-black/90 transition disabled:opacity-50"
+              >
+                {saving ? "جارٍ الحفظ..." : isEdit ? "حفظ التعديلات" : "إنشاء المستخدم"}
+              </button>
+              <button
+                onClick={onClose}
+                className="bg-white/40 border border-black/20 text-black rounded-full px-6 py-2.5 text-sm font-medium hover:bg-white/60 transition"
+              >
+                إلغاء
+              </button>
+            </DialogFooter>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
