@@ -49,6 +49,29 @@ Deno.serve(async (req) => {
 
     const body = (await req.json()) as Payload;
 
+    if (body.action === "list") {
+      const { data: list, error } = await admin.auth.admin.listUsers({ perPage: 1000 });
+      if (error) return json({ ok: false, error: error.message }, 500);
+      const ids = list.users.map((u) => u.id);
+      const { data: profiles } = await admin.from("profiles").select("user_id, display_name").in("user_id", ids);
+      const { data: roles } = await admin.from("user_roles").select("user_id, role").in("user_id", ids);
+      const pMap = new Map((profiles ?? []).map((p) => [p.user_id, p.display_name]));
+      const rMap = new Map<string, string[]>();
+      (roles ?? []).forEach((r) => {
+        const arr = rMap.get(r.user_id) ?? [];
+        arr.push(r.role as string);
+        rMap.set(r.user_id, arr);
+      });
+      const users = list.users.map((u) => ({
+        user_id: u.id,
+        email: u.email ?? "",
+        display_name: pMap.get(u.id) ?? null,
+        last_sign_in_at: u.last_sign_in_at ?? null,
+        roles: rMap.get(u.id) ?? [],
+      }));
+      return json({ ok: true, users });
+    }
+
     if (body.action === "create") {
       if (!body.email || !body.password) return json({ ok: false, error: "email_and_password_required" }, 400);
       const { data: created, error } = await admin.auth.admin.createUser({
