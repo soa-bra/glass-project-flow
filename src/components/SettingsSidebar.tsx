@@ -101,14 +101,7 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       route: '/settings/tools-marketplace',
       access: 'all'
     },
-    {
-      key: 'admin-roles',
-      label: 'إدارة الأدوار',
-      icon: Crown,
-      route: '/settings/admin-roles',
-      access: 'role == Owner'
-    }
-  ];
+    
   
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
