@@ -154,7 +154,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   // Handle anchor drag end
   const handleAnchorDragEnd = useCallback((point: ConnectorPoint) => {
     if (dragStartPoint && dragStartPoint.elementId !== point.elementId) {
-      handleCreateConnector(dragStartPoint, point, 'component-component');
+      handleCreateConnector(dragStartPoint, point, 'references');
     }
     setDragStartPoint(null);
     setIsCreatingConnector(false);

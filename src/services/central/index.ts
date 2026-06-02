@@ -17,3 +17,4 @@ export * as RolesService from "./roles.service";
 export * as PermissionsService from "./permissions.service";
 export * as PlanningBoardsService from "./planningBoards.service";
 export * as SmartConnectorsService from "./smartConnectors.service";
+export * as AuditService from "./audit.service";

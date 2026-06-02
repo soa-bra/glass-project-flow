@@ -86,11 +86,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       result.linkedElements.forEach((element) => {
         updateElement(element.id, {
           metadata: {
-            ...(typeof element.metadata === 'object' && element.metadata !== null ? element.metadata : {}),
+            ...(typeof element.metadata === 'object' && element.metadata !== null && !Array.isArray(element.metadata) ? (element.metadata as Record<string, unknown>) : {}),
           },
-          content: typeof element.content === 'object' && element.content !== null
-            ? { ...element.content }
-            : element.content,
+          content: (typeof element.content === 'object' && element.content !== null && !Array.isArray(element.content)
+            ? { ...(element.content as Record<string, unknown>) }
+            : element.content) as never,
         });
       });
     },
