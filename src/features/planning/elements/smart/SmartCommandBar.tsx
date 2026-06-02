@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils';
 interface SmartCommandBarProps {
   isOpen: boolean;
   onClose: () => void;
+  boardId?: string | null;
   onElementsGenerated?: (elements: any[], layout: string) => void;
   onSmartConversionSuggested?: (payload: {
     targetEntityType: SmartConversionTargetEntityType;
@@ -154,6 +155,7 @@ const getSuggestedConversionData = (element: any): Record<string, unknown> => ({
 export function SmartCommandBar({ 
   isOpen, 
   onClose, 
+  boardId,
   onElementsGenerated,
   onSmartConversionSuggested,
   position 
@@ -162,7 +164,7 @@ export function SmartCommandBar({
   const [showExamples, setShowExamples] = useState(true);
   const [selectedExample, setSelectedExample] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { isLoading, error, generateElements, approvalDialog } = useSmartElementAI();
+  const { isLoading, error, generateElements, approvalDialog, canUseAI, denialReason } = useSmartElementAI(boardId);
 
   // Focus input when opened
   useEffect(() => {
@@ -225,6 +227,7 @@ export function SmartCommandBar({
   // Handle command submission
   const handleSubmit = async () => {
     if (!input.trim() || isLoading) return;
+    if (!canUseAI) return;
 
     // Remove /ai prefix if present
     let prompt = input.trim();
@@ -253,6 +256,7 @@ export function SmartCommandBar({
 
   // Handle example click
   const handleExampleClick = (example: CommandExample) => {
+    if (!canUseAI) return;
     setInput(example.command);
     setShowExamples(false);
     // Auto-submit after a brief delay
@@ -333,7 +337,7 @@ export function SmartCommandBar({
                   placeholder="اكتب أمرك هنا... مثال: /ai kanban إدارة المشروع"
                   className="h-12 text-lg border-0 bg-transparent focus-visible:ring-0 pr-4"
                   dir="auto"
-                  disabled={isLoading}
+                  disabled={isLoading || !canUseAI}
                 />
               </div>
 
@@ -364,6 +368,12 @@ export function SmartCommandBar({
               </div>
             )}
 
+            {!canUseAI && !isLoading && (
+              <div className="p-4 bg-destructive/10 text-destructive text-center text-sm">
+                {denialReason || 'أدوات AI غير متاحة لهذا الدور'}
+              </div>
+            )}
+
             {/* Examples Section */}
             {showExamples && !isLoading && filteredExamples.length > 0 && (
               <ScrollArea className="max-h-[400px]">
@@ -376,8 +386,10 @@ export function SmartCommandBar({
                     <button
                       key={example.command}
                       onClick={() => handleExampleClick(example)}
+                      disabled={!canUseAI}
                       className={cn(
                         "w-full flex items-center gap-3 p-3 rounded-lg text-right transition-colors",
+                        !canUseAI && "opacity-50 cursor-not-allowed",
                         selectedExample === index 
                           ? "bg-accent" 
                           : "hover:bg-muted/50"

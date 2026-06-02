@@ -49,11 +49,7 @@ const BoardsGrid = () => {
 
   return (
     <div className="flex-1">
-      <h2 className="text-[20px] font-bold text-[hsl(var(--ink))] mb-6">
-        اللوحات المحفوظة ({boards.length})
-      </h2>
-      
-      <div className="grid grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {boards.map((board, index) => (
           <motion.div
             key={board.id}
@@ -62,7 +58,7 @@ const BoardsGrid = () => {
             transition={{ delay: index * 0.05 }}
             className="group relative"
           >
-            <div className="rounded-[24px] bg-white border border-[hsl(var(--border))] overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
+            <div className="rounded-lg bg-white border border-[hsl(var(--border))] overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-shadow">
               {/* Thumbnail */}
               <div
                 onClick={() => handleSelectBoard(board)}

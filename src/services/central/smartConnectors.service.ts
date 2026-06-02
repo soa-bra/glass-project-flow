@@ -5,6 +5,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database, Json } from '@/integrations/supabase/types';
 import type { PlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
+import { audit } from '@/services/audit';
 
 export type SmartConnector = Database['public']['Tables']['smart_connectors']['Row'];
 type SmartConnectorInsert = Database['public']['Tables']['smart_connectors']['Insert'];
@@ -46,6 +47,19 @@ export async function upsertSmartConnector(
     .single();
 
   if (error) throw error;
+  void audit({
+    resource_type: 'smart_connector',
+    action: 'canvas.connector.upserted',
+    resource_id: data.connector_element_id,
+    scope_type: 'board',
+    scope_id: data.board_id,
+    metadata: {
+      sourceElementId: data.source_element_id,
+      targetElementId: data.target_element_id,
+      relationshipType: data.relationship_type,
+      connectorKind: data.connector_kind,
+    },
+  });
   return data;
 }
 
@@ -65,13 +79,48 @@ export async function upsertSmartConnectors(
     .select('*');
 
   if (error) throw error;
+  (data ?? []).forEach((connector) => {
+    void audit({
+      resource_type: 'smart_connector',
+      action: 'canvas.connector.upserted',
+      resource_id: connector.connector_element_id,
+      scope_type: 'board',
+      scope_id: connector.board_id,
+      metadata: {
+        sourceElementId: connector.source_element_id,
+        targetElementId: connector.target_element_id,
+        relationshipType: connector.relationship_type,
+        connectorKind: connector.connector_kind,
+        batchSize: data?.length ?? 0,
+      },
+    });
+  });
   return data ?? [];
 }
 
 export async function deleteSmartConnectorByElementId(connectorElementId: string): Promise<void> {
+  const { data: existing } = await supabase
+    .from('smart_connectors')
+    .select('*')
+    .eq('connector_element_id', connectorElementId)
+    .maybeSingle();
   const { error } = await supabase
     .from('smart_connectors')
     .delete()
     .eq('connector_element_id', connectorElementId);
   if (error) throw error;
+  if (existing) {
+    void audit({
+      resource_type: 'smart_connector',
+      action: 'canvas.connector.deleted',
+      resource_id: existing.connector_element_id,
+      scope_type: 'board',
+      scope_id: existing.board_id,
+      metadata: {
+        sourceElementId: existing.source_element_id,
+        targetElementId: existing.target_element_id,
+        relationshipType: existing.relationship_type,
+      },
+    });
+  }
 }

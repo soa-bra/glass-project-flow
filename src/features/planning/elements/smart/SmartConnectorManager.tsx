@@ -47,7 +47,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     connectionType: RootConnectorData['connectionType']
   ) => {
     const newConnector: RootConnectorData = {
-      id: nanoid(),
+      id: crypto.randomUUID(),
       startPoint,
       endPoint,
       connectionType,
@@ -154,14 +154,14 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   // Handle anchor drag end
   const handleAnchorDragEnd = useCallback((point: ConnectorPoint) => {
     if (dragStartPoint && dragStartPoint.elementId !== point.elementId) {
-      handleCreateConnector(dragStartPoint, point, 'component-component');
+      handleCreateConnector(dragStartPoint, point, 'references');
     }
     setDragStartPoint(null);
     setIsCreatingConnector(false);
   }, [dragStartPoint, handleCreateConnector]);
 
   return (
-    <g className="smart-connector-manager">
+    <g className="smart-connector-manager" style={{ pointerEvents: 'auto' }}>
       {/* Connection Anchors for each element */}
       {showAnchors && elements.map(element => (
         <ConnectionAnchors
@@ -213,7 +213,7 @@ export const useSmartConnectors = (initialConnectors: RootConnectorData[] = []) 
   const addConnector = useCallback((connector: Omit<RootConnectorData, 'id' | 'createdAt' | 'updatedAt'>) => {
     const newConnector: RootConnectorData = {
       ...connector,
-      id: nanoid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };

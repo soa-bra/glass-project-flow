@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { useCanvasStore, type ToolId, type ShapeType } from '@/stores/canvasStore';
-import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { recognizeShape, pointsToSVGPath, simplifyPath, type Point } from '@/utils/shapeRecognition';
 import { toast } from 'sonner';
 import { createStraightArrowData, type ArrowData } from '@/types/arrow-connections';
 import type { SmartElementType } from '@/types/smart-elements';
+import { createSmartCanvasElement } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
 
 const DEFAULT_SHAPE_SIZE = { width: 120, height: 120 };
 const DEFAULT_ARROW_SIZE = { width: 120, height: 60 };
@@ -470,12 +470,11 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       return;
     }
 
-    const { addSmartElement } = useSmartElementsStore.getState();
-    addSmartElement(
-      selectedSmartElement as SmartElementType,
-      point,
-      { title: selectedSmartElement }
-    );
+    addCanvasElement(createSmartCanvasElement({
+      smartType: selectedSmartElement as SmartElementType,
+      position: point,
+      data: { title: selectedSmartElement },
+    }));
     toast.success('تم إضافة العنصر الذكي');
     useCanvasStore.getState().setSelectedSmartElement(null);
   };
@@ -491,25 +490,43 @@ export const useToolInteraction = (containerRef: React.RefObject<HTMLDivElement>
       return;
     }
 
-    const { addSmartElement } = useSmartElementsStore.getState();
+    const { addElement: addCanvasElement } = useCanvasStore.getState();
     const initialData: Record<string, any> = {};
     if (selectedSmartDoc === 'interactive_sheet') {
       initialData.title = 'جدول تفاعلي';
       initialData.rows = 10;
       initialData.columns = 5;
-      initialData.enableFormulas = true;
+      initialData.cells = {};
+      initialData.version = 1;
+      initialData.format = 'spreadsheet';
+      initialData.sheet = {
+        rows: 10,
+        cols: 5,
+        cells: {},
+      };
+      initialData.meta = { enableFormulas: true };
     } else if (selectedSmartDoc === 'smart_text_doc') {
       initialData.title = 'مستند نصي ذكي';
       initialData.content = '';
-      initialData.format = 'rich';
       initialData.aiAssist = true;
+      initialData.showToolbar = true;
+      initialData.readOnly = false;
+      initialData.version = 1;
+      initialData.format = 'rich-text';
+      initialData.blocks = [
+        { id: crypto.randomUUID(), type: 'heading', text: 'مستند نصي ذكي', level: 2 },
+        { id: crypto.randomUUID(), type: 'paragraph', text: '' },
+      ];
+      initialData.meta = { aiAssist: true };
     }
 
-    addSmartElement(
-      selectedSmartDoc as SmartElementType,
-      point,
-      initialData
-    );
+    addCanvasElement(createSmartCanvasElement({
+      smartType: selectedSmartDoc as SmartElementType,
+      position: point,
+      data: initialData,
+      title: initialData.title,
+      metadata: { documentStatus: 'draft' },
+    }));
     toast.success(`تم إضافة ${selectedSmartDoc === 'interactive_sheet' ? 'الجدول التفاعلي' : 'المستند النصي الذكي'}`);
     useCanvasStore.getState().setSelectedSmartDoc(null);
   };

@@ -15,13 +15,18 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { z } from "zod";
+import { audit } from "@/services/audit";
 import {
   isSmartDocElementType,
   SMART_DOC_SCHEMA_VERSION,
   validateSmartDocContent,
 } from "@/features/planning/elements/smart-doc/contract";
 import { planningElementToConnectorLogicalRecord } from "@/features/planning/integration/connectors";
-import { upsertSmartConnector, upsertSmartConnectors } from "./smartConnectors.service";
+import {
+  deleteSmartConnectorByElementId,
+  upsertSmartConnector,
+  upsertSmartConnectors,
+} from "./smartConnectors.service";
 
 // ── Types ───────────────────────────────────────────────────────────────────
 export type PlanningBoard = Database["public"]["Tables"]["planning_boards"]["Row"];
@@ -97,6 +102,24 @@ async function requireUserId(): Promise<string> {
   if (error) throw error;
   if (!data.user) throw new Error("Not authenticated");
   return data.user.id;
+}
+
+function recordCanvasElementAudit(
+  action: string,
+  row: Pick<PlanningElement, "id" | "board_id" | "element_type">,
+  metadata?: Record<string, unknown>,
+): void {
+  void audit({
+    resource_type: "planning_element",
+    action,
+    resource_id: row.id,
+    scope_type: "board",
+    scope_id: row.board_id,
+    metadata: {
+      elementType: row.element_type,
+      ...metadata,
+    },
+  });
 }
 
 // ── Boards CRUD ─────────────────────────────────────────────────────────────
@@ -225,6 +248,7 @@ export async function createPlanningElement(
   if (error) throw error;
   const connectorRecord = planningElementToConnectorLogicalRecord(data);
   if (connectorRecord) await upsertSmartConnector(connectorRecord);
+  recordCanvasElementAudit("canvas.element.created", data);
   return data;
 }
 
@@ -258,15 +282,55 @@ export async function updatePlanningElement(
   if (error) throw error;
   const connectorRecord = planningElementToConnectorLogicalRecord(data);
   if (connectorRecord) await upsertSmartConnector(connectorRecord);
+  recordCanvasElementAudit("canvas.element.updated", data);
   return data;
 }
 
 export async function deletePlanningElement(id: string): Promise<void> {
+  const existing = await getPlanningElement(id);
+  if (existing) {
+    const { data: dependentConnectors, error: dependentConnectorsError } = await supabase
+      .from("smart_connectors" as any)
+      .select("connector_element_id")
+      .or(`connector_element_id.eq.${id},source_element_id.eq.${id},target_element_id.eq.${id}`);
+
+    if (dependentConnectorsError) throw dependentConnectorsError;
+
+    const dependentConnectorElementIds = (dependentConnectors ?? [])
+      .map((connector: { connector_element_id?: string | null }) => connector.connector_element_id)
+      .filter((connectorElementId): connectorElementId is string => Boolean(connectorElementId));
+
+    await Promise.all(dependentConnectorElementIds.map((connectorElementId) => deleteSmartConnectorByElementId(connectorElementId)));
+
+    const orphanConnectorElementIds = dependentConnectorElementIds.filter((connectorElementId) => connectorElementId !== id);
+    if (orphanConnectorElementIds.length > 0) {
+      const { data: orphanConnectorElements, error: orphanSelectError } = await supabase
+        .from("planning_elements")
+        .select("*")
+        .in("id", orphanConnectorElementIds);
+
+      if (orphanSelectError) throw orphanSelectError;
+
+      const { error: orphanDeleteError } = await supabase
+        .from("planning_elements")
+        .delete()
+        .in("id", orphanConnectorElementIds);
+
+      if (orphanDeleteError) throw orphanDeleteError;
+
+      (orphanConnectorElements ?? []).forEach((connectorElement) =>
+        recordCanvasElementAudit("canvas.connector.deleted", connectorElement, {
+          deletedBecauseElementId: id,
+        }),
+      );
+    }
+  }
   const { error } = await supabase
     .from("planning_elements")
     .delete()
     .eq("id", id);
   if (error) throw error;
+  if (existing) recordCanvasElementAudit("canvas.element.deleted", existing);
 }
 
 /** Bulk upsert — used by debounced save loop (P1.a). */
@@ -284,6 +348,9 @@ export async function upsertPlanningElements(
     .map((row) => planningElementToConnectorLogicalRecord(row))
     .filter((record): record is NonNullable<typeof record> => Boolean(record));
   await upsertSmartConnectors(connectorRecords);
+  savedRows.forEach((row) => recordCanvasElementAudit("canvas.element.upserted", row, {
+    batchSize: savedRows.length,
+  }));
   return savedRows;
 }
 

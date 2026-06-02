@@ -19,6 +19,48 @@ type PlanningElement = Database['public']['Tables']['planning_elements']['Row'];
 
 type CreatedEntity = Project | Task | FinancialBudget | FinancialTransaction;
 
+function getEntityDisplayName(entity: CreatedEntity): string {
+  return asString((entity as any).name) ?? asString((entity as any).title) ?? 'كيان تنفيذي';
+}
+
+function getProjectIdForEvent(payload: SmartConversionPayload, entity: CreatedEntity): string | null {
+  if (payload.targetEntityType === 'project') return entity.id;
+  if (payload.targetEntityType === 'task') return asString((entity as Task).linked_project_id) ?? null;
+  return asString((entity as any).project_id) ?? null;
+}
+
+function getSmartCardType(targetEntityType: SmartConversionTargetEntityType): string {
+  if (targetEntityType === 'project') return 'project_card';
+  if (targetEntityType === 'task') return 'task_card';
+  return 'finance_card';
+}
+
+function buildExecutableCardContent(
+  payload: SmartConversionPayload,
+  entity: CreatedEntity,
+): Record<string, unknown> {
+  const smartType = getSmartCardType(payload.targetEntityType);
+  const displayName = getEntityDisplayName(entity);
+
+  return {
+    smartType,
+    linkedEntityType: payload.targetEntityType,
+    linkedEntityId: entity.id,
+    title: displayName,
+    name: displayName,
+    projectName: payload.targetEntityType === 'project' ? displayName : undefined,
+    taskName: payload.targetEntityType === 'task' ? displayName : undefined,
+    status: (entity as any).state ?? (entity as any).status ?? 'draft',
+    state: (entity as any).state ?? 'draft',
+    priority: (entity as any).priority ?? payload.suggestedData.priority,
+    description: (entity as any).description ?? payload.suggestedData.description,
+    budget: (entity as any).budget ?? (entity as any).planned_amount,
+    estimatedCost: (entity as any).estimated_cost,
+    dueDate: (entity as any).due_date,
+    sourceElementIds: payload.sourceElementIds,
+  };
+}
+
 export interface SmartConversionApproval {
   approved: boolean;
   approverId?: string;
@@ -87,6 +129,41 @@ async function requireUserId(): Promise<string> {
   if (error) throw error;
   if (!data.user) throw new Error('Not authenticated');
   return data.user.id;
+}
+
+async function requireBoardEditor(boardId: string, userId: string): Promise<void> {
+  const [{ data: board, error: boardError }, { data: canEdit, error: roleError }] = await Promise.all([
+    supabase
+      .from('planning_boards')
+      .select('owner_id')
+      .eq('id', boardId)
+      .maybeSingle(),
+    supabase.rpc('user_has_board_role', {
+      board_id: boardId,
+      user_id: userId,
+      min_role: 'editor',
+    }),
+  ]);
+
+  if (boardError) throw boardError;
+  if (roleError) throw roleError;
+  if (board?.owner_id === userId || canEdit) return;
+
+  await supabase.from('audit_events').insert({
+    actor_id: userId,
+    resource_type: 'planning_board',
+    resource_id: boardId,
+    action: 'planning.smart_conversion.approve',
+    decision: 'denied',
+    reason: 'missing_board_editor_role',
+    scope_type: 'board',
+    scope_id: boardId,
+    metadata: {
+      requiredRole: 'editor',
+    } as Json,
+  });
+
+  throw new Error('لا تملك صلاحية اعتماد تحويلات هذه اللوحة.');
 }
 
 function buildMetadata(payload: SmartConversionPayload): Json {
@@ -226,22 +303,29 @@ async function linkPlanningElements(payload: SmartConversionPayload, entity: Cre
 
   const updated: PlanningElement[] = [];
   for (const element of elements ?? []) {
+    const cardContent = buildExecutableCardContent(payload, entity);
     const metadata = {
       ...(typeof element.metadata === 'object' && element.metadata !== null ? element.metadata as Record<string, unknown> : {}),
+      canvasType: 'smart',
+      smartType: cardContent.smartType,
       linkedEntityType: payload.targetEntityType,
       linkedEntityId: entity.id,
     };
     const content = typeof element.content === 'object' && element.content !== null
       ? {
           ...element.content as Record<string, unknown>,
-          linkedEntityType: payload.targetEntityType,
-          linkedEntityId: entity.id,
+          ...cardContent,
         }
-      : element.content;
+      : cardContent;
 
     const { data, error } = await supabase
       .from('planning_elements')
-      .update({ metadata: metadata as Json, content: content as Json })
+      .update({
+        element_type: 'entity_card',
+        size: { width: 320, height: payload.targetEntityType === 'project' ? 260 : 220 } as Json,
+        metadata: metadata as Json,
+        content: content as Json,
+      })
       .eq('id', element.id)
       .select('*')
       .single();
@@ -250,6 +334,108 @@ async function linkPlanningElements(payload: SmartConversionPayload, entity: Cre
   }
 
   return updated;
+}
+
+async function recordTransformationLinksAndEvents(
+  payload: SmartConversionPayload,
+  entity: CreatedEntity,
+  ownerId: string,
+): Promise<void> {
+  const projectId = getProjectIdForEvent(payload, entity);
+
+  const transformationRows = payload.sourceElementIds.map((sourceElementId) => ({
+    board_id: payload.boardId,
+    source_element_id: sourceElementId,
+    transformation_type: payload.targetEntityType,
+    result: {
+      entityType: payload.targetEntityType,
+      entityId: entity.id,
+    } as Json,
+    status: 'completed',
+    metadata: {
+      suggestedData: payload.suggestedData,
+      approval: payload.approval,
+    } as Json,
+    created_by: ownerId,
+  }));
+
+  const linkRows = payload.sourceElementIds.map((sourceElementId) => ({
+    board_id: payload.boardId,
+    project_id: projectId,
+    source_element_id: sourceElementId,
+    link_kind: 'derivation',
+    label: `تحويل إلى ${payload.targetEntityType}`,
+    mapping: {
+      targetEntityType: payload.targetEntityType,
+      targetEntityId: entity.id,
+    } as Json,
+    metadata: {
+      conversion: payload,
+    } as Json,
+    created_by: ownerId,
+  }));
+
+  const eventRow = projectId
+    ? {
+        project_id: projectId,
+        board_id: payload.boardId,
+        event_kind: 'created',
+        event_type: `canvas.element.converted.${payload.targetEntityType}`,
+        aggregate_type: payload.targetEntityType,
+        aggregate_id: entity.id,
+        actor_id: payload.approval.approverId ?? ownerId,
+        payload: {
+          boardId: payload.boardId,
+          sourceElementIds: payload.sourceElementIds,
+          targetEntityType: payload.targetEntityType,
+          targetEntityId: entity.id,
+        } as Json,
+      }
+    : null;
+
+  const syncQueueRow = {
+    board_id: payload.boardId,
+    project_id: projectId,
+    entity_table:
+      payload.targetEntityType === 'project'
+        ? 'projects'
+        : payload.targetEntityType === 'task'
+          ? 'tasks'
+          : payload.targetEntityType === 'financial_budget'
+            ? 'financial_budgets'
+            : 'financial_transactions',
+    entity_id: entity.id,
+    operation: 'planning.smart_conversion.approved',
+    status: 'pending',
+    payload: {
+      boardId: payload.boardId,
+      sourceElementIds: payload.sourceElementIds,
+      targetEntityType: payload.targetEntityType,
+      targetEntityId: entity.id,
+      approval: payload.approval,
+    } as Json,
+    created_by: ownerId,
+  };
+
+  const writes: PromiseLike<unknown>[] = [
+    supabase.from('element_transformations' as any).insert(transformationRows as any),
+    supabase.from('data_links' as any).insert(linkRows as any),
+    supabase.from('sync_queue' as any).insert(syncQueueRow as any),
+  ];
+
+  if (eventRow) {
+    writes.push(supabase.from('project_events' as any).insert(eventRow as any));
+  }
+
+  const results = await Promise.allSettled(writes);
+  results.forEach((result) => {
+    if (result.status === 'fulfilled') {
+      const maybeError = (result.value as any)?.error;
+      if (maybeError) console.warn('[smartConversion] Supplemental write failed', maybeError);
+    } else {
+      console.warn('[smartConversion] Supplemental write failed', result.reason);
+    }
+  });
 }
 
 async function recordConversionAudit(
@@ -295,6 +481,7 @@ export async function approveSmartConversion(
   }
 
   const ownerId = await requireUserId();
+  await requireBoardEditor(parsed.boardId, ownerId);
   const approval = {
     ...parsed.approval,
     approverId: parsed.approval.approverId ?? ownerId,
@@ -304,6 +491,7 @@ export async function approveSmartConversion(
 
   const entity = await createEntity(approvedPayload, ownerId);
   const linkedElements = await linkPlanningElements(approvedPayload, entity);
+  await recordTransformationLinksAndEvents(approvedPayload, entity, ownerId);
   const auditEventId = await recordConversionAudit(approvedPayload, entity, ownerId);
 
   return { entity, linkedElements, auditEventId };

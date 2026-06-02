@@ -17,21 +17,31 @@ import { useCanvasPaste } from '@/hooks/useCanvasPaste';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { PenFloatingToolbar } from '@/components/ui/penToolbar';
 import { CanvasGridLayer } from '@/features/planning/canvas/viewport/CanvasGridLayer';
-import { RealtimeSyncManager } from '@/features/planning/integration/collaboration';
+import { PresenceCursors } from '@/features/planning/ui/collaboration';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
+import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
+import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import type { PresencePeer } from '@/features/planning/hooks/usePlanningRealtime';
 import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
 import { useCanvasPointerTracking } from '@/features/planning/canvas/controllers/useCanvasPointerTracking';
 import { useCanvasDropController } from '@/features/planning/canvas/controllers/useCanvasDropController';
 import { useMindMapConnectionController } from '@/features/planning/canvas/controllers/useMindMapConnectionController';
 import { useCanvasViewportController } from '@/features/planning/canvas/controllers/useCanvasViewportController';
 import { useCanvasSelectionController } from '@/features/planning/canvas/controllers/useCanvasSelectionController';
-import { useCanvasRealtimeController } from '@/features/planning/canvas/controllers/useCanvasRealtimeController';
 
 interface InfiniteCanvasProps {
   boardId: string;
+  peers?: PresencePeer[];
+  broadcastCursor?: (x: number, y: number) => void;
+  canEdit?: boolean;
 }
 
-const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
+const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
+  boardId: _boardId,
+  peers = [],
+  broadcastCursor,
+  canEdit = true,
+}) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -48,6 +58,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
   const setViewportHostSize = useCanvasStore((state) => state.setViewportHostSize);
   const clearSelection = useCanvasStore((state) => state.clearSelection);
   const selectElement = useCanvasStore((state) => state.selectElement);
+  const addElement = useCanvasStore((state) => state.addElement);
+  const updateElement = useCanvasStore((state) => state.updateElement);
+  const deleteElements = useCanvasStore((state) => state.deleteElements);
 
   const {
     mode: interactionMode,
@@ -135,16 +148,88 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
     updatePointerFromClient,
   });
 
-  const { realtimeProps } = useCanvasRealtimeController({
-    boardId,
-    viewport,
-  });
-
   useCanvasPaste({
     lastPointerPosition: lastPointerPositionRef,
     viewportBounds,
-    enabled: true,
+    enabled: canEdit,
   });
+
+  const rootConnectorElements = useMemo(
+    () => elements.filter((element) => element.data?.smartType === 'root_connector'),
+    [elements],
+  );
+
+  const rootConnectors = useMemo<RootConnectorData[]>(
+    () => rootConnectorElements.map((element) => ({
+      ...(element.data as RootConnectorData),
+      id: element.id,
+    })),
+    [rootConnectorElements],
+  );
+
+  const connectableElements = useMemo(
+    () =>
+      visibleElements
+        .filter((element) => element.data?.smartType !== 'root_connector')
+        .map((element) => ({
+          id: element.id,
+          x: element.position.x,
+          y: element.position.y,
+          width: element.size.width,
+          height: element.size.height,
+          type: element.type === 'frame' ? 'frame' as const : element.type === 'smart' ? 'smart-element' as const : 'component' as const,
+        })),
+    [visibleElements],
+  );
+
+  const syncRootConnectors = useCallback(
+    (nextConnectors: RootConnectorData[]) => {
+      const previousIds = new Set(rootConnectorElements.map((element) => element.id));
+      const nextIds = new Set(nextConnectors.map((connector) => connector.id));
+
+      rootConnectorElements
+        .filter((element) => !nextIds.has(element.id))
+        .forEach((element) => deleteElements([element.id]));
+
+      nextConnectors.forEach((connector) => {
+        const position = {
+          x: Math.min(connector.startPoint.x, connector.endPoint.x),
+          y: Math.min(connector.startPoint.y, connector.endPoint.y),
+        };
+        const size = {
+          width: Math.max(1, Math.abs(connector.endPoint.x - connector.startPoint.x)),
+          height: Math.max(1, Math.abs(connector.endPoint.y - connector.startPoint.y)),
+        };
+        const data = {
+          ...connector,
+          smartType: 'root_connector',
+          relationshipType: connector.connectionType ?? 'references',
+        };
+        const metadata = {
+          smartType: 'root_connector',
+          relationshipType: connector.connectionType ?? 'references',
+          sourceElementId: connector.startPoint.elementId,
+          targetElementId: connector.endPoint.elementId,
+        };
+
+        if (previousIds.has(connector.id)) {
+          updateElement(connector.id, { position, size, data, metadata });
+          return;
+        }
+
+        addElement({
+          id: connector.id,
+          type: 'smart',
+          position,
+          size,
+          style: {},
+          data,
+          metadata,
+        });
+      });
+    },
+    [addElement, deleteElements, rootConnectorElements, updateElement],
+  );
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -206,7 +291,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      updatePointerFromClient(e.clientX, e.clientY);
+      const pointer = updatePointerFromClient(e.clientX, e.clientY);
+      if (pointer) {
+        broadcastCursor?.(pointer.x, pointer.y);
+      }
 
       if (mindMapConnectionRef.current.isConnecting) {
         updateConnectionPosition(e.clientX, e.clientY);
@@ -224,7 +312,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
       handleCanvasMouseMove(e);
     },
-    [boxSelectData, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
+    [broadcastCursor, boxSelectData, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -284,7 +372,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       >
         <StrokesLayer />
 
-        {visibleElements.map((element) => (
+        {visibleElements
+          .filter((element) => element.data?.smartType !== 'root_connector')
+          .map((element) => (
           <CanvasElement
             key={element.id}
             element={element}
@@ -299,6 +389,20 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
           />
         ))}
 
+        <svg
+          className="absolute left-0 top-0 overflow-visible"
+          width="100000"
+          height="100000"
+          style={{ pointerEvents: 'none' }}
+        >
+          <SmartConnectorManager
+            elements={connectableElements}
+            connectors={rootConnectors}
+            onConnectorsChange={syncRootConnectors}
+            showAnchors={canEdit && activeTool === 'selection_tool' && selectedElementIds.length > 0}
+          />
+        </svg>
+
         {mindMapConnectionUI.isConnecting && mindMapConnectionUI.startPosition && mindMapConnectionUI.currentPosition && (
           <MindMapConnectionLine
             startPosition={mindMapConnectionUI.startPosition}
@@ -311,6 +415,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
 
         <BoundingBox onGuidesChange={setSnapGuides} />
         {tempElement && <DrawingPreview element={tempElement} />}
+        <PresenceCursors peers={peers} />
       </div>
 
       {isMode('boxSelect') && selectionBoxData && (
@@ -328,7 +433,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({ boardId }) => {
       <FrameInputLayer containerRef={containerRef} active={activeTool === 'frame_tool'} />
       <PenFloatingToolbar isVisible={activeTool === 'smart_pen'} />
 
-      <RealtimeSyncManager {...realtimeProps} />
     </div>
   );
 };
