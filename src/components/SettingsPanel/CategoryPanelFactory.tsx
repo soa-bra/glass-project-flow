@@ -7,7 +7,7 @@ import { NotificationsSettingsPanel } from './categories/NotificationsSettingsPa
 import { AISettingsPanel } from './categories/AISettingsPanel';
 import { ThemeSettingsPanel } from './categories/ThemeSettingsPanel';
 import { DataGovernanceSettingsPanel } from './categories/DataGovernanceSettingsPanel';
-import { UsersRolesSettingsPanel } from './categories/UsersRolesSettingsPanel';
+
 import { AuditCenterPanel } from './categories/AuditCenterPanel';
 import { EngineJobsDashboard } from '@/features/engine-jobs';
 import { DependencyGraphVisualizer } from '@/features/dependency-graph';
@@ -39,7 +39,8 @@ export class CategoryPanelFactory {
       case 'data-governance':
         return DataGovernanceSettingsPanel;
       case 'users-roles':
-        return UsersRolesSettingsPanel;
+      case 'admin-roles':
+        return wrapTechnical(AdminRolesPanel, 'المستخدمون والأدوار', 'إدارة الحسابات والأدوار والصلاحيات (DB-backed)');
       case 'audit':
         return AuditCenterPanel;
       case 'engine-jobs':
@@ -48,8 +49,6 @@ export class CategoryPanelFactory {
         return wrapTechnical(DependencyGraphVisualizer, 'خريطة الاعتماديات', 'علاقات الكيانات المركزية');
       case 'tools-marketplace':
         return wrapTechnical(ToolsMarketplace, 'سوق الأدوات', 'إدارة الأدوات والإضافات');
-      case 'admin-roles':
-        return wrapTechnical(AdminRolesPanel, 'الأدوار الإدارية', 'إدارة الأدوار والصلاحيات المتقدمة');
 
       default:
         return (props: any) => <GenericSettingsPanel category={category} {...props} />;
