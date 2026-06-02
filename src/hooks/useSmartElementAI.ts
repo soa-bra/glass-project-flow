@@ -5,6 +5,16 @@ import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
 import { buildAIContext } from '@/features/ai/context/contextBuilder';
 import { sanitizeAIContext } from '@/features/ai/context/contextSanitizer';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  SmartTransformationApprovalDialog,
+  type SmartTransformationApprovalRequest,
+  type TransformationSensitivity,
+} from '@/components/smart-elements/SmartTransformationApprovalDialog';
+import {
+  getCanvasAIPermissions,
+  type CanvasAIPermissionScope,
+} from '@/features/planning/hooks/useCanvasAIPermissions';
 
 interface GeneratedElement {
   id: string;
@@ -327,6 +337,12 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
 
     return result;
   }, [callAI, ensureAIPermission, requestHumanApproval, user?.id]);
+
+  const approvalDialog: ReactNode = createElement(SmartTransformationApprovalDialog, {
+    request: approvalRequest,
+    onApprove: handleApprove,
+    onCancel: handleCancelApproval,
+  });
 
   return {
     isLoading,
