@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, ShieldCheck, Bell, Link2, BrainCircuit, Palette, Database, Users, ScrollText, Cpu, Network, Wrench, Crown } from 'lucide-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useIsOwner } from '@/hooks/useIsOwner';
 
 interface SettingsSidebarProps {
   selectedCategory: string | null;
@@ -9,12 +10,15 @@ interface SettingsSidebarProps {
   onToggleCollapse: (collapsed: boolean) => void;
 }
 
+const OWNER_ONLY_KEYS = new Set(['users-roles', 'admin-roles', 'audit']);
+
 const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
   selectedCategory,
   onCategorySelect,
   isCollapsed,
   onToggleCollapse
 }) => {
+  const { isOwner } = useIsOwner();
   const categories = [
     {
       key: 'account',
@@ -155,7 +159,9 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 
         {/* Categories List */}
         <div className="flex flex-col gap-2 flex-1 overflow-y-auto my-[96px] px-[10px]">
-          {categories.map((category, index) => {
+          {categories
+            .filter((c) => (OWNER_ONLY_KEYS.has(c.key) ? isOwner : true))
+            .map((category, index) => {
             const IconComponent = category.icon;
             const isActive = selectedCategory === category.key;
             
