@@ -11,7 +11,8 @@ import { BaseBadge } from "@/components/ui/BaseBadge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import * as SelectPrimitive from "@radix-ui/react-select";
 import { Eye, Pencil, Trash2, UserPlus, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
