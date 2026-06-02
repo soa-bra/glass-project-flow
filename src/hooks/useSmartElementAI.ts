@@ -1,11 +1,6 @@
 import { createElement, useCallback, useState } from 'react';
 import type { ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { getCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
-import type { CanvasAIPermissionScope } from '@/features/planning/hooks/useCanvasAIPermissions';
-import { SmartTransformationApprovalDialog } from '@/components/smart-elements/SmartTransformationApprovalDialog';
-import type { SmartTransformationApprovalRequest, TransformationSensitivity } from '@/components/smart-elements/SmartTransformationApprovalDialog';
 import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
 import { buildAIContext } from '@/features/ai/context/contextBuilder';
@@ -332,12 +327,6 @@ export function useSmartElementAI(): UseSmartElementAIReturn {
 
     return result;
   }, [callAI, ensureAIPermission, requestHumanApproval, user?.id]);
-
-  const approvalDialog = createElement(SmartTransformationApprovalDialog, {
-    request: approvalRequest,
-    onApprove: handleApprove,
-    onCancel: handleCancelApproval
-  });
 
   return {
     isLoading,
