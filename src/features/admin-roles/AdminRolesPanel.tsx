@@ -312,7 +312,22 @@ const UserFormModal: React.FC<UserFormModalProps> = ({ state, onClose, onSaved }
                 </SelectTrigger>
                 <SelectContent>
                   {ROLE_OPTIONS.map((r) => (
-                    <SelectItem key={r} value={r}>{ROLE_LABEL[r]}</SelectItem>
+                    <SelectPrimitive.Item
+                      key={r}
+                      value={r}
+                      textValue={ROLE_LABEL[r]}
+                      className="relative flex w-full cursor-default select-none items-center rounded-full py-2 pl-8 pr-3 text-sm outline-none hover:bg-black hover:text-white focus:bg-black focus:text-white data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    >
+                      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                        <SelectPrimitive.ItemIndicator>
+                          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4"><path d="M11.4669 3.72684C11.7558 3.91574 11.8362 4.31308 11.6474 4.60201L7.07741 11.902C6.89097 12.1864 6.50367 12.268 6.21925 12.0816C6.20157 12.0704 6.18458 12.0582 6.16834 12.0452L3.57433 10.0593C3.28746 9.86434 3.2137 9.46596 3.40867 9.17908C3.60365 8.89221 4.00203 8.81845 4.2889 9.01342L6.51874 10.6118L10.6991 3.92675C10.888 3.63782 11.2854 3.55748 11.5743 3.74638C11.605 3.76563 11.6348 3.78694 11.6637 3.81015L11.4669 3.72684Z" fill="currentColor" stroke="currentColor" strokeWidth="0.2"></path></svg>
+                        </SelectPrimitive.ItemIndicator>
+                      </span>
+                      <div className="flex flex-col">
+                        <SelectPrimitive.ItemText>{ROLE_LABEL[r]}</SelectPrimitive.ItemText>
+                        <span className="text-[11px] font-light opacity-70 leading-tight mt-0.5">{ROLE_DESCRIPTION[r]}</span>
+                      </div>
+                    </SelectPrimitive.Item>
                   ))}
                 </SelectContent>
               </Select>
