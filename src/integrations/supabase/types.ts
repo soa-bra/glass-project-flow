@@ -2899,6 +2899,13 @@ export type Database = {
         | "technical"
         | "operational"
         | "time"
+        | "depends_on"
+        | "causes"
+        | "blocks"
+        | "references"
+        | "funds"
+        | "delivers"
+        | "belongs_to"
       central_entity_type:
         | "central_board"
         | "department"
@@ -2939,6 +2946,10 @@ export type Database = {
         | "frame"
         | "connector"
         | "entity_card"
+        | "mindmap_connector"
+        | "root_connector"
+        | "visual_connector"
+        | "visual_node"
       project_status:
         | "planning"
         | "active"
@@ -3139,6 +3150,13 @@ export const Constants = {
         "technical",
         "operational",
         "time",
+        "depends_on",
+        "causes",
+        "blocks",
+        "references",
+        "funds",
+        "delivers",
+        "belongs_to",
       ],
       central_entity_type: [
         "central_board",
@@ -3183,6 +3201,10 @@ export const Constants = {
         "frame",
         "connector",
         "entity_card",
+        "mindmap_connector",
+        "root_connector",
+        "visual_connector",
+        "visual_node",
       ],
       project_status: [
         "planning",
