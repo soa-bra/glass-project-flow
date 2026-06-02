@@ -100,7 +100,10 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       icon: Wrench,
       route: '/settings/tools-marketplace',
       access: 'all'
-    },
+    }
+  ];
+
+
     
   
   const toggleSidebar = () => {
