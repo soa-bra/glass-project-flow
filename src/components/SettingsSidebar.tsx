@@ -159,7 +159,9 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
 
         {/* Categories List */}
         <div className="flex flex-col gap-2 flex-1 overflow-y-auto my-[96px] px-[10px]">
-          {categories.map((category, index) => {
+          {categories
+            .filter((c) => (OWNER_ONLY_KEYS.has(c.key) ? isOwner : true))
+            .map((category, index) => {
             const IconComponent = category.icon;
             const isActive = selectedCategory === category.key;
             
