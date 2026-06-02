@@ -13,6 +13,7 @@ import {
 } from '@/components/smart-elements/SmartTransformationApprovalDialog';
 import {
   getCanvasAIPermissions,
+  useCanvasAIPermissions,
   type CanvasAIPermissionScope,
 } from '@/features/planning/hooks/useCanvasAIPermissions';
 

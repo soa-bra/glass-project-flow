@@ -103,7 +103,7 @@ const tools: Tool[] = [
   },
 ];
 
-const BottomToolbar: React.FC = () => {
+const BottomToolbar: React.FC<{ canEdit?: boolean }> = ({ canEdit: _canEdit = true }) => {
   const { activeTool, setActiveTool } = useCanvasStore();
 
   const dockItems = tools.map((tool) => ({

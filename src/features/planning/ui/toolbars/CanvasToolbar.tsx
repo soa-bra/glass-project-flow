@@ -33,6 +33,8 @@ interface CanvasToolbarProps {
   selfName?: string;
   realtimeStatus?: RealtimeConnectionStatus;
   lastSyncAt?: number | null;
+  canEdit?: boolean;
+  canUseAI?: boolean;
 }
 
 const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
@@ -43,6 +45,8 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   selfName,
   realtimeStatus = 'idle',
   lastSyncAt = null,
+  canEdit: _canEdit = true,
+  canUseAI: _canUseAI = true,
 }) => {
   const { undo, redo, history } = useCanvasStore();
   const { renameBoard } = usePlanningStore();
