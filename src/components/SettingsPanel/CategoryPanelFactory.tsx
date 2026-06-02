@@ -7,7 +7,7 @@ import { NotificationsSettingsPanel } from './categories/NotificationsSettingsPa
 import { AISettingsPanel } from './categories/AISettingsPanel';
 import { ThemeSettingsPanel } from './categories/ThemeSettingsPanel';
 import { DataGovernanceSettingsPanel } from './categories/DataGovernanceSettingsPanel';
-import { UsersRolesSettingsPanel } from './categories/UsersRolesSettingsPanel';
+
 import { AuditCenterPanel } from './categories/AuditCenterPanel';
 import { EngineJobsDashboard } from '@/features/engine-jobs';
 import { DependencyGraphVisualizer } from '@/features/dependency-graph';
