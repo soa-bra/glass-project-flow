@@ -2236,6 +2236,54 @@ export type Database = {
           },
         ]
       }
+      smart_connectors: {
+        Row: {
+          board_id: string
+          connector_element_id: string
+          connector_kind: string
+          created_at: string
+          created_by: string
+          id: string
+          label: string | null
+          metadata: Json
+          relationship_type: string
+          source_element_id: string
+          style: Json
+          target_element_id: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          connector_element_id: string
+          connector_kind: string
+          created_at?: string
+          created_by: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          relationship_type: string
+          source_element_id: string
+          style?: Json
+          target_element_id: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          connector_element_id?: string
+          connector_kind?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          label?: string | null
+          metadata?: Json
+          relationship_type?: string
+          source_element_id?: string
+          style?: Json
+          target_element_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       smart_element_data: {
         Row: {
           board_object_id: string
