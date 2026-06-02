@@ -45,6 +45,18 @@ const ROLE_LABEL: Record<AppRole, string> = {
   guest: "Guest",
 };
 
+const ROLE_DESCRIPTION: Record<AppRole, string> = {
+  owner: "وصول كامل للنظام — تجاوز الموافقات",
+  ciso: "سياسات الأمن والحوادث وتدوير المفاتيح",
+  dpo: "الخصوصية والامتثال وطلبات المحو",
+  infra_admin: "البنية التحتية والنشر والسجلات",
+  finance_admin: "الحسابات والميزانيات والتقارير",
+  department_manager: "إدارة قسم ومهامه وميزانيته",
+  project_manager: "إدارة مشروع ومهامه ونفقاته",
+  team_member: "تنفيذ المهام المسندة وتسجيل الأوقات",
+  guest: "وصول مؤقت محدود لمرفقات مشروع",
+};
+
 async function invokeManageUsers<T = unknown>(payload: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke("manage-users", { body: payload });
   if (error) throw error;
