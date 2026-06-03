@@ -160,7 +160,7 @@ async function requireBoardEditor(boardId: string, userId: string): Promise<void
     scope_id: boardId,
     metadata: {
       requiredRole: 'editor',
-    } as Json,
+    } as unknown as Json,
   });
 
   throw new Error('لا تملك صلاحية اعتماد تحويلات هذه اللوحة.');
@@ -322,7 +322,7 @@ async function linkPlanningElements(payload: SmartConversionPayload, entity: Cre
       .from('planning_elements')
       .update({
         element_type: 'entity_card',
-        size: { width: 320, height: payload.targetEntityType === 'project' ? 260 : 220 } as Json,
+        size: { width: 320, height: payload.targetEntityType === 'project' ? 260 : 220 } as unknown as Json,
         metadata: metadata as Json,
         content: content as Json,
       })
@@ -350,12 +350,12 @@ async function recordTransformationLinksAndEvents(
     result: {
       entityType: payload.targetEntityType,
       entityId: entity.id,
-    } as Json,
+    } as unknown as Json,
     status: 'completed',
     metadata: {
       suggestedData: payload.suggestedData,
       approval: payload.approval,
-    } as Json,
+    } as unknown as Json,
     created_by: ownerId,
   }));
 
@@ -368,10 +368,10 @@ async function recordTransformationLinksAndEvents(
     mapping: {
       targetEntityType: payload.targetEntityType,
       targetEntityId: entity.id,
-    } as Json,
+    } as unknown as Json,
     metadata: {
       conversion: payload,
-    } as Json,
+    } as unknown as Json,
     created_by: ownerId,
   }));
 
@@ -389,7 +389,7 @@ async function recordTransformationLinksAndEvents(
           sourceElementIds: payload.sourceElementIds,
           targetEntityType: payload.targetEntityType,
           targetEntityId: entity.id,
-        } as Json,
+        } as unknown as Json,
       }
     : null;
 
@@ -413,7 +413,7 @@ async function recordTransformationLinksAndEvents(
       targetEntityType: payload.targetEntityType,
       targetEntityId: entity.id,
       approval: payload.approval,
-    } as Json,
+    } as unknown as Json,
     created_by: ownerId,
   };
 

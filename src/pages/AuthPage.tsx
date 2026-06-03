@@ -1,6 +1,6 @@
 /**
- * AuthPage — صفحة تسجيل الدخول/الاشتراك (Email + Password عبر Supabase).
- * RTL، تتبع نظام الألوان والـ surfaces، بدون glassmorphism.
+ * AuthPage — صفحة تسجيل الدخول (Email + Password عبر Supabase).
+ * إنشاء الحسابات يتم حصراً عبر لوحة الإعدادات بواسطة Owner.
  */
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { isAuthBypassEnabled } from "@/lib/authBypass";
@@ -18,13 +17,11 @@ export default function AuthPage() {
   if (isAuthBypassEnabled()) {
     return <Navigate to="/" replace />;
   }
-  const { user, loading, signIn, signUp } = useAuth();
+  const { user, loading, signIn } = useAuth();
   const location = useLocation();
   const { toast } = useToast();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
@@ -43,24 +40,14 @@ export default function AuthPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    const result = mode === "signin"
-      ? await signIn(email, password)
-      : await signUp(email, password, displayName || undefined);
+    const result = await signIn(email, password);
     setSubmitting(false);
 
     if (result.error) {
       toast({
-        title: mode === "signin" ? "فشل تسجيل الدخول" : "فشل إنشاء الحساب",
+        title: "فشل تسجيل الدخول",
         description: result.error.message,
         variant: "destructive",
-      });
-      return;
-    }
-
-    if (mode === "signup") {
-      toast({
-        title: "تم إنشاء الحساب",
-        description: "تحقق من بريدك إن كان تأكيد البريد مفعَّلاً.",
       });
     }
   };
@@ -70,92 +57,42 @@ export default function AuthPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">سـوبــرا</CardTitle>
-          <CardDescription>
-            {mode === "signin" ? "تسجيل الدخول إلى حسابك" : "إنشاء حساب جديد"}
-          </CardDescription>
+          <CardDescription>تسجيل الدخول إلى حسابك</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">تسجيل الدخول</TabsTrigger>
-              <TabsTrigger value="signup">حساب جديد</TabsTrigger>
-            </TabsList>
-            <TabsContent value="signin" className="mt-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">البريد الإلكتروني</Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    dir="ltr"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">كلمة المرور</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    dir="ltr"
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting && <Loader2 className="ms-2 h-4 w-4 animate-spin" />}
-                  دخول
-                </Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="signup" className="mt-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">الاسم الظاهر</Label>
-                  <Input
-                    id="signup-name"
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    autoComplete="name"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">البريد الإلكتروني</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    dir="ltr"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">كلمة المرور</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="new-password"
-                    dir="ltr"
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting && <Loader2 className="ms-2 h-4 w-4 animate-spin" />}
-                  إنشاء الحساب
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="signin-email">البريد الإلكتروني</Label>
+              <Input
+                id="signin-email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                dir="ltr"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signin-password">كلمة المرور</Label>
+              <Input
+                id="signin-password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                dir="ltr"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting && <Loader2 className="ms-2 h-4 w-4 animate-spin" />}
+              دخول
+            </Button>
+            <p className="text-center text-xs text-muted-foreground pt-2">
+              إنشاء الحسابات يتم حصراً عبر لوحة الإعدادات بواسطة المالك (Owner).
+            </p>
+          </form>
         </CardContent>
       </Card>
     </div>

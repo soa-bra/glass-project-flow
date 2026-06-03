@@ -296,8 +296,8 @@ export async function deletePlanningElement(id: string): Promise<void> {
 
     if (dependentConnectorsError) throw dependentConnectorsError;
 
-    const dependentConnectorElementIds = (dependentConnectors ?? [])
-      .map((connector: { connector_element_id?: string | null }) => connector.connector_element_id)
+    const dependentConnectorElementIds = ((dependentConnectors ?? []) as Array<{ connector_element_id?: string | null }>)
+      .map((connector) => connector.connector_element_id)
       .filter((connectorElementId): connectorElementId is string => Boolean(connectorElementId));
 
     await Promise.all(dependentConnectorElementIds.map((connectorElementId) => deleteSmartConnectorByElementId(connectorElementId)));

@@ -220,14 +220,14 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
                 }),
               },
               meta: {
-                sourceSummary: analysis.summary,
+                sourceSummary: (analysis as any).summary,
                 sourceElementIds: selectedElementIds,
                 enableFormulas: true,
               },
             }
           : {
               title,
-              content: analysis.summary || contentText,
+              content: (analysis as any).summary || contentText,
               aiAssist: true,
               showToolbar: true,
               readOnly: false,
@@ -235,7 +235,7 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
               format: 'rich-text',
               blocks: [
                 { id: crypto.randomUUID(), type: 'heading', text: title, level: 2 },
-                { id: crypto.randomUUID(), type: 'paragraph', text: analysis.summary || contentText },
+                { id: crypto.randomUUID(), type: 'paragraph', text: (analysis as any).summary || contentText },
               ],
               meta: {
                 aiAssist: true,
