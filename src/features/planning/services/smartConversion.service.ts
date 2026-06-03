@@ -16,8 +16,13 @@ type Task = Database['public']['Tables']['tasks']['Row'];
 type FinancialBudget = Database['public']['Tables']['financial_budgets']['Row'];
 type FinancialTransaction = Database['public']['Tables']['financial_transactions']['Row'];
 type PlanningElement = Database['public']['Tables']['planning_elements']['Row'];
+type ElementTransformationInsert = Database['public']['Tables']['element_transformations']['Insert'];
+type DataLinkInsert = Database['public']['Tables']['data_links']['Insert'];
+type SyncQueueInsert = Database['public']['Tables']['sync_queue']['Insert'];
+type ProjectEventInsert = Database['public']['Tables']['project_events']['Insert'];
 
 type CreatedEntity = Project | Task | FinancialBudget | FinancialTransaction;
+type DbWriteResult = PromiseLike<{ error: unknown }>;
 
 function getEntityDisplayName(entity: CreatedEntity): string {
   return asString((entity as any).name) ?? asString((entity as any).title) ?? 'كيان تنفيذي';
@@ -160,7 +165,7 @@ async function requireBoardEditor(boardId: string, userId: string): Promise<void
     scope_id: boardId,
     metadata: {
       requiredRole: 'editor',
-    } as unknown as Json,
+    } as Json,
   });
 
   throw new Error('لا تملك صلاحية اعتماد تحويلات هذه اللوحة.');
@@ -293,7 +298,14 @@ async function createEntity(payload: SmartConversionPayload, ownerId: string): P
   }
 }
 
-async function linkPlanningElements(payload: SmartConversionPayload, entity: CreatedEntity): Promise<PlanningElement[]> {
+async function assertRequiredWrite(operation: DbWriteResult, label: string): Promise<void> {
+  const { error } = await operation;
+  if (error) {
+    throw new Error(`فشل تسجيل ${label}: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+  }
+}
+
+async function loadSourcePlanningElements(payload: SmartConversionPayload): Promise<PlanningElement[]> {
   const { data: elements, error: selectError } = await supabase
     .from('planning_elements')
     .select('*')
@@ -301,6 +313,20 @@ async function linkPlanningElements(payload: SmartConversionPayload, entity: Cre
     .in('id', payload.sourceElementIds);
   if (selectError) throw selectError;
 
+  const foundIds = new Set((elements ?? []).map((element) => element.id));
+  const missingIds = payload.sourceElementIds.filter((id) => !foundIds.has(id));
+  if (missingIds.length > 0) {
+    throw new Error('لا يمكن اعتماد التحويل قبل حفظ كل العناصر المحددة على اللوحة.');
+  }
+
+  return elements ?? [];
+}
+
+async function linkPlanningElements(
+  payload: SmartConversionPayload,
+  entity: CreatedEntity,
+  elements: PlanningElement[],
+): Promise<PlanningElement[]> {
   const updated: PlanningElement[] = [];
   for (const element of elements ?? []) {
     const cardContent = buildExecutableCardContent(payload, entity);
@@ -322,7 +348,7 @@ async function linkPlanningElements(payload: SmartConversionPayload, entity: Cre
       .from('planning_elements')
       .update({
         element_type: 'entity_card',
-        size: { width: 320, height: payload.targetEntityType === 'project' ? 260 : 220 } as unknown as Json,
+        size: { width: 320, height: payload.targetEntityType === 'project' ? 260 : 220 } as Json,
         metadata: metadata as Json,
         content: content as Json,
       })
@@ -343,23 +369,23 @@ async function recordTransformationLinksAndEvents(
 ): Promise<void> {
   const projectId = getProjectIdForEvent(payload, entity);
 
-  const transformationRows = payload.sourceElementIds.map((sourceElementId) => ({
+  const transformationRows: ElementTransformationInsert[] = payload.sourceElementIds.map((sourceElementId) => ({
     board_id: payload.boardId,
     source_element_id: sourceElementId,
     transformation_type: payload.targetEntityType,
     result: {
       entityType: payload.targetEntityType,
       entityId: entity.id,
-    } as unknown as Json,
+    } as Json,
     status: 'completed',
     metadata: {
       suggestedData: payload.suggestedData,
       approval: payload.approval,
-    } as unknown as Json,
+    } as Json,
     created_by: ownerId,
   }));
 
-  const linkRows = payload.sourceElementIds.map((sourceElementId) => ({
+  const linkRows: DataLinkInsert[] = payload.sourceElementIds.map((sourceElementId) => ({
     board_id: payload.boardId,
     project_id: projectId,
     source_element_id: sourceElementId,
@@ -368,14 +394,14 @@ async function recordTransformationLinksAndEvents(
     mapping: {
       targetEntityType: payload.targetEntityType,
       targetEntityId: entity.id,
-    } as unknown as Json,
+    } as Json,
     metadata: {
       conversion: payload,
-    } as unknown as Json,
+    } as Json,
     created_by: ownerId,
   }));
 
-  const eventRow = projectId
+  const eventRow: ProjectEventInsert | null = projectId
     ? {
         project_id: projectId,
         board_id: payload.boardId,
@@ -389,11 +415,11 @@ async function recordTransformationLinksAndEvents(
           sourceElementIds: payload.sourceElementIds,
           targetEntityType: payload.targetEntityType,
           targetEntityId: entity.id,
-        } as unknown as Json,
+        } as Json,
       }
     : null;
 
-  const syncQueueRow = {
+  const syncQueueRow: SyncQueueInsert = {
     board_id: payload.boardId,
     project_id: projectId,
     entity_table:
@@ -413,29 +439,29 @@ async function recordTransformationLinksAndEvents(
       targetEntityType: payload.targetEntityType,
       targetEntityId: entity.id,
       approval: payload.approval,
-    } as unknown as Json,
+    } as Json,
     created_by: ownerId,
   };
 
-  const writes: PromiseLike<unknown>[] = [
-    supabase.from('element_transformations' as any).insert(transformationRows as any),
-    supabase.from('data_links' as any).insert(linkRows as any),
-    supabase.from('sync_queue' as any).insert(syncQueueRow as any),
-  ];
+  await assertRequiredWrite(
+    supabase.from('element_transformations').insert(transformationRows),
+    'تحولات عناصر التخطيط',
+  );
+  await assertRequiredWrite(
+    supabase.from('data_links').insert(linkRows),
+    'روابط البيانات الناتجة عن التحويل',
+  );
+  await assertRequiredWrite(
+    supabase.from('sync_queue').insert(syncQueueRow),
+    'طلب مزامنة التحويل',
+  );
 
   if (eventRow) {
-    writes.push(supabase.from('project_events' as any).insert(eventRow as any));
+    await assertRequiredWrite(
+      supabase.from('project_events').insert(eventRow),
+      'حدث المشروع الناتج عن التحويل',
+    );
   }
-
-  const results = await Promise.allSettled(writes);
-  results.forEach((result) => {
-    if (result.status === 'fulfilled') {
-      const maybeError = (result.value as any)?.error;
-      if (maybeError) console.warn('[smartConversion] Supplemental write failed', maybeError);
-    } else {
-      console.warn('[smartConversion] Supplemental write failed', result.reason);
-    }
-  });
 }
 
 async function recordConversionAudit(
@@ -459,7 +485,7 @@ async function recordConversionAudit(
         targetEntityType: payload.targetEntityType,
         suggestedData: payload.suggestedData,
         approval: payload.approval,
-      } as unknown as Json,
+      } as Json,
     })
     .select('id')
     .single();
@@ -475,7 +501,7 @@ async function recordConversionAudit(
 export async function approveSmartConversion(
   payload: SmartConversionPayload,
 ): Promise<SmartConversionResult> {
-  const parsed = smartConversionPayloadSchema.parse(payload) as SmartConversionPayload;
+  const parsed = smartConversionPayloadSchema.parse(payload);
   if (!parsed.approval.approved) {
     throw new Error('Smart conversion must be approved before creating an executable record.');
   }
@@ -487,10 +513,11 @@ export async function approveSmartConversion(
     approverId: parsed.approval.approverId ?? ownerId,
     approvedAt: parsed.approval.approvedAt ?? new Date().toISOString(),
   };
-  const approvedPayload: SmartConversionPayload = { ...parsed, approval };
+  const approvedPayload = { ...parsed, approval };
 
+  const sourceElements = await loadSourcePlanningElements(approvedPayload);
   const entity = await createEntity(approvedPayload, ownerId);
-  const linkedElements = await linkPlanningElements(approvedPayload, entity);
+  const linkedElements = await linkPlanningElements(approvedPayload, entity, sourceElements);
   await recordTransformationLinksAndEvents(approvedPayload, entity, ownerId);
   const auditEventId = await recordConversionAudit(approvedPayload, entity, ownerId);
 
