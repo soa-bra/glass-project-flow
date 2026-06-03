@@ -5,6 +5,7 @@
 import { StateCreator } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
+import { createPlanningElementId } from '../createPlanningElementId';
 import { calculateElementsBounds } from '../helpers';
 import { DEFAULT_LAYER } from '../types';
 import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
@@ -136,7 +137,7 @@ export const createElementsSlice: StateCreator<
         size: elementData.size || { width: 200, height: 100 },
         style: elementData.style || {},
         ...elementData,
-        id: elementData.id || nanoid(),
+        id: elementData.id || createPlanningElementId(),
         layerId,
         visible: elementData.visible ?? true,
         locked: elementData.locked ?? false,
