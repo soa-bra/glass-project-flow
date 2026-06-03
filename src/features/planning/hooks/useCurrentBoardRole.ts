@@ -49,7 +49,7 @@ const ROLE_RANK: Record<CanvasRole, number> = {
   host: 3,
 };
 
-function highestCanvasRole(...roles: CanvasRole[]): CanvasRole {
+export function highestCanvasRole(...roles: CanvasRole[]): CanvasRole {
   return roles.reduce((best, role) => (
     ROLE_RANK[role] > ROLE_RANK[best] ? role : best
   ), "guest" as CanvasRole);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canMutateCanvas, mapAppRoleToCanvasRole } from './useCurrentBoardRole';
+import { canMutateCanvas, highestCanvasRole, mapAppRoleToCanvasRole } from './useCurrentBoardRole';
 
 describe('planning board roles', () => {
   it('maps board-scoped app roles to canvas roles', () => {
@@ -8,6 +8,12 @@ describe('planning board roles', () => {
     expect(mapAppRoleToCanvasRole('ai_analyst')).toBe('editor');
     expect(mapAppRoleToCanvasRole('guest')).toBe('guest');
     expect(mapAppRoleToCanvasRole('finance_auditor')).toBe('viewer');
+  });
+
+  it('keeps the strongest role when global and board roles differ', () => {
+    expect(highestCanvasRole('viewer', 'editor')).toBe('editor');
+    expect(highestCanvasRole('editor', 'viewer', 'guest')).toBe('editor');
+    expect(highestCanvasRole('host', 'editor', 'viewer')).toBe('host');
   });
 
   it('allows mutation only for host and editor roles', () => {
