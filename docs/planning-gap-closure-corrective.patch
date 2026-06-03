@@ -1,0 +1,30 @@
+From 410dc32d32cafab0819af55c70739787167a5d5c Mon Sep 17 00:00:00 2001
+From: Codex <codex@openai.com>
+Date: Wed, 3 Jun 2026 02:16:58 +0300
+Subject: [PATCH] fix(planning): close canvas persistence and conversion gaps
+
+This patch is the full corrective implementation for Planning Canvas after PR #324 was merged with only the helper/test files.
+
+Apply with:
+
+git apply docs/planning-gap-closure-corrective.patch
+
+Then run:
+
+npm ci
+npm run typecheck
+npm test -- --run src/features/planning/state/slices/planningElementIds.test.ts src/features/planning/state/slices/selectionSlice.test.ts
+npm run build
+
+Summary of intended changes:
+
+- Use persistable UUID ids for new Planning Canvas elements instead of nanoid-based ids.
+- Cover addElement, addText, pen strokes, paste/duplicate, smart elements, text helpers, and frame creation.
+- Prevent smart conversion for legacy/non-persistable selected ids.
+- Make smart conversion required records fail loudly instead of best-effort allSettled writes.
+- Make Smart Docs persistence typed and non-silent.
+- Align frontend AI permission with canvas.ai.use.
+- Harden board/global role merge logic.
+- Add focused tests for persistable ids.
+
+Full patch is available in the local Codex workspace as commit 410dc32d if this patch file is truncated by transport.
