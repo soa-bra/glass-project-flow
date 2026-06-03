@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCollaborationStore } from "@/stores/collaborationStore";
 import { CanvasRole, useCurrentBoardRole } from "./useCurrentBoardRole";
+import { hasPermission } from "@/services/central/permissions.service";
 
 export type CanvasAIPermissionScope = "generate" | "analyze" | "transform";
 
@@ -25,6 +26,7 @@ export const CANVAS_AI_DENIAL_REASONS = {
   untrustedSession: "لا يمكن استخدام الذكاء الاصطناعي لأن الجلسة غير موثوقة.",
   guest: "لا يمكن للضيف استخدام أدوات الذكاء الاصطناعي على اللوحة.",
   viewer: "دور المشاهد لا يملك صلاحية استخدام أدوات الذكاء الاصطناعي.",
+  missingPermission: "لا تملك صلاحية canvas.ai.use لاستخدام الذكاء الاصطناعي على اللوحة.",
 } as const;
 
 export function resolveCanvasAIPermissions({
@@ -113,6 +115,17 @@ export function useCanvasAIPermissions(boardId?: string | null): CanvasAIPermiss
   const currentUserId = useCollaborationStore((state) => state.currentUserId);
   const isHost = useCollaborationStore((state) => state.isHost);
   const participants = useCollaborationStore((state) => state.participants);
+  const [aiPermission, setAiPermission] = useState<{
+    loading: boolean;
+    allowed: boolean;
+    reason: string | null;
+    userId: string | null;
+  }>({
+    loading: false,
+    allowed: false,
+    reason: null,
+    userId: null,
+  });
 
   const collaborationRole = useMemo<CanvasRole>(() => {
     if (!currentUserId || currentUserId === "anonymous-user") return "guest";
@@ -120,7 +133,7 @@ export function useCanvasAIPermissions(boardId?: string | null): CanvasAIPermiss
     return participants.find((participant) => participant.id === currentUserId)?.role ?? "viewer";
   }, [currentUserId, isHost, participants]);
 
-  return useMemo(() => {
+  const roleState = useMemo(() => {
     const hasBoardRole = Boolean(boardId) && !boardRole.loading;
     const role = hasBoardRole ? boardRole.role : collaborationRole;
     const userId = hasBoardRole ? boardRole.userId : currentUserId;
@@ -131,4 +144,60 @@ export function useCanvasAIPermissions(boardId?: string | null): CanvasAIPermiss
       loading: Boolean(boardId) && boardRole.loading,
     });
   }, [boardId, boardRole.loading, boardRole.role, boardRole.userId, collaborationRole, currentUserId]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!boardId || roleState.loading || !roleState.canUseAI || !roleState.userId) {
+      setAiPermission({
+        loading: false,
+        allowed: !boardId ? true : false,
+        reason: null,
+        userId: roleState.userId,
+      });
+      return;
+    }
+
+    setAiPermission({
+      loading: true,
+      allowed: false,
+      reason: null,
+      userId: roleState.userId,
+    });
+
+    void hasPermission("canvas.ai.use", roleState.userId).then((decision) => {
+      if (cancelled) return;
+      setAiPermission({
+        loading: false,
+        allowed: decision.allowed,
+        reason: decision.reason,
+        userId: roleState.userId,
+      });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [boardId, roleState.loading, roleState.canUseAI, roleState.userId]);
+
+  return useMemo(() => {
+    if (!boardId) return roleState;
+    if (roleState.loading || aiPermission.loading) {
+      return {
+        ...roleState,
+        loading: true,
+        canUseAI: false,
+        denialReason: CANVAS_AI_DENIAL_REASONS.loading,
+      };
+    }
+    if (!roleState.canUseAI) return roleState;
+    if (!aiPermission.allowed || aiPermission.userId !== roleState.userId) {
+      return {
+        ...roleState,
+        canUseAI: false,
+        denialReason: aiPermission.reason || CANVAS_AI_DENIAL_REASONS.missingPermission,
+      };
+    }
+    return roleState;
+  }, [aiPermission.allowed, aiPermission.loading, aiPermission.reason, aiPermission.userId, boardId, roleState]);
 }
