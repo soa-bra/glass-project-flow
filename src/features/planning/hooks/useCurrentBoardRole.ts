@@ -42,6 +42,19 @@ export function mapAppRoleToCanvasRole(role: AppRole | null | undefined): Canvas
   return "viewer";
 }
 
+const ROLE_RANK: Record<CanvasRole, number> = {
+  guest: 0,
+  viewer: 1,
+  editor: 2,
+  host: 3,
+};
+
+function highestCanvasRole(...roles: CanvasRole[]): CanvasRole {
+  return roles.reduce((best, role) => (
+    ROLE_RANK[role] > ROLE_RANK[best] ? role : best
+  ), "guest" as CanvasRole);
+}
+
 export function useCurrentBoardRole(boardId: string | null | undefined): State {
   const [state, setState] = useState<State>({
     role: "guest",
@@ -96,8 +109,13 @@ export function useCurrentBoardRole(boardId: string | null | undefined): State {
       const activeBoardRole = (boardRoles ?? []).find(isActiveRole);
 
       if (role !== "host") {
-        const globalRole = mapAppRoleToCanvasRole(activeGlobalRole?.role);
-        role = globalRole === "host" ? globalRole : mapAppRoleToCanvasRole(activeBoardRole?.role);
+        const boardScopedRole = activeBoardRole
+          ? mapAppRoleToCanvasRole(activeBoardRole.role)
+          : "viewer";
+        const globalRole = activeGlobalRole
+          ? mapAppRoleToCanvasRole(activeGlobalRole.role)
+          : "viewer";
+        role = highestCanvasRole(role, boardScopedRole, globalRole);
       }
 
       if (!cancelled) setState({ role, userId, loading: false });
