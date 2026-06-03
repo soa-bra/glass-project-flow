@@ -10,6 +10,7 @@ import { StateCreator } from 'zustand';
 import { nanoid } from 'nanoid';
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
 import { runCanvasTransaction } from '../transactions/runCanvasTransaction';
+import { createPlanningElementId } from '../createPlanningElementId';
 
 type CanvasStoreState = SelectionSlice & {
   elements: CanvasElement[];
@@ -183,7 +184,7 @@ function findSmartPastePosition(
 }
 
 function buildIdMap(clipboard: CanvasElement[]): Map<string, string> {
-  return new Map(clipboard.map((el) => [el.id, nanoid()]));
+  return new Map(clipboard.map((el) => [el.id, createPlanningElementId()]));
 }
 
 function buildGroupMap(clipboard: CanvasElement[]): Map<string, string> {
@@ -298,7 +299,7 @@ function buildPastedElements(
 
   return clipboard.map((el) => {
     const copy = remapElementReferences(el, idMap, groupMap);
-    const newId = idMap.get(el.id) ?? nanoid();
+    const newId = idMap.get(el.id) ?? createPlanningElementId();
     delete (copy as any).id;
 
     return {
