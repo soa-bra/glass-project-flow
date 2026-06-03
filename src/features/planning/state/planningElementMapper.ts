@@ -63,7 +63,7 @@ function toCanvasElementType(row: PlanningElement): string {
   const smartType = readSmartType(content, metadata);
 
   if (SMART_PERSISTED_ELEMENT_TYPES.has(row.element_type) && smartType) {
-    return smartType;
+    return "smart";
   }
 
   return row.element_type;
