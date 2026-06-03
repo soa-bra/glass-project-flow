@@ -2,8 +2,8 @@
  * Frame Actions - إجراءات الإطار
  */
 
-import { nanoid } from "nanoid";
 import type { CanvasElement } from "@/types/canvas";
+import { createPlanningElementId } from "@/features/planning/state/createPlanningElementId";
 
 interface BoundingBox {
   x: number;
@@ -66,7 +66,7 @@ export function createFrameFromSelection(
   const padding = 24;
 
   // 3. إنشاء الإطار
-  const frameId = `frame-${nanoid()}`;
+  const frameId = createPlanningElementId();
 
   addElement({
     id: frameId,
