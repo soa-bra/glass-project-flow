@@ -3,8 +3,8 @@
  */
 
 import { StateCreator } from 'zustand';
-import { nanoid } from 'nanoid';
 import { PenStroke, PenSettings, PenPoint } from '../types';
+import { createPlanningElementId } from '../createPlanningElementId';
 
 export interface PenSlice {
   strokes: Record<string, PenStroke>;
@@ -50,7 +50,7 @@ export const createPenSlice: StateCreator<
   },
   
   beginStroke: (x, y, pressure = 0.5) => {
-    const id = nanoid();
+    const id = createPlanningElementId();
     const { toolSettings } = get();
     const now = performance.now();
     
