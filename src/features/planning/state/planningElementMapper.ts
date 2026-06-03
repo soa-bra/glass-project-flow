@@ -26,6 +26,13 @@ const PERSISTED_ELEMENT_TYPES = new Set<string>([
   "entity_card",
 ]);
 
+const SMART_PERSISTED_ELEMENT_TYPES = new Set<string>([
+  "smart_doc",
+  "interactive_sheet",
+  "root_connector",
+  "entity_card",
+]);
+
 const ENTITY_CARD_SMART_TYPES = new Set<string>([
   "project_card",
   "task_card",
@@ -40,7 +47,9 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
-function readSmartType(...sources: Array<Record<string, unknown>>): string | undefined {
+function readSmartType(
+  ...sources: Array<Record<string, unknown>>
+): string | undefined {
   for (const source of sources) {
     const smartType = source.smartType;
     if (typeof smartType === "string" && smartType.trim()) return smartType;
@@ -53,18 +62,30 @@ function toCanvasElementType(row: PlanningElement): string {
   const metadata = asRecord(row.metadata);
   const smartType = readSmartType(content, metadata);
 
-  if ((row.element_type === "smart_doc" || row.element_type === "interactive_sheet" || row.element_type === "root_connector") && smartType) {
+  if (SMART_PERSISTED_ELEMENT_TYPES.has(row.element_type) && smartType) {
     return smartType;
   }
 
   return row.element_type;
 }
 
-function toPersistedElementType(el: CanvasElement): PlanningElementInsert["element_type"] {
+function getElementSmartType(el: CanvasElement): string | undefined {
   const type = typeof el.type === "string" ? el.type : "shape";
   const data = asRecord(el.data);
   const metadata = asRecord(el.metadata);
-  const smartType = readSmartType(data, metadata, { smartType: (el as { smartType?: unknown }).smartType }, { smartType: type });
+  const directSmartType = (el as { smartType?: unknown }).smartType;
+  const smartType = readSmartType(data, metadata, { smartType: directSmartType });
+
+  if (smartType) return smartType;
+  if (!PERSISTED_ELEMENT_TYPES.has(type)) return type;
+  return undefined;
+}
+
+function toPersistedElementType(
+  el: CanvasElement,
+): PlanningElementInsert["element_type"] {
+  const type = typeof el.type === "string" ? el.type : "shape";
+  const smartType = getElementSmartType(el);
 
   if (PERSISTED_ELEMENT_TYPES.has(type)) {
     return type as PlanningElementInsert["element_type"];
@@ -75,6 +96,14 @@ function toPersistedElementType(el: CanvasElement): PlanningElementInsert["eleme
   if (smartType && ENTITY_CARD_SMART_TYPES.has(smartType)) return "entity_card";
 
   return "smart_doc";
+}
+
+function withSmartType(
+  value: unknown,
+  smartType: string | undefined,
+): Record<string, unknown> {
+  const record = asRecord(value);
+  return smartType ? { ...record, smartType } : record;
 }
 
 export function planningElementToCanvas(row: PlanningElement): CanvasElement {
@@ -111,6 +140,8 @@ export function canvasToPlanningInsert(
   boardId: string,
   createdBy: string,
 ): PlanningElementInsert {
+  const smartType = getElementSmartType(el);
+
   return {
     id: el.id,
     board_id: boardId,
@@ -120,8 +151,8 @@ export function canvasToPlanningInsert(
     size: el.size ?? { width: 200, height: 120 },
     rotation: typeof el.rotation === "number" ? el.rotation : 0,
     z_index: typeof el.layer === "number" ? el.layer : 0,
-    content: (el.data ?? {}) as PlanningElementInsert["content"],
+    content: withSmartType(el.data, smartType) as PlanningElementInsert["content"],
     style: (el.style ?? {}) as PlanningElementInsert["style"],
-    metadata: (el.metadata ?? {}) as PlanningElementInsert["metadata"],
+    metadata: withSmartType(el.metadata, smartType) as PlanningElementInsert["metadata"],
   };
 }
