@@ -17,6 +17,8 @@ interface ProjectModalTabsProps {
   onClientDataChange: (field: string, value: string) => void;
   onAddTask: () => void;
   onGenerateSmartTasks: () => void;
+  onEditTask: (task: TaskData) => void;
+  onDeleteTask: (taskId: number) => void;
   onAddPartnership: (partnership: PartnerData) => void;
   onEditPartnership: (id: number, partnership: PartnerData) => void;
   onDeletePartnership: (id: number) => void;
