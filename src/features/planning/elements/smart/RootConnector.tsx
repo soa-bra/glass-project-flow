@@ -158,7 +158,7 @@ const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; lab
   { value: 'dotted', label: 'منقّط' },
   { value: 'animated', label: 'متحرك' },
 ];
-const WIDTH_OPTIONS = [0.5, 1, 1.5, 2];
+const WIDTH_OPTIONS = [0.25, 0.5, 0.75, 1];
 
 const FloatingPanel: React.FC<FloatingPanelProps> = ({
   x,
@@ -282,7 +282,7 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] text-muted-foreground">السماكة</span>
-                  <Select value={String(data.strokeWidth ?? 0.5)} onValueChange={(v) => onPatch({ strokeWidth: parseFloat(v) })}>
+                  <Select value={String(data.strokeWidth ?? 0.25)} onValueChange={(v) => onPatch({ strokeWidth: parseFloat(v) })}>
                     <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {WIDTH_OPTIONS.map((w) => (
@@ -580,8 +580,8 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const baseStroke = data.color || NEUTRAL;
   const activeStroke = data.color || ACTIVE;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  const baseWidth = data.strokeWidth ?? 0.5;
-  const strokeWidth = isSelected ? Math.max(1, baseWidth) : baseWidth;
+  const baseWidth = data.strokeWidth ?? 0.25;
+  const strokeWidth = isSelected ? Math.max(0.5, baseWidth) : baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
