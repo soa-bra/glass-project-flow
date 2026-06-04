@@ -311,13 +311,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       <CanvasToolbar
         board={board}
         onBack={() => setCurrentBoard(null)}
-        onOpenAI={commandBar.open}
         peers={peers}
         selfName={selfName}
         realtimeStatus={connectionStatus}
         lastSyncAt={lastSyncAt}
         canEdit={canEditBoard}
-        canUseAI={aiPermissions.canUseAI}
       />
       <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
         <div data-board-frame="true" className="flex-1 relative overflow-hidden">
