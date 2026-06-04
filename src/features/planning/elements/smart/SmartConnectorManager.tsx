@@ -118,12 +118,18 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       };
     };
 
-    const findElementAt = (x: number, y: number) =>
-      elements.find((el) =>
-        el.id !== dragStartPoint.elementId &&
-        x >= el.x && x <= el.x + el.width &&
-        y >= el.y && y <= el.y + el.height,
+    const findElementAt = (x: number, y: number) => {
+      // Prefer non-frame elements (frames are background containers and should not
+      // capture connector drops when a card sits on top of them).
+      const candidates = elements.filter(
+        (el) =>
+          el.id !== dragStartPoint.elementId &&
+          x >= el.x && x <= el.x + el.width &&
+          y >= el.y && y <= el.y + el.height,
       );
+      const nonFrame = candidates.find((el) => el.type !== 'frame');
+      return nonFrame ?? candidates[0];
+    };
 
     const onMove = (e: MouseEvent) => {
       const p = clientToCanvas(e.clientX, e.clientY);

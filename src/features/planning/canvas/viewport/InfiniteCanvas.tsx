@@ -21,6 +21,10 @@ import { PresenceCursors } from '@/features/planning/ui/collaboration';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import {
+  upsertSmartConnector,
+  deleteSmartConnectorByElementId,
+} from '@/services/central/smartConnectors.service';
 import type { PresencePeer } from '@/features/planning/hooks/usePlanningRealtime';
 import type { SnapLine } from '@/engine/canvas/interaction/snapEngine';
 import { useCanvasPointerTracking } from '@/features/planning/canvas/controllers/useCanvasPointerTracking';
@@ -189,7 +193,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
       rootConnectorElements
         .filter((element) => !nextIds.has(element.id))
-        .forEach((element) => deleteElements([element.id]));
+        .forEach((element) => {
+          deleteElements([element.id]);
+          void deleteSmartConnectorByElementId(element.id).catch((err) =>
+            console.warn('[smart_connectors] delete failed', err),
+          );
+        });
 
       nextConnectors.forEach((connector) => {
         const position = {
@@ -214,21 +223,40 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
         if (previousIds.has(connector.id)) {
           updateElement(connector.id, { position, size, data, metadata });
-          return;
+        } else {
+          addElement({
+            id: connector.id,
+            type: 'smart',
+            position,
+            size,
+            style: {},
+            data,
+            metadata,
+          });
         }
 
-        addElement({
-          id: connector.id,
-          type: 'smart',
-          position,
-          size,
-          style: {},
-          data,
-          metadata,
-        });
+        // Logical persistence (best-effort; visual element is the source of truth client-side)
+        void upsertSmartConnector({
+          connector_element_id: connector.id,
+          board_id: _boardId,
+          source_element_id: connector.startPoint.elementId,
+          target_element_id: connector.endPoint.elementId,
+          relationship_type: connector.connectionType ?? 'references',
+          connector_kind: 'root_connector',
+          label: connector.title ?? null,
+          style: {
+            color: connector.color ?? null,
+            strokeWidth: connector.strokeWidth ?? null,
+            style: connector.style ?? null,
+          },
+          metadata: {
+            startAnchor: connector.startPoint.anchorPoint,
+            endAnchor: connector.endPoint.anchorPoint,
+          },
+        }).catch((err) => console.warn('[smart_connectors] upsert failed', err));
       });
     },
-    [addElement, deleteElements, rootConnectorElements, updateElement],
+    [addElement, deleteElements, rootConnectorElements, updateElement, _boardId],
   );
 
   const handleMouseDown = useCallback(
