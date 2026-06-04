@@ -1,0 +1,61 @@
+name: Planning Canvas Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/features/planning/**'
+      - '.github/workflows/planning-canvas-checks.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.ts'
+      - 'tsconfig*.json'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/features/planning/**'
+      - '.github/workflows/planning-canvas-checks.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.ts'
+      - 'tsconfig*.json'
+  workflow_dispatch:
+
+concurrency:
+  group: planning-canvas-checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  planning-canvas:
+    name: Planning Canvas Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run planning canvas regression tests
+        run: >-
+          npm test -- --run
+          src/features/planning/hooks/useCurrentBoardRole.test.ts
+          src/features/planning/hooks/useCanvasAIPermissions.test.ts
+          src/features/planning/state/slices/planningElementIds.test.ts
+          src/features/planning/state/slices/selectionSlice.test.ts
+
+      - name: Build
+        run: npm run build
