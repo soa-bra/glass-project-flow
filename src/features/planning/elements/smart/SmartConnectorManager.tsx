@@ -139,18 +139,31 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       setHoveredElementId(hovered?.id ?? null);
     };
 
+    const nearestEdgeAnchor = (el: ElementBounds, x: number, y: number) => {
+      const dLeft = x - el.x;
+      const dRight = (el.x + el.width) - x;
+      const dTop = y - el.y;
+      const dBottom = (el.y + el.height) - y;
+      const min = Math.min(dLeft, dRight, dTop, dBottom);
+      if (min === dLeft) return { anchor: 'left' as const, x: el.x, y: el.y + el.height / 2 };
+      if (min === dRight) return { anchor: 'right' as const, x: el.x + el.width, y: el.y + el.height / 2 };
+      if (min === dTop) return { anchor: 'top' as const, x: el.x + el.width / 2, y: el.y };
+      return { anchor: 'bottom' as const, x: el.x + el.width / 2, y: el.y + el.height };
+    };
+
     const onUp = (e: MouseEvent) => {
       const p = clientToCanvas(e.clientX, e.clientY);
       if (p) {
         const target = findElementAt(p.x, p.y);
         if (target) {
+          const edge = nearestEdgeAnchor(target, p.x, p.y);
           handleCreateConnector(
             dragStartPoint,
             {
               elementId: target.id,
-              x: target.x + target.width / 2,
-              y: target.y + target.height / 2,
-              anchorPoint: 'center',
+              x: edge.x,
+              y: edge.y,
+              anchorPoint: edge.anchor,
             },
             'references',
           );
