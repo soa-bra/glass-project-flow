@@ -211,6 +211,8 @@ export const useProjectForm = (
     validateForm,
     resetForm,
     addTask,
+    updateTask,
+    deleteTask,
     addPayment,
     removePayment,
     updatePayment,
