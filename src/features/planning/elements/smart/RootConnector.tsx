@@ -75,72 +75,53 @@ interface ConnectionAnchorsProps {
   elementId: string;
   bounds: { x: number; y: number; width: number; height: number };
   onStartDrag: (point: ConnectorPoint) => void;
-  onEndDrag: (point: ConnectorPoint) => void;
   isConnecting?: boolean;
-  activeAnchor?: AnchorPosition;
 }
 
 export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   elementId,
   bounds,
   onStartDrag,
-  onEndDrag,
   isConnecting,
-  activeAnchor,
 }) => {
-  // Single connector anchor placed just outside the element (top-right corner area)
-  const ANCHOR_OFFSET = 16;
-  const anchors: { position: AnchorPosition; x: number; y: number }[] = [
-    {
-      position: 'top-right',
-      x: bounds.x + bounds.width + ANCHOR_OFFSET,
-      y: bounds.y - ANCHOR_OFFSET / 2,
-    },
-  ];
+  // Single connector anchor placed just outside the top-right corner of the element,
+  // sitting slightly below the top edge (matches design reference).
+  const ANCHOR_OFFSET_X = 14;
+  const ANCHOR_OFFSET_Y = 12;
+  const anchor = {
+    position: 'top-right' as AnchorPosition,
+    x: bounds.x + bounds.width + ANCHOR_OFFSET_X,
+    y: bounds.y + ANCHOR_OFFSET_Y,
+  };
 
   return (
-    <g className="connection-anchors">
-      {anchors.map((anchor) => (
-        <motion.circle
-          key={anchor.position}
-          cx={anchor.x}
-          cy={anchor.y}
-          r={isConnecting && activeAnchor === anchor.position ? 10 : 6}
-          fill={activeAnchor === anchor.position ? 'hsl(var(--primary))' : 'hsl(var(--background))'}
-          stroke="hsl(var(--primary))"
-          strokeWidth={2}
-          className="cursor-crosshair"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: isConnecting ? 1 : 0.7,
-          }}
-          whileHover={{ scale: 1.3, opacity: 1 }}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            onStartDrag({
-              elementId,
-              x: anchor.x,
-              y: anchor.y,
-              anchorPoint: anchor.position,
-            });
-          }}
-          onMouseUp={(e) => {
-            e.stopPropagation();
-            if (isConnecting) {
-              onEndDrag({
-                elementId,
-                x: anchor.x,
-                y: anchor.y,
-                anchorPoint: anchor.position,
-              });
-            }
-          }}
-        />
-      ))}
+    <g className="connection-anchors" style={{ pointerEvents: 'auto' }}>
+      <motion.circle
+        cx={anchor.x}
+        cy={anchor.y}
+        r={isConnecting ? 8 : 6}
+        fill="hsl(var(--background))"
+        stroke="hsl(var(--primary))"
+        strokeWidth={2}
+        className="cursor-crosshair"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.3 }}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onStartDrag({
+            elementId,
+            x: anchor.x,
+            y: anchor.y,
+            anchorPoint: anchor.position,
+          });
+        }}
+      />
     </g>
   );
 };
+
 
 // ============= Floating Panel Component =============
 interface FloatingPanelProps {
