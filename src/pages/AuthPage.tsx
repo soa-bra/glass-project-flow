@@ -1,6 +1,7 @@
 /**
  * AuthPage — صفحة تسجيل الدخول (Email + Password عبر Supabase).
- * إنشاء الحسابات يتم حصراً عبر لوحة الإعدادات بواسطة Owner.
+ * جاهز لإنجاز اليوم؟
+
  */
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
@@ -90,7 +91,7 @@ export default function AuthPage() {
               دخول
             </Button>
             <p className="text-center text-xs text-muted-foreground pt-2">
-              إنشاء الحسابات يتم حصراً عبر لوحة الإعدادات بواسطة المالك (Owner).
+              جاهز لإنجاز اليوم؟
             </p>
           </form>
         </CardContent>
