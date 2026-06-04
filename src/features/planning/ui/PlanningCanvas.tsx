@@ -14,8 +14,7 @@ import { createTypedSmartElement } from '@/features/planning/elements/smart/fact
 import { executeCommandWithAuthorization } from '@/features/planning/domain/commands';
 import { useCollaborationStore } from '@/stores/collaborationStore';
 import { useBoardCanvasLifecycle } from '@/features/planning/hooks/useBoardCanvasLifecycle';
-import { usePlanningElementPersistence } from '@/features/planning/hooks/usePlanningElementPersistence';
-import { usePlanningStoreSync } from '@/features/planning/hooks/usePlanningStoreSync';
+import { usePlanningCanvasPersistence } from '@/features/planning/hooks/usePlanningCanvasPersistence';
 import { canMutateCanvas, useCurrentBoardRole } from '@/features/planning/hooks/useCurrentBoardRole';
 import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
 import { SmartConversionReviewDialog } from '@/features/planning/ui/overlays/SmartConversionReviewDialog';
@@ -97,9 +96,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   useBoardCanvasLifecycle(board);
 
-  const sync = usePlanningStoreSync(board.id, selfName);
+  const sync = usePlanningCanvasPersistence(board.id, {
+    selfDisplayName: selfName,
+    canPersist: canEditBoard,
+  });
   const { peers, connectionStatus, lastSyncAt } = sync;
-  usePlanningElementPersistence(board.id, canEditBoard);
 
   useEffect(() => {
     const handleOpenExecution = (event: Event) => {
