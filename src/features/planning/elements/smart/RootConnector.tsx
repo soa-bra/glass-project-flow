@@ -84,48 +84,61 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  // Single connector anchor placed just outside the top-right corner of the element,
-  // sitting slightly below the top edge (matches design reference).
-  const ANCHOR_OFFSET_X = 14;
-  const ANCHOR_OFFSET_Y = 12;
+  // Four anchors at the midpoints of each edge (top, right, bottom, left).
+  // Matches Qlik / n8n visual reference: small neutral dots that appear on hover.
   const HIT_RADIUS = 18;
-  const VISIBLE_RADIUS = isConnecting ? 8 : 6;
-  const cx = bounds.x + bounds.width + ANCHOR_OFFSET_X;
-  const cy = bounds.y + ANCHOR_OFFSET_Y;
+  const [hoveredAnchor, setHoveredAnchor] = useState<AnchorPosition | null>(null);
 
-  const handlePointerDown = (e: React.PointerEvent<SVGCircleElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onStartDrag({
-      elementId,
-      x: cx,
-      y: cy,
-      anchorPoint: 'top-right',
-    });
-  };
+  const anchors: Array<{ pos: AnchorPosition; cx: number; cy: number }> = [
+    { pos: 'top',    cx: bounds.x + bounds.width / 2, cy: bounds.y },
+    { pos: 'right',  cx: bounds.x + bounds.width,     cy: bounds.y + bounds.height / 2 },
+    { pos: 'bottom', cx: bounds.x + bounds.width / 2, cy: bounds.y + bounds.height },
+    { pos: 'left',   cx: bounds.x,                    cy: bounds.y + bounds.height / 2 },
+  ];
+
+  const makeHandler = (a: { pos: AnchorPosition; cx: number; cy: number }) =>
+    (e: React.PointerEvent<SVGCircleElement>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onStartDrag({ elementId, x: a.cx, y: a.cy, anchorPoint: a.pos });
+    };
 
   return (
-    <g className="connection-anchors" data-anchor-element-id={elementId} style={{ pointerEvents: 'auto' }}>
-      {/* Transparent hit area for reliable grabbing */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={HIT_RADIUS}
-        fill="transparent"
-        className="cursor-crosshair"
-        onPointerDown={handlePointerDown}
-        onMouseDown={handlePointerDown as unknown as React.MouseEventHandler<SVGCircleElement>}
-      />
-      {/* Visible dot */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={VISIBLE_RADIUS}
-        fill="hsl(var(--background))"
-        stroke="hsl(var(--primary))"
-        strokeWidth={2}
-        pointerEvents="none"
-      />
+    <g
+      className="connection-anchors group/anchors"
+      data-anchor-element-id={elementId}
+      style={{ pointerEvents: 'auto' }}
+    >
+      {anchors.map((a) => {
+        const isHover = hoveredAnchor === a.pos || isConnecting;
+        return (
+          <g key={a.pos} data-anchor-position={a.pos}>
+            {/* Transparent hit area */}
+            <circle
+              cx={a.cx}
+              cy={a.cy}
+              r={HIT_RADIUS}
+              fill="transparent"
+              className="cursor-crosshair connection-anchor-hit"
+              onPointerEnter={() => setHoveredAnchor(a.pos)}
+              onPointerLeave={() => setHoveredAnchor(null)}
+              onPointerDown={makeHandler(a)}
+              onMouseDown={makeHandler(a) as unknown as React.MouseEventHandler<SVGCircleElement>}
+            />
+            {/* Visible dot — small neutral, grows + darkens on hover */}
+            <circle
+              cx={a.cx}
+              cy={a.cy}
+              r={isHover ? 6 : 4}
+              fill="#FFFFFF"
+              stroke={isHover ? '#0B0F12' : '#9CA3AF'}
+              strokeWidth={isHover ? 1.5 : 1}
+              className="connection-anchor-dot transition-all"
+              pointerEvents="none"
+            />
+          </g>
+        );
+      })}
     </g>
   );
 };
@@ -406,96 +419,127 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const midX = (startX + endX) / 2;
   const midY = (startY + endY) / 2;
 
-  // Calculate control points for curved path
-  const dx = endX - startX;
-  const dy = endY - startY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-  const curvature = Math.min(distance * 0.3, 100);
+  // ===== Orthogonal routing with rounded corners (Qlik / n8n style) =====
+  // Build a polyline of waypoints based on each endpoint's anchor edge.
+  const STUB = 16; // initial perpendicular stub length
+  const CORNER_R = 4; // rounded corner radius
 
-  // Determine curve direction based on anchor points
-  let cp1x = startX, cp1y = startY, cp2x = endX, cp2y = endY;
-  
-  if (startPoint.anchorPoint === 'right' || startPoint.anchorPoint === 'left') {
-    cp1x = startX + (startPoint.anchorPoint === 'right' ? curvature : -curvature);
+  const stubFor = (p: ConnectorPoint): { x: number; y: number } => {
+    switch (p.anchorPoint) {
+      case 'right':  return { x: p.x + STUB, y: p.y };
+      case 'left':   return { x: p.x - STUB, y: p.y };
+      case 'top':    return { x: p.x, y: p.y - STUB };
+      case 'bottom': return { x: p.x, y: p.y + STUB };
+      default:       return { x: p.x, y: p.y };
+    }
+  };
+
+  const isHorizontal = (a?: AnchorPosition) => a === 'left' || a === 'right';
+
+  const s0 = { x: startX, y: startY };
+  const sStub = stubFor(startPoint);
+  const eStub = stubFor(endPoint);
+  const e0 = { x: endX, y: endY };
+
+  // Build intermediate waypoints between the two stubs so segments stay axis-aligned.
+  const points: Array<{ x: number; y: number }> = [s0, sStub];
+  const srcH = isHorizontal(startPoint.anchorPoint);
+  const tgtH = isHorizontal(endPoint.anchorPoint);
+
+  if (srcH && tgtH) {
+    const mx = (sStub.x + eStub.x) / 2;
+    points.push({ x: mx, y: sStub.y });
+    points.push({ x: mx, y: eStub.y });
+  } else if (!srcH && !tgtH) {
+    const my = (sStub.y + eStub.y) / 2;
+    points.push({ x: sStub.x, y: my });
+    points.push({ x: eStub.x, y: my });
+  } else if (srcH && !tgtH) {
+    points.push({ x: eStub.x, y: sStub.y });
   } else {
-    cp1y = startY + (startPoint.anchorPoint === 'bottom' ? curvature : -curvature);
+    points.push({ x: sStub.x, y: eStub.y });
   }
+  points.push(eStub, e0);
 
-  if (endPoint.anchorPoint === 'right' || endPoint.anchorPoint === 'left') {
-    cp2x = endX + (endPoint.anchorPoint === 'right' ? curvature : -curvature);
-  } else {
-    cp2y = endY + (endPoint.anchorPoint === 'bottom' ? curvature : -curvature);
-  }
+  // Build SVG path with rounded corners at each waypoint between two segments.
+  const buildRoundedPath = (pts: Array<{ x: number; y: number }>) => {
+    if (pts.length < 2) return '';
+    let d = `M ${pts[0].x} ${pts[0].y}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const prev = pts[i - 1];
+      const cur = pts[i];
+      const next = pts[i + 1];
+      const inDx = Math.sign(cur.x - prev.x);
+      const inDy = Math.sign(cur.y - prev.y);
+      const outDx = Math.sign(next.x - cur.x);
+      const outDy = Math.sign(next.y - cur.y);
+      const r = Math.min(
+        CORNER_R,
+        Math.hypot(cur.x - prev.x, cur.y - prev.y) / 2,
+        Math.hypot(next.x - cur.x, next.y - cur.y) / 2,
+      );
+      if (r > 0 && (inDx !== outDx || inDy !== outDy) && (inDx !== 0 || inDy !== 0) && (outDx !== 0 || outDy !== 0)) {
+        const p1 = { x: cur.x - inDx * r, y: cur.y - inDy * r };
+        const p2 = { x: cur.x + outDx * r, y: cur.y + outDy * r };
+        d += ` L ${p1.x} ${p1.y} Q ${cur.x} ${cur.y} ${p2.x} ${p2.y}`;
+      } else {
+        d += ` L ${cur.x} ${cur.y}`;
+      }
+    }
+    const last = pts[pts.length - 1];
+    d += ` L ${last.x} ${last.y}`;
+    return d;
+  };
 
-  const pathD = `M ${startX} ${startY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${endX} ${endY}`;
+  const pathD = buildRoundedPath(points);
 
-  const strokeColor = data.color || 'hsl(var(--primary))';
-  const strokeWidth = data.strokeWidth || 2;
+  // ===== Visual style — neutral grey by default, darker on hover/select =====
+  const NEUTRAL = '#C7CDD4';
+  const ACTIVE = '#0B0F12';
+  const baseStroke = data.color || NEUTRAL;
+  const activeStroke = data.color || ACTIVE;
+  const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
+  const baseWidth = data.strokeWidth ?? 1.5;
+  const strokeWidth = isSelected ? Math.max(2, baseWidth) : baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
     switch (strokeStyle) {
-      case 'dashed': return '10,5';
-      case 'dotted': return '2,3';
-      case 'animated': return '10,5';
+      case 'dashed': return '8,4';
+      case 'dotted': return '2,4';
+      case 'animated': return '8,4';
       default: return 'none';
     }
   };
 
-  const markerId = `arrowhead-${data.id}`;
-
   return (
-    <g 
+    <g
       className="root-connector"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Arrow marker definition */}
-      <defs>
-        <marker
-          id={markerId}
-          markerWidth="12"
-          markerHeight="12"
-          refX="10"
-          refY="6"
-          orient="auto"
-        >
-          <path d="M0,0 L12,6 L0,12 L3,6 Z" fill={strokeColor} />
-        </marker>
-        
-        {/* Glow filter for selected state */}
-        <filter id={`glow-${data.id}`} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge>
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
-
-      {/* Invisible hit area for easier selection */}
+      {/* Invisible thicker hit area for easier selection */}
       <path
         d={pathD}
         fill="none"
         stroke="transparent"
-        strokeWidth={20}
+        strokeWidth={16}
         className="cursor-pointer"
         pointerEvents="stroke"
       />
 
-      {/* Main connector path */}
+      {/* Main connector path — thin, orthogonal, neutral */}
       <motion.path
         d={pathD}
         fill="none"
         stroke={strokeColor}
-        strokeWidth={isSelected || isHovered ? strokeWidth + 1 : strokeWidth}
+        strokeWidth={strokeWidth}
         strokeDasharray={getStrokeDasharray()}
         strokeLinecap="round"
-        markerEnd={`url(#${markerId})`}
-        filter={isSelected ? `url(#glow-${data.id})` : undefined}
+        strokeLinejoin="round"
         initial={false}
         animate={{
-          strokeDashoffset: strokeStyle === 'animated' ? [0, -30] : 0,
+          strokeDashoffset: strokeStyle === 'animated' ? [0, -24] : 0,
         }}
         transition={{
           strokeDashoffset: {
@@ -506,61 +550,30 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         }}
       />
 
-      {/* Start point */}
-      <motion.circle
+      {/* Start endpoint dot — small, same color as line */}
+      <circle
         cx={startX}
         cy={startY}
-        r={isHovered || isSelected ? 8 : 6}
-        fill="hsl(var(--background))"
-        stroke={strokeColor}
-        strokeWidth={2}
-        className="cursor-move"
-        whileHover={{ scale: 1.2 }}
+        r={3}
+        fill={strokeColor}
+        pointerEvents="none"
       />
 
-      {/* End point */}
-      <motion.circle
+      {/* End endpoint dot */}
+      <circle
         cx={endX}
         cy={endY}
-        r={isHovered || isSelected ? 8 : 6}
+        r={3}
         fill={strokeColor}
-        stroke="hsl(var(--background))"
-        strokeWidth={2}
-        className="cursor-move"
-        whileHover={{ scale: 1.2 }}
+        pointerEvents="none"
       />
 
-      {/* Connection type indicator at midpoint */}
-      {(isHovered || isSelected) && !isEditing && (
-        <motion.g
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-        >
-          <circle
-            cx={midX}
-            cy={midY}
-            r={14}
-            fill="hsl(var(--background))"
-            stroke={strokeColor}
-            strokeWidth={2}
-          />
-          <Link2
-            x={midX - 7}
-            y={midY - 7}
-            width={14}
-            height={14}
-            className="text-primary"
-          />
-        </motion.g>
-      )}
-
-      {/* Floating info panel */}
+      {/* Floating info panel — only when selected or editing */}
       <AnimatePresence>
         {(isSelected || isEditing) && (
           <FloatingPanel
             x={midX}
-            y={midY + 40}
+            y={midY + 24}
             data={data}
             isEditing={isEditing}
             onEdit={() => setIsEditing(true)}
