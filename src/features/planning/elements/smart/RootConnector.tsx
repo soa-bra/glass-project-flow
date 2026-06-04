@@ -71,76 +71,99 @@ const getRelationshipTypeLabel = (type?: string) => {
 };
 
 // ============= Connection Anchors Component =============
+import { ANCHOR_OFFSET, useConnectorDebug } from './connectorDebug';
+
 interface ConnectionAnchorsProps {
   elementId: string;
   bounds: { x: number; y: number; width: number; height: number };
   onStartDrag: (point: ConnectorPoint) => void;
-  onEndDrag: (point: ConnectorPoint) => void;
   isConnecting?: boolean;
-  activeAnchor?: AnchorPosition;
+  /** Optional override for the default anchor offset. */
+  offset?: { x?: number; y?: number };
 }
 
 export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   elementId,
   bounds,
   onStartDrag,
-  onEndDrag,
   isConnecting,
-  activeAnchor,
+  offset,
 }) => {
-  // Single connector anchor placed just outside the element (top-right corner area)
-  const ANCHOR_OFFSET = 16;
-  const anchors: { position: AnchorPosition; x: number; y: number }[] = [
-    {
-      position: 'top-right',
-      x: bounds.x + bounds.width + ANCHOR_OFFSET,
-      y: bounds.y - ANCHOR_OFFSET / 2,
-    },
-  ];
+  const [debug] = useConnectorDebug();
+  const ox = offset?.x ?? ANCHOR_OFFSET.x;
+  const oy = offset?.y ?? ANCHOR_OFFSET.y;
+
+  const anchor = {
+    position: 'top-right' as AnchorPosition,
+    x: bounds.x + bounds.width + ox,
+    y: bounds.y + oy,
+  };
 
   return (
-    <g className="connection-anchors">
-      {anchors.map((anchor) => (
-        <motion.circle
-          key={anchor.position}
-          cx={anchor.x}
-          cy={anchor.y}
-          r={isConnecting && activeAnchor === anchor.position ? 10 : 6}
-          fill={activeAnchor === anchor.position ? 'hsl(var(--primary))' : 'hsl(var(--background))'}
-          stroke="hsl(var(--primary))"
-          strokeWidth={2}
-          className="cursor-crosshair"
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: isConnecting ? 1 : 0.7,
-          }}
-          whileHover={{ scale: 1.3, opacity: 1 }}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            onStartDrag({
-              elementId,
-              x: anchor.x,
-              y: anchor.y,
-              anchorPoint: anchor.position,
-            });
-          }}
-          onMouseUp={(e) => {
-            e.stopPropagation();
-            if (isConnecting) {
-              onEndDrag({
-                elementId,
-                x: anchor.x,
-                y: anchor.y,
-                anchorPoint: anchor.position,
-              });
-            }
-          }}
-        />
-      ))}
+    <g className="connection-anchors" style={{ pointerEvents: 'auto' }} data-connector-anchor={elementId}>
+      {/* Larger hit-area circle (visible in debug mode) */}
+      <circle
+        cx={anchor.x}
+        cy={anchor.y}
+        r={ANCHOR_OFFSET.hitRadius}
+        fill={debug ? 'hsl(var(--primary) / 0.10)' : 'transparent'}
+        stroke={debug ? 'hsl(var(--primary))' : 'none'}
+        strokeWidth={debug ? 1 : 0}
+        strokeDasharray={debug ? '3,3' : undefined}
+        className="cursor-crosshair"
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          onStartDrag({
+            elementId,
+            x: anchor.x,
+            y: anchor.y,
+            anchorPoint: anchor.position,
+          });
+          if (debug) {
+            // eslint-disable-next-line no-console
+            console.log('[connector:debug] anchor mousedown', { elementId, anchor });
+          }
+        }}
+      />
+      {/* Visible anchor dot */}
+      <motion.circle
+        cx={anchor.x}
+        cy={anchor.y}
+        r={isConnecting ? ANCHOR_OFFSET.visibleRadius + 2 : ANCHOR_OFFSET.visibleRadius}
+        fill="hsl(var(--background))"
+        stroke="hsl(var(--primary))"
+        strokeWidth={2}
+        className="pointer-events-none"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+      />
+      {debug && (
+        <g pointerEvents="none">
+          <line
+            x1={bounds.x + bounds.width}
+            y1={bounds.y}
+            x2={anchor.x}
+            y2={anchor.y}
+            stroke="hsl(var(--primary) / 0.5)"
+            strokeWidth={1}
+            strokeDasharray="2,2"
+          />
+          <text
+            x={anchor.x + 10}
+            y={anchor.y - 8}
+            fontSize={10}
+            fill="hsl(var(--primary))"
+            style={{ fontFamily: 'monospace' }}
+          >
+            {`+${ox},${oy} · hit r=${ANCHOR_OFFSET.hitRadius}`}
+          </text>
+        </g>
+      )}
     </g>
   );
 };
+
 
 // ============= Floating Panel Component =============
 interface FloatingPanelProps {
