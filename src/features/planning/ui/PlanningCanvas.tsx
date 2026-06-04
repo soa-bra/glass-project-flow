@@ -9,6 +9,7 @@ import ToolZone from './panels/ToolZone';
 import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
 import ContextualToolbarManager from '@/features/planning/ui/toolbars/ContextualToolbarManager';
 import { SmartCommandBar, useSmartCommandBar } from '@/features/planning/elements/smart/SmartCommandBar';
+import { AIAssistantButton } from '@/features/planning/ui/widgets/AIAssistantButton';
 import { createTypedSmartElement } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
 import { executeCommandWithAuthorization } from '@/features/planning/domain/commands';
 import { useCollaborationStore } from '@/stores/collaborationStore';
@@ -330,6 +331,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         <ToolZone activeTool={activeTool} boardId={board.id} />
       </div>
       <BottomToolbar canEdit={canEditBoard} />
+      {aiPermissions.canUseAI && <AIAssistantButton />}
       <NavigationBar />
       <ContextualToolbarManager boardId={board.id} />
       <SmartCommandBar
