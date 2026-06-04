@@ -247,7 +247,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     }
   };
   return <>
-      <div className={`fixed z-[1200] ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
+      <div className={`fixed z-project-panel ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
       zIndex: 1200,
       top: "var(--sidebar-top-offset)",
       height: "calc(100vh - var(--sidebar-top-offset))",

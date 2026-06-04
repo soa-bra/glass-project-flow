@@ -171,20 +171,24 @@ export default {
 				'18': '4.5rem',
 				'88': '22rem'
 			},
+			// Z-Index — tokens mirrored from src/styles/z-index.css
+			// Do NOT hardcode z-index values. Always use these tokens or the CSS variables.
 			zIndex: {
-				'header': '1000',
-				'sidebar': '1000',
-				'projects': '900',
-				'calendar': '900',
-				'project-cards': '800',
-				'dashboard-panel': '950',
-				'modal': '1100',
-				'modal-backdrop': '10100',
-				'modal-content': '10200',
-				'dropdown': '10300',
-				'popover': '10400',
-				'tooltip': '10500',
-				'toast': '10600'
+				'canvas': 'var(--z-canvas)',
+				'element': 'var(--z-element)',
+				'element-selected': 'var(--z-element-selected)',
+				'bounding-box': 'var(--z-bounding-box)',
+				'workspace': 'var(--z-workspace)',
+				'sidebar': 'var(--z-sidebar)',
+				'project-panel': 'var(--z-project-panel)',
+				'header': 'var(--z-header)',
+				'toolbar': 'var(--z-toolbar)',
+				'dropdown': 'var(--z-dropdown)',
+				'popover': 'var(--z-popover)',
+				'modal-backdrop': 'var(--z-modal-backdrop)',
+				'modal-content': 'var(--z-modal-content)',
+				'tooltip': 'var(--z-tooltip)',
+				'toast': 'var(--z-toast)',
 			},
 			width: {
 				'sidebar-expanded': 'var(--sidebar-width-expanded)',
