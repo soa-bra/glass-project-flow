@@ -18,12 +18,11 @@ const DepartmentsWorkspace: React.FC<DepartmentsWorkspaceProps> = ({ isSidebarCo
     <>
       {/* العمود الثاني: سايدبار الإدارات */}
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${
+        className={`fixed z-sidebar h-[calc(100vh-var(--sidebar-top-offset))] ${
           isSidebarCollapsed ? 'departments-sidebar-collapsed' : 'departments-sidebar-expanded'
         }`}
         style={{
           top: 'var(--sidebar-top-offset)',
-          zIndex: 110,
         }}
       >
         <DepartmentsSidebar

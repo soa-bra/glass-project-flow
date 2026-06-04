@@ -643,7 +643,7 @@ const HeaderBar = () => {
   };
 
   return (
-    <header data-testid="app-header" className="fixed top-0 right-0 left-0 h-[60px] z-popover my-0 py-[65px] px-[5px] bg-slate-100">
+    <header data-testid="app-header" className="fixed top-0 right-0 left-0 h-[60px] my-0 py-[65px] px-[5px] bg-slate-100" style={{ zIndex: 'var(--z-header)' }}>
       <div className="flex items-center justify-between h-full px-0">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
@@ -713,7 +713,7 @@ const HeaderBar = () => {
                   transition={{ duration: 0.25, ease: 'easeOut' }}
                   data-testid="header-search-popover"
                   className="absolute top-[64px] right-2 z-popover max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
-                  style={glassStyle}
+                  style={{ ...glassStyle, zIndex: 'var(--z-popover)' }}
                 >
                   <div className="flex flex-col gap-2">
                     {filteredSearchItems.map((item) => (
@@ -769,6 +769,7 @@ const HeaderBar = () => {
                     ...glassStyle,
                     top: notificationMenuPosition.top,
                     left: notificationMenuPosition.left,
+                    zIndex: 'var(--z-popover)',
                   }}
                 >
                   <div className="max-h-[300px] overflow-y-auto pl-1">
@@ -833,6 +834,7 @@ const HeaderBar = () => {
                   transition={{ duration: 0.3, ease: 'easeOut' }}
                   data-testid="header-user-popover"
                   className="absolute top-[64px] left-0 z-popover w-56"
+                  style={{ zIndex: 'var(--z-popover)' }}
                 >
                   <div className="flex flex-col items-start gap-2">
                     <button
@@ -900,6 +902,7 @@ const HeaderBar = () => {
             transition={{ duration: 0.25, ease: 'easeOut' }}
             data-testid="header-messages-popover"
             className="fixed inset-0 z-popover flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
+            style={{ zIndex: 'var(--z-popover)' }}
             onMouseDown={() => setOpenOverlay(null)}
           >
             <motion.div
