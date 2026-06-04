@@ -217,8 +217,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
       <AddTaskModal
         isOpen={showAddTaskModal}
-        onClose={() => setShowAddTaskModal(false)}
+        onClose={() => { setShowAddTaskModal(false); setEditingTask(null); }}
         onTaskAdded={addTask}
+        onTaskUpdated={(t) => { updateTask(t); setShowAddTaskModal(false); setEditingTask(null); }}
+        editingTask={editingTask ?? undefined}
+        isEditMode={!!editingTask}
       />
 
       <ProjectModalDialogs
