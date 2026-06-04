@@ -20,7 +20,7 @@ const ProjectCardHeader = ({
   return (
     <div
       dir="rtl"
-      className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 sm:gap-3 mb-2 py-2 sm:py-3 px-2 sm:px-3 min-h-[96px] sm:min-h-[110px] overflow-hidden"
+      className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-2 sm:gap-3 mb-2 py-2 sm:py-3 px-2 sm:px-3 h-[96px] sm:h-[110px] overflow-hidden"
     >
       <div className="relative shrink-0 self-start">
         <ProjectCardDaysCircle daysLeft={daysLeft} />
