@@ -407,7 +407,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
         selector: `#${element.id}`,
       };
     })
-    .filter((item): item is SearchItem => Boolean(item));
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return values.filter((item) =>
     item.requiredPermissions.every((permission) => permissions.includes(permission)),
