@@ -17,6 +17,8 @@ import { useCallback, useEffect } from "react";
 import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import { usePlanningStore } from "@/features/planning/state/store";
+import { DEFAULT_LAYER } from "@/features/planning/state/types";
+import type { CanvasElement, LayerInfo } from "@/features/planning/state/types";
 import { planningElementToCanvas } from "@/features/planning/state/planningElementMapper";
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
@@ -28,6 +30,46 @@ function sortByZ(rows: PlanningElement[]): PlanningElement[] {
       new Date(a.updated_at).getTime() - new Date(b.updated_at).getTime()
     );
   });
+}
+
+function ensureLayers(layers: LayerInfo[] | undefined): LayerInfo[] {
+  return layers && layers.length > 0 ? layers : [{ ...DEFAULT_LAYER, elements: [] }];
+}
+
+function resolveLayerId(element: CanvasElement, layers: LayerInfo[]): string {
+  const layerIds = new Set(layers.map((layer) => layer.id));
+  const layerId = typeof element.layerId === "string" && element.layerId.trim()
+    ? element.layerId
+    : undefined;
+
+  if (layerId && layerIds.has(layerId)) return layerId;
+  return layers[0]?.id ?? DEFAULT_LAYER.id;
+}
+
+function assignLayerIds(elements: CanvasElement[], layers: LayerInfo[]): CanvasElement[] {
+  return elements.map((element) => ({
+    ...element,
+    layerId: resolveLayerId(element, layers),
+  }));
+}
+
+function rebuildLayerMembership(layers: LayerInfo[] | undefined, elements: CanvasElement[]): LayerInfo[] {
+  const normalizedLayers = ensureLayers(layers);
+  const elementIdsByLayer = new Map<string, string[]>(
+    normalizedLayers.map((layer) => [layer.id, []]),
+  );
+
+  for (const element of elements) {
+    const layerId = resolveLayerId(element, normalizedLayers);
+    const ids = elementIdsByLayer.get(layerId) ?? [];
+    if (!ids.includes(element.id)) ids.push(element.id);
+    elementIdsByLayer.set(layerId, ids);
+  }
+
+  return normalizedLayers.map((layer) => ({
+    ...layer,
+    elements: elementIdsByLayer.get(layer.id) ?? [],
+  }));
 }
 
 export function usePlanningStoreSync(
@@ -44,8 +86,12 @@ export function usePlanningStoreSync(
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
-        const mapped = sortByZ(rows).map(planningElementToCanvas);
-        usePlanningStore.setState({ elements: mapped });
+        const layers = ensureLayers(usePlanningStore.getState().layers);
+        const mapped = assignLayerIds(sortByZ(rows).map(planningElementToCanvas), layers);
+        usePlanningStore.setState({
+          elements: mapped,
+          layers: rebuildLayerMembership(layers, mapped),
+        });
       })
       .catch((err) => {
         console.error("[usePlanningStoreSync] fetch failed", err);
@@ -58,22 +104,38 @@ export function usePlanningStoreSync(
   const onElementInsert = useCallback((row: PlanningElement) => {
     usePlanningStore.setState((state) => {
       if (state.elements.some((e) => e.id === row.id)) return state;
-      return { elements: [...state.elements, planningElementToCanvas(row)] };
+      const layers = ensureLayers(state.layers);
+      const element = assignLayerIds([planningElementToCanvas(row)], layers)[0];
+      const elements = [...state.elements, element];
+      return {
+        elements,
+        layers: rebuildLayerMembership(layers, elements),
+      };
     });
   }, []);
 
   const onElementUpdate = useCallback((row: PlanningElement) => {
     usePlanningStore.setState((state) => {
+      const layers = ensureLayers(state.layers);
       const idx = state.elements.findIndex((e) => e.id === row.id);
       if (idx === -1) {
-        return { elements: [...state.elements, planningElementToCanvas(row)] };
+        const element = assignLayerIds([planningElementToCanvas(row)], layers)[0];
+        const elements = [...state.elements, element];
+        return {
+          elements,
+          layers: rebuildLayerMembership(layers, elements),
+        };
       }
       const existing = state.elements[idx];
       // Echo suppression — local state already at this version.
       if (existing.updatedAt === row.updated_at) return state;
+      const mapped = planningElementToCanvas(row);
       const next = state.elements.slice();
-      next[idx] = planningElementToCanvas(row);
-      return { elements: next };
+      next[idx] = assignLayerIds([{ ...mapped, layerId: mapped.layerId ?? existing.layerId }], layers)[0];
+      return {
+        elements: next,
+        layers: rebuildLayerMembership(layers, next),
+      };
     });
   }, []);
 
@@ -93,7 +155,12 @@ export function usePlanningStoreSync(
           idsToDelete.add(element.id);
         }
       });
-      return { elements: state.elements.filter((e) => !idsToDelete.has(e.id)) };
+      const elements = state.elements.filter((e) => !idsToDelete.has(e.id));
+      const layers = ensureLayers(state.layers);
+      return {
+        elements,
+        layers: rebuildLayerMembership(layers, elements),
+      };
     });
   }, []);
 
