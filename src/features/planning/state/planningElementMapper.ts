@@ -57,6 +57,16 @@ function readSmartType(
   return undefined;
 }
 
+function readLayerId(
+  ...sources: Array<Record<string, unknown>>
+): string | undefined {
+  for (const source of sources) {
+    const layerId = source.layerId;
+    if (typeof layerId === "string" && layerId.trim()) return layerId;
+  }
+  return undefined;
+}
+
 function toCanvasElementType(row: PlanningElement): string {
   const content = asRecord(row.content);
   const metadata = asRecord(row.metadata);
@@ -106,6 +116,13 @@ function withSmartType(
   return smartType ? { ...record, smartType } : record;
 }
 
+function withLayerId(
+  value: Record<string, unknown>,
+  layerId: string | undefined,
+): Record<string, unknown> {
+  return layerId ? { ...value, layerId } : value;
+}
+
 export function planningElementToCanvas(row: PlanningElement): CanvasElement {
   const position = (row.position as { x: number; y: number } | null) ?? { x: 0, y: 0 };
   const size = (row.size as { width: number; height: number } | null) ?? {
@@ -115,6 +132,7 @@ export function planningElementToCanvas(row: PlanningElement): CanvasElement {
   const metadata = asRecord(row.metadata);
   const data = asRecord(row.content);
   const smartType = readSmartType(data, metadata);
+  const layerId = readLayerId(metadata, data);
 
   return {
     id: row.id,
@@ -125,6 +143,7 @@ export function planningElementToCanvas(row: PlanningElement): CanvasElement {
     style: (row.style as Record<string, unknown>) ?? {},
     rotation: row.rotation ?? 0,
     layer: row.z_index ?? 0,
+    layerId,
     metadata,
     data,
     locked: !!row.locked_by,
@@ -141,6 +160,9 @@ export function canvasToPlanningInsert(
   createdBy: string,
 ): PlanningElementInsert {
   const smartType = getElementSmartType(el);
+  const layerId = typeof el.layerId === "string" && el.layerId.trim()
+    ? el.layerId
+    : undefined;
 
   return {
     id: el.id,
@@ -153,6 +175,9 @@ export function canvasToPlanningInsert(
     z_index: typeof el.layer === "number" ? el.layer : 0,
     content: withSmartType(el.data, smartType) as PlanningElementInsert["content"],
     style: (el.style ?? {}) as PlanningElementInsert["style"],
-    metadata: withSmartType(el.metadata, smartType) as PlanningElementInsert["metadata"],
+    metadata: withLayerId(
+      withSmartType(el.metadata, smartType),
+      layerId,
+    ) as PlanningElementInsert["metadata"],
   };
 }
