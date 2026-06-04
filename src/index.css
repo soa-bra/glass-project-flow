@@ -1,9 +1,11 @@
+/* z-index tokens must be imported BEFORE any other rule so all
+   downstream utilities (header, popovers, panels...) resolve var(--z-*)
+   reliably. CSS spec requires @import to come first. */
+@import "./styles/z-index.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "./styles/z-index.css";
 
 /* خط IBM Plex Sans Arabic محمَّل عبر <link> في index.html */
 
