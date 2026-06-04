@@ -399,8 +399,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             elements={connectableElements}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
+            selectedElementIds={selectedElementIds}
             showAnchors={canEdit && activeTool === 'selection_tool' && selectedElementIds.length > 0}
           />
+
         </svg>
 
         {mindMapConnectionUI.isConnecting && mindMapConnectionUI.startPosition && mindMapConnectionUI.currentPosition && (
