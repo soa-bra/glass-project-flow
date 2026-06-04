@@ -484,14 +484,14 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
 
   const pathD = buildRoundedPath(points);
 
-  // ===== Visual style — neutral grey by default, darker on hover/select =====
-  const NEUTRAL = '#C7CDD4';
+  // ===== Visual style — thin grey by default, darker on hover/select =====
+  const NEUTRAL = '#9CA3AF';
   const ACTIVE = '#0B0F12';
   const baseStroke = data.color || NEUTRAL;
   const activeStroke = data.color || ACTIVE;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  const baseWidth = data.strokeWidth ?? 1.5;
-  const strokeWidth = isSelected ? Math.max(2, baseWidth) : baseWidth;
+  const baseWidth = data.strokeWidth ?? 0.5;
+  const strokeWidth = isSelected ? Math.max(1, baseWidth) : baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
