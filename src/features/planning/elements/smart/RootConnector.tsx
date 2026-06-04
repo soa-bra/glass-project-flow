@@ -151,6 +151,15 @@ interface FloatingPanelProps {
   isLoadingAI: boolean;
 }
 
+const COLOR_SWATCHES = ['#9CA3AF', '#0B0F12', '#3DA8F5', '#3DBE8B', '#F6C445', '#E5564D'];
+const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; label: string }> = [
+  { value: 'solid', label: 'متصل' },
+  { value: 'dashed', label: 'متقطع' },
+  { value: 'dotted', label: 'منقّط' },
+  { value: 'animated', label: 'متحرك' },
+];
+const WIDTH_OPTIONS = [0.5, 1, 1.5, 2];
+
 const FloatingPanel: React.FC<FloatingPanelProps> = ({
   x,
   y,
@@ -162,6 +171,7 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
   onDelete,
   onAISuggest,
   onInsertSuggestion,
+  onPatch,
   isLoadingAI,
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.title || '');
