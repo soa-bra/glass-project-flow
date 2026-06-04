@@ -178,7 +178,13 @@ export default {
 				'calendar': '900',
 				'project-cards': '800',
 				'dashboard-panel': '950',
-				'modal': '1100'
+				'modal': '1100',
+				'modal-backdrop': '10100',
+				'modal-content': '10200',
+				'dropdown': '10300',
+				'popover': '10400',
+				'tooltip': '10500',
+				'toast': '10600'
 			},
 			width: {
 				'sidebar-expanded': 'var(--sidebar-width-expanded)',
