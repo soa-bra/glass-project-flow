@@ -193,8 +193,10 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             projectData={projectData}
             onInputChange={handleInputChange}
             onClientDataChange={handleClientDataChange}
-            onAddTask={() => setShowAddTaskModal(true)}
+            onAddTask={() => { setEditingTask(null); setShowAddTaskModal(true); }}
             onGenerateSmartTasks={handleGenerateSmartTasks}
+            onEditTask={(task) => { setEditingTask(task); setShowAddTaskModal(true); }}
+            onDeleteTask={deleteTask}
             onAddPartnership={addPartnership}
             onEditPartnership={editPartnership}
             onDeletePartnership={deletePartnership}
