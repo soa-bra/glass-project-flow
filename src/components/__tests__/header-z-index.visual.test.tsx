@@ -44,7 +44,7 @@ const demoProject: Project = {
   progress: 72,
 };
 
-const zIndexTokenSource = readFileSync(new URL('../../styles/z-index.css', import.meta.url), 'utf8');
+const zIndexTokenSource = readFileSync('src/styles/z-index.css', 'utf8');
 
 const getTokenValue = (name: string) => {
   const match = zIndexTokenSource.match(new RegExp(`${name}:\\s*(\\d+);`));
