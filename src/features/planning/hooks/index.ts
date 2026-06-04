@@ -24,6 +24,7 @@ export type { UsePlanningElementsResult } from "./usePlanningElements";
 export { usePlanningRealtime } from "./usePlanningRealtime";
 export type { PresencePeer } from "./usePlanningRealtime";
 
+export { usePlanningCanvasPersistence } from "./usePlanningCanvasPersistence";
 export { usePlanningStoreSync } from "./usePlanningStoreSync";
 
 export { useElementHistory } from "./useElementHistory";
