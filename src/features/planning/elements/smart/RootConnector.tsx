@@ -88,35 +88,43 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   // sitting slightly below the top edge (matches design reference).
   const ANCHOR_OFFSET_X = 14;
   const ANCHOR_OFFSET_Y = 12;
-  const anchor = {
-    position: 'top-right' as AnchorPosition,
-    x: bounds.x + bounds.width + ANCHOR_OFFSET_X,
-    y: bounds.y + ANCHOR_OFFSET_Y,
+  const HIT_RADIUS = 18;
+  const VISIBLE_RADIUS = isConnecting ? 8 : 6;
+  const cx = bounds.x + bounds.width + ANCHOR_OFFSET_X;
+  const cy = bounds.y + ANCHOR_OFFSET_Y;
+
+  const handlePointerDown = (e: React.PointerEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onStartDrag({
+      elementId,
+      x: cx,
+      y: cy,
+      anchorPoint: 'top-right',
+    });
   };
 
   return (
-    <g className="connection-anchors" style={{ pointerEvents: 'auto' }}>
-      <motion.circle
-        cx={anchor.x}
-        cy={anchor.y}
-        r={isConnecting ? 8 : 6}
+    <g className="connection-anchors" data-anchor-element-id={elementId} style={{ pointerEvents: 'auto' }}>
+      {/* Transparent hit area for reliable grabbing */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={HIT_RADIUS}
+        fill="transparent"
+        className="cursor-crosshair"
+        onPointerDown={handlePointerDown}
+        onMouseDown={handlePointerDown as unknown as React.MouseEventHandler<SVGCircleElement>}
+      />
+      {/* Visible dot */}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={VISIBLE_RADIUS}
         fill="hsl(var(--background))"
         stroke="hsl(var(--primary))"
         strokeWidth={2}
-        className="cursor-crosshair"
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        whileHover={{ scale: 1.3 }}
-        onMouseDown={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          onStartDrag({
-            elementId,
-            x: anchor.x,
-            y: anchor.y,
-            anchorPoint: anchor.position,
-          });
-        }}
+        pointerEvents="none"
       />
     </g>
   );
