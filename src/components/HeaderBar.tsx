@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 
 type HeaderOverlay = 'search' | 'notifications' | 'messages' | 'user' | null;
@@ -179,10 +180,10 @@ const searchItems: SearchItem[] = [
 ];
 
 const notificationColors: Record<NotificationType, string> = {
-  app: 'bg-[#3e494c]',
-  message: 'bg-[#7c8f96]',
-  task: 'bg-[#4f766f]',
-  alert: 'bg-[#c69b55]',
+  app: 'bg-[#BDEED3]',
+  message: 'bg-[#A4E2F6]',
+  task: 'bg-[#FBE2AA]',
+  alert: 'bg-[#D9D2FE]',
 };
 
 const initialNotifications: NotificationItem[] = [
@@ -232,6 +233,49 @@ const readStoredPermissions = () => {
   }
 };
 
+const normalizeArabicSearch = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u064B-\u065F\u0670]/g, '')
+    .replace(/[إأآٱا]/g, 'ا')
+    .replace(/[ةه]/g, 'ه')
+    .replace(/[ىي]/g, 'ي')
+    .replace(/[ؤو]/g, 'و')
+    .replace(/[ئء]/g, '')
+    .replace(/[^\u0600-\u06FFa-z0-9\s]/g, ' ')
+    .replace(/\bال/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const isSubsequence = (query: string, target: string) => {
+  let targetIndex = 0;
+
+  for (const char of query) {
+    targetIndex = target.indexOf(char, targetIndex);
+    if (targetIndex === -1) return false;
+    targetIndex += 1;
+  }
+
+  return true;
+};
+
+const itemMatchesQuery = (item: SearchItem, query: string) => {
+  const normalizedQuery = normalizeArabicSearch(query);
+  if (!normalizedQuery) return true;
+
+  const corpus = normalizeArabicSearch([item.label, item.description, ...item.keywords].join(' '));
+  const compactQuery = normalizedQuery.replace(/\s/g, '');
+  const compactCorpus = corpus.replace(/\s/g, '');
+  const queryTokens = normalizedQuery.split(' ').filter(Boolean);
+
+  return (
+    corpus.includes(normalizedQuery) ||
+    compactCorpus.includes(compactQuery) ||
+    queryTokens.every((token) => corpus.includes(token) || isSubsequence(token, compactCorpus))
+  );
+};
+
 const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
   if (typeof document === 'undefined') return [];
 
@@ -263,11 +307,11 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
 
 const HeaderBar = () => {
   const { setActiveSection } = useNavigation();
+  const { signOut } = useAuth();
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [openOverlay, setOpenOverlay] = useState<HeaderOverlay>(null);
   const [searchValue, setSearchValue] = useState('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [notifications, setNotifications] = useState(initialNotifications);
   const [selectedChatId, setSelectedChatId] = useState(chats[0].id);
   const [showChatList, setShowChatList] = useState(true);
@@ -290,15 +334,11 @@ const HeaderBar = () => {
   );
 
   const filteredSearchItems = useMemo(() => {
-    const query = searchValue.trim().toLowerCase();
+    const query = searchValue.trim();
     if (!query) return availableSearchItems.slice(0, 5);
 
     return availableSearchItems
-      .filter((item) =>
-        [item.label, item.description, ...item.keywords].some((value) =>
-          value.toLowerCase().includes(query),
-        ),
-      )
+      .filter((item) => itemMatchesQuery(item, query))
       .slice(0, 6);
   }, [availableSearchItems, searchValue]);
 
@@ -343,11 +383,8 @@ const HeaderBar = () => {
   };
 
   const handleRefresh = () => {
-    if (isRefreshing) return;
-
     setOpenOverlay(null);
-    setIsRefreshing(true);
-    window.setTimeout(() => window.location.reload(), 220);
+    window.location.reload();
   };
 
   const handleSearchSelect = (item: SearchItem) => {
@@ -385,9 +422,9 @@ const HeaderBar = () => {
     setOpenOverlay(null);
   };
 
-  const handleLogout = () => {
-    window.dispatchEvent(new CustomEvent('soabra:logout-requested'));
+  const handleLogout = async () => {
     setOpenOverlay(null);
+    await signOut();
   };
 
   const handleChatSelect = (chatId: string) => {
@@ -401,7 +438,7 @@ const HeaderBar = () => {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 h-[60px] z-header my-0 py-[65px] px-[5px] bg-slate-100">
+    <header className="fixed top-0 right-0 left-0 h-[60px] z-[1000] my-0 py-[65px] px-[5px] bg-slate-100">
       <div className="flex items-center justify-between h-full px-0">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
@@ -469,7 +506,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="absolute top-[64px] right-2 w-[270px] rounded-[26px] p-2"
+                  className="absolute top-[64px] right-2 z-[1100] w-[270px] rounded-[26px] p-2"
                   style={glassStyle}
                 >
                   <div className="flex flex-col gap-2">
@@ -492,11 +529,7 @@ const HeaderBar = () => {
 
           <button className={iconButtonClass} onClick={handleRefresh} aria-label="تحديث">
             <div className={iconCircleClass}>
-              <RefreshCcw
-                className={`w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300 ${
-                  isRefreshing ? 'animate-spin' : ''
-                }`}
-              />
+              <RefreshCcw className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
 
@@ -507,10 +540,12 @@ const HeaderBar = () => {
               aria-label="الإشعارات"
             >
               <div className={`${iconCircleClass} relative`}>
-                <Bell className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
-                {hasNewNotifications && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-slate-100" />
-                )}
+                <span className="relative flex h-[20px] w-[20px] items-center justify-center">
+                  <Bell className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+                  {hasNewNotifications && (
+                    <span className="absolute right-[3px] top-[3px] h-1.5 w-1.5 rounded-full bg-red-500" />
+                  )}
+                </span>
               </div>
             </button>
 
@@ -521,7 +556,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="absolute top-[64px] left-2 w-[320px] rounded-[28px] p-3"
+                  className="absolute top-[64px] right-2 z-[1100] w-[320px] rounded-[28px] p-3"
                   style={glassStyle}
                 >
                   <div className="max-h-[300px] overflow-y-auto pl-1">
@@ -532,23 +567,26 @@ const HeaderBar = () => {
                         {notifications.map((notification) => (
                           <div
                             key={notification.id}
-                            className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 text-right transition hover:bg-white/75"
+                            dir="ltr"
+                            className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
                           >
-                            <span
-                              className={`h-3 w-3 flex-shrink-0 rounded-full ${notificationColors[notification.type]}`}
-                            />
-                            {notification.isNew && (
-                              <span className="h-3 w-3 flex-shrink-0 rounded-full bg-red-500" />
-                            )}
-                            <span className="flex-1 text-sm text-black">{notification.text}</span>
                             <button
                               type="button"
                               onClick={() => handleDeleteNotification(notification.id)}
-                              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-black transition hover:bg-white active:scale-95"
+                              className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-gray-300 transition hover:bg-white hover:text-gray-400 active:scale-95"
                               aria-label="حذف الإشعار"
                             >
-                              <X className="h-4 w-4" />
+                              <X className="h-3 w-3" />
                             </button>
+                            <span dir="rtl" className="flex-1 text-right text-sm text-black">
+                              {notification.text}
+                            </span>
+                            {notification.isNew && (
+                              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
+                            )}
+                            <span
+                              className={`h-2 w-2 flex-shrink-0 rounded-full ${notificationColors[notification.type]}`}
+                            />
                           </div>
                         ))}
                       </div>
@@ -581,7 +619,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="absolute top-[64px] left-0 w-56"
+                  className="absolute top-[64px] left-0 z-[1100] w-56"
                 >
                   <div className="flex flex-col items-start gap-2">
                     <button
@@ -647,7 +685,7 @@ const HeaderBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed inset-0 z-[999] flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
+            className="fixed inset-0 z-[1200] flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
             onMouseDown={() => setOpenOverlay(null)}
           >
             <motion.div
