@@ -56,6 +56,9 @@ const glassStyle = {
   boxShadow: '0 25px 50px -12px rgba(0,0,0,0.24), 0 0 0 1px rgba(255,255,255,0.28)',
 };
 
+const notificationMenuWidth = 320;
+const notificationViewportGap = 12;
+
 const searchItems: SearchItem[] = [
   {
     id: 'home',
@@ -82,12 +85,68 @@ const searchItems: SearchItem[] = [
     requiredPermissions: ['projects:view'],
   },
   {
+    id: 'finance-board',
+    label: 'لوحة المالي',
+    description: 'تبويب ولوحة المالي داخل إدارة المشاريع',
+    section: 'home',
+    keywords: ['المالي', 'مالي', 'تمويل', 'ميزانية', 'الفواتير', 'finance'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'marketing-board',
+    label: 'لوحة التسويق',
+    description: 'تبويب ولوحة التسويق داخل إدارة المشاريع',
+    section: 'home',
+    keywords: ['التسويق', 'تسويق', 'marketing', 'حملات'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'hr-board',
+    label: 'لوحة الموارد البشرية',
+    description: 'تبويب ولوحة الموارد البشرية',
+    section: 'home',
+    keywords: ['الموارد البشرية', 'موارد', 'بشرية', 'فريق', 'اعضاء الفريق', 'hr'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'customers-board',
+    label: 'لوحة العملاء',
+    description: 'تبويب ولوحة العملاء داخل إدارة المشاريع',
+    section: 'home',
+    keywords: ['العملاء', 'عملاء', 'عميل', 'بيانات العميل', 'customers'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
     id: 'project-box',
     label: 'صندوق المشاريع',
     description: 'بطاقات ولوحات المشاريع الحالية',
     section: 'home',
     keywords: ['صندوق المشاريع', 'بطاقات المشاريع', 'المشاريع', 'لوحة المشاريع'],
     requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'customers-box',
+    label: 'صندوق العملاء',
+    description: 'بطاقات العملاء وبياناتهم المرتبطة بالمشاريع',
+    section: 'home',
+    keywords: ['صندوق العملاء', 'بطاقات العملاء', 'بيانات العميل', 'عميل'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'add-project-modal',
+    label: 'نافذة إضافة مشروع جديد',
+    description: 'نافذة إنشاء مشروع والتبويبات الخاصة بها',
+    section: 'home',
+    keywords: ['إضافة مشروع', 'اضافة مشروع', 'مشروع جديد', 'نافذة مشروع', 'حفظ المشروع'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'add-task-modal',
+    label: 'نافذة إضافة مهمة',
+    description: 'نافذة إنشاء مهمة جديدة داخل المشروع',
+    section: 'planning',
+    keywords: ['إضافة مهمة', 'اضافة مهمة', 'مهمة جديدة', 'نافذة مهمة'],
+    requiredPermissions: ['planning:view'],
   },
   {
     id: 'task-box',
@@ -233,20 +292,26 @@ const readStoredPermissions = () => {
   }
 };
 
-const normalizeArabicSearch = (value: string) =>
-  value
+const normalizeArabicSearch = (value: string) => {
+  const normalized = value
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u064B-\u065F\u0670]/g, '')
+    .replace(/[\u0640\u064B-\u065F\u0670]/g, '')
     .replace(/[إأآٱا]/g, 'ا')
     .replace(/[ةه]/g, 'ه')
     .replace(/[ىي]/g, 'ي')
     .replace(/[ؤو]/g, 'و')
     .replace(/[ئء]/g, '')
     .replace(/[^\u0600-\u06FFa-z0-9\s]/g, ' ')
-    .replace(/\bال/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+
+  return normalized
+    .split(' ')
+    .map((token) => token.replace(/^ال/, ''))
+    .filter(Boolean)
+    .join(' ');
+};
 
 const isSubsequence = (query: string, target: string) => {
   let targetIndex = 0;
@@ -276,6 +341,50 @@ const itemMatchesQuery = (item: SearchItem, query: string) => {
   );
 };
 
+const defaultSearchPriority = [
+  'projects',
+  'project-tabs',
+  'project-box',
+  'finance-board',
+  'marketing-board',
+  'hr-board',
+  'customers-board',
+  'add-project-modal',
+  'project-basic-info',
+  'project-customer-info',
+  'project-tasks-tab',
+  'project-partnerships-tab',
+  'project-contract-tab',
+  'task-box',
+  'customers-box',
+  'add-task-modal',
+  'departments',
+  'planning',
+  'archive',
+  'settings',
+  'profile',
+  'home',
+];
+
+const getDefaultSearchRank = (item: SearchItem) => {
+  const index = defaultSearchPriority.indexOf(item.id);
+  return index === -1 ? defaultSearchPriority.length : index;
+};
+
+const getSearchScore = (item: SearchItem, query: string) => {
+  const normalizedQuery = normalizeArabicSearch(query);
+  const normalizedLabel = normalizeArabicSearch(item.label);
+  const normalizedDescription = normalizeArabicSearch(item.description);
+  const normalizedKeywords = normalizeArabicSearch(item.keywords.join(' '));
+
+  if (normalizedLabel === normalizedQuery) return 0;
+  if (normalizedLabel.startsWith(normalizedQuery)) return 1;
+  if (normalizedLabel.includes(normalizedQuery)) return 2;
+  if (normalizedKeywords.includes(normalizedQuery)) return 3;
+  if (normalizedDescription.includes(normalizedQuery)) return 4;
+  return 5 + getDefaultSearchRank(item);
+};
+
 const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
   if (typeof document === 'undefined') return [];
 
@@ -298,7 +407,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
         selector: `#${element.id}`,
       };
     })
-    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+    .filter((item): item is SearchItem => Boolean(item));
 
   return values.filter((item) =>
     item.requiredPermissions.every((permission) => permissions.includes(permission)),
@@ -317,12 +426,15 @@ const HeaderBar = () => {
   const [showChatList, setShowChatList] = useState(true);
   const [messageText, setMessageText] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [hasOpenedNotifications, setHasOpenedNotifications] = useState(false);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [visibleSearchItems, setVisibleSearchItems] = useState<SearchItem[]>([]);
+  const [notificationMenuPosition, setNotificationMenuPosition] = useState({ top: 0, left: 0 });
   const headerActionsRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const notificationButtonRef = useRef<HTMLDivElement | null>(null);
 
-  const hasNewNotifications = notifications.some((notification) => notification.isNew);
+  const hasNewNotifications = !hasOpenedNotifications && notifications.some((notification) => notification.isNew);
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || chats[0];
 
   const availableSearchItems = useMemo(
@@ -335,11 +447,14 @@ const HeaderBar = () => {
 
   const filteredSearchItems = useMemo(() => {
     const query = searchValue.trim();
-    if (!query) return availableSearchItems.slice(0, 5);
+    if (!query) {
+      return [...availableSearchItems].sort((a, b) => getDefaultSearchRank(a) - getDefaultSearchRank(b)).slice(0, 12);
+    }
 
     return availableSearchItems
       .filter((item) => itemMatchesQuery(item, query))
-      .slice(0, 6);
+      .sort((a, b) => getSearchScore(a, query) - getSearchScore(b, query))
+      .slice(0, 12);
   }, [availableSearchItems, searchValue]);
 
   useEffect(() => {
@@ -366,9 +481,36 @@ const HeaderBar = () => {
     }
 
     if (openOverlay === 'notifications') {
-      setNotifications((items) => items.map((item) => ({ ...item, isNew: false })));
+      setHasOpenedNotifications(true);
     }
   }, [openOverlay, userPermissions]);
+
+  useEffect(() => {
+    if (openOverlay !== 'notifications') return;
+
+    const updateNotificationMenuPosition = () => {
+      const rect = notificationButtonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const maxLeft = Math.max(notificationViewportGap, window.innerWidth - notificationMenuWidth - notificationViewportGap);
+      const preferredLeft = rect.right - notificationMenuWidth;
+      const left = Math.min(Math.max(preferredLeft, notificationViewportGap), maxLeft);
+
+      setNotificationMenuPosition({
+        top: rect.bottom + 8,
+        left,
+      });
+    };
+
+    updateNotificationMenuPosition();
+    window.addEventListener('resize', updateNotificationMenuPosition);
+    window.addEventListener('scroll', updateNotificationMenuPosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updateNotificationMenuPosition);
+      window.removeEventListener('scroll', updateNotificationMenuPosition, true);
+    };
+  }, [openOverlay]);
 
   const handleImageError = () => {
     setImageError(true);
@@ -438,7 +580,7 @@ const HeaderBar = () => {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 h-[60px] z-[1000] my-0 py-[65px] px-[5px] bg-slate-100">
+    <header className="fixed top-0 right-0 left-0 h-[60px] z-[1400] my-0 py-[65px] px-[5px] bg-slate-100">
       <div className="flex items-center justify-between h-full px-0">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
@@ -506,7 +648,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="absolute top-[64px] right-2 z-[1100] w-[270px] rounded-[26px] p-2"
+                  className="absolute top-[64px] right-2 z-[1500] max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
                   style={glassStyle}
                 >
                   <div className="flex flex-col gap-2">
@@ -527,14 +669,15 @@ const HeaderBar = () => {
             </AnimatePresence>
           </div>
 
-          <button className={iconButtonClass} onClick={handleRefresh} aria-label="تحديث">
+          <button type="button" className={iconButtonClass} onClick={handleRefresh} aria-label="تحديث">
             <div className={iconCircleClass}>
               <RefreshCcw className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
             </div>
           </button>
 
-          <div className="relative">
+          <div ref={notificationButtonRef} className="relative">
             <button
+              type="button"
               className={iconButtonClass}
               onClick={() => openOnly('notifications')}
               aria-label="الإشعارات"
@@ -556,8 +699,12 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="absolute top-[64px] right-2 z-[1100] w-[320px] rounded-[28px] p-3"
-                  style={glassStyle}
+                  className="fixed z-[1500] w-[320px] rounded-[28px] p-3"
+                  style={{
+                    ...glassStyle,
+                    top: notificationMenuPosition.top,
+                    left: notificationMenuPosition.left,
+                  }}
                 >
                   <div className="max-h-[300px] overflow-y-auto pl-1">
                     {notifications.length === 0 ? (
@@ -598,7 +745,7 @@ const HeaderBar = () => {
           </div>
 
           <div className="relative">
-            <button className={iconButtonClass} onClick={() => openOnly('messages')} aria-label="الرسائل">
+            <button type="button" className={iconButtonClass} onClick={() => openOnly('messages')} aria-label="الرسائل">
               <div className={iconCircleClass}>
                 <MessageCircle className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
               </div>
@@ -606,7 +753,7 @@ const HeaderBar = () => {
           </div>
 
           <div className="relative">
-            <button className={iconButtonClass} onClick={() => openOnly('user')} aria-label="المستخدم">
+            <button type="button" className={iconButtonClass} onClick={() => openOnly('user')} aria-label="المستخدم">
               <div className={iconCircleClass}>
                 <User className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
               </div>
@@ -619,7 +766,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="absolute top-[64px] left-0 z-[1100] w-56"
+                  className="absolute top-[64px] left-0 z-[1500] w-56"
                 >
                   <div className="flex flex-col items-start gap-2">
                     <button
@@ -685,7 +832,7 @@ const HeaderBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed inset-0 z-[1200] flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
+            className="fixed inset-0 z-[1600] flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
             onMouseDown={() => setOpenOverlay(null)}
           >
             <motion.div
