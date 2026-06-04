@@ -26,14 +26,14 @@ export default function Dock({ items, className }: DockProps) {
   return (
     <div className={cn("flex items-center justify-center w-full", className)}>
       <motion.div
-        animate={{ y: [0, -2, 0] }}
+        animate={{ y: [0, -1, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         className={cn(
-          "flex items-end gap-4 px-4 py-3 rounded-full",
+          "flex items-end gap-2 px-3 py-2 rounded-full",
           "border border-[hsl(var(--border))] bg-background/70 backdrop-blur-2xl shadow-lg"
         )}
         style={{
-          transform: "perspective(600px) rotateX(10deg)",
+          transform: "perspective(600px) rotateX(6deg)",
         }}
       >
         <TooltipProvider delayDuration={100}>
@@ -55,7 +55,7 @@ export default function Dock({ items, className }: DockProps) {
                       transition: 'transform 0.2s ease-out, background-color 0.2s'
                     }}
                     className={cn(
-                      "h-10 w-10 rounded-full flex items-center justify-center transition-colors",
+                      "h-8 w-8 rounded-full flex items-center justify-center transition-colors",
                       isActive && "bg-[hsl(var(--ink))]",
                       isHovered && !isActive && "bg-[hsl(var(--ink-30))]",
                       !isActive && !isHovered && "bg-transparent"
@@ -63,7 +63,7 @@ export default function Dock({ items, className }: DockProps) {
                   >
                     <item.icon
                       className={cn(
-                        "h-6 w-6 transition-colors",
+                        "h-4 w-4 transition-colors",
                         isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
                       )}
                     />
