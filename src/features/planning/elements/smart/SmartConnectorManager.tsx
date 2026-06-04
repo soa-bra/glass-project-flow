@@ -1,13 +1,12 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { nanoid } from 'nanoid';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { 
   RootConnector, 
   RootConnectorData, 
   ConnectorPoint, 
   AISuggestion,
   ConnectionAnchors,
-  RootConnectorCreator 
 } from './RootConnector';
+import { useCanvasStore } from '@/stores/canvasStore';
 
 interface ElementBounds {
   id: string;
@@ -25,6 +24,7 @@ interface SmartConnectorManagerProps {
   onInsertComponent?: (suggestion: AISuggestion, position: { x: number; y: number }) => void;
   selectedConnectorId?: string;
   onSelectConnector?: (id: string | null) => void;
+  selectedElementIds?: string[];
   showAnchors?: boolean;
 }
 
@@ -35,12 +35,22 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   onInsertComponent,
   selectedConnectorId,
   onSelectConnector,
+  selectedElementIds = [],
   showAnchors = true,
 }) => {
+  const viewport = useCanvasStore((state) => state.viewport);
   const [isCreatingConnector, setIsCreatingConnector] = useState(false);
   const [dragStartPoint, setDragStartPoint] = useState<ConnectorPoint | null>(null);
+  const [dragCurrent, setDragCurrent] = useState<{ x: number; y: number } | null>(null);
+  const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
+  const svgGroupRef = useRef<SVGGElement | null>(null);
 
-  // Handle creating new connector
+  // Only show anchors for selected, non-connector elements
+  const anchoredElements = useMemo(
+    () => elements.filter((el) => selectedElementIds.includes(el.id)),
+    [elements, selectedElementIds],
+  );
+
   const handleCreateConnector = useCallback((
     startPoint: ConnectorPoint,
     endPoint: ConnectorPoint,
@@ -57,76 +67,24 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-
     onConnectorsChange([...connectors, newConnector]);
     onSelectConnector?.(newConnector.id);
   }, [connectors, onConnectorsChange, onSelectConnector]);
 
-  // Handle updating connector
   const handleUpdateConnector = useCallback((id: string, data: RootConnectorData) => {
-    onConnectorsChange(
-      connectors.map(c => c.id === id ? data : c)
-    );
+    onConnectorsChange(connectors.map(c => c.id === id ? data : c));
   }, [connectors, onConnectorsChange]);
 
-  // Handle deleting connector
   const handleDeleteConnector = useCallback((id: string) => {
     onConnectorsChange(connectors.filter(c => c.id !== id));
-    if (selectedConnectorId === id) {
-      onSelectConnector?.(null);
-    }
+    if (selectedConnectorId === id) onSelectConnector?.(null);
   }, [connectors, onConnectorsChange, selectedConnectorId, onSelectConnector]);
 
-  // AI suggestion handler
-  const handleAISuggest = useCallback(async (connector: RootConnectorData): Promise<AISuggestion[]> => {
-    // Simulate AI analysis based on connected elements
-    const startElement = elements.find(e => e.id === connector.startPoint.elementId);
-    const endElement = elements.find(e => e.id === connector.endPoint.elementId);
+  const handleAISuggest = useCallback(async (_connector: RootConnectorData): Promise<AISuggestion[]> => {
+    await new Promise(resolve => setTimeout(resolve, 800));
+    return [];
+  }, []);
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const suggestions: AISuggestion[] = [
-      {
-        id: nanoid(),
-        type: 'component',
-        title: 'إضافة معالج وسيط',
-        description: 'مكون لمعالجة البيانات بين العنصرين المتصلين',
-        confidence: 0.92,
-        data: {
-          componentType: 'processor',
-          position: {
-            x: (connector.startPoint.x + connector.endPoint.x) / 2,
-            y: (connector.startPoint.y + connector.endPoint.y) / 2,
-          },
-        },
-      },
-      {
-        id: nanoid(),
-        type: 'connector',
-        title: 'رابط تدفق البيانات',
-        description: 'تحويل إلى رابط تدفق بيانات مع مؤشرات اتجاه',
-        confidence: 0.85,
-        data: {
-          style: 'animated',
-          showDataFlow: true,
-        },
-      },
-      {
-        id: nanoid(),
-        type: 'action',
-        title: 'إضافة نقطة تحقق',
-        description: 'إدراج نقطة تحقق من صحة البيانات',
-        confidence: 0.78,
-        data: {
-          actionType: 'validation',
-        },
-      },
-    ];
-
-    return suggestions;
-  }, [elements]);
-
-  // Handle inserting suggestion
   const handleInsertSuggestion = useCallback((
     connector: RootConnectorData,
     suggestion: AISuggestion
@@ -136,40 +94,116 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         x: (connector.startPoint.x + connector.endPoint.x) / 2,
         y: (connector.startPoint.y + connector.endPoint.y) / 2,
       });
-    } else if (suggestion.type === 'connector') {
-      // Update connector style
-      handleUpdateConnector(connector.id, {
-        ...connector,
-        style: suggestion.data?.style || connector.style,
-      });
     }
-  }, [onInsertComponent, handleUpdateConnector]);
+  }, [onInsertComponent]);
 
-  // Handle anchor drag start
   const handleAnchorDragStart = useCallback((point: ConnectorPoint) => {
     setDragStartPoint(point);
+    setDragCurrent({ x: point.x, y: point.y });
     setIsCreatingConnector(true);
   }, []);
 
-  // Handle anchor drag end
-  const handleAnchorDragEnd = useCallback((point: ConnectorPoint) => {
-    if (dragStartPoint && dragStartPoint.elementId !== point.elementId) {
-      handleCreateConnector(dragStartPoint, point, 'references');
-    }
-    setDragStartPoint(null);
-    setIsCreatingConnector(false);
-  }, [dragStartPoint, handleCreateConnector]);
+  // Global mousemove/mouseup while dragging from anchor → drop on any element body
+  useEffect(() => {
+    if (!isCreatingConnector || !dragStartPoint) return;
+
+    const clientToCanvas = (clientX: number, clientY: number) => {
+      const svgEl = svgGroupRef.current?.ownerSVGElement;
+      if (!svgEl) return null;
+      const rect = svgEl.getBoundingClientRect();
+      const zoom = viewport.zoom || 1;
+      return {
+        x: (clientX - rect.left) / zoom,
+        y: (clientY - rect.top) / zoom,
+      };
+    };
+
+    const findElementAt = (x: number, y: number) =>
+      elements.find((el) =>
+        el.id !== dragStartPoint.elementId &&
+        x >= el.x && x <= el.x + el.width &&
+        y >= el.y && y <= el.y + el.height,
+      );
+
+    const onMove = (e: MouseEvent) => {
+      const p = clientToCanvas(e.clientX, e.clientY);
+      if (!p) return;
+      setDragCurrent(p);
+      const hovered = findElementAt(p.x, p.y);
+      setHoveredElementId(hovered?.id ?? null);
+    };
+
+    const onUp = (e: MouseEvent) => {
+      const p = clientToCanvas(e.clientX, e.clientY);
+      if (p) {
+        const target = findElementAt(p.x, p.y);
+        if (target) {
+          handleCreateConnector(
+            dragStartPoint,
+            {
+              elementId: target.id,
+              x: target.x + target.width / 2,
+              y: target.y + target.height / 2,
+              anchorPoint: 'center',
+            },
+            'references',
+          );
+        }
+      }
+      setDragStartPoint(null);
+      setDragCurrent(null);
+      setHoveredElementId(null);
+      setIsCreatingConnector(false);
+    };
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDragStartPoint(null);
+        setDragCurrent(null);
+        setHoveredElementId(null);
+        setIsCreatingConnector(false);
+      }
+    };
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isCreatingConnector, dragStartPoint, elements, viewport.zoom, handleCreateConnector]);
 
   return (
-    <g className="smart-connector-manager" style={{ pointerEvents: 'auto' }}>
-      {/* Connection Anchors for each element */}
-      {showAnchors && elements.map(element => (
+    <g ref={svgGroupRef} className="smart-connector-manager" style={{ pointerEvents: 'auto' }}>
+      {/* Hover highlight on target element */}
+      {hoveredElementId && (() => {
+        const el = elements.find(e => e.id === hoveredElementId);
+        if (!el) return null;
+        return (
+          <rect
+            x={el.x - 3}
+            y={el.y - 3}
+            width={el.width + 6}
+            height={el.height + 6}
+            fill="hsl(var(--primary) / 0.08)"
+            stroke="hsl(var(--primary))"
+            strokeWidth={2}
+            strokeDasharray="6,4"
+            rx={10}
+            className="pointer-events-none"
+          />
+        );
+      })()}
+
+      {/* Connection Anchors — only for selected elements */}
+      {showAnchors && anchoredElements.map(element => (
         <ConnectionAnchors
           key={element.id}
           elementId={element.id}
           bounds={element}
           onStartDrag={handleAnchorDragStart}
-          onEndDrag={handleAnchorDragEnd}
           isConnecting={isCreatingConnector}
         />
       ))}
@@ -187,17 +221,17 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         />
       ))}
 
-      {/* Preview line while dragging from anchor */}
-      {isCreatingConnector && dragStartPoint && (
+      {/* Preview line while dragging */}
+      {isCreatingConnector && dragStartPoint && dragCurrent && (
         <line
           x1={dragStartPoint.x}
           y1={dragStartPoint.y}
-          x2={dragStartPoint.x}
-          y2={dragStartPoint.y}
+          x2={dragCurrent.x}
+          y2={dragCurrent.y}
           stroke="hsl(var(--primary))"
           strokeWidth={2}
-          strokeDasharray="5,5"
-          opacity={0.7}
+          strokeDasharray="6,4"
+          opacity={0.85}
           className="pointer-events-none"
         />
       )}
@@ -223,23 +257,18 @@ export const useSmartConnectors = (initialConnectors: RootConnectorData[] = []) 
 
   const updateConnector = useCallback((id: string, updates: Partial<RootConnectorData>) => {
     setConnectors(prev => prev.map(c => 
-      c.id === id 
-        ? { ...c, ...updates, updatedAt: new Date().toISOString() }
-        : c
+      c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c
     ));
   }, []);
 
   const removeConnector = useCallback((id: string) => {
     setConnectors(prev => prev.filter(c => c.id !== id));
-    if (selectedConnectorId === id) {
-      setSelectedConnectorId(null);
-    }
+    if (selectedConnectorId === id) setSelectedConnectorId(null);
   }, [selectedConnectorId]);
 
   const getConnectorsByElement = useCallback((elementId: string) => {
     return connectors.filter(c => 
-      c.startPoint.elementId === elementId || 
-      c.endPoint.elementId === elementId
+      c.startPoint.elementId === elementId || c.endPoint.elementId === elementId
     );
   }, [connectors]);
 
