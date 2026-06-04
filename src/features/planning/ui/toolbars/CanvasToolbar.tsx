@@ -128,7 +128,7 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
             {board.name || 'لوحة جديدة'}
           </h2>
         )}
-        <span className="text-[11px] text-sb-ink-40">{saveLabel}</span>
+        <span className="text-[10px] text-sb-ink-40">{saveLabel}</span>
       </div>
 
       <div className="flex items-center gap-2">
