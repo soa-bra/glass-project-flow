@@ -73,6 +73,8 @@ export const ProjectModalTabs: React.FC<ProjectModalTabsProps> = ({
               tasks={projectData.tasks}
               onAddTask={onAddTask}
               onGenerateSmartTasks={onGenerateSmartTasks}
+              onEditTask={onEditTask}
+              onDeleteTask={onDeleteTask}
             />
           </TabsContent>
 
