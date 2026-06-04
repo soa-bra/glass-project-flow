@@ -397,7 +397,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
 
       if (!element.id) element.id = `header-search-target-${index}`;
 
-      return {
+      const item: SearchItem = {
         id: `visible-${element.id}`,
         label,
         description: 'عنصر ظاهر في الواجهة الحالية',
@@ -406,6 +406,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
         requiredPermissions: [],
         selector: `#${element.id}`,
       };
+      return item;
     })
     .filter((item): item is SearchItem => Boolean(item));
 
