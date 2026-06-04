@@ -34,6 +34,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [activeTab, setActiveTab] = useState('basic');
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskData | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const {
