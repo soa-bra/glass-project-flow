@@ -2,13 +2,13 @@
  * @specRef docs/specs/master-spec-ar.md — طبقات الهيدر واللوحات داخل واجهة إدارة المشاريع.
  */
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import HeaderBar from '@/components/HeaderBar';
 import { ProjectManagementBoard } from '@/components/ProjectManagement/ProjectManagementBoard';
 import { NavigationProvider } from '@/contexts/NavigationContext';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import type { Project } from '@/types/project';
-import '@/index.css';
 
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({
@@ -44,9 +44,11 @@ const demoProject: Project = {
   progress: 72,
 };
 
+const zIndexTokenSource = readFileSync(new URL('../../styles/z-index.css', import.meta.url), 'utf8');
+
 const getTokenValue = (name: string) => {
-  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return Number(value);
+  const match = zIndexTokenSource.match(new RegExp(`${name}:\\s*(\\d+);`));
+  return match ? Number(match[1]) : Number.NaN;
 };
 
 const expectPopoverAbovePanels = (popover: HTMLElement) => {
