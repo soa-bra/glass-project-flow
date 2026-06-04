@@ -580,7 +580,9 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const baseStroke = data.color || NEUTRAL;
   const activeStroke = data.color || ACTIVE;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  const baseWidth = data.strokeWidth ?? 0.25;
+  // Clamp legacy values: any stored width > 1 is treated as legacy and forced thin
+  const storedWidth = data.strokeWidth ?? 0.25;
+  const baseWidth = storedWidth > 1 ? 0.25 : storedWidth;
   const strokeWidth = isSelected ? Math.max(0.5, baseWidth) : baseWidth;
   const strokeStyle = data.style || 'solid';
 
