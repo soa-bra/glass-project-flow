@@ -14,6 +14,7 @@ type TestStoreState = {
   elements: CanvasElement[];
   layers: LayerInfo[];
   viewport: { zoom: number; pan: { x: number; y: number } };
+  viewportHostSize: { width: number; height: number };
   activeLayerId: string | null;
   history: { past: unknown[]; future: unknown[] };
   deleteElements: ReturnType<typeof vi.fn>;
@@ -40,6 +41,7 @@ function createTestStore(initialElements: CanvasElement[]) {
       },
     ],
     viewport: { zoom: 2, pan: { x: 100, y: 50 } },
+    viewportHostSize: { width: 1000, height: 600 },
     activeLayerId: 'default',
     history: { past: [], future: [] },
     deleteElements: vi.fn(),
@@ -159,12 +161,6 @@ describe('selectionSlice clipboard regression', () => {
   });
 
   it('uses the canvas host size to determine viewport-centered paste when position is omitted', () => {
-    const container = document.createElement('div');
-    container.setAttribute('data-canvas-container', 'true');
-    Object.defineProperty(container, 'clientWidth', { configurable: true, value: 1000 });
-    Object.defineProperty(container, 'clientHeight', { configurable: true, value: 600 });
-    document.body.appendChild(container);
-
     const baseElement: CanvasElement = {
       id: 'single-element',
       type: 'text',
