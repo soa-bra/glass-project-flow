@@ -5,7 +5,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import HeaderBar from '@/components/HeaderBar';
-import { ProjectManagementBoard } from '@/components/ProjectManagement/ProjectManagementBoard';
+import { ProjectManagementBoard } from '@/components/ProjectManagement';
 import { NavigationProvider } from '@/contexts/NavigationContext';
 import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import type { Project } from '@/types/project';
