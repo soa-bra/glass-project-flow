@@ -24,6 +24,7 @@ interface SearchItem {
   section: string;
   keywords: string[];
   requiredPermissions: string[];
+  selector?: string;
 }
 
 interface NotificationItem {
@@ -72,6 +73,30 @@ const searchItems: SearchItem[] = [
     requiredPermissions: ['projects:view'],
   },
   {
+    id: 'project-tabs',
+    label: 'تبويبات إدارة المشاريع',
+    description: 'المالي، إدارة المشاريع، التسويق، الموارد البشرية، العملاء',
+    section: 'home',
+    keywords: ['المالي', 'إدارة المشاريع', 'التسويق', 'الموارد البشرية', 'العملاء', 'تبويبات'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'project-box',
+    label: 'صندوق المشاريع',
+    description: 'بطاقات ولوحات المشاريع الحالية',
+    section: 'home',
+    keywords: ['صندوق المشاريع', 'بطاقات المشاريع', 'المشاريع', 'لوحة المشاريع'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'task-box',
+    label: 'صندوق المهام',
+    description: 'مهام ومشاريع قيد المتابعة',
+    section: 'planning',
+    keywords: ['صندوق المهام', 'المهام', 'مهام ومشاريع', 'tasks'],
+    requiredPermissions: ['planning:view'],
+  },
+  {
     id: 'departments',
     label: 'الإدارات',
     description: 'أقسام وإدارات التطبيق',
@@ -110,6 +135,46 @@ const searchItems: SearchItem[] = [
     section: 'settings',
     keywords: ['حسابي', 'الحساب الشخصي', 'profile'],
     requiredPermissions: ['settings:profile'],
+  },
+  {
+    id: 'project-basic-info',
+    label: 'تبويب المعلومات الأساسية',
+    description: 'تبويب داخل نافذة إضافة أو تعديل مشروع',
+    section: 'home',
+    keywords: ['المعلومات الأساسية', 'اسم المشروع', 'وصف المشروع', 'مدير المشروع'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'project-customer-info',
+    label: 'تبويب بيانات العميل',
+    description: 'بيانات العميل داخل نافذة المشروع',
+    section: 'home',
+    keywords: ['بيانات العميل', 'العميل', 'customer'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'project-tasks-tab',
+    label: 'تبويب المهام',
+    description: 'مهام المشروع داخل نافذة المشروع',
+    section: 'home',
+    keywords: ['المهام', 'مهام المشروع', 'tasks'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'project-partnerships-tab',
+    label: 'تبويب الشراكات',
+    description: 'شراكات المشروع داخل نافذة المشروع',
+    section: 'home',
+    keywords: ['الشراكات', 'شركاء', 'partnerships'],
+    requiredPermissions: ['projects:view'],
+  },
+  {
+    id: 'project-contract-tab',
+    label: 'تبويب العقد',
+    description: 'تفاصيل العقد داخل نافذة المشروع',
+    section: 'home',
+    keywords: ['العقد', 'قيمة العقد', 'contract'],
+    requiredPermissions: ['projects:view'],
   },
 ];
 
@@ -167,6 +232,35 @@ const readStoredPermissions = () => {
   }
 };
 
+const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
+  if (typeof document === 'undefined') return [];
+
+  const values = Array.from(
+    document.querySelectorAll<HTMLElement>('h1, h2, h3, button, [role="tab"], [data-search-label]'),
+  )
+    .map((element, index) => {
+      const label = element.dataset.searchLabel || element.textContent?.replace(/\s+/g, ' ').trim();
+      if (!label || label.length < 3 || label.length > 48) return null;
+
+      if (!element.id) element.id = `header-search-target-${index}`;
+
+      return {
+        id: `visible-${element.id}`,
+        label,
+        description: 'عنصر ظاهر في الواجهة الحالية',
+        section: '',
+        keywords: [label],
+        requiredPermissions: [],
+        selector: `#${element.id}`,
+      };
+    })
+    .filter((item): item is SearchItem => Boolean(item));
+
+  return values.filter((item) =>
+    item.requiredPermissions.every((permission) => permissions.includes(permission)),
+  );
+};
+
 const HeaderBar = () => {
   const { setActiveSection } = useNavigation();
   const [imageError, setImageError] = useState(false);
@@ -180,6 +274,7 @@ const HeaderBar = () => {
   const [messageText, setMessageText] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
+  const [visibleSearchItems, setVisibleSearchItems] = useState<SearchItem[]>([]);
   const headerActionsRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -188,10 +283,10 @@ const HeaderBar = () => {
 
   const availableSearchItems = useMemo(
     () =>
-      searchItems.filter((item) =>
+      [...searchItems, ...visibleSearchItems].filter((item) =>
         item.requiredPermissions.every((permission) => userPermissions.includes(permission)),
       ),
-    [userPermissions],
+    [userPermissions, visibleSearchItems],
   );
 
   const filteredSearchItems = useMemo(() => {
@@ -226,13 +321,14 @@ const HeaderBar = () => {
 
   useEffect(() => {
     if (openOverlay === 'search') {
+      setVisibleSearchItems(getVisibleSearchItems(userPermissions));
       window.setTimeout(() => searchInputRef.current?.focus(), 120);
     }
 
     if (openOverlay === 'notifications') {
       setNotifications((items) => items.map((item) => ({ ...item, isNew: false })));
     }
-  }, [openOverlay]);
+  }, [openOverlay, userPermissions]);
 
   const handleImageError = () => {
     setImageError(true);
@@ -251,18 +347,25 @@ const HeaderBar = () => {
 
     setOpenOverlay(null);
     setIsRefreshing(true);
-    window.dispatchEvent(new CustomEvent('soabra:refresh-current-section'));
-    window.setTimeout(() => setIsRefreshing(false), 900);
+    window.setTimeout(() => window.location.reload(), 220);
   };
 
   const handleSearchSelect = (item: SearchItem) => {
-    setActiveSection(item.section);
+    if (item.section) setActiveSection(item.section);
     setOpenOverlay(null);
     setSearchValue('');
 
     window.setTimeout(() => {
-      const main = document.querySelector('main, [data-main-content], .overflow-hidden');
-      main?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const target = item.selector
+        ? document.querySelector(item.selector)
+        : Array.from(document.querySelectorAll<HTMLElement>('h1, h2, h3, button, [role="tab"]')).find(
+            (element) => element.textContent?.includes(item.label),
+          );
+
+      (target || document.querySelector('main, [data-main-content], .overflow-hidden'))?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
     }, 120);
   };
 
@@ -418,7 +521,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="absolute top-[64px] right-2 w-[320px] rounded-[28px] p-3"
+                  className="absolute top-[64px] left-2 w-[320px] rounded-[28px] p-3"
                   style={glassStyle}
                 >
                   <div className="max-h-[300px] overflow-y-auto pl-1">
@@ -462,91 +565,6 @@ const HeaderBar = () => {
                 <MessageCircle className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
               </div>
             </button>
-
-            <AnimatePresence>
-              {openOverlay === 'messages' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.98, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: 10, scale: 0.98, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="absolute top-[64px] right-[-120px] w-[min(720px,calc(100vw-28px))] rounded-[30px] p-4"
-                  style={glassStyle}
-                >
-                  <div className="mb-3 flex items-center justify-between">
-                    <h2 className="text-base font-medium text-black">الرسائل</h2>
-                    <button
-                      type="button"
-                      onClick={() => setOpenOverlay(null)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full border border-black/20 text-black transition hover:bg-white/70 active:scale-95"
-                      aria-label="إغلاق الرسائل"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  <div className="grid h-[380px] grid-cols-1 overflow-hidden rounded-[24px] bg-white/35 md:grid-cols-[240px_1fr]">
-                    <div className={`${showChatList ? 'block' : 'hidden'} border-black/10 md:block md:border-l`}>
-                      <div className="flex h-full flex-col gap-2 overflow-y-auto p-3">
-                        {chats.map((chat) => (
-                          <button
-                            key={chat.id}
-                            type="button"
-                            onClick={() => handleChatSelect(chat.id)}
-                            className={`rounded-3xl px-3 py-3 text-right transition hover:bg-white/75 active:scale-[0.98] ${
-                              selectedChatId === chat.id ? 'bg-white/80' : 'bg-white/40'
-                            }`}
-                          >
-                            <span className="block text-sm font-medium text-black">{chat.name}</span>
-                            <span className="block truncate text-xs text-[#3e494c]/70">{chat.preview}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className={`${showChatList ? 'hidden' : 'flex'} h-full flex-col md:flex`}>
-                      <div className="flex items-center gap-2 border-b border-black/10 p-3">
-                        <button
-                          type="button"
-                          onClick={() => setShowChatList(true)}
-                          className="rounded-full px-3 py-1 text-sm text-black transition hover:bg-white/70 md:hidden"
-                        >
-                          رجوع
-                        </button>
-                        <span className="font-medium text-black">{selectedChat.name}</span>
-                      </div>
-                      <div className="flex-1 space-y-2 overflow-y-auto p-4">
-                        {selectedChat.messages.map((message, index) => (
-                          <div
-                            key={`${selectedChat.id}-${index}`}
-                            className={`w-fit max-w-[82%] rounded-3xl px-4 py-2 text-sm text-black ${
-                              index % 2 === 0 ? 'mr-auto bg-white/80' : 'bg-[#dfeaf0]'
-                            }`}
-                          >
-                            {message}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex gap-2 border-t border-black/10 p-3">
-                        <input
-                          value={messageText}
-                          onChange={(event) => setMessageText(event.target.value)}
-                          placeholder="اكتب رسالة"
-                          className="min-w-0 flex-1 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-right text-sm text-black outline-none"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleSendMessage}
-                          className="rounded-full bg-black px-4 py-2 text-sm text-white transition hover:bg-black/80 active:scale-95"
-                        >
-                          إرسال
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </div>
 
           <div className="relative">
@@ -576,13 +594,22 @@ const HeaderBar = () => {
                         {isDarkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
                         {isDarkMode ? 'الوضع الداكن' : 'الوضع الفاتح'}
                       </span>
-                      <span className="flex h-8 w-[92px] items-center rounded-full border border-black/40 bg-slate-200 p-1">
+                      <span className="flex h-9 w-[86px] items-center justify-between rounded-full border border-black/45 bg-transparent p-1">
                         <span
-                          className={`flex h-6 w-11 items-center justify-center rounded-full bg-black text-[11px] text-white transition-transform duration-300 ${
-                            isDarkMode ? '-translate-x-10' : 'translate-x-0'
+                          className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+                            !isDarkMode ? 'bg-black text-white' : 'text-black'
                           }`}
+                          aria-hidden="true"
                         >
-                          {isDarkMode ? 'داكن' : 'فاتح'}
+                          <Sun className="h-4 w-4" />
+                        </span>
+                        <span
+                          className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+                            isDarkMode ? 'bg-black text-white' : 'text-black'
+                          }`}
+                          aria-hidden="true"
+                        >
+                          <Moon className="h-4 w-4" />
                         </span>
                       </span>
                     </button>
@@ -613,6 +640,100 @@ const HeaderBar = () => {
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {openOverlay === 'messages' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="fixed inset-0 z-[999] flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
+            onMouseDown={() => setOpenOverlay(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(8px)' }}
+              transition={{ duration: 0.32, ease: 'easeOut' }}
+              className="w-[min(860px,calc(100vw-32px))] rounded-[30px] p-4 md:p-6"
+              style={glassStyle}
+              onMouseDown={(event) => event.stopPropagation()}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-black">الرسائل</h2>
+                <button
+                  type="button"
+                  onClick={() => setOpenOverlay(null)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black text-black transition hover:bg-white/70 active:scale-95"
+                  aria-label="إغلاق الرسائل"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="grid h-[min(520px,70vh)] grid-cols-1 overflow-hidden rounded-[24px] bg-white/25 md:grid-cols-[260px_1fr]">
+                <div className={`${showChatList ? 'block' : 'hidden'} border-black/10 md:block md:border-l`}>
+                  <div className="flex h-full flex-col gap-2 overflow-y-auto p-3">
+                    {chats.map((chat) => (
+                      <button
+                        key={chat.id}
+                        type="button"
+                        onClick={() => handleChatSelect(chat.id)}
+                        className={`rounded-3xl px-3 py-3 text-right transition hover:bg-white/75 active:scale-[0.98] ${
+                          selectedChatId === chat.id ? 'bg-white/80' : 'bg-white/40'
+                        }`}
+                      >
+                        <span className="block text-sm font-medium text-black">{chat.name}</span>
+                        <span className="block truncate text-xs text-[#3e494c]/70">{chat.preview}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={`${showChatList ? 'hidden' : 'flex'} h-full flex-col md:flex`}>
+                  <div className="flex items-center gap-2 border-b border-black/10 p-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowChatList(true)}
+                      className="rounded-full px-3 py-1 text-sm text-black transition hover:bg-white/70 md:hidden"
+                    >
+                      رجوع
+                    </button>
+                    <span className="font-medium text-black">{selectedChat.name}</span>
+                  </div>
+                  <div className="flex-1 space-y-2 overflow-y-auto p-4">
+                    {selectedChat.messages.map((message, index) => (
+                      <div
+                        key={`${selectedChat.id}-${index}`}
+                        className={`w-fit max-w-[82%] rounded-3xl px-4 py-2 text-sm text-black ${
+                          index % 2 === 0 ? 'mr-auto bg-white/80' : 'bg-[#dfeaf0]'
+                        }`}
+                      >
+                        {message}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 border-t border-black/10 p-3">
+                    <input
+                      value={messageText}
+                      onChange={(event) => setMessageText(event.target.value)}
+                      placeholder="اكتب رسالة"
+                      className="min-w-0 flex-1 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-right text-sm text-black outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendMessage}
+                      className="rounded-full bg-black px-4 py-2 text-sm text-white transition hover:bg-black/80 active:scale-95"
+                    >
+                      إرسال
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
