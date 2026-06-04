@@ -8,20 +8,22 @@ const ProjectCardTitle = ({
   description
 }: ProjectCardTitleProps) => {
   return (
-    <div className="min-w-0 text-center py-1 sm:py-2 px-0 mx-0 my-0 self-center">
+    <div className="min-w-0 text-center py-1 sm:py-2 px-0 mx-0 my-0 self-center overflow-hidden">
       <h3
-        className="font-arabic text-right mx-0 my-0 py-0 mb-1 text-base sm:text-lg font-semibold sm:font-bold leading-[1.6] sm:leading-[1.5] break-words"
+        className="font-arabic text-right mx-0 my-0 py-0 mb-1 text-base sm:text-lg font-semibold sm:font-bold leading-[1.6] sm:leading-[1.5] truncate"
         style={{
           color: 'var(--project-card-elements-title-text)'
         }}
+        title={title}
       >
         {title}
       </h3>
       <p
-        className="font-arabic text-right px-0 py-0 mx-0 my-0 text-sm sm:text-base leading-[1.75] sm:leading-[1.7] break-words"
+        className="font-arabic text-right px-0 py-0 mx-0 my-0 text-sm sm:text-base leading-[1.75] sm:leading-[1.7] line-clamp-1"
         style={{
           color: 'var(--project-card-elements-secondary-text)'
         }}
+        title={description}
       >
         {description}
       </p>
