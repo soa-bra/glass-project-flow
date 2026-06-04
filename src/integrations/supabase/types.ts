@@ -734,6 +734,48 @@ export type Database = {
         }
         Relationships: []
       }
+      data_links: {
+        Row: {
+          board_id: string
+          created_at: string
+          created_by: string
+          id: string
+          label: string | null
+          link_kind: string
+          mapping: Json
+          metadata: Json
+          project_id: string | null
+          source_element_id: string | null
+          target_element_id: string | null
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          label?: string | null
+          link_kind: string
+          mapping?: Json
+          metadata?: Json
+          project_id?: string | null
+          source_element_id?: string | null
+          target_element_id?: string | null
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          label?: string | null
+          link_kind?: string
+          mapping?: Json
+          metadata?: Json
+          project_id?: string | null
+          source_element_id?: string | null
+          target_element_id?: string | null
+        }
+        Relationships: []
+      }
       department_projects: {
         Row: {
           created_at: string
@@ -848,6 +890,42 @@ export type Database = {
           to_entity_id?: string
           to_entity_type?: Database["public"]["Enums"]["central_entity_type"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      element_transformations: {
+        Row: {
+          board_id: string
+          created_at: string
+          created_by: string
+          id: string
+          metadata: Json
+          result: Json
+          source_element_id: string
+          status: string
+          transformation_type: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          metadata?: Json
+          result?: Json
+          source_element_id: string
+          status?: string
+          transformation_type: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          metadata?: Json
+          result?: Json
+          source_element_id?: string
+          status?: string
+          transformation_type?: string
         }
         Relationships: []
       }
@@ -2165,6 +2243,45 @@ export type Database = {
           },
         ]
       }
+      project_events: {
+        Row: {
+          actor_id: string
+          aggregate_id: string
+          aggregate_type: string
+          board_id: string | null
+          created_at: string
+          event_kind: string
+          event_type: string
+          id: string
+          payload: Json
+          project_id: string
+        }
+        Insert: {
+          actor_id: string
+          aggregate_id: string
+          aggregate_type: string
+          board_id?: string | null
+          created_at?: string
+          event_kind: string
+          event_type: string
+          id?: string
+          payload?: Json
+          project_id: string
+        }
+        Update: {
+          actor_id?: string
+          aggregate_id?: string
+          aggregate_type?: string
+          board_id?: string | null
+          created_at?: string
+          event_kind?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          project_id?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           budget: number | null
@@ -2280,6 +2397,45 @@ export type Database = {
           source_element_id?: string
           style?: Json
           target_element_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      smart_docs: {
+        Row: {
+          board_id: string
+          content: Json
+          created_at: string
+          created_by: string
+          element_id: string
+          id: string
+          metadata: Json
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          content?: Json
+          created_at?: string
+          created_by: string
+          element_id: string
+          id?: string
+          metadata?: Json
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          content?: Json
+          created_at?: string
+          created_by?: string
+          element_id?: string
+          id?: string
+          metadata?: Json
+          status?: string
+          title?: string
           updated_at?: string
         }
         Relationships: []
@@ -2435,6 +2591,48 @@ export type Database = {
           tab_key?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      sync_queue: {
+        Row: {
+          board_id: string
+          created_at: string
+          created_by: string
+          entity_id: string
+          entity_table: string
+          id: string
+          operation: string
+          payload: Json
+          processed_at: string | null
+          project_id: string | null
+          status: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          created_by: string
+          entity_id: string
+          entity_table: string
+          id?: string
+          operation: string
+          payload?: Json
+          processed_at?: string | null
+          project_id?: string | null
+          status?: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by?: string
+          entity_id?: string
+          entity_table?: string
+          id?: string
+          operation?: string
+          payload?: Json
+          processed_at?: string | null
+          project_id?: string | null
+          status?: string
         }
         Relationships: []
       }
