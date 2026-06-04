@@ -95,11 +95,11 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 
   return (
     <div className="flex items-center justify-between px-4 py-1.5 bg-white border-b border-sb-border">
-      <div className="flex items-center gap-4">
-        <button onClick={onBack} className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors" aria-label="العودة إلى القائمة">
-          <ArrowRight size={20} className="text-sb-ink" />
+      <div className="flex items-center gap-3">
+        <button onClick={onBack} className="p-1.5 hover:bg-sb-panel-bg rounded-lg transition-colors" aria-label="العودة إلى القائمة">
+          <ArrowRight size={16} className="text-sb-ink" />
         </button>
-        <div className="h-6 w-px bg-sb-border" />
+        <div className="h-5 w-px bg-sb-border" />
         {isEditingName ? (
           <input
             type="text"
