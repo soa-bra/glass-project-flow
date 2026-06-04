@@ -6,7 +6,7 @@
 import { useState, type FormEvent } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { ActionButton } from "@/components/box-kit/primitives/action";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -86,10 +86,15 @@ export default function AuthPage() {
                 dir="ltr"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
-              {submitting && <Loader2 className="ms-2 h-4 w-4 animate-spin" />}
+            <ActionButton
+              componentRef="ACT-BTN-P01"
+              type="submit"
+              className="w-full"
+              disabled={submitting}
+              icon={submitting ? <Loader2 className="animate-spin" /> : undefined}
+            >
               دخول
-            </Button>
+            </ActionButton>
             <p className="text-center text-xs text-muted-foreground pt-2">
               جاهز لإنجاز اليوم؟
             </p>
