@@ -9,8 +9,13 @@ const Index = () => {
       className="relative min-h-screen w-full font-arabic overflow-hidden"
       style={{ background: '#dfecf2' }}
     >
-      <div 
-        className="fixed top-0 inset-x-0 z-header"
+      {/*
+        ملاحظة مهمة: لا نضع z-index على هذه الحاوية حتى لا تُنشئ stacking context
+        يحصر القوائم المنسدلة للهيدر (popover) داخل طبقة الأب، مما يجعلها تظهر
+        خلف لوحة إدارة المشروع والسايد بار. الهيدر نفسه يضبط z-index داخليًا.
+      */}
+      <div
+        className="fixed top-0 inset-x-0"
         style={{ background: '#dfecf2' }}
       >
         <HeaderBar />
