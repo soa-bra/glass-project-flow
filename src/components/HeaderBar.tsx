@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
 
@@ -57,7 +58,27 @@ const glassStyle = {
 };
 
 const notificationMenuWidth = 320;
+const searchMenuWidth = 300;
+const userMenuWidth = 224;
 const notificationViewportGap = 12;
+
+const getAnchoredMenuPosition = (
+  anchor: HTMLElement | null,
+  width: number,
+  align: 'start' | 'end' = 'end',
+) => {
+  if (!anchor || typeof window === 'undefined') return { top: 0, left: 0 };
+
+  const rect = anchor.getBoundingClientRect();
+  const maxLeft = Math.max(notificationViewportGap, window.innerWidth - width - notificationViewportGap);
+  const preferredLeft = align === 'start' ? rect.left : rect.right - width;
+  const left = Math.min(Math.max(preferredLeft, notificationViewportGap), maxLeft);
+
+  return {
+    top: rect.bottom + 8,
+    left,
+  };
+};
 
 const searchItems: SearchItem[] = [
   {
@@ -397,7 +418,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
 
       if (!element.id) element.id = `header-search-target-${index}`;
 
-      const item: SearchItem = {
+      return {
         id: `visible-${element.id}`,
         label,
         description: 'عنصر ظاهر في الواجهة الحالية',
@@ -406,7 +427,6 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
         requiredPermissions: [],
         selector: `#${element.id}`,
       };
-      return item;
     })
     .filter((item): item is SearchItem => Boolean(item));
 
@@ -431,13 +451,22 @@ const HeaderBar = () => {
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [visibleSearchItems, setVisibleSearchItems] = useState<SearchItem[]>([]);
   const [pendingSearchItem, setPendingSearchItem] = useState<SearchItem | null>(null);
+  const [searchMenuPosition, setSearchMenuPosition] = useState({ top: 0, left: 0 });
   const [notificationMenuPosition, setNotificationMenuPosition] = useState({ top: 0, left: 0 });
+  const [userMenuPosition, setUserMenuPosition] = useState({ top: 0, left: 0 });
   const headerActionsRef = useRef<HTMLDivElement | null>(null);
+  const searchButtonRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const notificationButtonRef = useRef<HTMLDivElement | null>(null);
+  const userButtonRef = useRef<HTMLDivElement | null>(null);
+  const searchPopoverRef = useRef<HTMLDivElement | null>(null);
+  const notificationPopoverRef = useRef<HTMLDivElement | null>(null);
+  const userPopoverRef = useRef<HTMLDivElement | null>(null);
+  const messagesPopoverRef = useRef<HTMLDivElement | null>(null);
 
   const hasNewNotifications = !hasOpenedNotifications && notifications.some((notification) => notification.isNew);
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || chats[0];
+  const canUsePortal = typeof document !== 'undefined';
 
   const availableSearchItems = useMemo(
     () =>
@@ -520,7 +549,16 @@ const HeaderBar = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (headerActionsRef.current && !headerActionsRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const isInsideHeaderAction = headerActionsRef.current?.contains(target);
+      const isInsideOverlay = [
+        searchPopoverRef.current,
+        notificationPopoverRef.current,
+        userPopoverRef.current,
+        messagesPopoverRef.current,
+      ].some((element) => element?.contains(target));
+
+      if (!isInsideHeaderAction && !isInsideOverlay) {
         setOpenOverlay(null);
         if (!searchValue.trim()) setSearchValue('');
       }
@@ -552,29 +590,29 @@ const HeaderBar = () => {
   }, [navigationState.activeSection, pendingSearchItem]);
 
   useEffect(() => {
-    if (openOverlay !== 'notifications') return;
+    if (!['search', 'notifications', 'user'].includes(openOverlay || '')) return;
 
-    const updateNotificationMenuPosition = () => {
-      const rect = notificationButtonRef.current?.getBoundingClientRect();
-      if (!rect) return;
+    const updateMenuPositions = () => {
+      if (openOverlay === 'search') {
+        setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
+      }
 
-      const maxLeft = Math.max(notificationViewportGap, window.innerWidth - notificationMenuWidth - notificationViewportGap);
-      const preferredLeft = rect.right - notificationMenuWidth;
-      const left = Math.min(Math.max(preferredLeft, notificationViewportGap), maxLeft);
+      if (openOverlay === 'notifications') {
+        setNotificationMenuPosition(getAnchoredMenuPosition(notificationButtonRef.current, notificationMenuWidth, 'end'));
+      }
 
-      setNotificationMenuPosition({
-        top: rect.bottom + 8,
-        left,
-      });
+      if (openOverlay === 'user') {
+        setUserMenuPosition(getAnchoredMenuPosition(userButtonRef.current, userMenuWidth, 'start'));
+      }
     };
 
-    updateNotificationMenuPosition();
-    window.addEventListener('resize', updateNotificationMenuPosition);
-    window.addEventListener('scroll', updateNotificationMenuPosition, true);
+    updateMenuPositions();
+    window.addEventListener('resize', updateMenuPositions);
+    window.addEventListener('scroll', updateMenuPositions, true);
 
     return () => {
-      window.removeEventListener('resize', updateNotificationMenuPosition);
-      window.removeEventListener('scroll', updateNotificationMenuPosition, true);
+      window.removeEventListener('resize', updateMenuPositions);
+      window.removeEventListener('scroll', updateMenuPositions, true);
     };
   }, [openOverlay]);
 
@@ -587,6 +625,18 @@ const HeaderBar = () => {
   };
 
   const openOnly = (overlay: HeaderOverlay) => {
+    if (overlay === 'search') {
+      setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
+    }
+
+    if (overlay === 'notifications') {
+      setNotificationMenuPosition(getAnchoredMenuPosition(notificationButtonRef.current, notificationMenuWidth, 'end'));
+    }
+
+    if (overlay === 'user') {
+      setUserMenuPosition(getAnchoredMenuPosition(userButtonRef.current, userMenuWidth, 'start'));
+    }
+
     setOpenOverlay((current) => (current === overlay ? null : overlay));
   };
 
@@ -673,7 +723,7 @@ const HeaderBar = () => {
 
         {/* Action Icons - Right Side: بحث ← تحديث ← تنبيهات ← رسائل ← مستخدم */}
         <div ref={headerActionsRef} className="relative flex items-center gap-0 px-0 mx-0">
-          <div className="relative p-2">
+          <div ref={searchButtonRef} className="relative p-2">
             <motion.div
               layout
               className={`border border-black bg-transparent flex items-center transition-all duration-300 ${
@@ -704,33 +754,43 @@ const HeaderBar = () => {
               </button>
             </motion.div>
 
-            <AnimatePresence>
-              {openOverlay === 'search' && filteredSearchItems.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.25, ease: 'easeOut' }}
-                  data-testid="header-search-popover"
-                  className="absolute top-[64px] right-2 z-popover max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
-                  style={{ ...glassStyle, zIndex: 'var(--z-popover)' }}
-                >
-                  <div className="flex flex-col gap-2">
-                    {filteredSearchItems.map((item) => (
-                      <button
-                        key={item.id}
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => handleSearchSelect(item)}
-                        className="rounded-3xl px-3 py-2 text-right transition hover:bg-white/70 active:scale-[0.98]"
-                      >
-                        <span className="block text-sm font-medium text-black">{item.label}</span>
-                        <span className="block text-xs text-[#3e494c]/70">{item.description}</span>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
+            {canUsePortal &&
+              createPortal(
+                <AnimatePresence>
+                  {openOverlay === 'search' && filteredSearchItems.length > 0 && (
+                    <motion.div
+                      ref={searchPopoverRef}
+                      initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                      transition={{ duration: 0.25, ease: 'easeOut' }}
+                      data-testid="header-search-popover"
+                      className="fixed max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
+                      style={{
+                        ...glassStyle,
+                        top: searchMenuPosition.top,
+                        left: searchMenuPosition.left,
+                        zIndex: 'var(--z-popover)',
+                      }}
+                    >
+                      <div className="flex flex-col gap-2">
+                        {filteredSearchItems.map((item) => (
+                          <button
+                            key={item.id}
+                            onMouseDown={(event) => event.preventDefault()}
+                            onClick={() => handleSearchSelect(item)}
+                            className="rounded-3xl px-3 py-2 text-right transition hover:bg-white/70 active:scale-[0.98]"
+                          >
+                            <span className="block text-sm font-medium text-black">{item.label}</span>
+                            <span className="block text-xs text-[#3e494c]/70">{item.description}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>,
+                document.body,
               )}
-            </AnimatePresence>
           </div>
 
           <button type="button" className={iconButtonClass} onClick={handleRefresh} aria-label="تحديث">
@@ -756,58 +816,63 @@ const HeaderBar = () => {
               </div>
             </button>
 
-            <AnimatePresence>
-              {openOverlay === 'notifications' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.28, ease: 'easeOut' }}
-                  data-testid="header-notifications-popover"
-                  className="fixed z-popover w-[320px] rounded-[28px] p-3"
-                  style={{
-                    ...glassStyle,
-                    top: notificationMenuPosition.top,
-                    left: notificationMenuPosition.left,
-                    zIndex: 'var(--z-popover)',
-                  }}
-                >
-                  <div className="max-h-[300px] overflow-y-auto pl-1">
-                    {notifications.length === 0 ? (
-                      <div className="px-3 py-4 text-center text-sm text-black">لا توجد إشعارات</div>
-                    ) : (
-                      <div className="flex flex-col gap-2">
-                        {notifications.map((notification) => (
-                          <div
-                            key={notification.id}
-                            dir="ltr"
-                            className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
-                          >
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteNotification(notification.id)}
-                              className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-gray-300 transition hover:bg-white hover:text-gray-400 active:scale-95"
-                              aria-label="حذف الإشعار"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                            <span dir="rtl" className="flex-1 text-right text-sm text-black">
-                              {notification.text}
-                            </span>
-                            <span
-                              className={`h-2 w-2 flex-shrink-0 rounded-full ${notificationColors[notification.type]}`}
-                            />
-                            {notification.isNew && (
-                              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
-                            )}
+            {canUsePortal &&
+              createPortal(
+                <AnimatePresence>
+                  {openOverlay === 'notifications' && (
+                    <motion.div
+                      ref={notificationPopoverRef}
+                      initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                      transition={{ duration: 0.28, ease: 'easeOut' }}
+                      data-testid="header-notifications-popover"
+                      className="fixed w-[320px] rounded-[28px] p-3"
+                      style={{
+                        ...glassStyle,
+                        top: notificationMenuPosition.top,
+                        left: notificationMenuPosition.left,
+                        zIndex: 'var(--z-popover)',
+                      }}
+                    >
+                      <div className="max-h-[300px] overflow-y-auto pl-1">
+                        {notifications.length === 0 ? (
+                          <div className="px-3 py-4 text-center text-sm text-black">لا توجد إشعارات</div>
+                        ) : (
+                          <div className="flex flex-col gap-2">
+                            {notifications.map((notification) => (
+                              <div
+                                key={notification.id}
+                                dir="ltr"
+                                className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteNotification(notification.id)}
+                                  className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-gray-300 transition hover:bg-white hover:text-gray-400 active:scale-95"
+                                  aria-label="حذف الإشعار"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                                <span dir="rtl" className="flex-1 text-right text-sm text-black">
+                                  {notification.text}
+                                </span>
+                                <span
+                                  className={`h-2 w-2 flex-shrink-0 rounded-full ${notificationColors[notification.type]}`}
+                                />
+                                {notification.isNew && (
+                                  <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
+                                )}
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
-                    )}
-                  </div>
-                </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>,
+                document.body,
               )}
-            </AnimatePresence>
           </div>
 
           <div className="relative">
@@ -818,177 +883,191 @@ const HeaderBar = () => {
             </button>
           </div>
 
-          <div className="relative">
+          <div ref={userButtonRef} className="relative">
             <button type="button" className={iconButtonClass} onClick={() => openOnly('user')} aria-label="المستخدم">
               <div className={iconCircleClass}>
                 <User className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
               </div>
             </button>
 
-            <AnimatePresence>
-              {openOverlay === 'user' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
-                  data-testid="header-user-popover"
-                  className="absolute top-[64px] left-0 z-popover w-56"
-                  style={{ zIndex: 'var(--z-popover)' }}
-                >
-                  <div className="flex flex-col items-start gap-2">
-                    <button
-                      type="button"
-                      onClick={handleThemeToggle}
-                      className="relative flex w-full items-center justify-between overflow-hidden rounded-3xl px-3 py-2 text-right text-black transition hover:bg-white/70 active:scale-[0.98]"
-                      style={glassStyle}
+            {canUsePortal &&
+              createPortal(
+                <AnimatePresence>
+                  {openOverlay === 'user' && (
+                    <motion.div
+                      ref={userPopoverRef}
+                      initial={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                      data-testid="header-user-popover"
+                      className="fixed w-56"
+                      style={{
+                        top: userMenuPosition.top,
+                        left: userMenuPosition.left,
+                        zIndex: 'var(--z-popover)',
+                      }}
                     >
-                      <span className="flex items-center gap-2 text-sm">
-                        {isDarkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-                        {isDarkMode ? 'الوضع الداكن' : 'الوضع الفاتح'}
-                      </span>
-                      <span className="flex h-9 w-[86px] items-center justify-between rounded-full border border-black/45 bg-transparent p-1">
-                        <span
-                          className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
-                            !isDarkMode ? 'bg-black text-white' : 'text-black'
-                          }`}
-                          aria-hidden="true"
+                      <div className="flex flex-col items-start gap-2">
+                        <button
+                          type="button"
+                          onClick={handleThemeToggle}
+                          className="relative flex w-full items-center justify-between overflow-hidden rounded-3xl px-3 py-2 text-right text-black transition hover:bg-white/70 active:scale-[0.98]"
+                          style={glassStyle}
                         >
-                          <Sun className="h-4 w-4" />
-                        </span>
-                        <span
-                          className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
-                            isDarkMode ? 'bg-black text-white' : 'text-black'
-                          }`}
-                          aria-hidden="true"
+                          <span className="flex items-center gap-2 text-sm">
+                            {isDarkMode ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                            {isDarkMode ? 'الوضع الداكن' : 'الوضع الفاتح'}
+                          </span>
+                          <span className="flex h-9 w-[86px] items-center justify-between rounded-full border border-black/45 bg-transparent p-1">
+                            <span
+                              className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+                                !isDarkMode ? 'bg-black text-white' : 'text-black'
+                              }`}
+                              aria-hidden="true"
+                            >
+                              <Sun className="h-4 w-4" />
+                            </span>
+                            <span
+                              className={`flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ${
+                                isDarkMode ? 'bg-black text-white' : 'text-black'
+                              }`}
+                              aria-hidden="true"
+                            >
+                              <Moon className="h-4 w-4" />
+                            </span>
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleProfileShortcut}
+                          className="flex w-full items-center gap-2 rounded-3xl px-3 py-2 text-right text-sm text-black transition hover:bg-white/70 active:scale-[0.98]"
+                          style={glassStyle}
                         >
-                          <Moon className="h-4 w-4" />
-                        </span>
-                      </span>
-                    </button>
+                          <Settings className="h-4 w-4" />
+                          الحساب الشخصي
+                        </button>
 
-                    <button
-                      type="button"
-                      onClick={handleProfileShortcut}
-                      className="flex w-full items-center gap-2 rounded-3xl px-3 py-2 text-right text-sm text-black transition hover:bg-white/70 active:scale-[0.98]"
-                      style={glassStyle}
-                    >
-                      <Settings className="h-4 w-4" />
-                      الحساب الشخصي
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="flex w-full items-center gap-2 rounded-3xl px-3 py-2 text-right text-sm text-red-600 transition hover:bg-red-50 active:scale-[0.98]"
-                      style={glassStyle}
-                    >
-                      <LogOut className="h-4 w-4" />
-                      تسجيل الخروج
-                    </button>
-                  </div>
-                </motion.div>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex w-full items-center gap-2 rounded-3xl px-3 py-2 text-right text-sm text-red-600 transition hover:bg-red-50 active:scale-[0.98]"
+                          style={glassStyle}
+                        >
+                          <LogOut className="h-4 w-4" />
+                          تسجيل الخروج
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>,
+                document.body,
               )}
-            </AnimatePresence>
           </div>
         </div>
       </div>
-      <AnimatePresence>
-        {openOverlay === 'messages' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25, ease: 'easeOut' }}
-            data-testid="header-messages-popover"
-            className="fixed inset-0 z-popover flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
-            style={{ zIndex: 'var(--z-popover)' }}
-            onMouseDown={() => setOpenOverlay(null)}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(8px)' }}
-              transition={{ duration: 0.32, ease: 'easeOut' }}
-              className="w-[min(860px,calc(100vw-32px))] rounded-[30px] p-4 md:p-6"
-              style={glassStyle}
-              onMouseDown={(event) => event.stopPropagation()}
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-2xl font-semibold text-black">الرسائل</h2>
-                <button
-                  type="button"
-                  onClick={() => setOpenOverlay(null)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-black text-black transition hover:bg-white/70 active:scale-95"
-                  aria-label="إغلاق الرسائل"
+      {canUsePortal &&
+        createPortal(
+          <AnimatePresence>
+            {openOverlay === 'messages' && (
+              <motion.div
+                ref={messagesPopoverRef}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                data-testid="header-messages-popover"
+                className="fixed inset-0 flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
+                style={{ zIndex: 'var(--z-modal-backdrop)' }}
+                onMouseDown={() => setOpenOverlay(null)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(8px)' }}
+                  animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(8px)' }}
+                  transition={{ duration: 0.32, ease: 'easeOut' }}
+                  className="w-[min(860px,calc(100vw-32px))] rounded-[30px] p-4 md:p-6"
+                  style={{ ...glassStyle, zIndex: 'var(--z-modal-content)' }}
+                  onMouseDown={(event) => event.stopPropagation()}
                 >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="grid h-[min(520px,70vh)] grid-cols-1 overflow-hidden rounded-[24px] bg-white/25 md:grid-cols-[260px_1fr]">
-                <div className={`${showChatList ? 'block' : 'hidden'} border-black/10 md:block md:border-l`}>
-                  <div className="flex h-full flex-col gap-2 overflow-y-auto p-3">
-                    {chats.map((chat) => (
-                      <button
-                        key={chat.id}
-                        type="button"
-                        onClick={() => handleChatSelect(chat.id)}
-                        className={`rounded-3xl px-3 py-3 text-right transition hover:bg-white/75 active:scale-[0.98] ${
-                          selectedChatId === chat.id ? 'bg-white/80' : 'bg-white/40'
-                        }`}
-                      >
-                        <span className="block text-sm font-medium text-black">{chat.name}</span>
-                        <span className="block truncate text-xs text-[#3e494c]/70">{chat.preview}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className={`${showChatList ? 'hidden' : 'flex'} h-full flex-col md:flex`}>
-                  <div className="flex items-center gap-2 border-b border-black/10 p-3">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-black">الرسائل</h2>
                     <button
                       type="button"
-                      onClick={() => setShowChatList(true)}
-                      className="rounded-full px-3 py-1 text-sm text-black transition hover:bg-white/70 md:hidden"
+                      onClick={() => setOpenOverlay(null)}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-black text-black transition hover:bg-white/70 active:scale-95"
+                      aria-label="إغلاق الرسائل"
                     >
-                      رجوع
+                      <X className="h-5 w-5" />
                     </button>
-                    <span className="font-medium text-black">{selectedChat.name}</span>
                   </div>
-                  <div className="flex-1 space-y-2 overflow-y-auto p-4">
-                    {selectedChat.messages.map((message, index) => (
-                      <div
-                        key={`${selectedChat.id}-${index}`}
-                        className={`w-fit max-w-[82%] rounded-3xl px-4 py-2 text-sm text-black ${
-                          index % 2 === 0 ? 'mr-auto bg-white/80' : 'bg-[#dfeaf0]'
-                        }`}
-                      >
-                        {message}
+
+                  <div className="grid h-[min(520px,70vh)] grid-cols-1 overflow-hidden rounded-[24px] bg-white/25 md:grid-cols-[260px_1fr]">
+                    <div className={`${showChatList ? 'block' : 'hidden'} border-black/10 md:block md:border-l`}>
+                      <div className="flex h-full flex-col gap-2 overflow-y-auto p-3">
+                        {chats.map((chat) => (
+                          <button
+                            key={chat.id}
+                            type="button"
+                            onClick={() => handleChatSelect(chat.id)}
+                            className={`rounded-3xl px-3 py-3 text-right transition hover:bg-white/75 active:scale-[0.98] ${
+                              selectedChatId === chat.id ? 'bg-white/80' : 'bg-white/40'
+                            }`}
+                          >
+                            <span className="block text-sm font-medium text-black">{chat.name}</span>
+                            <span className="block truncate text-xs text-[#3e494c]/70">{chat.preview}</span>
+                          </button>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+
+                    <div className={`${showChatList ? 'hidden' : 'flex'} h-full flex-col md:flex`}>
+                      <div className="flex items-center gap-2 border-b border-black/10 p-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowChatList(true)}
+                          className="rounded-full px-3 py-1 text-sm text-black transition hover:bg-white/70 md:hidden"
+                        >
+                          رجوع
+                        </button>
+                        <span className="font-medium text-black">{selectedChat.name}</span>
+                      </div>
+                      <div className="flex-1 space-y-2 overflow-y-auto p-4">
+                        {selectedChat.messages.map((message, index) => (
+                          <div
+                            key={`${selectedChat.id}-${index}`}
+                            className={`w-fit max-w-[82%] rounded-3xl px-4 py-2 text-sm text-black ${
+                              index % 2 === 0 ? 'mr-auto bg-white/80' : 'bg-[#dfeaf0]'
+                            }`}
+                          >
+                            {message}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 border-t border-black/10 p-3">
+                        <input
+                          value={messageText}
+                          onChange={(event) => setMessageText(event.target.value)}
+                          placeholder="اكتب رسالة"
+                          className="min-w-0 flex-1 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-right text-sm text-black outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSendMessage}
+                          className="rounded-full bg-black px-4 py-2 text-sm text-white transition hover:bg-black/80 active:scale-95"
+                        >
+                          إرسال
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2 border-t border-black/10 p-3">
-                    <input
-                      value={messageText}
-                      onChange={(event) => setMessageText(event.target.value)}
-                      placeholder="اكتب رسالة"
-                      className="min-w-0 flex-1 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-right text-sm text-black outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSendMessage}
-                      className="rounded-full bg-black px-4 py-2 text-sm text-white transition hover:bg-black/80 active:scale-95"
-                    >
-                      إرسال
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </header>
   );
 };
