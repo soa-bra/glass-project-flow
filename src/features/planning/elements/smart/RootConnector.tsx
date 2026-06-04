@@ -84,48 +84,61 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  // Single connector anchor placed just outside the top-right corner of the element,
-  // sitting slightly below the top edge (matches design reference).
-  const ANCHOR_OFFSET_X = 14;
-  const ANCHOR_OFFSET_Y = 12;
+  // Four anchors at the midpoints of each edge (top, right, bottom, left).
+  // Matches Qlik / n8n visual reference: small neutral dots that appear on hover.
   const HIT_RADIUS = 18;
-  const VISIBLE_RADIUS = isConnecting ? 8 : 6;
-  const cx = bounds.x + bounds.width + ANCHOR_OFFSET_X;
-  const cy = bounds.y + ANCHOR_OFFSET_Y;
+  const [hoveredAnchor, setHoveredAnchor] = useState<AnchorPosition | null>(null);
 
-  const handlePointerDown = (e: React.PointerEvent<SVGCircleElement>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    onStartDrag({
-      elementId,
-      x: cx,
-      y: cy,
-      anchorPoint: 'top-right',
-    });
-  };
+  const anchors: Array<{ pos: AnchorPosition; cx: number; cy: number }> = [
+    { pos: 'top',    cx: bounds.x + bounds.width / 2, cy: bounds.y },
+    { pos: 'right',  cx: bounds.x + bounds.width,     cy: bounds.y + bounds.height / 2 },
+    { pos: 'bottom', cx: bounds.x + bounds.width / 2, cy: bounds.y + bounds.height },
+    { pos: 'left',   cx: bounds.x,                    cy: bounds.y + bounds.height / 2 },
+  ];
+
+  const makeHandler = (a: { pos: AnchorPosition; cx: number; cy: number }) =>
+    (e: React.PointerEvent<SVGCircleElement>) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onStartDrag({ elementId, x: a.cx, y: a.cy, anchorPoint: a.pos });
+    };
 
   return (
-    <g className="connection-anchors" data-anchor-element-id={elementId} style={{ pointerEvents: 'auto' }}>
-      {/* Transparent hit area for reliable grabbing */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={HIT_RADIUS}
-        fill="transparent"
-        className="cursor-crosshair"
-        onPointerDown={handlePointerDown}
-        onMouseDown={handlePointerDown as unknown as React.MouseEventHandler<SVGCircleElement>}
-      />
-      {/* Visible dot */}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={VISIBLE_RADIUS}
-        fill="hsl(var(--background))"
-        stroke="hsl(var(--primary))"
-        strokeWidth={2}
-        pointerEvents="none"
-      />
+    <g
+      className="connection-anchors group/anchors"
+      data-anchor-element-id={elementId}
+      style={{ pointerEvents: 'auto' }}
+    >
+      {anchors.map((a) => {
+        const isHover = hoveredAnchor === a.pos || isConnecting;
+        return (
+          <g key={a.pos} data-anchor-position={a.pos}>
+            {/* Transparent hit area */}
+            <circle
+              cx={a.cx}
+              cy={a.cy}
+              r={HIT_RADIUS}
+              fill="transparent"
+              className="cursor-crosshair connection-anchor-hit"
+              onPointerEnter={() => setHoveredAnchor(a.pos)}
+              onPointerLeave={() => setHoveredAnchor(null)}
+              onPointerDown={makeHandler(a)}
+              onMouseDown={makeHandler(a) as unknown as React.MouseEventHandler<SVGCircleElement>}
+            />
+            {/* Visible dot — small neutral, grows + darkens on hover */}
+            <circle
+              cx={a.cx}
+              cy={a.cy}
+              r={isHover ? 6 : 4}
+              fill="#FFFFFF"
+              stroke={isHover ? '#0B0F12' : '#9CA3AF'}
+              strokeWidth={isHover ? 1.5 : 1}
+              className="connection-anchor-dot transition-all"
+              pointerEvents="none"
+            />
+          </g>
+        );
+      })}
     </g>
   );
 };
