@@ -142,6 +142,20 @@ export const useProjectForm = (
     }));
   };
 
+  const updateTask = (task: TaskData) => {
+    setProjectData(prev => ({
+      ...prev,
+      tasks: prev.tasks.map(t => (t.id === task.id ? task : t)),
+    }));
+  };
+
+  const deleteTask = (taskId: number) => {
+    setProjectData(prev => ({
+      ...prev,
+      tasks: prev.tasks.filter(t => t.id !== taskId),
+    }));
+  };
+
   const addPayment = () => {
     setProjectData(prev => ({
       ...prev,
@@ -197,6 +211,8 @@ export const useProjectForm = (
     validateForm,
     resetForm,
     addTask,
+    updateTask,
+    deleteTask,
     addPayment,
     removePayment,
     updatePayment,

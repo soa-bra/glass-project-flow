@@ -34,6 +34,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [activeTab, setActiveTab] = useState('basic');
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<TaskData | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const {
@@ -44,6 +45,8 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     validateForm,
     resetForm,
     addTask,
+    updateTask,
+    deleteTask,
     addPayment,
     removePayment,
     updatePayment,
@@ -190,8 +193,10 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
             projectData={projectData}
             onInputChange={handleInputChange}
             onClientDataChange={handleClientDataChange}
-            onAddTask={() => setShowAddTaskModal(true)}
+            onAddTask={() => { setEditingTask(null); setShowAddTaskModal(true); }}
             onGenerateSmartTasks={handleGenerateSmartTasks}
+            onEditTask={(task) => { setEditingTask(task); setShowAddTaskModal(true); }}
+            onDeleteTask={deleteTask}
             onAddPartnership={addPartnership}
             onEditPartnership={editPartnership}
             onDeletePartnership={deletePartnership}
@@ -212,8 +217,11 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
       <AddTaskModal
         isOpen={showAddTaskModal}
-        onClose={() => setShowAddTaskModal(false)}
+        onClose={() => { setShowAddTaskModal(false); setEditingTask(null); }}
         onTaskAdded={addTask}
+        onTaskUpdated={(t) => { updateTask(t); setShowAddTaskModal(false); setEditingTask(null); }}
+        editingTask={editingTask ?? undefined}
+        isEditMode={!!editingTask}
       />
 
       <ProjectModalDialogs
