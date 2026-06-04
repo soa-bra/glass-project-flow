@@ -308,13 +308,12 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   return (
     <ProjectTasksProvider>
       <div
-        className={`fixed h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
+        className={`fixed z-workspace h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
         style={{
           top: 'var(--sidebar-top-offset)',
           right: projectsColumnRight,
           width: projectsColumnWidth,
           transition: 'all var(--animation-duration-main) var(--animation-easing)',
-          zIndex: 110,
         }}
       >
         <div
@@ -340,7 +339,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           width: operationsBoardWidth,
           transition: 'all var(--animation-duration-main) var(--animation-easing)',
         }}
-        className={`fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
+        className={`fixed z-workspace top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
       >
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
