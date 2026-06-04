@@ -1,9 +1,9 @@
 import { StateCreator } from 'zustand';
-import { nanoid } from 'nanoid';
 import type { CanvasElement } from '@/types/canvas';
 import { ToolId, ToolSettings, TextElement, DEFAULT_TOOL_SETTINGS } from '../types';
 import { isTextEmpty } from '@/utils/textDirection';
 import { DEFAULT_TEXT_DATA, DEFAULT_TEXT_SIZE } from '@/features/planning/elements/text/types';
+import { createPlanningElementId } from '../createPlanningElementId';
 
 export interface ToolsSlice {
   activeTool: ToolId;
@@ -75,7 +75,7 @@ export const createToolsSlice: StateCreator<any, [], [], ToolsSlice> = (set, get
   setSelectedSmartDoc: (docType) => set({ selectedSmartDoc: docType }),
   setLastSmartSelectedMindMapNode: (nodeId) => set({ lastSmartSelectedMindMapNode: nodeId }),
   addText: (textData) => {
-    const id = textData.id || nanoid();
+    const id = textData.id || createPlanningElementId();
     const textSettings = get().toolSettings.text;
     const requestedTextType = textData.data?.textType || textData.textType || 'line';
     const normalizedData = {
