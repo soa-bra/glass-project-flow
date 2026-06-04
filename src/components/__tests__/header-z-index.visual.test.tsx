@@ -61,7 +61,9 @@ const expectPopoverAbovePanels = (popover: HTMLElement) => {
   expect(popoverZ).toBeGreaterThan(projectPanelZ);
   expect(popoverZ).toBeGreaterThan(sidebarZ);
   expect(popoverZ).toBeGreaterThan(headerZ);
-  expect(popover).toHaveClass('z-popover');
+  // Runtime: inline style must resolve to var(--z-popover) so the popover
+  // actually paints above panels even if a Tailwind utility fails to compile.
+  expect(popover.style.zIndex).toBe('var(--z-popover)');
 };
 
 const renderStackingScenario = () => render(
@@ -90,7 +92,7 @@ describe('Header overlay visual z-index contract', () => {
     expect(board).toHaveClass('z-project-panel');
     expect(board.style.zIndex).toBe('');
     expect(sidebar).toHaveClass('z-sidebar');
-    expect(header).toHaveClass('z-popover');
+    expect(header.style.zIndex).toBe('var(--z-header)');
 
     fireEvent.click(screen.getByLabelText('بحث'));
     await waitFor(() => expectPopoverAbovePanels(screen.getByTestId('header-search-popover')));
