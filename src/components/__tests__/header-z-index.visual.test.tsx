@@ -16,6 +16,18 @@ vi.mock('@/contexts/AuthContext', () => ({
   }),
 }));
 
+vi.mock('@/components/ProjectManagement/ProjectProgressBar', () => ({
+  ProjectProgressBar: () => <div data-testid="project-progress-bar" />,
+}));
+
+vi.mock('@/components/ProjectManagement/ProjectCardGrid', () => ({
+  ProjectCardGrid: () => <div data-testid="project-card-grid" />,
+}));
+
+vi.mock('@/components/ProjectsColumn/AddProjectModal', () => ({
+  AddProjectModal: () => null,
+}));
+
 const demoProject: Project = {
   id: 'visual-z-test-project',
   title: 'مشروع اختبار الطبقات',
