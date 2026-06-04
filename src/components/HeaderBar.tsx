@@ -643,7 +643,7 @@ const HeaderBar = () => {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 h-[60px] z-popover my-0 py-[65px] px-[5px] bg-slate-100">
+    <header data-testid="app-header" className="fixed top-0 right-0 left-0 h-[60px] z-popover my-0 py-[65px] px-[5px] bg-slate-100">
       <div className="flex items-center justify-between h-full px-0">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
@@ -711,6 +711,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
+                  data-testid="header-search-popover"
                   className="absolute top-[64px] right-2 z-popover max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
                   style={glassStyle}
                 >
@@ -762,6 +763,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
+                  data-testid="header-notifications-popover"
                   className="fixed z-popover w-[320px] rounded-[28px] p-3"
                   style={{
                     ...glassStyle,
@@ -829,6 +831,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
+                  data-testid="header-user-popover"
                   className="absolute top-[64px] left-0 z-popover w-56"
                 >
                   <div className="flex flex-col items-start gap-2">
@@ -895,6 +898,7 @@ const HeaderBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
+            data-testid="header-messages-popover"
             className="fixed inset-0 z-popover flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
             onMouseDown={() => setOpenOverlay(null)}
           >
