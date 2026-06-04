@@ -541,23 +541,13 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         }}
       />
 
-      {/* Start endpoint dot — small, same color as line */}
-      <circle
-        cx={startX}
-        cy={startY}
-        r={3}
-        fill={strokeColor}
-        pointerEvents="none"
-      />
-
-      {/* End endpoint dot */}
-      <circle
-        cx={endX}
-        cy={endY}
-        r={3}
-        fill={strokeColor}
-        pointerEvents="none"
-      />
+      {/* Endpoint dots — only visible when selected/hovered */}
+      {(isSelected || isHovered) && (
+        <>
+          <circle cx={startX} cy={startY} r={2.5} fill={strokeColor} pointerEvents="none" />
+          <circle cx={endX} cy={endY} r={2.5} fill={strokeColor} pointerEvents="none" />
+        </>
+      )}
 
       {/* Floating info panel — only when selected or editing */}
       <AnimatePresence>
