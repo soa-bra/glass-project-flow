@@ -3,6 +3,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./styles/z-index.css";
+
 /* خط IBM Plex Sans Arabic محمَّل عبر <link> في index.html */
 
 /* SoaBra Design System - Updated Color Palette */
@@ -83,19 +85,8 @@
     --progress-stage-current: #3B82F6;
     --progress-stage-pending: #9CA3AF;
     
-    /* Z-Index Hierarchy - Production-Ready System */
-    --z-canvas: 1;
-    --z-element: 10;
-    --z-element-selected: 100;
-    --z-bounding-box: 500;
-    --z-toolbar: 10000;
-    --z-modal-backdrop: 10100;
-    --z-modal-content: 10200;
-    --z-dropdown: 10300;
-    --z-popover: 10400;
-    --z-tooltip: 10500;
-    --z-toast: 10600;
-    
+    /* Z-Index tokens are defined in src/styles/z-index.css (single source of truth) */
+
     /* SoaBra Glass UI Variables */
     --sb-glass-bg: rgba(255,255,255,0.45);
     --sb-glass-outline: rgba(255,255,255,0.35);
