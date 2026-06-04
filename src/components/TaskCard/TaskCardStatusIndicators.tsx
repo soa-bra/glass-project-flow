@@ -93,7 +93,7 @@ const TaskCardStatusIndicators = ({
             }}></div>
           </div>
 
-          <div style={{ ...pillStyle, ...pillWidthByType.date, border: '1px solid #111111' }} className={basePillClassName} title={date}>
+          <div style={{ ...pillStyle, ...pillWidthByType.date }} className={basePillClassName} title={date}>
             <span className={pillTextClassName} dir="auto">{date}</span>
           </div>
           <div style={{ ...pillStyle, ...pillWidthByType.assignee }} className={basePillClassName} title={assignee}>
