@@ -9,7 +9,6 @@ import {
   Settings,
   File,
   Layers,
-  Sparkles,
 } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
