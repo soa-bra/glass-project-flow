@@ -166,6 +166,7 @@ export const ActionButton: React.FC<{
   destructive?: boolean;
   confirmTitle?: string;
   confirmDescription?: string;
+  type?: 'button' | 'submit' | 'reset';
 }> = ({
   componentRef,
   variant = 'primary',
@@ -177,6 +178,7 @@ export const ActionButton: React.FC<{
   destructive = false,
   confirmTitle = 'تأكيد الإجراء',
   confirmDescription = 'هذا إجراء حساس. هل أنت متأكد أنك تبي تكمل؟',
+  type = 'button',
 }) => {
   const buttonRef =
     normalizeActionButtonRef(componentRef) ??
@@ -211,6 +213,7 @@ export const ActionButton: React.FC<{
         onClick={handlePrimaryClick}
         icon={icon}
         className={className}
+        type={type}
         ariaLabel={config.content === 'iconOnly' && typeof children === 'string' ? children : undefined}
       >
         {children}
