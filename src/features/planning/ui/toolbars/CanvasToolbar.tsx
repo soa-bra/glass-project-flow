@@ -27,25 +27,21 @@ import { Users } from 'lucide-react';
 interface CanvasToolbarProps {
   board: CanvasBoard;
   onBack: () => void;
-  onOpenAI: () => void;
   peers?: PresencePeer[];
   selfName?: string;
   realtimeStatus?: RealtimeConnectionStatus;
   lastSyncAt?: number | null;
   canEdit?: boolean;
-  canUseAI?: boolean;
 }
 
 const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   board,
   onBack,
-  onOpenAI,
   peers = [],
   selfName,
   realtimeStatus = 'idle',
   lastSyncAt = null,
   canEdit: _canEdit = true,
-  canUseAI: _canUseAI = true,
 }) => {
   const { undo, redo, history } = useCanvasStore();
   const { renameBoard } = usePlanningStore();
@@ -164,10 +160,8 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
           <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} boardId={board.id} />
         </div>
 
-        <button onClick={onOpenAI} className="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white rounded-full hover:opacity-90 transition-opacity">
-          <Sparkles size={18} className="animate-pulse" />
-          <span className="text-[12px] font-medium">AI</span>
-        </button>
+
+
 
         <div className="relative">
           <button onClick={() => setIsFileMenuOpen(!isFileMenuOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
