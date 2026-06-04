@@ -23,6 +23,7 @@ function stableElementSignature(elements: CanvasElement[]): string {
         size: element.size,
         rotation: element.rotation,
         layer: element.layer,
+        layerId: element.layerId,
         data: element.data,
         content: element.content,
         style: element.style,
