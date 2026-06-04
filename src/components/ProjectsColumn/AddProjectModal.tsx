@@ -45,6 +45,8 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     validateForm,
     resetForm,
     addTask,
+    updateTask,
+    deleteTask,
     addPayment,
     removePayment,
     updatePayment,
