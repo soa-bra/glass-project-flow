@@ -117,7 +117,7 @@ const BottomToolbar: React.FC<{ canEdit?: boolean }> = ({ canEdit: _canEdit = tr
 
   return (
     <nav 
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50"
       role="toolbar"
       aria-label="أدوات الرسم والتصميم"
       aria-orientation="horizontal"
