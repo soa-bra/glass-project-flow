@@ -52,6 +52,8 @@ jobs:
       - name: Run planning canvas regression tests
         run: >-
           npm test -- --run
+          src/features/planning/hooks/useBoardCanvasLifecycle.test.tsx
+          src/features/planning/hooks/useBoardSaveState.test.tsx
           src/features/planning/hooks/useCurrentBoardRole.test.ts
           src/features/planning/hooks/useCanvasAIPermissions.test.ts
           src/features/planning/state/slices/planningElementIds.test.ts

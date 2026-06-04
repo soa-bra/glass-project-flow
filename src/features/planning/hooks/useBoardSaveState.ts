@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { usePlanningStore } from '@/stores/planningStore';
 import type { CanvasBoard, CanvasBoardStateSnapshot } from '@/types/planning';
+import type { LayerInfo } from '@/types/canvas';
 
 export type BoardSaveStatus = 'clean' | 'dirty' | 'saving' | 'saved' | 'error';
 
@@ -21,12 +22,17 @@ function normalizeDate(value: string | Date | undefined | null): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function stripLayerElementRefs(layers: LayerInfo[]): LayerInfo[] {
+  return layers.map((layer) => ({
+    ...layer,
+    elements: [],
+  }));
+}
+
 function buildBoardFingerprint(input: {
   boardId: string;
   boardName: string;
-  elements: unknown[];
   layers: unknown[];
-  selectedElementIds: string[];
   viewport: { zoom: number; pan: { x: number; y: number } };
   activeLayerId: string | null;
 }): string {
@@ -60,9 +66,7 @@ export function formatBoardSaveStatusLabel(status: BoardSaveStatus, lastSavedAt:
 }
 
 export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateReturn {
-  const elements = useCanvasStore((state) => state.elements);
   const layers = useCanvasStore((state) => state.layers);
-  const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
   const viewport = useCanvasStore((state) => state.viewport);
   const activeLayerId = useCanvasStore((state) => state.activeLayerId);
   const saveBoard = usePlanningStore((state) => state.saveBoard);
@@ -72,19 +76,19 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
   const lastSavedFingerprintRef = useRef<string>('');
   const cleanupTimerRef = useRef<number | null>(null);
 
+  const snapshotLayers = useMemo(() => stripLayerElementRefs(layers), [layers]);
+
   const fingerprint = useMemo(() => {
     if (!board) return '';
 
     return buildBoardFingerprint({
       boardId: board.id,
       boardName: board.name,
-      elements,
-      layers,
-      selectedElementIds,
+      layers: snapshotLayers,
       viewport,
       activeLayerId,
     });
-  }, [activeLayerId, board, elements, layers, selectedElementIds, viewport]);
+  }, [activeLayerId, board, snapshotLayers, viewport]);
 
   useEffect(() => {
     if (!board) {
@@ -99,9 +103,7 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
     const savedFingerprint = buildBoardFingerprint({
       boardId: board.id,
       boardName: board.name,
-      elements: savedSnapshot?.elements ?? [],
-      layers: savedSnapshot?.layers ?? [],
-      selectedElementIds: savedSnapshot?.selectedElementIds ?? [],
+      layers: stripLayerElementRefs(savedSnapshot?.layers ?? []),
       viewport: savedSnapshot?.viewport ?? { zoom: 1, pan: { x: 0, y: 0 } },
       activeLayerId: savedSnapshot?.activeLayerId ?? null,
     });
@@ -134,9 +136,9 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
     try {
       const savedAt = new Date();
       const canvasState: CanvasBoardStateSnapshot = {
-        elements,
-        layers,
-        selectedElementIds,
+        elements: [],
+        layers: snapshotLayers,
+        selectedElementIds: [],
         viewport,
         activeLayerId,
         savedAt: savedAt.toISOString(),
@@ -163,7 +165,7 @@ export function useBoardSaveState(board: CanvasBoard | null): UseBoardSaveStateR
       setStatus('error');
       return false;
     }
-  }, [activeLayerId, board, elements, fingerprint, layers, saveBoard, selectedElementIds, viewport]);
+  }, [activeLayerId, board, fingerprint, saveBoard, snapshotLayers, viewport]);
 
   const isDirty = !!board && fingerprint !== lastSavedFingerprintRef.current;
 
