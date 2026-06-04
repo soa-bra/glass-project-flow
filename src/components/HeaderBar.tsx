@@ -407,7 +407,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
         selector: `#${element.id}`,
       };
     })
-    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+    .filter((item): item is SearchItem => Boolean(item));
 
   return values.filter((item) =>
     item.requiredPermissions.every((permission) => permissions.includes(permission)),
@@ -415,7 +415,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
 };
 
 const HeaderBar = () => {
-  const { setActiveSection } = useNavigation();
+  const { navigationState, setActiveSection } = useNavigation();
   const { signOut } = useAuth();
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -429,6 +429,7 @@ const HeaderBar = () => {
   const [hasOpenedNotifications, setHasOpenedNotifications] = useState(false);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [visibleSearchItems, setVisibleSearchItems] = useState<SearchItem[]>([]);
+  const [pendingSearchItem, setPendingSearchItem] = useState<SearchItem | null>(null);
   const [notificationMenuPosition, setNotificationMenuPosition] = useState({ top: 0, left: 0 });
   const headerActionsRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -457,6 +458,60 @@ const HeaderBar = () => {
       .slice(0, 12);
   }, [availableSearchItems, searchValue]);
 
+  const findSearchTarget = (item: SearchItem) => {
+    if (item.selector) {
+      const selectedTarget = document.querySelector<HTMLElement>(item.selector);
+      if (selectedTarget) return selectedTarget;
+    }
+
+    const targetTerms = [item.label, item.description, ...item.keywords]
+      .map(normalizeArabicSearch)
+      .filter((term) => term.length >= 2);
+
+    return Array.from(
+      document.querySelectorAll<HTMLElement>(
+        'h1, h2, h3, button, [role="tab"], [data-search-label], [aria-label]',
+      ),
+    ).find((element) => {
+      const text = [
+        element.dataset.searchLabel,
+        element.getAttribute('aria-label'),
+        element.textContent,
+      ]
+        .filter(Boolean)
+        .join(' ');
+      const normalizedText = normalizeArabicSearch(text);
+      if (!normalizedText) return false;
+
+      return targetTerms.some((term) => normalizedText.includes(term) || term.includes(normalizedText));
+    });
+  };
+
+  const scrollToSearchTarget = (item: SearchItem, attempt = 0) => {
+    const target = findSearchTarget(item);
+
+    if (!target && attempt < 8) {
+      window.setTimeout(() => scrollToSearchTarget(item, attempt + 1), 120);
+      return;
+    }
+
+    const fallbackTarget = document.querySelector<HTMLElement>('main, [data-main-content], .overflow-hidden');
+    const destination = target || fallbackTarget;
+
+    if (target && (target.tagName === 'BUTTON' || target.getAttribute('role') === 'tab')) {
+      target.click();
+    }
+
+    window.setTimeout(() => {
+      destination?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      if (target) target.focus({ preventScroll: true });
+      setPendingSearchItem(null);
+    }, target ? 80 : 0);
+  };
+
   useEffect(() => {
     setUserPermissions(readStoredPermissions());
     setIsDarkMode(document.documentElement.classList.contains('dark'));
@@ -484,6 +539,16 @@ const HeaderBar = () => {
       setHasOpenedNotifications(true);
     }
   }, [openOverlay, userPermissions]);
+
+  useEffect(() => {
+    if (!pendingSearchItem) return;
+
+    const timeoutId = window.setTimeout(() => {
+      scrollToSearchTarget(pendingSearchItem);
+    }, 180);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [navigationState.activeSection, pendingSearchItem]);
 
   useEffect(() => {
     if (openOverlay !== 'notifications') return;
@@ -526,26 +591,23 @@ const HeaderBar = () => {
 
   const handleRefresh = () => {
     setOpenOverlay(null);
-    window.location.reload();
+    window.dispatchEvent(
+      new CustomEvent('soabra:refresh-current-section', {
+        detail: {
+          section: navigationState.activeSection,
+          timestamp: Date.now(),
+        },
+      }),
+    );
+    window.dispatchEvent(new Event('focus'));
+    setActiveSection(navigationState.activeSection);
   };
 
   const handleSearchSelect = (item: SearchItem) => {
     if (item.section) setActiveSection(item.section);
     setOpenOverlay(null);
     setSearchValue('');
-
-    window.setTimeout(() => {
-      const target = item.selector
-        ? document.querySelector(item.selector)
-        : Array.from(document.querySelectorAll<HTMLElement>('h1, h2, h3, button, [role="tab"]')).find(
-            (element) => element.textContent?.includes(item.label),
-          );
-
-      (target || document.querySelector('main, [data-main-content], .overflow-hidden'))?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }, 120);
+    setPendingSearchItem(item);
   };
 
   const handleDeleteNotification = (id: string) => {
@@ -580,7 +642,7 @@ const HeaderBar = () => {
   };
 
   return (
-    <header className="fixed top-0 right-0 left-0 h-[60px] z-[1400] my-0 py-[65px] px-[5px] bg-slate-100">
+    <header className="fixed top-0 right-0 left-0 h-[60px] z-modal my-0 py-[65px] px-[5px] bg-slate-100">
       <div className="flex items-center justify-between h-full px-0">
         {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
@@ -648,7 +710,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.25, ease: 'easeOut' }}
-                  className="absolute top-[64px] right-2 z-[1500] max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
+                  className="absolute top-[64px] right-2 z-modal max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
                   style={glassStyle}
                 >
                   <div className="flex flex-col gap-2">
@@ -686,7 +748,7 @@ const HeaderBar = () => {
                 <span className="relative flex h-[20px] w-[20px] items-center justify-center">
                   <Bell className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
                   {hasNewNotifications && (
-                    <span className="absolute right-[3px] top-[3px] h-1.5 w-1.5 rounded-full bg-red-500" />
+                    <span className="absolute right-0 top-0 h-1.5 w-1.5 translate-x-1 -translate-y-0.5 rounded-full bg-red-500" />
                   )}
                 </span>
               </div>
@@ -699,7 +761,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
-                  className="fixed z-[1500] w-[320px] rounded-[28px] p-3"
+                  className="fixed z-modal w-[320px] rounded-[28px] p-3"
                   style={{
                     ...glassStyle,
                     top: notificationMenuPosition.top,
@@ -728,12 +790,12 @@ const HeaderBar = () => {
                             <span dir="rtl" className="flex-1 text-right text-sm text-black">
                               {notification.text}
                             </span>
-                            {notification.isNew && (
-                              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
-                            )}
                             <span
                               className={`h-2 w-2 flex-shrink-0 rounded-full ${notificationColors[notification.type]}`}
                             />
+                            {notification.isNew && (
+                              <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
+                            )}
                           </div>
                         ))}
                       </div>
@@ -766,7 +828,7 @@ const HeaderBar = () => {
                   animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                   transition={{ duration: 0.3, ease: 'easeOut' }}
-                  className="absolute top-[64px] left-0 z-[1500] w-56"
+                  className="absolute top-[64px] left-0 z-modal w-56"
                 >
                   <div className="flex flex-col items-start gap-2">
                     <button
@@ -832,7 +894,7 @@ const HeaderBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
-            className="fixed inset-0 z-[1600] flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
+            className="fixed inset-0 z-modal flex items-center justify-center bg-[#2A3437]/35 p-4 backdrop-blur-md"
             onMouseDown={() => setOpenOverlay(null)}
           >
             <motion.div
