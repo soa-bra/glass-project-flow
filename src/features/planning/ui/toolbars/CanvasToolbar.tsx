@@ -114,7 +114,7 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
               }
             }}
             autoFocus
-            className="text-[16px] font-bold text-sb-ink px-2 py-1 border border-sb-ink rounded focus:outline-none"
+            className="text-[14px] font-bold text-sb-ink px-2 py-0.5 border border-sb-ink rounded focus:outline-none"
             aria-label="اسم اللوحة"
           />
         ) : (
