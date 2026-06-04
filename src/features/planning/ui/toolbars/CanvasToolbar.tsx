@@ -164,32 +164,32 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 
 
         <div className="relative">
-          <button onClick={() => setIsFileMenuOpen(!isFileMenuOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <File size={18} className="text-sb-ink" />
-            <span className="text-[13px] font-medium text-sb-ink">ملف</span>
+          <button onClick={() => setIsFileMenuOpen(!isFileMenuOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <File size={14} className="text-sb-ink" />
+            <span className="text-[11px] font-medium text-sb-ink">ملف</span>
           </button>
           <FileMenuPopover isOpen={isFileMenuOpen} onClose={() => setIsFileMenuOpen(false)} />
         </div>
 
         <div className="relative">
-          <button onClick={() => setIsLayersOpen(!isLayersOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <Layers size={18} className="text-sb-ink" />
-            <span className="text-[13px] font-medium text-sb-ink">الطبقات</span>
+          <button onClick={() => setIsLayersOpen(!isLayersOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <Layers size={14} className="text-sb-ink" />
+            <span className="text-[11px] font-medium text-sb-ink">الطبقات</span>
           </button>
           <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
         </div>
 
         <div className="relative">
-          <button onClick={() => setIsHistoryOpen(!isHistoryOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <Clock size={18} className="text-sb-ink" />
-            <span className="text-[13px] font-medium text-sb-ink">السجل</span>
+          <button onClick={() => setIsHistoryOpen(!isHistoryOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <Clock size={14} className="text-sb-ink" />
+            <span className="text-[11px] font-medium text-sb-ink">السجل</span>
           </button>
           <HistoryPopover isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
         </div>
 
         <div className="relative">
-          <button onClick={() => setIsPropertiesOpen(!isPropertiesOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <Settings size={18} className="text-sb-ink" />
+          <button onClick={() => setIsPropertiesOpen(!isPropertiesOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <Settings size={14} className="text-sb-ink" />
           </button>
           <CanvasPropertiesPopover isOpen={isPropertiesOpen} onClose={() => setIsPropertiesOpen(false)} />
         </div>
