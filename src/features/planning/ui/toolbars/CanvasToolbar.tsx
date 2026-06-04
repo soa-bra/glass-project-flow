@@ -119,7 +119,7 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
           />
         ) : (
           <h2
-            className="text-[16px] font-bold text-sb-ink cursor-pointer hover:bg-sb-panel-bg px-2 py-1 rounded"
+            className="text-[14px] font-bold text-sb-ink cursor-pointer hover:bg-sb-panel-bg px-2 py-0.5 rounded"
             onDoubleClick={() => setIsEditingName(true)}
             tabIndex={0}
             role="button"
