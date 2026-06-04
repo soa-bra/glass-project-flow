@@ -86,10 +86,15 @@ export default function AuthPage() {
                 dir="ltr"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={submitting}>
-              {submitting && <Loader2 className="ms-2 h-4 w-4 animate-spin" />}
+            <ActionButton
+              componentRef="ACT-BTN-P01"
+              type="submit"
+              className="w-full"
+              disabled={submitting}
+              icon={submitting ? <Loader2 className="animate-spin" /> : undefined}
+            >
               دخول
-            </Button>
+            </ActionButton>
             <p className="text-center text-xs text-muted-foreground pt-2">
               جاهز لإنجاز اليوم؟
             </p>
