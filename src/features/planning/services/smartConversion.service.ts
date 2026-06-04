@@ -381,7 +381,7 @@ async function recordTransformationLinksAndEvents(
     metadata: {
       suggestedData: payload.suggestedData,
       approval: payload.approval,
-    } as Json,
+    } as unknown as Json,
     created_by: ownerId,
   }));
 
@@ -397,7 +397,7 @@ async function recordTransformationLinksAndEvents(
     } as Json,
     metadata: {
       conversion: payload,
-    } as Json,
+    } as unknown as Json,
     created_by: ownerId,
   }));
 
@@ -415,7 +415,7 @@ async function recordTransformationLinksAndEvents(
           sourceElementIds: payload.sourceElementIds,
           targetEntityType: payload.targetEntityType,
           targetEntityId: entity.id,
-        } as Json,
+        } as unknown as Json,
       }
     : null;
 
@@ -439,7 +439,7 @@ async function recordTransformationLinksAndEvents(
       targetEntityType: payload.targetEntityType,
       targetEntityId: entity.id,
       approval: payload.approval,
-    } as Json,
+    } as unknown as Json,
     created_by: ownerId,
   };
 
@@ -485,7 +485,7 @@ async function recordConversionAudit(
         targetEntityType: payload.targetEntityType,
         suggestedData: payload.suggestedData,
         approval: payload.approval,
-      } as Json,
+      } as unknown as Json,
     })
     .select('id')
     .single();
@@ -501,7 +501,7 @@ async function recordConversionAudit(
 export async function approveSmartConversion(
   payload: SmartConversionPayload,
 ): Promise<SmartConversionResult> {
-  const parsed = smartConversionPayloadSchema.parse(payload);
+  const parsed = smartConversionPayloadSchema.parse(payload) as SmartConversionPayload;
   if (!parsed.approval.approved) {
     throw new Error('Smart conversion must be approved before creating an executable record.');
   }
@@ -513,7 +513,7 @@ export async function approveSmartConversion(
     approverId: parsed.approval.approverId ?? ownerId,
     approvedAt: parsed.approval.approvedAt ?? new Date().toISOString(),
   };
-  const approvedPayload = { ...parsed, approval };
+  const approvedPayload: SmartConversionPayload = { ...parsed, approval };
 
   const sourceElements = await loadSourcePlanningElements(approvedPayload);
   const entity = await createEntity(approvedPayload, ownerId);

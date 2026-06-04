@@ -123,9 +123,9 @@ async function upsertSmartDocsForElements(
       scope_type: "board",
       scope_id: boardId,
       metadata: {
-        ...link.metadata,
+        ...((link.metadata ?? {}) as Record<string, unknown>),
         link,
-      } as Json,
+      } as unknown as Json,
     }));
   const { error: auditError } = await supabase.from("audit_events").insert(auditRows);
 
