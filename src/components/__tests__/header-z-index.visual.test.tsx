@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest';
 import HeaderBar from '@/components/HeaderBar';
 import { ProjectManagementBoard } from '@/components/ProjectManagement/ProjectManagementBoard';
 import { NavigationProvider } from '@/contexts/NavigationContext';
+import { ProjectTasksProvider } from '@/contexts/ProjectTasksContext';
 import type { Project } from '@/types/project';
 import '@/index.css';
 
@@ -51,14 +52,16 @@ const expectPopoverAbovePanels = (popover: HTMLElement) => {
 
 const renderStackingScenario = () => render(
   <NavigationProvider>
-    <div className="fixed z-sidebar" data-testid="sidebar-layer" />
-    <ProjectManagementBoard
-      project={demoProject}
-      isVisible
-      onClose={vi.fn()}
-      isSidebarCollapsed={false}
-    />
-    <HeaderBar />
+    <ProjectTasksProvider>
+      <div className="fixed z-sidebar" data-testid="sidebar-layer" />
+      <ProjectManagementBoard
+        project={demoProject}
+        isVisible
+        onClose={vi.fn()}
+        isSidebarCollapsed={false}
+      />
+      <HeaderBar />
+    </ProjectTasksProvider>
   </NavigationProvider>,
 );
 
