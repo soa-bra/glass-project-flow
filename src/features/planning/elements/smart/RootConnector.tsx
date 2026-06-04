@@ -241,7 +241,86 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
               </p>
             )}
 
-            {/* AI Suggestions */}
+            {/* ===== Connector Properties Panel ===== */}
+            <div className="space-y-2 p-3 rounded-lg border border-border/60 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <Settings2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs font-medium">خصائص الموصل</span>
+              </div>
+
+              {/* Color */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-muted-foreground">اللون</span>
+                <div className="flex gap-1.5">
+                  {COLOR_SWATCHES.map((c) => {
+                    const active = (data.color || '#9CA3AF') === c;
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => onPatch({ color: c })}
+                        className={`h-5 w-5 rounded-full border transition-all ${active ? 'ring-2 ring-offset-1 ring-foreground/40 scale-110' : 'border-border'}`}
+                        style={{ backgroundColor: c }}
+                        aria-label={`لون ${c}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Style + Width */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground">النمط</span>
+                  <Select value={data.style || 'solid'} onValueChange={(v) => onPatch({ style: v as RootConnectorData['style'] })}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {STYLE_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground">السماكة</span>
+                  <Select value={String(data.strokeWidth ?? 0.5)} onValueChange={(v) => onPatch({ strokeWidth: parseFloat(v) })}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {WIDTH_OPTIONS.map((w) => (
+                        <SelectItem key={w} value={String(w)} className="text-xs">{w}px</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Relationship type */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-muted-foreground">نوع العلاقة</span>
+                <Select
+                  value={data.connectionType || 'references'}
+                  onValueChange={(v) => onPatch({ connectionType: v as UnifiedRelationshipType })}
+                >
+                  <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {UNIFIED_RELATIONSHIP_TYPES.map((t) => (
+                      <SelectItem key={t} value={t} className="text-xs">{getRelationshipTypeLabel(t)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Swap direction */}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onPatch({ startPoint: data.endPoint, endPoint: data.startPoint })}
+                className="w-full h-7 text-xs gap-1.5"
+              >
+                <ArrowRight className="h-3 w-3" />
+                عكس الاتجاه
+              </Button>
+            </div>
+
             {data.aiSuggestions && data.aiSuggestions.length > 0 && (
               <div className="space-y-2 p-3 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border border-primary/10">
                 <div className="flex items-center gap-2 mb-2">
