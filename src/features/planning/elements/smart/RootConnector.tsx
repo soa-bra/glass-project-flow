@@ -147,6 +147,7 @@ interface FloatingPanelProps {
   onDelete: () => void;
   onAISuggest: () => void;
   onInsertSuggestion: (suggestion: AISuggestion) => void;
+  onPatch: (patch: Partial<RootConnectorData>) => void;
   isLoadingAI: boolean;
 }
 
