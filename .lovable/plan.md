@@ -1,138 +1,138 @@
 
-# خطة المطابقة الشاملة مع المواصفات (Spec-Driven Alignment)
-
-## القرارات المعتمدة من الأسئلة المفتوحة
-1. **إعادة التسمية**: `social → csr`, `research → kmpa` (rename فعلي في الكود + ميغرايشن قاعدة).
-2. **الإدارات الناقصة** (BCM, Partnerships, Knowledge): إنشاء **جداول حد أدنى** في Supabase الآن (DB3) للحصول على CRUD حقيقي.
-3. **لوحات الإعدادات التقنية** (Engine Jobs, Dependency Graph, Tools Marketplace, Admin Roles): تبقى **كما هي مع غلاف رفيع** يجعلها spec-compliant بصرياً عبر `WorkspaceShell`.
-4. **الإيقاع**: **وقفة مراجعة بعد كل مرحلة** P1→P7 قبل الانتقال للتالية.
+# خطة إغلاق فجوات لوحة التخطيط الذكية في سـوبــرا
+> تحديث شامل لخطة `plan.md` بناءً على الوصف الوظيفي الموسع (AI Buttons / Connectors / Convert / Expand / Execution Tools / Workflows).
 
 ---
 
-## نظرة عامة
-الهدف: تحويل التطبيق ليُقاد بالكامل من `src/config/app-spec.ts` (15 لوحة / 124 تبويب / 476 صندوق / 184 منبثقة) عبر `SpecDrivenDashboard` + `TabRenderer` + `BoxRenderer` + `Box-Kit` كمصدر وحيد للحقيقة (SSoT).
+## 1. جدول الفجوات (Spec ⇄ Code) — Per-File Diff
 
-```text
-spec(xlsx) → app-spec.ts → SpecDrivenDashboard → TabRenderer → BoxRenderer → BOX_KIT_REGISTRY
-                                    ↓
-                           slotProps (data hooks)
-                                    ↓
-                        src/services/* (Supabase central + departments)
-```
-
----
-
-## المراحل (7) مع وقفة مراجعة بعد كل واحدة
-
-### P1 — إغلاق فجوات الأساس (Foundation Hardening)
-**الهدف**: ضمان جاهزية البنية قبل التوسع.
-- إكمال مكوّنات Box-Kit الناقصة (TextBlock, FormField, FileDrop, KpiTrend) وتسجيلها في `registry.ts`.
-- توحيد `WorkspaceShell` (header + sidebar + breadcrumb + RTL) في `src/components/shared/WorkspaceShell/`.
-- إضافة `slotProps` resolver في `TabRenderer` (يربط `boxId → dataHook`).
-- مسار معاينة `/spec-preview/:dashboardId/:tabId` لاختبار أي تبويب من المواصفة.
-- **خرج**: build أخضر + اختبار smoke لكل componentRef.
-- 🛑 **وقفة مراجعة**.
-
-### P2 — إعادة التسمية + جداول الإدارات الناقصة (DB3 Migration)
-**الهدف**: مطابقة قائمة الإدارات الـ12 من المواصفة.
-- Rename: `social → csr`, `research → kmpa` في:
-  - `DepartmentsSidebar.tsx` (مفتاح + label)
-  - `FeatureDepartmentPanel` وكل المراجع
-  - مسارات `/departments/:key`
-- إنشاء جداول Supabase (RLS owners-only):
-  - `bcm_plans`, `bcm_risks`, `bcm_incidents`
-  - `partnerships_partners`, `partnerships_agreements`, `partnerships_activities`
-  - `knowledge_articles`, `knowledge_categories`, `knowledge_resources`
-- إضافة Generic CRUD لكل جدول عبر `_factory.ts` الموجود.
-- إضافة المفاتيح الثلاثة الجديدة لـ `DepartmentsSidebar` (BCM, Partnerships, Knowledge).
-- 🛑 **وقفة مراجعة**.
-
-### P3 — Projects Workspace (إدارة المشاريع: 8 تبويبات) ✅
-- ✅ بناء `SpecDrivenDashboard` العام (`src/components/spec-driven/SpecDrivenDashboard.tsx`) — يستهلك أي لوحة من `APP_SPEC` بمفتاحها.
-- ✅ التحقق من spec الـ projects: 8 تبويبات / 29 صندوق / 18 منبثقة تُحلّ بالكامل ضد `BOX_KIT_REGISTRY`.
-- ✅ التنفيذ الحالي (`ProjectManagementBoard` + `useUnifiedTasks` + `centralProjectsService`) يطابق `state: "CODE_CURRENT_STATE"` في المواصفة — لا إعادة بناء.
-- ✅ اختبار `src/__tests__/projects.spec-coverage.test.ts` أخضر (3/3).
-- 🛑 **وقفة مراجعة**.
-
-
-### P4 — Departments Workspace (12 إدارة) ✅
-- ✅ تحويل `FeatureDepartmentPanel` ليُمرّر كل 12 إدارة عبر `SpecDrivenDepartmentDashboard` (الـ94 تبويب كلها spec-driven عبر `TabRenderer`).
-- ✅ الإبقاء على لوحات legacy خلف `?legacy=1` للمقارنة/الاسترجاع السريع أثناء QA.
-- ✅ اختبار `src/__tests__/departments.spec-coverage.test.ts` أخضر (13/13) — كل `componentRef` في الـ12 لوحة محلول من `BOX_KIT_REGISTRY`.
-- ⏭️ ربط `slotProps` لكل تبويب بهوكاته في `src/hooks/departments/` يُرحّل إلى P4.b (بعد اكتمال P5/P6) لأن البنية الحالية تعرض المواصفة بالبيانات الافتراضية للـ Box-Kit.
-- 🛑 **وقفة مراجعة**.
-
-### P5 — Archive Workspace (9 فئات) ✅
-- ✅ Migration: جدول `archive_documents` (category, title, file_url, version, tags[], metadata jsonb, status) + 4 سياسات RLS (owner-only + is_owner override) + trigger `update_updated_at_column`.
-- ✅ `src/services/archive/archiveService.ts`: CRUD + Zod schemas + audit لكل عملية.
-- ✅ `src/hooks/archive/useArchiveDocuments.ts`: React Query bindings (list/create/delete) مع invalidation per-category.
-- ✅ `DocumentsArchivePanel` مربوط فعلياً بـ `archive_documents` (category='documents') مع fallback لقائمة عرض حتى يكتب المستخدم وثائق حقيقية.
-- ✅ `CategoryPanelFactory` يدعم `?spec=1` لعرض المواصفة عبر `SpecDrivenDashboard('archive')` بدلاً من اللوحات legacy.
-- ✅ اختبار `src/__tests__/archive.spec-coverage.test.ts` أخضر (3/3) — كل componentRef في 9 فئات الأرشيف محلول من registry.
-- ⏭️ ربط باقي 8 فئات (HR/Financial/Legal/Organizational/Knowledge/Templates/Policies/Projects) بـ `archiveService` يُرحَّل إلى P5.b بنفس نمط Documents (Mapper + fallback).
-- 🛑 **وقفة مراجعة**.
-
-### P5.x — Data Wiring (slotProps) ✅
-- ✅ **P5.3** — الإدارات الجديدة الثلاث (BCM / Partnerships / Knowledge): `src/hooks/spec/useSpecBoxData.ts` يحقن `boxData` للصناديق `*.overview.summary/health/recent` و `BCMDashboard.members.table` من جداول Supabase الحقيقية.
-- ✅ **P5.4** — الإدارات الـ9 القديمة: تبقى على لوحاتها البرمجية (feature dashboards) عبر `FeatureDepartmentPanel`، مع `?spec=1` كمعاينة QA. لا حاجة لـ slotProps لها.
-- ✅ **P5.1** — Operations Board: مربوط مسبقاً ببيانات حقيقية عبر `src/components/OperationsBoard/useTabData.ts`.
-- ✅ **P5.2** — Projects Workspace: `useProjectsBoxData` يحقن KPIs و قائمة المشاريع و تجميع المهام (state) في صناديق `ProjectManagementBoard.overview.{project-summary,cards-grid,phase-progress}` و `ProjectManagementBoard.tasks.tasks-kpis` من `central.projects` + `tasks`.
-- ✅ **P5.5** — Archive + Settings:
-  - **Archive**: `useArchiveBoxData` يستدعي `archiveService.listByCategory` للفئات الـ9 ويملأ `ArchiveWorkspace.<category>.records-list` بـ `DAV-LST-01` و `DAV-TBL-01`.
-  - **Settings**: جدول جديد `public.user_settings` (per-user, per-category JSONB) + `settingsService` + `useSettings/useUpsertSettings` + RLS صارمة. `useSettingsBoxData` يربط `SettingsWorkspace.account.account-stats` و `SettingsWorkspace.security.status-card`.
-
-### P6 — Settings Workspace (13 فئة) ✅
-- ✅ جدول `public.user_settings` (P5.5) — RLS صارمة `user_id = auth.uid()` + upsert by `(user_id, category)`.
-- ✅ `src/services/settings/settingsService.ts` — Zod enum للـ13 فئة + CRUD + audit.
-- ✅ `src/hooks/settings/usePersistedSettings.ts` — هوك موحّد (load + debounced autosave 800ms) جاهز للاستخدام من أي لوحة إعدادات.
-- ✅ اللوحات الـ9 الوظيفية (Account, Security, Integrations, Notifications, AI, Theme, Data Governance, Users/Roles, Audit) تستهلك `usePersistedSettings` أو `useSettings/useUpsertSettings`.
-- ✅ اللوحات الـ4 التقنية (Engine Jobs, Dependency Graph, Tools Marketplace, Admin Roles) ملفوفة بـ `SpecSettingsShell` (غلاف رفيع: WorkspaceShell + breadcrumb spec) دون تعديل منطقها الداخلي — مطابق لقرار الأسئلة المفتوحة #3.
-- 🛑 **وقفة مراجعة**.
-
-### P7 — التحقق النهائي + CI Gates ✅
-- ✅ `src/__tests__/full-spec.coverage.test.ts` — يمرّ على كل لوحات/تبويبات/صناديق `APP_SPEC` ويتحقق من حلّ كل `componentRef` (DAV/IPF/ACT/MDL) من `BOX_KIT_REGISTRY`. يحرس أيضاً العدّاد المقفول (15/124/476/184).
-- ✅ `src/__tests__/settings.spec-coverage.test.ts` — مرآة Archive/Projects/Departments لإعدادات الـ13 فئة.
-- ✅ ESLint قاعدة 7: منع الاستيراد العميق من `components/box-kit/primitives/**` — يجبر المرور عبر `BOX_KIT_REGISTRY` / `TabRenderer`.
-- ✅ كل الاختبارات: `app-spec.coverage` + `box-kit.registry-coverage` + `box-kit.smoke` + `projects/departments/archive/settings/full-spec` خضراء.
-- ✅ توثيق نهائي في `docs/specs/INDEX.md`.
-- 🛑 **مراجعة نهائية مكتملة**.
+| # | مكون المواصفة | الكود الحالي | المطلوب | الملف(ات) | نوع التغيير | المخاطر |
+|---|---|---|---|---|---|---|
+| 1 | إزالة زر AI من الشريط العلوي | `CanvasToolbar.tsx:154` يعرض زر "AI" أخضر/أزرق | حذف الزر + الـ prop `onOpenAI` | `src/features/planning/ui/toolbars/CanvasToolbar.tsx`, `PlanningCanvas.tsx` | modify | low |
+| 2 | زر AI بجانب شريط الأدوات (السفلي) | `AIAssistantButton.tsx` ثابت `bottom-6 left-1/2 ml-[420px]` ومنفصل عن `BottomToolbar` | دمجه كعنصر جانبي ضمن `BottomToolbar` (مع `Dock`)، يحترم RTL ويتموضع لوجستياً بجانب dock الأدوات | `src/features/planning/ui/toolbars/BottomToolbar.tsx`, `src/features/planning/ui/widgets/AIAssistantButton.tsx` | modify | low |
+| 3 | وضعا AI: محادثة + توليد (Workflow/Docs/Sheets) | `AIAssistantPopover` يفتح محادثة فقط | إضافة Tabs داخل البوب-أوفر: "محادثة" / "إنشاء" (مستند، جدول، Workflow، صندوق تنفيذ، ملخص، مخاطر) | `src/features/planning/ui/widgets/AIAssistantPopover.tsx` | modify | medium |
+| 4 | زر AI في الشريط الطافي عند تحديد عناصر | `AIMenuDropdown` موجود ويحوي "تحويل إلى smart element" + تحويل مخصص | إعادة هيكلة القائمة إلى أقسام: **تحويل إلى كيان**، **توسيع البطاقة**، **تحويل إلى عنصر ذكي**، **تلخيص/تحليل/مخاطر** | `src/features/planning/ui/toolbars/floating-bar/components/AIMenuDropdown.tsx` | modify | medium |
+| 5 | إجراء "تحويل إلى كيان" (Convert to Entity) | `SmartConversionReviewDialog` يعرض معاينة لتحويل smart → smart فقط؛ لا إنشاء سجلات حقيقية | إضافة مسار `convertElementToEntity` يدعم الأنواع: project, task, budget_line, contract, campaign, csr_initiative, training_program, research_output, knowledge_record, archive_document. يكتب عبر `services/central/{projects,tasks,...}.service.ts` ثم يربط `canvas_element.linked_entity_id` | `src/features/planning/services/convertElementToEntity.ts` (جديد), `SmartConversionReviewDialog.tsx`, `useSmartElementAI.ts` | create+modify | **high** |
+| 6 | إجراء "توسيع البطاقة" (Expand) | لا يوجد `isExpanded` في `SmartProjectCard` / `TaskCard` ولا modal | إضافة `ExpandableCardShell` يستخدم `framer-motion layoutId`؛ بطاقة مشروع → يفتح `ProjectManagementBoard` داخل modal/sidebar؛ بطاقة مهمة → يفتح `TaskDetailDrawer`؛ صندوق عرض → يحوّل إلى صندوق تنفيذ | `src/features/planning/elements/smart/ExpandableCardShell.tsx` (جديد), `SmartProjectCard.tsx`, `TaskCard.tsx`, `RootConnectorDisplay.tsx` | create+modify | **high** |
+| 7 | أداة "الموصلات (الجذر الذكي)" — Anchor لكل عنصر محدد + Snap على الهدف + تخصيص نمط/اتجاه | `SmartConnectorManager` يعرض anchor واحدة فقط (top-right)، الـSVG `pointerEvents:none` يكسر الإمساك، لا يوجد محرر خصائص للموصل (لون/نمط/اتجاه) في UI | (أ) فصل طبقة SVG للموصلات بـ `pointerEvents:auto` على الـSVG؛ (ب) 4 anchors لوجستية (start/end/top/bottom)؛ (ج) استخدام `viewport.toCanvas` بدل حساب يدوي؛ (د) فلترة `findElementAt` لاستبعاد الإطارات الأمامية؛ (هـ) محرر خصائص الموصل في الشريط الطافي (لون، نمط solid/dashed/dotted، اتجاه single/double، نوع علاقة) | `src/features/planning/canvas/viewport/InfiniteCanvas.tsx`, `SmartConnectorManager.tsx`, `RootConnector.tsx`, `ConnectorPropertiesPanel.tsx` (جديد) | modify+create | **high** |
+| 8 | حفظ منطقي للموصل في DB | `syncRootConnectors` يكتب في `planning_elements` فقط؛ `smart_connectors` service موجودة لكن غير مستدعاة | استدعاء `upsertSmartConnector` بعد إنشاء/تحديث + `deleteSmartConnectorByElementId` عند الحذف؛ تمرير `boardId` | `src/features/planning/canvas/viewport/InfiniteCanvas.tsx`, `services/central/smartConnectors.service.ts` | modify | medium |
+| 9 | حذف cascading للموصلات عند حذف عنصر طرف | غير موجود في `canvasStore.deleteElements` | عند الحذف: العثور على موصلات root مرتبطة وحذفها قبل العنصر، ثم استدعاء DB cleanup | `src/stores/canvasStore.ts` | modify | medium |
+| 10 | أداة "أدوات التنفيذ" (إدراج صناديق عرض/تنفيذ من أقسام أخرى) | غير موجودة كلياً | لوحة جديدة `ExecutionToolsPalette` تظهر في BottomToolbar مفتاح `E`؛ تعرض كاتالوج صناديق `BOX_KIT_REGISTRY` المسموحة بصلاحيات المستخدم (`useCanvasBoxCatalog`)؛ تدعم Drag-to-canvas؛ تنشئ عنصر `canvas_element` نوع `execution_box` بـ `linked_entity_id` + `mode: view\|execution` | `src/features/planning/ui/panels/ExecutionToolsPalette.tsx` (جديد), `src/features/planning/hooks/useCanvasBoxCatalog.ts` (جديد), `BottomToolbar.tsx`, `CanvasElement.tsx` | create+modify | **high** |
+| 11 | فرق بصري بين صندوق عرض / تنفيذ / عنصر مرتبط / عنصر AI | لا يوجد | إضافة `EntityLinkBadge` + ring/border state (مرتبط=primary، AI=violet، مقفل=amber) داخل `CanvasElement` | `src/features/planning/elements/CanvasElement.tsx`, `EntityLinkBadge.tsx` (جديد) | create+modify | low |
+| 12 | Workflow builder (تدفقات عمل) | غير موجود | **يُرحَّل إلى P9** (خارج نطاق الموجة الأولى) | — | defer | — |
+| 13 | تحويل المستند الذكي إلى أرشيف/معرفة | `smart_doc_tool` يولّد فقط؛ لا تحويل لاحق | إضافة action في AI menu للمستندات: "حفظ في الأرشيف"، "إضافة لقاعدة المعرفة" — يكتب عبر `archiveService` و `knowledge_articles` | `SmartDocRenderer.tsx`, `AIMenuDropdown.tsx`, `services/knowledge.service.ts` (جديد) | create+modify | medium |
+| 14 | نموذج بيانات: `linked_entity_id` + `linked_entity_type` على عنصر الكانفس | `planning_elements.metadata` jsonb غير منظم | migration إضافة عمودين generated من metadata + index؛ تحديث Zod schema | `supabase/migrations/<new>.sql`, `src/features/planning/domain/types/canvas.types.ts` | create | medium |
+| 15 | EntityLink table مستقل للعلاقات الدلالية بين كيانات (غير canvas) | لا يوجد؛ `smart_connectors` يربط canvas elements فقط | جدول جديد `entity_links(source_entity_id, source_type, target_entity_id, target_type, relation_type, direction, confidence, created_by_ai, approved_by)` + RLS | `supabase/migrations/<new>.sql`, `services/central/entityLinks.service.ts` (جديد) | create | medium |
+| 16 | AI Context Snapshot يحترم الصلاحيات | `contextBuilder.ts` + `contextSanitizer.ts` موجودان | إضافة فلترة `permission_scope` فعلية: استبعاد عناصر `dataSensitivity > user_clearance` قبل الإرسال للنموذج | `src/features/ai/context/contextBuilder.ts`, `contextSanitizer.ts` | modify | medium |
+| 17 | Preview قبل التحويل (إجباري للحساس) | `SmartConversionReviewDialog` يعرض preview بسيط | توسيع الـ dialog ليعرض: الحقول المستخرجة، الكيانات المرتبطة، تحذيرات الصلاحية، زر "تشغيل تحويل منخفض المخاطر تلقائياً" في الإعدادات | `SmartConversionReviewDialog.tsx` | modify | medium |
+| 18 | Audit log لكل تحويل/ربط | `smartConnectors.service` يسجّل ✓؛ canvas element trigger موجود ✓؛ لكن تحويل-إلى-كيان لا يسجّل | استدعاء `AuditService.log` في `convertElementToEntity` مع `action='canvas.element.converted_to_entity'` | `src/features/planning/services/convertElementToEntity.ts` | create | low |
+| 19 | حالة "مقفل" / Locked by another user | `RealtimeSyncManager` يدعم element locking لكن UI لا يعرضه على البطاقات | إضافة overlay "مقفل من X" + إخفاء AI menu للعنصر | `CanvasElement.tsx`, `FloatingBar.tsx` | modify | low |
+| 20 | إخفاء AI tools كلياً للضيف | `useCanvasAIPermissions` موجود لكن لا تطبيق على BottomToolbar's AI button | إضافة guard على `AIAssistantButton` المدموج | `BottomToolbar.tsx` | modify | low |
 
 ---
 
-## التقنيات الرئيسية (Technical Section)
+## 2. خطة التنفيذ المرحلية (Phased)
 
-### قاعدة البيانات (P2 + P5 + P6)
-- 9 جداول إدارات جديدة + `archive_documents` + `user_settings` = **11 ميغرايشن**.
-- كل الجداول: `owner_id uuid not null` + RLS policy `owner = auth.uid() OR is_owner(auth.uid())`.
-- تريغر `update_updated_at_column` موجود — يُعاد استخدامه.
+### مرحلة A — إعادة تموضع AI + إصلاح الموصلات (Foundation)
+يجب أن تعمل أساسيات الموصلات قبل بناء أي شيء فوقها.
+1. **A1** — حذف زر AI من `CanvasToolbar`؛ نقل `AIAssistantButton` ليكون عنصراً داخل `BottomToolbar` كزر أيمن (RTL). (#1، #2، #20)
+2. **A2** — إصلاح طبقة أحداث الموصلات: SVG منفصل بـ`pointerEvents:auto`، Anchor خام بدون framer، استخدام `viewport.toCanvas`. (#7 أ–ج)
+3. **A3** — Drop targeting صحيح + استجابة بصرية مؤكدة. (#7 د)
+4. **A4** — حفظ + cascade delete عبر `smart_connectors`. (#8، #9)
+5. **A5** — `ConnectorPropertiesPanel` في الشريط الطافي عند تحديد موصل. (#7 هـ)
+> 🛑 **وقفة مراجعة A** — يجب أن يستطيع المستخدم رسم موصل، حفظه، حذف عنصر فيُحذف الموصل، تعديل نمطه.
 
-### الواجهة
-- `SpecDrivenDashboard({ dashboardId })` يقرأ من `APP_SPEC.dashboards[dashboardId]`.
-- `TabRenderer({ tab, slotProps })` يرسم `tab.boxes` بـ `BoxRenderer`.
-- `BoxRenderer({ box, slotProps[box.id] })` يحل `componentRef` من registry.
+### مرحلة B — Convert to Entity + Expand Card
+6. **B1** — Migration: إضافة `linked_entity_id` + `linked_entity_type` لـ `planning_elements`. (#14)
+7. **B2** — خدمة `convertElementToEntity` تدعم 10 أنواع كيانات حقيقية (تكتب في الجداول الفعلية). (#5)
+8. **B3** — توسيع `SmartConversionReviewDialog` بالحقول والتحذيرات. (#17)
+9. **B4** — `ExpandableCardShell` + ربطه ببطاقة مشروع (`ProjectManagementBoard` modal) وبطاقة مهمة (`TaskDetailDrawer`). (#6)
+10. **B5** — إضافة "تحويل إلى كيان" و"توسيع البطاقة" في `AIMenuDropdown`. (#4)
+11. **B6** — `EntityLinkBadge` + التمييز البصري + Locked overlay. (#11، #19)
+> 🛑 **وقفة مراجعة B** — تحويل ملاحظة "حملة Q3" إلى مشروع حقيقي يظهر في `/projects` + توسيع البطاقة يفتح لوحته.
 
-### الخدمات
-- `_factory.ts` الحالي يولد CRUD + audit + Zod للجداول الجديدة دون كتابة يدوية.
+### مرحلة C — أدوات التنفيذ + AI Generation Mode
+12. **C1** — `useCanvasBoxCatalog`: يقرأ `BOX_KIT_REGISTRY` + يصفّيها عبر `usePermission`. (#10)
+13. **C2** — `ExecutionToolsPalette` مع Drag-to-canvas + render داخل `CanvasElement` لنوع `execution_box`. (#10)
+14. **C3** — وضع "إنشاء" داخل `AIAssistantPopover` (tabs: محادثة/توليد). (#3)
+15. **C4** — تحويل المستند الذكي إلى أرشيف/معرفة. (#13)
+16. **C5** — `entity_links` table + service + استخدامه في `convertElementToEntity` لتسجيل العلاقات. (#15)
+17. **C6** — تحسين سياق AI بحدود الصلاحيات الفعلية + audit التحويلات. (#16، #18)
+> 🛑 **وقفة مراجعة C** — يمكن سحب صندوق "ميزانية مشروع" من palette، ربطه ببطاقة المشروع بموصل، وتلخيصه بالـAI.
+
+### مرحلة D — مؤجلة (Out of Scope الآن)
+- Workflow visual builder + runner (#12) — مرحلة لاحقة P9.
+- Voice/Video in canvas (موجود stub).
+- AI image generation داخل الكانفس.
 
 ---
 
-## Out of Scope
-- نقل لوحات الإعدادات التقنية إلى spec-native (يبقى غلاف رفيع).
-- تعميق منطق البيانات الوهمية في `TemplatesArchivePanel` إلى backend (يُربط لـ `archive_documents` في P5 لكن دون migrate للبيانات التاريخية).
+## 3. تفاصيل تقنية مختصرة (Technical Section)
 
-## Orphans (للنقاش لاحقاً، لا حذف الآن)
-- `BaseArchivePanel` fallback (يبقى للفئات غير المعروفة).
-- `GenericSettingsPanel` (يبقى للفئات غير المعرفة في spec).
+### قاعدة البيانات
+- **Migration #1** (B1): `ALTER TABLE planning_elements ADD COLUMN linked_entity_id uuid, linked_entity_type text;` + index + Zod update.
+- **Migration #2** (C5): `CREATE TABLE entity_links(...)` مع GRANT صارمة + RLS تعتمد `has_permission('entity_links.read')`. تشمل `confidence numeric(3,2)` و `created_by_ai bool` و `approved_by uuid`.
 
-## Acceptance Checklist
-- ✅ 12 إدارة ظاهرة في `DepartmentsSidebar` بأسماء spec.
-- ✅ 124 تبويب يُرسم عبر `TabRenderer` بدون errors.
-- ✅ 476 صندوق resolvable من `BOX_KIT_REGISTRY`.
-- ✅ 11 جدول جديد في Supabase مع RLS.
-- ✅ CRUD حقيقي على الإدارات الـ3 الجديدة (BCM/Partnerships/Knowledge).
-- ✅ `Archive` و `Settings` يقرآن/يكتبان من `archive_documents` و `user_settings`.
-- ✅ اختبار `app-spec.coverage.test.ts` أخضر.
+### الـ Stores
+- `canvasStore.deleteElements` يستدعي hook جديد `onBeforeElementsDelete` لإطلاق cascade cleanup للموصلات (cleanly testable).
+- لا يُضاف state جديد للـ Expand — يستخدم `framer-motion layoutId` + local state داخل الـ shell.
+
+### الموصلات (تفصيل تقني للإصلاح الأساسي)
+- إخراج موصلات الكانفس من الـ SVG العام (100000×100000، `pointerEvents:none`) إلى **SVG مخصص** بحجم العالم الفعلي، `pointerEvents:auto`، مع `<g pointerEvents:none>` للموصلات غير المحددة.
+- 4 anchors لوجستية (start/end/top/bottom) لكل عنصر محدد، Hit-box نصف قطر 18px شفاف فوق دائرة مرئية r=6.
+- `findElementAt(x,y)` يبحث في `visibleElements` reversed، يستبعد `type==='frame'` و `data-connectable===false`.
+- تخزين: `planning_element` (visual geometry) + `smart_connectors` (logical edge) بنفس `id`.
+
+### Convert to Entity (تفصيل)
+- خريطة الكيانات:
+  ```ts
+  const ENTITY_CONVERTERS: Record<EntityType, (data) => Promise<{id, route}>> = {
+    project: (d) => centralProjectsService.create(d),
+    task: (d) => centralTasksService.create(d),
+    budget_line: (d) => financeService.createBudgetLine(d),
+    contract: (d) => contractService.create(d),
+    campaign: (d) => marketingService.createCampaign(d),
+    csr_initiative: (d) => csrService.create(d),
+    training_program: (d) => hrService.createTraining(d),
+    research_output: (d) => kmpaService.createResearch(d),
+    knowledge_record: (d) => knowledgeService.create(d),
+    archive_document: (d) => archiveService.create(d),
+  };
+  ```
+- يتطلب `requirePermission('<entity>.create')` قبل التنفيذ + يحدّث `linked_entity_id/type` على `planning_element`.
+
+### أدوات التنفيذ
+- Catalog item shape: `{ boxId, componentRef, label, departmentId, requiredPermission, supports: ['view','execution'] }`.
+- عند الإسقاط: `CanvasElement` بنوع `execution_box` + `metadata.boxRef`؛ يُرسم باستخدام نفس `BoxRenderer` المستخدم في SpecDrivenDashboard لكن داخل غلاف `CanvasExecutionBoxShell`.
 
 ---
 
-**التنفيذ يبدأ بعد موافقتك على P1، ثم نقف بعد كل مرحلة للمراجعة.**
+## 4. Open Questions
+1. هل بطاقة المشروع عند Expand تفتح **Modal فوق اللوحة** أم **Drawer جانبي**؟ المواصفة تذكر الاثنين (مكتب=Modal، موبايل=Full-screen).
+2. أداة "أدوات التنفيذ" — هل تظهر كـ Palette dock في BottomToolbar أم كـ Sidebar منفصل؟
+3. حدود التحويل منخفض المخاطر التي لا تتطلب preview — تحتاج تعريف من المستخدم (مثال: ملاحظة → مهمة بدون تاريخ = منخفض المخاطر؟).
+4. `entity_links` — هل نسجل العلاقات الناتجة عن موصلات الكانفس فقط، أم نسمح أيضاً بربط كيانات بدون عناصر كانفس؟
+
+## 5. Orphans (لا حذف)
+- `RootConnectorDisplay.tsx` — يبقى لعرض الموصلات كعنصر smart مستقل (لم يذكره الـ spec الجديد).
+- `LayoutEngine.tsx` (تخطيط تلقائي للعناصر الذكية) — يبقى كما هو.
+
+## 6. Acceptance Checklist
+- ✅ زر AI غير موجود في `CanvasToolbar`؛ موجود بجانب `BottomToolbar` ومخفي للضيف.
+- ✅ `AIAssistantPopover` يعرض tab "محادثة" و"إنشاء".
+- ✅ `AIMenuDropdown` (الشريط الطافي) يعرض: تحويل إلى كيان / توسيع البطاقة / تحويل إلى عنصر ذكي / تلخيص.
+- ✅ نقطة Anchor تظهر على العنصر المحدد فقط؛ السحب يبدأ فوراً؛ تظليل أخضر متقطع على عنصر الهدف.
+- ✅ إفلات الموصل ينشئ سجل في `smart_connectors` + planning_element.
+- ✅ حذف عنصر طرف يحذف الموصل تلقائياً (client + DB cascade).
+- ✅ تحرير لون/نمط/اتجاه الموصل عبر panel في الشريط الطافي.
+- ✅ "تحويل إلى مشروع" ينشئ صف فعلي في `projects` ويفتحه في `/projects/:id`.
+- ✅ "توسيع" بطاقة مشروع يفتح `ProjectManagementBoard` في modal مع `layoutId` انتقال.
+- ✅ "توسيع" بطاقة مهمة يفتح `TaskDetailDrawer`.
+- ✅ `ExecutionToolsPalette` (مفتاح E) يعرض صناديق مفلترة بالصلاحيات؛ Drag يُنشئ صندوقاً تنفيذياً مرتبطاً.
+- ✅ صناديق العرض/التنفيذ/الكيانات المرتبطة لها تمييز بصري واضح (Badge + ring).
+- ✅ `useCanvasAIPermissions` يحجب AI للضيف، و `contextSanitizer` يستبعد بيانات أعلى من clearance المستخدم.
+- ✅ كل تحويل يُسجَّل في `audit_logs` بـ `action='canvas.element.converted_to_entity'`.
+
+---
+
+**ابدأ بالموجة A فوراً بعد الموافقة. الموجة B تنتظر إغلاق A. الموجة C تنتظر B. الـWorkflow Builder مؤجل.**

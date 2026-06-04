@@ -191,7 +191,19 @@ export const createElementsSlice: StateCreator<
     if (elementIds.length === 0) return;
 
     runCanvasTransaction(set, (state: any) => {
-      const idsToDelete = collectDeletionIds(Array.from(new Set(elementIds)), state.elements);
+      const baseIds = collectDeletionIds(Array.from(new Set(elementIds)), state.elements);
+      // Cascade: also delete any root_connector whose endpoint references a deleted element
+      const cascaded = new Set<string>(baseIds);
+      for (const el of state.elements as CanvasElement[]) {
+        const data = (el.data ?? {}) as Record<string, unknown>;
+        if (data.smartType !== 'root_connector') continue;
+        const startId = (data as any).startPoint?.elementId as string | undefined;
+        const endId = (data as any).endPoint?.elementId as string | undefined;
+        if ((startId && cascaded.has(startId)) || (endId && cascaded.has(endId))) {
+          cascaded.add(el.id);
+        }
+      }
+      const idsToDelete = Array.from(cascaded);
       const updatedLayers = ensureLayers(state.layers || []).map((layer: LayerInfo) => ({
         ...layer,
         elements: layer.elements.filter((id: string) => !idsToDelete.includes(id)),

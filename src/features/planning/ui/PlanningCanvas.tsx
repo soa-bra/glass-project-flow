@@ -9,6 +9,7 @@ import ToolZone from './panels/ToolZone';
 import NavigationBar from '@/features/planning/ui/toolbars/NavigationBar';
 import ContextualToolbarManager from '@/features/planning/ui/toolbars/ContextualToolbarManager';
 import { SmartCommandBar, useSmartCommandBar } from '@/features/planning/elements/smart/SmartCommandBar';
+import { AIAssistantButton } from '@/features/planning/ui/widgets/AIAssistantButton';
 import { createTypedSmartElement } from '@/features/planning/elements/smart/factories/createTypedSmartElement';
 import { executeCommandWithAuthorization } from '@/features/planning/domain/commands';
 import { useCollaborationStore } from '@/stores/collaborationStore';
@@ -311,13 +312,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       <CanvasToolbar
         board={board}
         onBack={() => setCurrentBoard(null)}
-        onOpenAI={commandBar.open}
         peers={peers}
         selfName={selfName}
         realtimeStatus={connectionStatus}
         lastSyncAt={lastSyncAt}
         canEdit={canEditBoard}
-        canUseAI={aiPermissions.canUseAI}
       />
       <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
         <div data-board-frame="true" className="flex-1 relative overflow-hidden">
@@ -332,6 +331,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         <ToolZone activeTool={activeTool} boardId={board.id} />
       </div>
       <BottomToolbar canEdit={canEditBoard} />
+      {aiPermissions.canUseAI && <AIAssistantButton />}
       <NavigationBar />
       <ContextualToolbarManager boardId={board.id} />
       <SmartCommandBar
