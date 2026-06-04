@@ -153,9 +153,9 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 
         <div className="h-5 w-px bg-sb-border" />
         <div className="relative">
-          <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-2 px-4 py-1.5 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
-            <Share2 size={18} />
-            <span className="text-[12px] font-medium">المشاركين</span>
+          <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-1.5 px-3 py-1 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
+            <Share2 size={14} />
+            <span className="text-[11px] font-medium">المشاركين</span>
           </button>
           <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} boardId={board.id} />
         </div>
