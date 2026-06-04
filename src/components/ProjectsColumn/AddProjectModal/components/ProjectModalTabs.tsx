@@ -36,6 +36,8 @@ export const ProjectModalTabs: React.FC<ProjectModalTabsProps> = ({
   onClientDataChange,
   onAddTask,
   onGenerateSmartTasks,
+  onEditTask,
+  onDeleteTask,
   onAddPartnership,
   onEditPartnership,
   onDeletePartnership,
