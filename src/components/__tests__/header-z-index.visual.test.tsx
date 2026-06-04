@@ -51,19 +51,25 @@ const getTokenValue = (name: string) => {
   return match ? Number(match[1]) : Number.NaN;
 };
 
-const expectPopoverAbovePanels = (popover: HTMLElement) => {
+const expectPopoverAbovePanels = (popover: HTMLElement, expectedZIndex = 'var(--z-popover)') => {
   const popoverZ = getTokenValue('--z-popover');
+  const modalBackdropZ = getTokenValue('--z-modal-backdrop');
   const sidebarZ = getTokenValue('--z-sidebar');
   const projectPanelZ = getTokenValue('--z-project-panel');
   const headerZ = getTokenValue('--z-header');
 
   expect(Number.isFinite(popoverZ)).toBe(true);
+  expect(Number.isFinite(modalBackdropZ)).toBe(true);
   expect(popoverZ).toBeGreaterThan(projectPanelZ);
   expect(popoverZ).toBeGreaterThan(sidebarZ);
   expect(popoverZ).toBeGreaterThan(headerZ);
-  // Runtime: inline style must resolve to var(--z-popover) so the popover
-  // actually paints above panels even if a Tailwind utility fails to compile.
-  expect(popover.style.zIndex).toBe('var(--z-popover)');
+  expect(modalBackdropZ).toBeGreaterThan(popoverZ);
+  expect(popover.style.zIndex).toBe(expectedZIndex);
+};
+
+const expectPortaledOutsideHeader = (header: HTMLElement, popover: HTMLElement) => {
+  expect(header.contains(popover)).toBe(false);
+  expect(document.body.contains(popover)).toBe(true);
 };
 
 const renderStackingScenario = () => render(
@@ -82,7 +88,7 @@ const renderStackingScenario = () => render(
 );
 
 describe('Header overlay visual z-index contract', () => {
-  it('opens search, notifications, messages, and user popovers above the project board and sidebar', async () => {
+  it('portals search, notifications, messages, and user overlays above the project board and sidebar', async () => {
     renderStackingScenario();
 
     const board = screen.getByTestId('project-management-board');
@@ -95,16 +101,32 @@ describe('Header overlay visual z-index contract', () => {
     expect(header.style.zIndex).toBe('var(--z-header)');
 
     fireEvent.click(screen.getByLabelText('بحث'));
-    await waitFor(() => expectPopoverAbovePanels(screen.getByTestId('header-search-popover')));
+    await waitFor(() => {
+      const popover = screen.getByTestId('header-search-popover');
+      expectPopoverAbovePanels(popover);
+      expectPortaledOutsideHeader(header, popover);
+    });
 
     fireEvent.click(screen.getByLabelText('الإشعارات'));
-    await waitFor(() => expectPopoverAbovePanels(screen.getByTestId('header-notifications-popover')));
+    await waitFor(() => {
+      const popover = screen.getByTestId('header-notifications-popover');
+      expectPopoverAbovePanels(popover);
+      expectPortaledOutsideHeader(header, popover);
+    });
 
     fireEvent.click(screen.getByLabelText('الرسائل'));
-    await waitFor(() => expectPopoverAbovePanels(screen.getByTestId('header-messages-popover')));
+    await waitFor(() => {
+      const popover = screen.getByTestId('header-messages-popover');
+      expectPopoverAbovePanels(popover, 'var(--z-modal-backdrop)');
+      expectPortaledOutsideHeader(header, popover);
+    });
     fireEvent.mouseDown(screen.getByTestId('header-messages-popover'));
 
     fireEvent.click(screen.getByLabelText('المستخدم'));
-    await waitFor(() => expectPopoverAbovePanels(screen.getByTestId('header-user-popover')));
+    await waitFor(() => {
+      const popover = screen.getByTestId('header-user-popover');
+      expectPopoverAbovePanels(popover);
+      expectPortaledOutsideHeader(header, popover);
+    });
   });
 });
