@@ -26,14 +26,14 @@ export default function Dock({ items, className }: DockProps) {
   return (
     <div className={cn("flex items-center justify-center w-full", className)}>
       <motion.div
-        animate={{ y: [0, -2, 0] }}
+        animate={{ y: [0, -1, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         className={cn(
-          "flex items-end gap-4 px-4 py-3 rounded-full",
+          "flex items-end gap-2 px-3 py-2 rounded-full",
           "border border-[hsl(var(--border))] bg-background/70 backdrop-blur-2xl shadow-lg"
         )}
         style={{
-          transform: "perspective(600px) rotateX(10deg)",
+          transform: "perspective(600px) rotateX(6deg)",
         }}
       >
         <TooltipProvider delayDuration={100}>
