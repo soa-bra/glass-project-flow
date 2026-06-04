@@ -242,7 +242,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           source_element_id: connector.startPoint.elementId,
           target_element_id: connector.endPoint.elementId,
           relationship_type: connector.connectionType ?? 'references',
-          connector_kind: 'root',
+          connector_kind: 'root_connector',
           label: connector.title ?? null,
           style: {
             color: connector.color ?? null,
