@@ -227,19 +227,23 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         />
       ))}
 
-      {/* Preview line while dragging */}
+      {/* Preview line while dragging — neutral grey, matches final connector */}
       {isCreatingConnector && dragStartPoint && dragCurrent && (
-        <line
-          x1={dragStartPoint.x}
-          y1={dragStartPoint.y}
-          x2={dragCurrent.x}
-          y2={dragCurrent.y}
-          stroke="hsl(var(--primary))"
-          strokeWidth={2}
-          strokeDasharray="6,4"
-          opacity={0.85}
-          className="pointer-events-none"
-        />
+        <g className="pointer-events-none">
+          <line
+            x1={dragStartPoint.x}
+            y1={dragStartPoint.y}
+            x2={dragCurrent.x}
+            y2={dragCurrent.y}
+            stroke="#0B0F12"
+            strokeWidth={1.5}
+            strokeDasharray="6,4"
+            strokeLinecap="round"
+            opacity={0.7}
+          />
+          <circle cx={dragStartPoint.x} cy={dragStartPoint.y} r={3} fill="#0B0F12" />
+          <circle cx={dragCurrent.x} cy={dragCurrent.y} r={3} fill="#0B0F12" opacity={0.6} />
+        </g>
       )}
     </g>
   );
