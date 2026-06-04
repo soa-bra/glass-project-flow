@@ -10,18 +10,19 @@
  *   10  element         عناصر الكانفس
  *   100 element-selected عنصر محدد على الكانفس
  *   500 bounding-box    إطارات التحديد
- *   600 workspace       محتوى مساحة العمل الرئيسي
- *   700 sidebar         الشريط الجانبي
- *   800 project-panel   لوحة إدارة المشروع وأي لوحات ثابتة فوق الـworkspace
- *   900 header          الهيدر العلوي
- *  1000 toolbar         أشرطة الأدوات العائمة
- *  1100 dropdown        قوائم منسدلة عادية
- *  1200 popover         قوائم الهيدر (البحث/الإشعارات/الرسائل/المستخدم)
- *                       ⚠ يجب أن تبقى أعلى من header/sidebar/project-panel
- *  1300 modal-backdrop  خلفية النوافذ المنبثقة
- *  1400 modal-content   محتوى النوافذ المنبثقة
- *  1500 tooltip         تلميحات
- *  1600 toast           إشعارات منبثقة
+ *   100 workspace       محتوى مساحة العمل الرئيسي
+ *   200 sidebar         الشريط الجانبي
+ *   300 project-panel   لوحة إدارة المشروع وأي لوحات ثابتة فوق الـworkspace
+ *   400 header          الهيدر العلوي
+ *   500 toolbar         أشرطة الأدوات العائمة
+ *  8000 dropdown        قوائم منسدلة عادية
+ *  9000 popover         قوائم الهيدر (البحث/الإشعارات/الرسائل/المستخدم)
+ *                       ⚠ أولوية popover ثابتة: أعلى من header/sidebar/project-panel
+ *                          وأقل فقط من modal/tooltip/toast.
+ * 10000 modal-backdrop  خلفية النوافذ المنبثقة
+ * 10100 modal-content   محتوى النوافذ المنبثقة
+ * 10200 tooltip         تلميحات
+ * 10300 toast           إشعارات منبثقة
  *
  * ملاحظات حرجة:
  * - أي عنصر يستخدم z-index يُنشئ stacking context؛ لذا يجب ألا
@@ -38,17 +39,17 @@
   --z-bounding-box: 500;
 
   /* App shell layers */
-  --z-workspace: 600;
-  --z-sidebar: 700;
-  --z-project-panel: 800;
-  --z-header: 900;
+  --z-workspace: 100;
+  --z-sidebar: 200;
+  --z-project-panel: 300;
+  --z-header: 400;
 
   /* Overlays */
-  --z-toolbar: 1000;
-  --z-dropdown: 1100;
-  --z-popover: 1200;
-  --z-modal-backdrop: 1300;
-  --z-modal-content: 1400;
-  --z-tooltip: 1500;
-  --z-toast: 1600;
+  --z-toolbar: 500;
+  --z-dropdown: 8000;
+  --z-popover: 9000;
+  --z-modal-backdrop: 10000;
+  --z-modal-content: 10100;
+  --z-tooltip: 10200;
+  --z-toast: 10300;
 }

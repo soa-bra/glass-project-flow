@@ -185,6 +185,7 @@ export default {
 				'toolbar': 'var(--z-toolbar)',
 				'dropdown': 'var(--z-dropdown)',
 				'popover': 'var(--z-popover)',
+				'modal': 'var(--z-modal-content)',
 				'modal-backdrop': 'var(--z-modal-backdrop)',
 				'modal-content': 'var(--z-modal-content)',
 				'tooltip': 'var(--z-tooltip)',
