@@ -88,16 +88,14 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   isConnecting,
   activeAnchor,
 }) => {
+  // Single connector anchor placed just outside the element (top-right corner area)
+  const ANCHOR_OFFSET = 16;
   const anchors: { position: AnchorPosition; x: number; y: number }[] = [
-    { position: 'top', x: bounds.x + bounds.width / 2, y: bounds.y },
-    { position: 'right', x: bounds.x + bounds.width, y: bounds.y + bounds.height / 2 },
-    { position: 'bottom', x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height },
-    { position: 'left', x: bounds.x, y: bounds.y + bounds.height / 2 },
-    { position: 'top-left', x: bounds.x, y: bounds.y },
-    { position: 'top-right', x: bounds.x + bounds.width, y: bounds.y },
-    { position: 'bottom-left', x: bounds.x, y: bounds.y + bounds.height },
-    { position: 'bottom-right', x: bounds.x + bounds.width, y: bounds.y + bounds.height },
-    { position: 'center', x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 },
+    {
+      position: 'top-right',
+      x: bounds.x + bounds.width + ANCHOR_OFFSET,
+      y: bounds.y - ANCHOR_OFFSET / 2,
+    },
   ];
 
   return (
