@@ -84,61 +84,52 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  // Four anchors at the midpoints of each edge (top, right, bottom, left).
-  // Matches Qlik / n8n visual reference: small neutral dots that appear on hover.
-  const HIT_RADIUS = 18;
-  const [hoveredAnchor, setHoveredAnchor] = useState<AnchorPosition | null>(null);
+  // Single circular anchor placed beside the selected element (logical end / right edge).
+  // Small ~4px dot; drag originates precisely from its center.
+  const HIT_RADIUS = 14;
+  const DOT_RADIUS = 4;
+  const GAP = 10;
+  const [hovered, setHovered] = useState(false);
 
-  const anchors: Array<{ pos: AnchorPosition; cx: number; cy: number }> = [
-    { pos: 'top',    cx: bounds.x + bounds.width / 2, cy: bounds.y },
-    { pos: 'right',  cx: bounds.x + bounds.width,     cy: bounds.y + bounds.height / 2 },
-    { pos: 'bottom', cx: bounds.x + bounds.width / 2, cy: bounds.y + bounds.height },
-    { pos: 'left',   cx: bounds.x,                    cy: bounds.y + bounds.height / 2 },
-  ];
+  const cx = bounds.x + bounds.width + GAP;
+  const cy = bounds.y + bounds.height / 2;
+  const pos: AnchorPosition = 'right';
 
-  const makeHandler = (a: { pos: AnchorPosition; cx: number; cy: number }) =>
-    (e: React.PointerEvent<SVGCircleElement>) => {
-      e.stopPropagation();
-      e.preventDefault();
-      onStartDrag({ elementId, x: a.cx, y: a.cy, anchorPoint: a.pos });
-    };
+  const handler = (e: React.PointerEvent<SVGCircleElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+    onStartDrag({ elementId, x: cx, y: cy, anchorPoint: pos });
+  };
+
+  const active = hovered || isConnecting;
 
   return (
     <g
-      className="connection-anchors group/anchors"
+      className="connection-anchors"
       data-anchor-element-id={elementId}
       style={{ pointerEvents: 'auto' }}
     >
-      {anchors.map((a) => {
-        const isHover = hoveredAnchor === a.pos || isConnecting;
-        return (
-          <g key={a.pos} data-anchor-position={a.pos}>
-            {/* Transparent hit area */}
-            <circle
-              cx={a.cx}
-              cy={a.cy}
-              r={HIT_RADIUS}
-              fill="transparent"
-              className="cursor-crosshair connection-anchor-hit"
-              onPointerEnter={() => setHoveredAnchor(a.pos)}
-              onPointerLeave={() => setHoveredAnchor(null)}
-              onPointerDown={makeHandler(a)}
-              onMouseDown={makeHandler(a) as unknown as React.MouseEventHandler<SVGCircleElement>}
-            />
-            {/* Visible dot — small neutral, grows + darkens on hover */}
-            <circle
-              cx={a.cx}
-              cy={a.cy}
-              r={isHover ? 6 : 4}
-              fill="#FFFFFF"
-              stroke={isHover ? '#0B0F12' : '#9CA3AF'}
-              strokeWidth={isHover ? 1.5 : 1}
-              className="connection-anchor-dot transition-all"
-              pointerEvents="none"
-            />
-          </g>
-        );
-      })}
+      <circle
+        cx={cx}
+        cy={cy}
+        r={HIT_RADIUS}
+        fill="transparent"
+        className="cursor-crosshair connection-anchor-hit"
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+        onPointerDown={handler}
+        onMouseDown={handler as unknown as React.MouseEventHandler<SVGCircleElement>}
+      />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={active ? DOT_RADIUS + 1 : DOT_RADIUS}
+        fill="#FFFFFF"
+        stroke={active ? '#0B0F12' : '#9CA3AF'}
+        strokeWidth={1}
+        className="connection-anchor-dot transition-all"
+        pointerEvents="none"
+      />
     </g>
   );
 };
@@ -156,8 +147,18 @@ interface FloatingPanelProps {
   onDelete: () => void;
   onAISuggest: () => void;
   onInsertSuggestion: (suggestion: AISuggestion) => void;
+  onPatch: (patch: Partial<RootConnectorData>) => void;
   isLoadingAI: boolean;
 }
+
+const COLOR_SWATCHES = ['#9CA3AF', '#0B0F12', '#3DA8F5', '#3DBE8B', '#F6C445', '#E5564D'];
+const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; label: string }> = [
+  { value: 'solid', label: 'متصل' },
+  { value: 'dashed', label: 'متقطع' },
+  { value: 'dotted', label: 'منقّط' },
+  { value: 'animated', label: 'متحرك' },
+];
+const WIDTH_OPTIONS = [0.5, 1, 1.5, 2];
 
 const FloatingPanel: React.FC<FloatingPanelProps> = ({
   x,
@@ -170,6 +171,7 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
   onDelete,
   onAISuggest,
   onInsertSuggestion,
+  onPatch,
   isLoadingAI,
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.title || '');
@@ -239,7 +241,86 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
               </p>
             )}
 
-            {/* AI Suggestions */}
+            {/* ===== Connector Properties Panel ===== */}
+            <div className="space-y-2 p-3 rounded-lg border border-border/60 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <Settings2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-xs font-medium">خصائص الموصل</span>
+              </div>
+
+              {/* Color */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-muted-foreground">اللون</span>
+                <div className="flex gap-1.5">
+                  {COLOR_SWATCHES.map((c) => {
+                    const active = (data.color || '#9CA3AF') === c;
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => onPatch({ color: c })}
+                        className={`h-5 w-5 rounded-full border transition-all ${active ? 'ring-2 ring-offset-1 ring-foreground/40 scale-110' : 'border-border'}`}
+                        style={{ backgroundColor: c }}
+                        aria-label={`لون ${c}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Style + Width */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground">النمط</span>
+                  <Select value={data.style || 'solid'} onValueChange={(v) => onPatch({ style: v as RootConnectorData['style'] })}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {STYLE_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] text-muted-foreground">السماكة</span>
+                  <Select value={String(data.strokeWidth ?? 0.5)} onValueChange={(v) => onPatch({ strokeWidth: parseFloat(v) })}>
+                    <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {WIDTH_OPTIONS.map((w) => (
+                        <SelectItem key={w} value={String(w)} className="text-xs">{w}px</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Relationship type */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-muted-foreground">نوع العلاقة</span>
+                <Select
+                  value={data.connectionType || 'references'}
+                  onValueChange={(v) => onPatch({ connectionType: v as UnifiedRelationshipType })}
+                >
+                  <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {UNIFIED_RELATIONSHIP_TYPES.map((t) => (
+                      <SelectItem key={t} value={t} className="text-xs">{getRelationshipTypeLabel(t)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Swap direction */}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onPatch({ startPoint: data.endPoint, endPoint: data.startPoint })}
+                className="w-full h-7 text-xs gap-1.5"
+              >
+                <ArrowRight className="h-3 w-3" />
+                عكس الاتجاه
+              </Button>
+            </div>
+
             {data.aiSuggestions && data.aiSuggestions.length > 0 && (
               <div className="space-y-2 p-3 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border border-primary/10">
                 <div className="flex items-center gap-2 mb-2">
@@ -493,14 +574,14 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
 
   const pathD = buildRoundedPath(points);
 
-  // ===== Visual style — neutral grey by default, darker on hover/select =====
-  const NEUTRAL = '#C7CDD4';
+  // ===== Visual style — thin grey by default, darker on hover/select =====
+  const NEUTRAL = '#9CA3AF';
   const ACTIVE = '#0B0F12';
   const baseStroke = data.color || NEUTRAL;
   const activeStroke = data.color || ACTIVE;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  const baseWidth = data.strokeWidth ?? 1.5;
-  const strokeWidth = isSelected ? Math.max(2, baseWidth) : baseWidth;
+  const baseWidth = data.strokeWidth ?? 0.5;
+  const strokeWidth = isSelected ? Math.max(1, baseWidth) : baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
@@ -550,23 +631,13 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         }}
       />
 
-      {/* Start endpoint dot — small, same color as line */}
-      <circle
-        cx={startX}
-        cy={startY}
-        r={3}
-        fill={strokeColor}
-        pointerEvents="none"
-      />
-
-      {/* End endpoint dot */}
-      <circle
-        cx={endX}
-        cy={endY}
-        r={3}
-        fill={strokeColor}
-        pointerEvents="none"
-      />
+      {/* Endpoint dots — only visible when selected/hovered */}
+      {(isSelected || isHovered) && (
+        <>
+          <circle cx={startX} cy={startY} r={2.5} fill={strokeColor} pointerEvents="none" />
+          <circle cx={endX} cy={endY} r={2.5} fill={strokeColor} pointerEvents="none" />
+        </>
+      )}
 
       {/* Floating info panel — only when selected or editing */}
       <AnimatePresence>
@@ -584,6 +655,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
             onDelete={() => onDelete?.()}
             onAISuggest={handleAISuggest}
             onInsertSuggestion={handleInsertSuggestion}
+            onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
             isLoadingAI={isLoadingAI}
           />
         )}
