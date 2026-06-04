@@ -94,7 +94,7 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   const saveButtonDisabled = !canSave || (!isDirty && status === 'clean');
 
   return (
-    <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-sb-border">
+    <div className="flex items-center justify-between px-4 py-1.5 bg-white border-b border-sb-border">
       <div className="flex items-center gap-4">
         <button onClick={onBack} className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors" aria-label="العودة إلى القائمة">
           <ArrowRight size={20} className="text-sb-ink" />
