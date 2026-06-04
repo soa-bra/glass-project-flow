@@ -655,6 +655,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
             onDelete={() => onDelete?.()}
             onAISuggest={handleAISuggest}
             onInsertSuggestion={handleInsertSuggestion}
+            onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
             isLoadingAI={isLoadingAI}
           />
         )}
