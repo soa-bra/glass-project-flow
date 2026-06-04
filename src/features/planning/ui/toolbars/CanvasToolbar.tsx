@@ -131,27 +131,27 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
         <span className="text-[10px] text-sb-ink-40">{saveLabel}</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <RealtimeStatusBadge status={realtimeStatus} lastSyncAt={lastSyncAt} />
 
         <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sb-panel-bg border border-sb-border"
+          className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-sb-panel-bg border border-sb-border"
           aria-label="المتعاونون النشِطون"
           dir="rtl"
         >
-          <Users size={14} className="text-sb-ink/70" />
-          <span className="text-[12px] font-semibold text-sb-ink">
+          <Users size={12} className="text-sb-ink/70" />
+          <span className="text-[11px] font-semibold text-sb-ink">
             {peers.length + 1}
           </span>
           {selfName && (
-            <span className="text-[12px] text-sb-ink/70 max-w-[140px] truncate">
+            <span className="text-[11px] text-sb-ink/70 max-w-[120px] truncate">
               أنت: {selfName}
             </span>
           )}
           <PresenceAvatars peers={peers} />
         </div>
 
-        <div className="h-6 w-px bg-sb-border" />
+        <div className="h-5 w-px bg-sb-border" />
         <div className="relative">
           <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-2 px-4 py-1.5 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
             <Share2 size={18} />
