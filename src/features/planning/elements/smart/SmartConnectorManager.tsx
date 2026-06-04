@@ -214,18 +214,50 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         />
       ))}
 
-      {/* Render all connectors */}
-      {connectors.map(connector => (
-        <RootConnector
-          key={connector.id}
-          data={connector}
-          isSelected={selectedConnectorId === connector.id}
-          onUpdate={(data) => handleUpdateConnector(connector.id, data)}
-          onDelete={() => handleDeleteConnector(connector.id)}
-          onAISuggest={() => handleAISuggest(connector)}
-          onInsertSuggestion={(suggestion) => handleInsertSuggestion(connector, suggestion)}
-        />
-      ))}
+      {/* Render all connectors — endpoints recomputed live from current element bounds */}
+      {connectors.map(connector => {
+        const resolvePoint = (p: ConnectorPoint): ConnectorPoint => {
+          const el = elements.find(e => e.id === p.elementId);
+          if (!el) return p;
+          const anchorToXY = (a: typeof p.anchorPoint) => {
+            switch (a) {
+              case 'top': return { x: el.x + el.width / 2, y: el.y };
+              case 'bottom': return { x: el.x + el.width / 2, y: el.y + el.height };
+              case 'left': return { x: el.x, y: el.y + el.height / 2 };
+              case 'right': return { x: el.x + el.width, y: el.y + el.height / 2 };
+              case 'top-left': return { x: el.x, y: el.y };
+              case 'top-right': return { x: el.x + el.width, y: el.y };
+              case 'bottom-left': return { x: el.x, y: el.y + el.height };
+              case 'bottom-right': return { x: el.x + el.width, y: el.y + el.height };
+              case 'center':
+              default: return { x: el.x + el.width / 2, y: el.y + el.height / 2 };
+            }
+          };
+          const { x, y } = anchorToXY(p.anchorPoint);
+          return { ...p, x, y };
+        };
+        const liveData: RootConnectorData = {
+          ...connector,
+          startPoint: resolvePoint(connector.startPoint),
+          endPoint: resolvePoint(connector.endPoint),
+        };
+        return (
+          <RootConnector
+            key={connector.id}
+            data={liveData}
+            isSelected={selectedConnectorId === connector.id}
+            onUpdate={(data) => handleUpdateConnector(connector.id, {
+              ...data,
+              // preserve the original anchor descriptors, never persist the resolved x/y
+              startPoint: { ...connector.startPoint, anchorPoint: data.startPoint.anchorPoint },
+              endPoint: { ...connector.endPoint, anchorPoint: data.endPoint.anchorPoint },
+            })}
+            onDelete={() => handleDeleteConnector(connector.id)}
+            onAISuggest={() => handleAISuggest(connector)}
+            onInsertSuggestion={(suggestion) => handleInsertSuggestion(connector, suggestion)}
+          />
+        );
+      })}
 
       {/* Preview line while dragging — neutral grey, matches final connector */}
       {isCreatingConnector && dragStartPoint && dragCurrent && (

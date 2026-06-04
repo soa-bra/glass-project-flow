@@ -94,12 +94,12 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   const saveButtonDisabled = !canSave || (!isDirty && status === 'clean');
 
   return (
-    <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-sb-border">
-      <div className="flex items-center gap-4">
-        <button onClick={onBack} className="p-2 hover:bg-sb-panel-bg rounded-lg transition-colors" aria-label="العودة إلى القائمة">
-          <ArrowRight size={20} className="text-sb-ink" />
+    <div className="flex items-center justify-between px-4 py-1.5 bg-white border-b border-sb-border">
+      <div className="flex items-center gap-3">
+        <button onClick={onBack} className="p-1.5 hover:bg-sb-panel-bg rounded-lg transition-colors" aria-label="العودة إلى القائمة">
+          <ArrowRight size={16} className="text-sb-ink" />
         </button>
-        <div className="h-6 w-px bg-sb-border" />
+        <div className="h-5 w-px bg-sb-border" />
         {isEditingName ? (
           <input
             type="text"
@@ -114,12 +114,12 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
               }
             }}
             autoFocus
-            className="text-[16px] font-bold text-sb-ink px-2 py-1 border border-sb-ink rounded focus:outline-none"
+            className="text-[14px] font-bold text-sb-ink px-2 py-0.5 border border-sb-ink rounded focus:outline-none"
             aria-label="اسم اللوحة"
           />
         ) : (
           <h2
-            className="text-[16px] font-bold text-sb-ink cursor-pointer hover:bg-sb-panel-bg px-2 py-1 rounded"
+            className="text-[14px] font-bold text-sb-ink cursor-pointer hover:bg-sb-panel-bg px-2 py-0.5 rounded"
             onDoubleClick={() => setIsEditingName(true)}
             tabIndex={0}
             role="button"
@@ -128,34 +128,34 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
             {board.name || 'لوحة جديدة'}
           </h2>
         )}
-        <span className="text-[11px] text-sb-ink-40">{saveLabel}</span>
+        <span className="text-[10px] text-sb-ink-40">{saveLabel}</span>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5">
         <RealtimeStatusBadge status={realtimeStatus} lastSyncAt={lastSyncAt} />
 
         <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sb-panel-bg border border-sb-border"
+          className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-sb-panel-bg border border-sb-border"
           aria-label="المتعاونون النشِطون"
           dir="rtl"
         >
-          <Users size={14} className="text-sb-ink/70" />
-          <span className="text-[12px] font-semibold text-sb-ink">
+          <Users size={12} className="text-sb-ink/70" />
+          <span className="text-[11px] font-semibold text-sb-ink">
             {peers.length + 1}
           </span>
           {selfName && (
-            <span className="text-[12px] text-sb-ink/70 max-w-[140px] truncate">
+            <span className="text-[11px] text-sb-ink/70 max-w-[120px] truncate">
               أنت: {selfName}
             </span>
           )}
           <PresenceAvatars peers={peers} />
         </div>
 
-        <div className="h-6 w-px bg-sb-border" />
+        <div className="h-5 w-px bg-sb-border" />
         <div className="relative">
-          <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-2 px-4 py-1.5 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
-            <Share2 size={18} />
-            <span className="text-[12px] font-medium">المشاركين</span>
+          <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-1.5 px-3 py-1 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">
+            <Share2 size={14} />
+            <span className="text-[11px] font-medium">المشاركين</span>
           </button>
           <SharePopover isOpen={isShareOpen} onClose={() => setIsShareOpen(false)} boardId={board.id} />
         </div>
@@ -164,53 +164,53 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 
 
         <div className="relative">
-          <button onClick={() => setIsFileMenuOpen(!isFileMenuOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <File size={18} className="text-sb-ink" />
-            <span className="text-[13px] font-medium text-sb-ink">ملف</span>
+          <button onClick={() => setIsFileMenuOpen(!isFileMenuOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <File size={14} className="text-sb-ink" />
+            <span className="text-[11px] font-medium text-sb-ink">ملف</span>
           </button>
           <FileMenuPopover isOpen={isFileMenuOpen} onClose={() => setIsFileMenuOpen(false)} />
         </div>
 
         <div className="relative">
-          <button onClick={() => setIsLayersOpen(!isLayersOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <Layers size={18} className="text-sb-ink" />
-            <span className="text-[13px] font-medium text-sb-ink">الطبقات</span>
+          <button onClick={() => setIsLayersOpen(!isLayersOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <Layers size={14} className="text-sb-ink" />
+            <span className="text-[11px] font-medium text-sb-ink">الطبقات</span>
           </button>
           <LayersMenuPopover isOpen={isLayersOpen} onClose={() => setIsLayersOpen(false)} />
         </div>
 
         <div className="relative">
-          <button onClick={() => setIsHistoryOpen(!isHistoryOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <Clock size={18} className="text-sb-ink" />
-            <span className="text-[13px] font-medium text-sb-ink">السجل</span>
+          <button onClick={() => setIsHistoryOpen(!isHistoryOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <Clock size={14} className="text-sb-ink" />
+            <span className="text-[11px] font-medium text-sb-ink">السجل</span>
           </button>
           <HistoryPopover isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} />
         </div>
 
         <div className="relative">
-          <button onClick={() => setIsPropertiesOpen(!isPropertiesOpen)} className="flex items-center gap-2 px-3 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors">
-            <Settings size={18} className="text-sb-ink" />
+          <button onClick={() => setIsPropertiesOpen(!isPropertiesOpen)} className="flex items-center gap-1.5 px-2.5 py-1 hover:bg-sb-panel-bg rounded-lg transition-colors">
+            <Settings size={14} className="text-sb-ink" />
           </button>
           <CanvasPropertiesPopover isOpen={isPropertiesOpen} onClose={() => setIsPropertiesOpen(false)} />
         </div>
 
-        <div className="h-6 w-px bg-sb-border mx-2" />
+        <div className="h-5 w-px bg-sb-border mx-1" />
 
-        <button onClick={undo} disabled={!canUndo} className={`p-2 rounded-lg transition-colors ${canUndo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
-          <RotateCcw size={18} />
+        <button onClick={undo} disabled={!canUndo} className={`p-1.5 rounded-lg transition-colors ${canUndo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
+          <RotateCcw size={14} />
         </button>
-        <button onClick={redo} disabled={!canRedo} className={`p-2 rounded-lg transition-colors ${canRedo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
-          <RotateCw size={18} />
+        <button onClick={redo} disabled={!canRedo} className={`p-1.5 rounded-lg transition-colors ${canRedo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
+          <RotateCw size={14} />
         </button>
       </div>
 
       <button
         onClick={() => void saveBoardState()}
         disabled={saveButtonDisabled}
-        className={`flex items-center gap-2 px-4 py-2 rounded-[10px] transition-opacity ${saveButtonDisabled ? 'bg-[#A7CDBD] text-white cursor-not-allowed' : 'bg-[#3DBE8B] text-white hover:opacity-90'}`}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[8px] transition-opacity ${saveButtonDisabled ? 'bg-[#A7CDBD] text-white cursor-not-allowed' : 'bg-[#3DBE8B] text-white hover:opacity-90'}`}
       >
-        <Save size={16} />
-        <span className="text-[13px] font-medium">{saveButtonLabel}</span>
+        <Save size={14} />
+        <span className="text-[11px] font-medium">{saveButtonLabel}</span>
       </button>
     </div>
   );
