@@ -2,12 +2,15 @@
  * SnapSettingsDropdown - قائمة منسدلة لخيارات السناب المتقدمة
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns, Check, Circle, LayoutGrid, Hexagon, Triangle } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 
 const SnapSettingsDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ right: 0, bottom: 0 });
   const { 
     settings, 
     toggleSnapToGrid,
@@ -22,6 +25,29 @@ const SnapSettingsDropdown: React.FC = () => {
     { id: 'isometric' as const, label: 'أيزومتري', icon: Triangle },
   ];
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const updateDropdownPosition = () => {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      setDropdownPosition({
+        right: Math.max(8, window.innerWidth - rect.right),
+        bottom: Math.max(8, window.innerHeight - rect.top + 8),
+      });
+    };
+
+    updateDropdownPosition();
+    window.addEventListener('resize', updateDropdownPosition);
+    window.addEventListener('scroll', updateDropdownPosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updateDropdownPosition);
+      window.removeEventListener('scroll', updateDropdownPosition, true);
+    };
+  }, [isOpen]);
+
   const handleGridSizeChange = (size: number) => {
     updateSettings({ gridSize: size });
   };
@@ -34,28 +60,16 @@ const SnapSettingsDropdown: React.FC = () => {
     updateSettings({ [option]: !settings[option] });
   };
 
-  return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`p-1 rounded-lg transition-colors ${
-          settings.snapToGrid 
-            ? 'bg-sb-panel-bg text-sb-ink' 
-            : 'hover:bg-sb-panel-bg text-sb-ink-40'
-        }`}
-        title="إعدادات المحاذاة التلقائية"
-      >
-        <Magnet size={12} />
-      </button>
-      
-      {isOpen && (
+  const dropdown = isOpen && typeof document !== 'undefined'
+    ? createPortal(
         <>
-          <div 
-            className="fixed inset-0 z-40" 
+          <div
+            className="fixed inset-0 z-toolbar"
             onClick={() => setIsOpen(false)}
           />
-          <div 
-            className="absolute bottom-full right-0 mb-2 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-dropdown min-w-[220px]"
+          <div
+            className="fixed bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-dropdown min-w-[220px]"
+            style={{ right: dropdownPosition.right, bottom: dropdownPosition.bottom }}
             dir="rtl"
           >
             {/* تفعيل/تعطيل السناب */}
@@ -203,8 +217,26 @@ const SnapSettingsDropdown: React.FC = () => {
               </button>
             </div>
           </div>
-        </>
-      )}
+        </>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <div className="relative">
+      <button
+        ref={buttonRef}
+        onClick={() => setIsOpen(!isOpen)}
+        className={`p-1 rounded-lg transition-colors ${
+          settings.snapToGrid 
+            ? 'bg-sb-panel-bg text-sb-ink' 
+            : 'hover:bg-sb-panel-bg text-sb-ink-40'
+        }`}
+        title="إعدادات المحاذاة التلقائية"
+      >
+        <Magnet size={12} />
+      </button>
+      {dropdown}
     </div>
   );
 };
