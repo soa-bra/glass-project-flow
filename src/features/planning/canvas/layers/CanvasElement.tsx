@@ -3,7 +3,7 @@ import { Lock } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
 import { useCollaborationStore } from '@/stores/collaborationStore';
-import { ELEMENT_LOCK_TTL_MS } from '@/services/central/planningBoards.service';
+import { getActiveElementLock, getElementLockExpiryDelayMs } from './elementLockState';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from '@/features/planning/elements/smart/SmartElementRenderer';
 import { ResizeHandle } from '@/features/planning/canvas/selection/ResizeHandle';
@@ -134,22 +134,37 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const participants = useCollaborationStore((state) => state.participants);
   const remoteLockedBy = (element as { lockedBy?: string | null }).lockedBy ?? null;
   const remoteLockedAt = (element as { lockedAt?: string | null }).lockedAt ?? null;
-  const hasActiveRemoteLock = useMemo(() => {
-    if (!remoteLockedBy) return false;
-    if (!remoteLockedAt) return true;
-    const lockedAtTime = Date.parse(remoteLockedAt);
-    if (!Number.isFinite(lockedAtTime)) return true;
-    return Date.now() - lockedAtTime <= ELEMENT_LOCK_TTL_MS;
+  const [lockClockMs, setLockClockMs] = useState(() => Date.now());
+  const activeRemoteLock = useMemo(
+    () => getActiveElementLock(remoteLockedBy, remoteLockedAt, lockClockMs),
+    [lockClockMs, remoteLockedAt, remoteLockedBy],
+  );
+
+  useEffect(() => {
+    const lock = getActiveElementLock(remoteLockedBy, remoteLockedAt);
+    if (!lock) {
+      setLockClockMs(Date.now());
+      return;
+    }
+
+    const timeoutId = window.setTimeout(
+      () => setLockClockMs(Date.now()),
+      getElementLockExpiryDelayMs(lock) + 50,
+    );
+    return () => window.clearTimeout(timeoutId);
   }, [remoteLockedAt, remoteLockedBy]);
-  const isLockedByOther = hasActiveRemoteLock && remoteLockedBy !== currentUserId;
-  const isLockedBySelf = hasActiveRemoteLock && remoteLockedBy === currentUserId;
+
+  const activeRemoteLockedBy = activeRemoteLock?.lockedBy ?? null;
+  const hasActiveRemoteLock = !!activeRemoteLockedBy;
+  const isLockedByOther = hasActiveRemoteLock && activeRemoteLockedBy !== currentUserId;
+  const isLockedBySelf = hasActiveRemoteLock && activeRemoteLockedBy === currentUserId;
   const isLayerLocked = !!elementLayer?.locked;
   const isLocked = isLayerLocked || isLockedByOther;
   const lockHolder = useMemo(() => {
-    if (!remoteLockedBy) return null;
-    return participants.find((p) => p.id === remoteLockedBy) ?? null;
-  }, [remoteLockedBy, participants]);
-  const lockHolderName = lockHolder?.name ?? (remoteLockedBy ? 'مستخدم آخر' : null);
+    if (!activeRemoteLockedBy) return null;
+    return participants.find((p) => p.id === activeRemoteLockedBy) ?? null;
+  }, [activeRemoteLockedBy, participants]);
+  const lockHolderName = lockHolder?.name ?? (activeRemoteLockedBy ? 'مستخدم آخر' : null);
   const lockHolderColor = lockHolder?.color ?? 'hsl(var(--accent-red))';
   const lockHolderAvatar = lockHolder?.avatar;
   const lockHolderInitial = (lockHolderName ?? '?').trim().charAt(0).toUpperCase() || '?';
