@@ -77,6 +77,26 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
       },
     }));
   };
+  const dispatchSuggestConversion = (targetEntityType: 'project' | 'task') => {
+    const title = readString(data.title)
+      ?? readString(data.name)
+      ?? readString(data.projectName)
+      ?? readString(data.taskName)
+      ?? (targetEntityType === 'project' ? 'مشروع من التخطيط' : 'مهمة من التخطيط');
+
+    window.dispatchEvent(new CustomEvent('planning:smart-conversion-suggested', {
+      detail: {
+        targetEntityType,
+        sourceElementIds: [element.id],
+        suggestedData: {
+          ...data,
+          title,
+          name: title,
+          description: readString(data.description) ?? title,
+        },
+      },
+    }));
+  };
 
   // ThinkingBoard
   if (smartType === 'thinking_board') {
@@ -184,6 +204,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
       <SmartProjectCard 
         data={data as any}
         onExpand={linkedEntityId ? () => dispatchOpenExecution('project') : undefined}
+        onConvert={!linkedEntityId ? () => dispatchSuggestConversion('project') : undefined}
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />
     );
@@ -195,6 +216,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
       <TaskCard
         data={data as any}
         onExpand={linkedEntityId ? () => dispatchOpenExecution('task') : undefined}
+        onConvert={!linkedEntityId ? () => dispatchSuggestConversion('task') : undefined}
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })}
       />
     );
