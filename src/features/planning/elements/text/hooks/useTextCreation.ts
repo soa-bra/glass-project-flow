@@ -6,9 +6,9 @@
  */
 
 import { useCallback } from 'react';
-import { nanoid } from 'nanoid';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
+import { createPlanningElementId } from '@/features/planning/state/createPlanningElementId';
 import { DEFAULT_TEXT_ELEMENT, type TextType } from '../TextElement';
 
 interface CreateTextOptions {
@@ -61,7 +61,7 @@ export function useTextCreation(): UseTextCreationReturn {
     y: number, 
     options: CreateTextOptions = {}
   ): string => {
-    const id = nanoid();
+    const id = createPlanningElementId();
     const textSettings = toolSettings.text;
     
     const {

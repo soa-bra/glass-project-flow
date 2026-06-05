@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
+import { TextElement } from '@/features/planning/elements/text/TextElement';
 import { createElementsSlice } from './elementsSlice';
 import { createToolsSlice } from './toolsSlice';
 import { createPenSlice } from './penSlice';
@@ -70,5 +71,12 @@ describe('planning element ids', () => {
     expect(textId).toMatch(UUID_RE);
     expect(strokeId).toMatch(UUID_RE);
     expect(store.getState().elements.find((element) => element.id === textId)?.id).toMatch(UUID_RE);
+  });
+
+  it('creates persistable UUID ids for TextElement instances', () => {
+    const textElement = new TextElement(12, 24, { text: 'ملاحظة' });
+
+    expect(textElement.id).toMatch(UUID_RE);
+    expect(textElement.toJSON().id).toBe(textElement.id);
   });
 });

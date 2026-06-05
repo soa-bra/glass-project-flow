@@ -5,7 +5,7 @@
  * @module features/planning/elements/text/TextElement
  */
 
-import { nanoid } from 'nanoid';
+import { createPlanningElementId } from '@/features/planning/state/createPlanningElementId';
 
 export type TextType = 'line' | 'box' | 'attached';
 export type TextAlign = 'left' | 'center' | 'right';
@@ -139,7 +139,7 @@ export class TextElement implements TextElementData {
     y: number,
     options: Partial<Omit<TextElementData, 'id' | 'x' | 'y'>> = {}
   ) {
-    this.id = nanoid();
+    this.id = createPlanningElementId();
     this.x = x;
     this.y = y;
     
