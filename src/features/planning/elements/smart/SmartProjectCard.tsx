@@ -1,6 +1,7 @@
 import React from 'react';
-import { FolderKanban, CheckCircle2, Clock, Users, TrendingUp } from 'lucide-react';
+import { FolderKanban, CheckCircle2, Clock, Users, TrendingUp, Maximize2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface ProjectCardData {
@@ -21,6 +22,7 @@ interface ProjectCardData {
 interface ProjectCardProps {
   data: ProjectCardData;
   onUpdate: (data: Partial<ProjectCardData>) => void;
+  onExpand?: () => void;
 }
 
 const STATUS_CONFIG = {
@@ -31,7 +33,7 @@ const STATUS_CONFIG = {
   cancelled: { label: 'ملغي', color: 'bg-red-500', textColor: 'text-red-600' },
 };
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ data, onExpand }) => {
   const projectName = data.projectName || 'مشروع جديد';
   const status = data.status || 'planning';
   const totalTasks = data.totalTasks || 0;
@@ -53,12 +55,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
     <div className="w-full h-full flex flex-col bg-background rounded-lg border border-border overflow-hidden" dir="rtl">
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-border bg-panel">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
             <FolderKanban className="h-4 w-4 text-primary" />
           </div>
-          <div>
-            <h3 className="font-semibold text-foreground text-sm">{projectName}</h3>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-foreground text-sm truncate">{projectName}</h3>
             <div className="flex items-center gap-1">
               <span className={cn("w-2 h-2 rounded-full", statusConfig.color)} />
               <span className={cn("text-xs", statusConfig.textColor)}>{statusConfig.label}</span>
@@ -66,12 +68,31 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ data }) => {
           </div>
         </div>
         
-        {budget > 0 && (
-          <div className="text-left">
-            <p className="text-xs text-muted-foreground">الميزانية</p>
-            <p className="font-bold text-sm">{budget.toLocaleString('ar-SA')} ﷼</p>
-          </div>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {budget > 0 && (
+            <div className="text-left">
+              <p className="text-xs text-muted-foreground">الميزانية</p>
+              <p className="font-bold text-sm">{budget.toLocaleString('ar-SA')} ﷼</p>
+            </div>
+          )}
+          {onExpand && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              title="توسيع المشروع"
+              aria-label="توسيع المشروع"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onExpand();
+              }}
+            >
+              <Maximize2 className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Stats Grid */}
