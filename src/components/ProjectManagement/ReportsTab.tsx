@@ -11,14 +11,10 @@ interface ReportsTabProps {
 }
 
 export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
-  const mockReports = [
-    { id: '1', name: 'تقرير سير المشروع الشهري', type: 'progress', generatedDate: '2024-01-25', size: '2.1 MB', format: 'PDF', status: 'ready' },
-    { id: '2', name: 'تحليل الأداء المالي', type: 'financial', generatedDate: '2024-01-24', size: '1.8 MB', format: 'Excel', status: 'ready' },
-    { id: '3', name: 'تقرير كفاءة الفريق', type: 'team', generatedDate: '2024-01-23', size: '1.5 MB', format: 'PDF', status: 'ready' },
-    { id: '4', name: 'تقييم رضا العميل', type: 'client', generatedDate: '2024-01-22', size: '1.2 MB', format: 'PDF', status: 'ready' },
-  ];
+  // تأتي التقارير والإحصائيات من الباك إند — تبدأ فارغة/صفر
+  const mockReports: Array<{ id: string; name: string; type: string; generatedDate: string; size: string; format: string; status: string }> = [];
 
-  const reportStats = { totalReports: 15, thisMonth: 4, avgGenTime: '2.3', exportCount: 28 };
+  const reportStats = { totalReports: 0, thisMonth: 0, avgGenTime: '0', exportCount: 0 };
 
   return (
     <div className="space-y-6">
