@@ -627,6 +627,10 @@ const HeaderBar = () => {
   const openOnly = (overlay: HeaderOverlay) => {
     if (overlay === 'search') {
       setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
+      // إعادة قياس الموضع بعد انتهاء انيميشن توسيع كبسولة البحث (duration-300)
+      window.setTimeout(() => {
+        setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
+      }, 320);
     }
 
     if (overlay === 'notifications') {
