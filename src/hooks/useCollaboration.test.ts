@@ -7,7 +7,17 @@ import { useCanvasStore } from '@/stores/canvasStore';
 const addElement = vi.fn();
 const updateElement = vi.fn();
 const deleteElement = vi.fn();
-let initializeOptions: any;
+
+type RemoteElementChange = {
+  type: 'element_created' | 'element_updated' | 'element_deleted' | 'element_moved' | 'element_resized';
+  payload: Record<string, unknown>;
+};
+
+type InitializeOptions = {
+  onRemoteElementChange: (event: RemoteElementChange) => void;
+};
+
+let initializeOptions: InitializeOptions | undefined;
 
 vi.mock('@/stores/canvasStore', () => ({
   useCanvasStore: {
@@ -22,7 +32,7 @@ vi.mock('@/stores/canvasStore', () => ({
 
 vi.mock('@/engine/canvas/collaboration/collaborationEngine', () => ({
   collaborationEngine: {
-    initialize: vi.fn((options) => {
+    initialize: vi.fn((options: InitializeOptions) => {
       initializeOptions = options;
     }),
     joinBoard: vi.fn().mockResolvedValue(undefined),
@@ -54,7 +64,7 @@ describe('useCollaboration legacy element sync guard', () => {
 
     await waitFor(() => expect(initializeOptions).toBeDefined());
 
-    initializeOptions.onRemoteElementChange({
+    initializeOptions?.onRemoteElementChange({
       type: 'element_created',
       payload: { element: { id: 'element-1', type: 'sticky_note' } },
     });
@@ -77,7 +87,7 @@ describe('useCollaboration legacy element sync guard', () => {
 
     await waitFor(() => expect(result.current.isConnected).toBe(true));
 
-    initializeOptions.onRemoteElementChange({
+    initializeOptions?.onRemoteElementChange({
       type: 'element_updated',
       payload: { elementId: 'element-1', updates: { position: { x: 10, y: 20 } } },
     });
