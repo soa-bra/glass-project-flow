@@ -61,26 +61,25 @@ export const BudgetBox: React.FC<BudgetCardProps> = ({ project }) => {
           </svg>
         </div>
 
-        {/* Stats row — contained, no absolute positioning */}
+        {/* Stats row — تعرض أصفار حتى تتوفر البيانات الحقيقية */}
         <div className="flex justify-center gap-6 flex-shrink-0 flex-wrap">
           <div className="text-center">
-            <div className="text-2xl font-bold text-black">02</div>
-            <div className="text-xs text-black font-arabic">مثال</div>
+            <div className="text-2xl font-bold text-black">00</div>
+            <div className="text-xs text-black font-arabic">المصروف</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-black">14</div>
-            <div className="text-xs text-black font-arabic">مثال</div>
+            <div className="text-2xl font-bold text-black">00</div>
+            <div className="text-xs text-black font-arabic">الفواتير</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-black">{Math.round(remainingAmount / 1000)}</div>
-            <div className="text-xs text-black font-arabic">مثال</div>
+            <div className="text-xs text-black font-arabic">المتبقي (ألف)</div>
           </div>
         </div>
 
-        {/* Footer text — contained */}
+        {/* Footer text */}
         <div className="text-center flex-shrink-0">
-          <div className="text-xs text-black font-arabic">هذا النص مثال للشكل النهائي</div>
-          <div className="text-xs text-black font-arabic">هذا النص مثال</div>
+          <div className="text-xs text-black font-arabic">لا توجد بيانات مالية مرتبطة بعد</div>
         </div>
       </div>
     </BaseBox>
