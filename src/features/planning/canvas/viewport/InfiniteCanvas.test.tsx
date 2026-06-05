@@ -22,7 +22,9 @@ const mockHandleEndConnection = vi.fn();
 const mockCancelConnection = vi.fn();
 const mockUpdateConnectionPosition = vi.fn();
 const mockHandleStartConnection = vi.fn();
-const mockRealtimeSyncManager = vi.fn();
+const mockPresenceCursors = vi.fn();
+const mockBroadcastCursor = vi.fn();
+const boxSelectSelector = vi.hoisted(() => Symbol('box-select-selector'));
 
 const canvasState: any = {
   elements: [
@@ -50,7 +52,6 @@ const interactionState: any = {
   isMode: vi.fn((kind: string) => kind === interactionState.mode.kind),
 };
 
-const boxSelectSelector = Symbol('box-select-selector');
 const boxSelectData = {
   startWorld: { x: 10, y: 20 },
   currentWorld: { x: 30, y: 50 },
@@ -66,6 +67,15 @@ const connectionRef = {
   },
 };
 
+const remotePeer = {
+  user_id: 'peer-1',
+  display_name: 'Remote User',
+  color: '#3DBE8B',
+  cursor: { x: 120, y: 180 },
+  selected_element_ids: [],
+  last_seen_at: Date.now(),
+};
+
 vi.mock('@/stores/canvasStore', () => {
   const useCanvasStore = vi.fn((selector: (state: any) => unknown) => selector(canvasState));
   (useCanvasStore as any).getState = () => ({ editingTextId: null, stopEditingText: vi.fn() });
@@ -73,8 +83,9 @@ vi.mock('@/stores/canvasStore', () => {
 });
 
 vi.mock('@/stores/interactionStore', () => ({
-  useInteractionStore: vi.fn((selector: any) => {
+  useInteractionStore: vi.fn((selector?: any) => {
     if (selector === boxSelectSelector) return boxSelectData;
+    if (typeof selector !== 'function') return interactionState;
     return selector(interactionState);
   }),
   selectBoxSelectData: boxSelectSelector,
@@ -148,19 +159,6 @@ vi.mock('@/features/planning/canvas/controllers/useCanvasSelectionController', (
   }),
 }));
 
-vi.mock('@/features/planning/canvas/controllers/useCanvasRealtimeController', () => ({
-  useCanvasRealtimeController: () => ({
-    realtimeProps: {
-      boardId: 'board-123',
-      userId: 'user-1',
-      userName: 'Dr. Osama',
-      enabled: true,
-      viewport: canvasState.viewport,
-      onSyncStatusChange: vi.fn(),
-    },
-  }),
-}));
-
 vi.mock('@/features/planning/canvas/layers/CanvasElement', () => ({
   default: ({ element, isSelected, activeTool }: any) => (
     <div data-testid="canvas-element">
@@ -183,10 +181,10 @@ vi.mock('@/features/planning/canvas', async () => {
 });
 vi.mock('@/components/ui/penToolbar', () => ({ PenFloatingToolbar: ({ isVisible }: any) => <div data-testid="pen-toolbar">{String(isVisible)}</div> }));
 vi.mock('@/features/planning/canvas/viewport/CanvasGridLayer', () => ({ CanvasGridLayer: () => <div data-testid="grid-layer" /> }));
-vi.mock('@/features/planning/integration/collaboration', () => ({
-  RealtimeSyncManager: (props: any) => {
-    mockRealtimeSyncManager(props);
-    return <div data-testid="realtime-sync" />;
+vi.mock('@/features/planning/ui/collaboration', () => ({
+  PresenceCursors: (props: any) => {
+    mockPresenceCursors(props);
+    return <div data-testid="presence-cursors" />;
   },
 }));
 vi.mock('@/features/planning/elements/mindmap/MindMapConnectionLine', () => ({ default: () => <div data-testid="mindmap-connection-line" /> }));
@@ -198,21 +196,31 @@ describe('InfiniteCanvas', () => {
     connectionRef.current.isConnecting = false;
     connectionRef.current.nearestAnchor = null;
     canvasState.activeTool = 'selection_tool';
+    mockUpdatePointerFromClient.mockReturnValue({ x: 88, y: 144 });
   });
 
-  it('renders the canvas shell, visible elements, overlays, and realtime manager', () => {
-    render(<InfiniteCanvas boardId="board-123" />);
+  it('renders the canvas shell, visible elements, overlays, and official presence cursors', () => {
+    render(<InfiniteCanvas boardId="board-123" peers={[remotePeer]} />);
 
     expect(screen.getAllByTestId('canvas-element')).toHaveLength(2);
     expect(screen.getByTestId('grid-layer')).toBeInTheDocument();
     expect(screen.getByTestId('strokes-layer')).toBeInTheDocument();
     expect(screen.getByTestId('drawing-preview')).toBeInTheDocument();
-    expect(screen.getByTestId('selection-box')).toBeInTheDocument();
     expect(screen.getByTestId('snap-guides')).toBeInTheDocument();
-    expect(screen.getByTestId('realtime-sync')).toBeInTheDocument();
-    expect(mockRealtimeSyncManager).toHaveBeenCalledWith(
-      expect.objectContaining({ boardId: 'board-123', userId: 'user-1', userName: 'Dr. Osama' }),
+    expect(screen.getByTestId('presence-cursors')).toBeInTheDocument();
+    expect(mockPresenceCursors).toHaveBeenCalledWith(
+      expect.objectContaining({ peers: [remotePeer] }),
     );
+  });
+
+  it('broadcasts pointer movement through the official planning realtime cursor path', () => {
+    render(<InfiniteCanvas boardId="board-123" broadcastCursor={mockBroadcastCursor} />);
+    const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
+
+    fireEvent.mouseMove(container, { clientX: 130, clientY: 170 });
+
+    expect(mockUpdatePointerFromClient).toHaveBeenCalledWith(130, 170);
+    expect(mockBroadcastCursor).toHaveBeenCalledWith(88, 144);
   });
 
   it('starts panning on alt + primary mouse down', () => {
