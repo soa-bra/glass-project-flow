@@ -78,7 +78,12 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
           </Button>
         </div>
         <div className="space-y-3">
-          {mockReports.map(report => (
+          {mockReports.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <FileText className="w-8 h-8 text-[rgba(11,15,18,0.25)] mb-2" />
+              <div className="text-sm text-[rgba(11,15,18,0.55)]">لا توجد تقارير بعد. أنشئ تقريراً جديداً للبدء.</div>
+            </div>
+          ) : mockReports.map(report => (
             <div key={report.id} className="rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] p-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center">
