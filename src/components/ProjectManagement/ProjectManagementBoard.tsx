@@ -253,7 +253,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
   const isPlanningCanvasPresentation = presentation === 'planning-canvas';
   const panelClassName = isPlanningCanvasPresentation
-    ? 'fixed inset-0 z-dropdown md:inset-y-4 md:left-4 md:right-auto md:w-[min(1120px,calc(100vw-2rem))]'
+    ? 'fixed inset-0 z-popover md:inset-y-4 md:left-4 md:right-auto md:w-[min(1120px,calc(100vw-2rem))]'
     : `fixed z-project-panel ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`;
   const panelStyle: CSSProperties = isPlanningCanvasPresentation
     ? {
