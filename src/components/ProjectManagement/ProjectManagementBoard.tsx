@@ -253,7 +253,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
   const isPlanningCanvasPresentation = presentation === 'planning-canvas';
   const panelClassName = isPlanningCanvasPresentation
-    ? 'fixed inset-0 z-modal-content md:inset-y-4 md:left-4 md:right-auto md:w-[min(1120px,calc(100vw-2rem))]'
+    ? 'fixed inset-0 z-dropdown md:inset-y-4 md:left-4 md:right-auto md:w-[min(1120px,calc(100vw-2rem))]'
     : `fixed z-project-panel ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`;
   const panelStyle: CSSProperties = isPlanningCanvasPresentation
     ? {
@@ -280,7 +280,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
       };
 
   return <>
-      {isPlanningCanvasPresentation && <div className="fixed inset-0 z-modal-backdrop bg-black/30 backdrop-blur-sm" onClick={onClose} />}
+      {isPlanningCanvasPresentation && <div className="fixed inset-0 z-toolbar bg-black/30 backdrop-blur-sm" onClick={onClose} />}
       <div data-testid="project-management-board" className={cn(panelClassName, isPlanningCanvasPresentation && 'shadow-2xl')} style={panelStyle}>
         {/* الرأس */}
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
