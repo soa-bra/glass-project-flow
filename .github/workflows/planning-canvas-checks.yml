@@ -54,6 +54,7 @@ jobs:
           npm test -- --run
           src/features/planning/hooks/useBoardCanvasLifecycle.test.tsx
           src/features/planning/hooks/useBoardSaveState.test.tsx
+          src/features/planning/hooks/usePlanningCanvasPersistence.test.tsx
           src/features/planning/hooks/usePlanningElementPersistence.test.tsx
           src/features/planning/hooks/usePlanningStoreSync.test.tsx
           src/features/planning/hooks/useCurrentBoardRole.test.ts
