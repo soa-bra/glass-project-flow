@@ -58,7 +58,7 @@ const glassStyle = {
 };
 
 const notificationMenuWidth = 320;
-const searchMenuWidth = 300;
+const searchMenuWidth = 270;
 const userMenuWidth = 224;
 const notificationViewportGap = 12;
 
@@ -428,7 +428,7 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
         selector: `#${element.id}`,
       };
     })
-    .filter((item): item is SearchItem => Boolean(item));
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return values.filter((item) =>
     item.requiredPermissions.every((permission) => permissions.includes(permission)),
@@ -627,6 +627,10 @@ const HeaderBar = () => {
   const openOnly = (overlay: HeaderOverlay) => {
     if (overlay === 'search') {
       setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
+      // إعادة قياس الموضع بعد انتهاء انيميشن توسيع كبسولة البحث (duration-300)
+      window.setTimeout(() => {
+        setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
+      }, 320);
     }
 
     if (overlay === 'notifications') {
@@ -765,7 +769,7 @@ const HeaderBar = () => {
                       exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                       transition={{ duration: 0.25, ease: 'easeOut' }}
                       data-testid="header-search-popover"
-                      className="fixed max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
+                      className="fixed max-h-[430px] w-[270px] overflow-y-auto rounded-[26px] p-2"
                       style={{
                         ...glassStyle,
                         top: searchMenuPosition.top,
@@ -843,7 +847,7 @@ const HeaderBar = () => {
                             {notifications.map((notification) => (
                               <div
                                 key={notification.id}
-                                dir="ltr"
+                                dir="rtl"
                                 className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
                               >
                                 <button
