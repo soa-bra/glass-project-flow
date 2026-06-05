@@ -843,7 +843,7 @@ const HeaderBar = () => {
                             {notifications.map((notification) => (
                               <div
                                 key={notification.id}
-                                dir="ltr"
+                                dir="rtl"
                                 className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
                               >
                                 <button
