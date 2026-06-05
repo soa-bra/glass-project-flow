@@ -28,7 +28,7 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
 
       {/* تحليل الأداء + النظرة المالية: صف واحد */}
       <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
-        <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="94%" description="معدل الإنجاز" trend="+12%" chartType="line" />
+        <AISuggestedPerformanceBox type="analytics" title="تحليل الأداء" metric="0%" description="معدل الإنجاز" trend="—" chartType="line" />
       </AppGridItem>
 
       <AppGridItem colSpan={4} rowSpan={2} tabletSpan={3} className="min-h-[280px]">
@@ -37,16 +37,16 @@ export const ProjectCardGrid: React.FC<ProjectCardGridProps> = ({
 
       {/* أداء الفريق + الأهداف */}
       <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
-        <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="23" description="عضو نشط" trend="+5 جدد" chartType="bar" />
+        <AISuggestedPerformanceBox type="team" title="أداء الفريق" metric="0" description="عضو نشط" trend="—" chartType="bar" />
       </AppGridItem>
 
       {/* الأهداف + التقارير */}
       <AppGridItem colSpan={3} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
-        <AISuggestedPerformanceBox type="goals" title="الأهداف" metric="7/10" description="أهداف محققة" trend="3 متبقية" chartType="pie" />
+        <AISuggestedPerformanceBox type="goals" title="الأهداف" metric="0/0" description="أهداف محققة" trend="—" chartType="pie" />
       </AppGridItem>
 
       <AppGridItem colSpan={4} rowSpan={1} tabletSpan={3} className="min-h-[140px]">
-        <AISuggestedPerformanceBox type="reports" title="التقارير" metric="8" description="تقارير جاهزة" trend="3 جديدة" chartType="donut" />
+        <AISuggestedPerformanceBox type="reports" title="التقارير" metric="0" description="تقارير جاهزة" trend="—" chartType="donut" />
       </AppGridItem>
     </AppDashboardGrid>
   );
