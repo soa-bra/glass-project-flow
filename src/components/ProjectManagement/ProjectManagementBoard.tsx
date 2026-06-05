@@ -187,7 +187,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">عضو</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">ومعدل الانجاز العام 94٪</div>
+                      <div className="text-xs font-Regular text-black font-arabic">معدل الإنجاز العام —</div>
                     </Stagger.Item>
                   </Stagger>
                 </div>
