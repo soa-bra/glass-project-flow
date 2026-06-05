@@ -84,18 +84,16 @@ export function calculateContextSmartMenuPosition(
   boardFrameOffset: BoardFrameOffset = { left: 0, top: 0 },
 ): { x: number; y: number } {
   let minX = Infinity, minY = Infinity;
-  let maxX = -Infinity, maxY = -Infinity;
+  let maxX = -Infinity;
 
   selectedElements.forEach(el => {
     const x = el.position?.x || 0;
     const y = el.position?.y || 0;
     const width = el.size?.width || 100;
-    const height = el.size?.height || 100;
 
     minX = Math.min(minX, x);
     minY = Math.min(minY, y);
     maxX = Math.max(maxX, x + width);
-    maxY = Math.max(maxY, y + height);
   });
 
   const screenX = boardFrameOffset.left + ((minX + maxX) / 2) * viewport.zoom + viewport.pan.x;
