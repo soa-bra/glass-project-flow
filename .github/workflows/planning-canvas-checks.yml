@@ -58,6 +58,7 @@ jobs:
           npm test -- --run
           src/features/planning/canvas/layers/elementLockState.test.ts
           src/features/planning/canvas/viewport/InfiniteCanvas.test.tsx
+          src/features/planning/elements/smart/ContextSmartMenu.test.ts
           src/features/planning/hooks/useBoardCanvasLifecycle.test.tsx
           src/features/planning/hooks/useBoardSaveState.test.tsx
           src/features/planning/hooks/usePlanningCanvasPersistence.test.tsx
