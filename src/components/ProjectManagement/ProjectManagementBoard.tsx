@@ -173,7 +173,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">يوم</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
+                      <div className="text-xs font-Regular text-black font-arabic">لا توجد مهام متبقية</div>
                     </Stagger.Item>
 
                     {/* المشاريع المتأخرة */}
