@@ -307,12 +307,13 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   const handleSuggestConversion = async (targetEntityType: 'project' | 'task') => {
     if (!ensureSelectionWithinLimit() || !ensureAIAllowed()) return;
 
+    const checkedBoardId = boardId;
     const checkedSourceElementIds = [...selectedElementIds];
     const selectionText = getSelectionText();
 
     setIsTransforming(true);
     try {
-      const selectionPersisted = await areContextSmartMenuSelectionIdsPersisted(boardId, checkedSourceElementIds);
+      const selectionPersisted = await areContextSmartMenuSelectionIdsPersisted(checkedBoardId, checkedSourceElementIds);
       if (!selectionPersisted) {
         toast.error('لا يمكن تحويل عناصر لم تكتمل مزامنتها بعد', {
           description: 'انتظر اكتمال حفظ اللوحة ثم أعد محاولة التحويل.',
@@ -325,6 +326,7 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
       window.dispatchEvent(new CustomEvent('planning:smart-conversion-suggested', {
         detail: {
           targetEntityType,
+          sourceBoardId: checkedBoardId,
           sourceElementIds: checkedSourceElementIds,
           suggestedData: {
             title,
