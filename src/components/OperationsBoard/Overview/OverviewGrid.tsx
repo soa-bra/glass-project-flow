@@ -14,7 +14,8 @@ import {
 } from './index';
 
 export const OverviewGrid: React.FC = () => {
-  const mockHRData = { members: 24, vacancies: 3, onLeave: 2 };
+  // تم مسح بيانات الموظفين الوهمية — تعرض الكبسولة أصفارًا حتى ربطها ببيانات حقيقية.
+  const mockHRData = { members: 0, vacancies: 0, onLeave: 0 };
   const mockMarketingData = { roas: 4.2, activeCampaigns: 8, conversion: 12 };
   const mockReportsData = { totalReports: 15, pendingReports: 4, completedReports: 11 };
   const mockCustomersData = { totalClients: 45, newClients: 6, satisfaction: 92 };
