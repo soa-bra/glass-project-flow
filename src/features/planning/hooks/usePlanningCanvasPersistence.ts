@@ -18,8 +18,12 @@ export function usePlanningCanvasPersistence(
   options: UsePlanningCanvasPersistenceOptions,
 ) {
   const sync = usePlanningStoreSync(boardId, options.selfDisplayName);
-  usePlanningElementPersistence(boardId, options.canPersist);
-  return sync;
+  const persistence = usePlanningElementPersistence(boardId, options.canPersist);
+
+  return {
+    ...sync,
+    persistence,
+  };
 }
 
 export default usePlanningCanvasPersistence;
