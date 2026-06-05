@@ -55,7 +55,7 @@ const SnapSettingsDropdown: React.FC = () => {
             onClick={() => setIsOpen(false)}
           />
           <div 
-            className="absolute bottom-full right-0 mb-2 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-toolbar min-w-[220px]"
+            className="absolute bottom-full right-0 mb-2 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-dropdown min-w-[220px]"
             dir="rtl"
           >
             {/* تفعيل/تعطيل السناب */}
