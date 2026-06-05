@@ -47,6 +47,9 @@ const ICONS: Record<string, React.ElementType> = {
   root_connector: Link2,
 };
 
+const readString = (value: unknown): string | undefined =>
+  typeof value === 'string' && value.trim() ? value : undefined;
+
 export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({ 
   element, 
   onUpdate 
@@ -59,6 +62,21 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   const { getSmartElementData } = useSmartElementsStore();
   const storedData = smartElementId ? getSmartElementData(smartElementId) : null;
   const data = storedData || element.data || {};
+  const metadata = element.metadata ?? {};
+  const linkedEntityId = readString(data.linkedEntityId) ?? readString(metadata.linkedEntityId);
+  const dispatchOpenExecution = (entityType: 'project' | 'task') => {
+    if (!linkedEntityId) return;
+    window.dispatchEvent(new CustomEvent('planning:open-execution', {
+      detail: {
+        entityType,
+        entityId: linkedEntityId,
+        data: {
+          sourceElementId: element.id,
+          sourceSmartType: smartType,
+        },
+      },
+    }));
+  };
 
   // ThinkingBoard
   if (smartType === 'thinking_board') {
@@ -164,7 +182,8 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   if (smartType === 'project_card') {
     return (
       <SmartProjectCard 
-        data={data as any} 
+        data={data as any}
+        onExpand={linkedEntityId ? () => dispatchOpenExecution('project') : undefined}
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
       />
     );
@@ -175,6 +194,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
     return (
       <TaskCard
         data={data as any}
+        onExpand={linkedEntityId ? () => dispatchOpenExecution('task') : undefined}
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })}
       />
     );
