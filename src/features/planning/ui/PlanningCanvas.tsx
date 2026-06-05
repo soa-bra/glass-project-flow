@@ -39,6 +39,7 @@ type ExecutionTarget = {
   data?: Record<string, unknown>;
 };
 type SmartConversionSuggestion = Pick<SmartConversionPayload, 'targetEntityType' | 'suggestedData'> & {
+  sourceBoardId?: string | null;
   sourceElementIds?: string[];
 };
 
@@ -215,6 +216,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   const handleSmartConversionSuggested = useCallback(
     (suggestion: SmartConversionSuggestion) => {
+      if (suggestion.sourceBoardId && suggestion.sourceBoardId !== board.id) return;
+
       const sourceElementIds = suggestion.sourceElementIds ?? selectedElementIds;
 
       if (sourceElementIds.length === 0) {
