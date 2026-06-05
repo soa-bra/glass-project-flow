@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { Trash2, Archive, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ProjectManagementHeader } from './ProjectManagementHeader';
@@ -11,6 +12,7 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
+import { cn } from '@/lib/utils';
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
@@ -19,6 +21,7 @@ interface ProjectManagementBoardProps {
   onProjectUpdated?: (project: ProjectData) => void;
   onProjectDeleted?: (projectId: string) => void;
   onProjectArchived?: (projectId: string) => void;
+  presentation?: 'default' | 'planning-canvas';
 }
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
@@ -27,7 +30,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   isSidebarCollapsed,
   onProjectUpdated,
   onProjectDeleted,
-  onProjectArchived
+  onProjectArchived,
+  presentation = 'default'
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
@@ -246,19 +250,38 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         return null;
     }
   };
+
+  const isPlanningCanvasPresentation = presentation === 'planning-canvas';
+  const panelClassName = isPlanningCanvasPresentation
+    ? 'fixed inset-0 z-project-panel md:inset-y-4 md:left-4 md:right-auto md:w-[min(1120px,calc(100vw-2rem))]'
+    : `fixed z-project-panel ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`;
+  const panelStyle: CSSProperties = isPlanningCanvasPresentation
+    ? {
+        borderRadius: 'clamp(0px, 2vw, 24px)',
+        background: 'var(--sb-column-3-bg)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        transition: 'all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)',
+        padding: 'clamp(12px, 2vw, 24px)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }
+    : {
+        top: 'var(--sidebar-top-offset)',
+        height: 'calc(100vh - var(--sidebar-top-offset))',
+        borderRadius: '24px',
+        background: 'var(--sb-column-3-bg)',
+        border: '1px solid rgba(255,255,255,0.2)',
+        transition: 'all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)',
+        padding: '24px',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      };
+
   return <>
-      <div data-testid="project-management-board" className={`fixed z-project-panel ${isSidebarCollapsed ? 'project-details-collapsed' : 'project-details-expanded'}`} style={{
-      top: "var(--sidebar-top-offset)",
-      height: "calc(100vh - var(--sidebar-top-offset))",
-      borderRadius: "24px",
-      background: "var(--sb-column-3-bg)",
-      border: "1px solid rgba(255,255,255,0.2)",
-      transition: "all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)",
-      padding: "24px",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden"
-    }}>
+      {isPlanningCanvasPresentation && <div className="fixed inset-0 z-project-panel bg-black/30 backdrop-blur-sm" onClick={onClose} />}
+      <div data-testid="project-management-board" className={cn(panelClassName, isPlanningCanvasPresentation && 'shadow-2xl')} style={panelStyle}>
         {/* الرأس */}
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 

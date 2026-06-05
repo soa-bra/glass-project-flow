@@ -377,6 +377,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         isVisible={executionTarget?.entityType === 'project' && (Boolean(executionProject) || executionLoading)}
         onClose={() => setExecutionTarget(null)}
         isSidebarCollapsed
+        presentation="planning-canvas"
       />
       <Dialog
         open={executionTarget?.entityType === 'task' && (Boolean(executionTask) || executionLoading)}
