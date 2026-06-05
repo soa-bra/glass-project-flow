@@ -100,11 +100,11 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     label: 'التقارير'
   }];
 
-  // بيانات وهمية للإحصائيات
+  // إحصائيات المشروع — تأتي من الباك إند، تبدأ بقيم صفرية
   const mockStats = {
-    expectedRevenue: 250,
-    complaints: 12,
-    delayedProjects: 3
+    expectedRevenue: 0,
+    complaints: 0,
+    delayedProjects: 0
   };
 
   // محتوى التبويبات المختلفة
