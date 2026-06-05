@@ -63,6 +63,47 @@ const TRANSFORM_OPTIONS: TransformOption[] = [
   },
 ];
 
+interface SelectedMenuElement {
+  position?: { x?: number; y?: number };
+  size?: { width?: number; height?: number };
+}
+
+interface MenuViewport {
+  zoom: number;
+  pan: { x: number; y: number };
+}
+
+interface BoardFrameOffset {
+  left: number;
+  top: number;
+}
+
+export function calculateContextSmartMenuPosition(
+  selectedElements: SelectedMenuElement[],
+  viewport: MenuViewport,
+  boardFrameOffset: BoardFrameOffset = { left: 0, top: 0 },
+): { x: number; y: number } {
+  let minX = Infinity, minY = Infinity;
+  let maxX = -Infinity, maxY = -Infinity;
+
+  selectedElements.forEach(el => {
+    const x = el.position?.x || 0;
+    const y = el.position?.y || 0;
+    const width = el.size?.width || 100;
+    const height = el.size?.height || 100;
+
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x + width);
+    maxY = Math.max(maxY, y + height);
+  });
+
+  const screenX = boardFrameOffset.left + ((minX + maxX) / 2) * viewport.zoom + viewport.pan.x;
+  const screenY = boardFrameOffset.top + minY * viewport.zoom + viewport.pan.y - 60;
+
+  return { x: screenX, y: Math.max(boardFrameOffset.top + 60, screenY) };
+}
+
 interface ContextSmartMenuProps {
   boardId?: string | null;
 }
@@ -88,27 +129,14 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
       return;
     }
 
-    // Calculate bounding box of selected elements
-    let minX = Infinity, minY = Infinity;
-    let maxX = -Infinity, maxY = -Infinity;
+    const boardFrame = document.querySelector('[data-board-frame="true"]');
+    const boardRect = boardFrame?.getBoundingClientRect();
+    const boardFrameOffset = {
+      left: boardRect?.left ?? 0,
+      top: boardRect?.top ?? 0,
+    };
 
-    selectedElements.forEach(el => {
-      const x = el.position?.x || 0;
-      const y = el.position?.y || 0;
-      const width = el.size?.width || 100;
-      const height = el.size?.height || 100;
-
-      minX = Math.min(minX, x);
-      minY = Math.min(minY, y);
-      maxX = Math.max(maxX, x + width);
-      maxY = Math.max(maxY, y + height);
-    });
-
-    // Convert to screen coordinates
-    const screenX = (minX + maxX) / 2 * viewport.zoom + viewport.pan.x;
-    const screenY = minY * viewport.zoom + viewport.pan.y - 60;
-
-    setPosition({ x: screenX, y: Math.max(60, screenY) });
+    setPosition(calculateContextSmartMenuPosition(selectedElements, viewport, boardFrameOffset));
     setIsVisible(true);
     setIsExpanded(false);
   }, [selectedElements, viewport]);
