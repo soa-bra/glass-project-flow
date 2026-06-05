@@ -11,14 +11,10 @@ interface ReportsTabProps {
 }
 
 export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
-  const mockReports = [
-    { id: '1', name: 'تقرير سير المشروع الشهري', type: 'progress', generatedDate: '2024-01-25', size: '2.1 MB', format: 'PDF', status: 'ready' },
-    { id: '2', name: 'تحليل الأداء المالي', type: 'financial', generatedDate: '2024-01-24', size: '1.8 MB', format: 'Excel', status: 'ready' },
-    { id: '3', name: 'تقرير كفاءة الفريق', type: 'team', generatedDate: '2024-01-23', size: '1.5 MB', format: 'PDF', status: 'ready' },
-    { id: '4', name: 'تقييم رضا العميل', type: 'client', generatedDate: '2024-01-22', size: '1.2 MB', format: 'PDF', status: 'ready' },
-  ];
+  // تأتي التقارير والإحصائيات من الباك إند — تبدأ فارغة/صفر
+  const mockReports: Array<{ id: string; name: string; type: string; generatedDate: string; size: string; format: string; status: string }> = [];
 
-  const reportStats = { totalReports: 15, thisMonth: 4, avgGenTime: '2.3', exportCount: 28 };
+  const reportStats = { totalReports: 0, thisMonth: 0, avgGenTime: '0', exportCount: 0 };
 
   return (
     <div className="space-y-6">
@@ -54,10 +50,10 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">أنواع التقارير</h3>
         <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           {[
-            { icon: BarChart3, label: 'تقارير التقدم', count: 5, color: '#f1b5b9' },
-            { icon: PieChart, label: 'التقارير المالية', count: 4, color: '#a4e2f6' },
-            { icon: TrendingUp, label: 'تقارير الفريق', count: 3, color: '#d9d2fd' },
-            { icon: FileText, label: 'تقارير العملاء', count: 3, color: '#fbe2aa' },
+            { icon: BarChart3, label: 'تقارير التقدم', count: 0, color: '#f1b5b9' },
+            { icon: PieChart, label: 'التقارير المالية', count: 0, color: '#a4e2f6' },
+            { icon: TrendingUp, label: 'تقارير الفريق', count: 0, color: '#d9d2fd' },
+            { icon: FileText, label: 'تقارير العملاء', count: 0, color: '#fbe2aa' },
           ].map((item, i) => (
             <AppGridItem key={i} colSpan={3} tabletSpan={3}>
               <div className="text-center p-5 rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] h-full">
@@ -82,7 +78,12 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
           </Button>
         </div>
         <div className="space-y-3">
-          {mockReports.map(report => (
+          {mockReports.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <FileText className="w-8 h-8 text-[rgba(11,15,18,0.25)] mb-2" />
+              <div className="text-sm text-[rgba(11,15,18,0.55)]">لا توجد تقارير بعد. أنشئ تقريراً جديداً للبدء.</div>
+            </div>
+          ) : mockReports.map(report => (
             <div key={report.id} className="rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] p-4 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center">

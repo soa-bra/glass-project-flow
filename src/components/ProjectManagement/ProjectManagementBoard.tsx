@@ -100,11 +100,11 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     label: 'التقارير'
   }];
 
-  // بيانات وهمية للإحصائيات
+  // إحصائيات المشروع — تأتي من الباك إند، تبدأ بقيم صفرية
   const mockStats = {
-    expectedRevenue: 250,
-    complaints: 12,
-    delayedProjects: 3
+    expectedRevenue: 0,
+    complaints: 0,
+    delayedProjects: 0
   };
 
   // محتوى التبويبات المختلفة
@@ -159,7 +159,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">الف</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
+                      <div className="text-xs font-Regular text-black font-arabic">ريال سعودي</div>
                     </Stagger.Item>
 
                     {/* الشكاوى */}
@@ -173,7 +173,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">يوم</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">وعدد المهام المتبقية: 5 مهام</div>
+                      <div className="text-xs font-Regular text-black font-arabic">لا توجد مهام متبقية</div>
                     </Stagger.Item>
 
                     {/* المشاريع المتأخرة */}
@@ -187,7 +187,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">عضو</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">ومعدل الانجاز العام 94٪</div>
+                      <div className="text-xs font-Regular text-black font-arabic">معدل الإنجاز العام —</div>
                     </Stagger.Item>
                   </Stagger>
                 </div>
