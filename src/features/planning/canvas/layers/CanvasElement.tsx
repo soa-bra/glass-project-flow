@@ -3,6 +3,7 @@ import { Lock } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useInteractionStore } from '@/stores/interactionStore';
 import { useCollaborationStore } from '@/stores/collaborationStore';
+import { ELEMENT_LOCK_TTL_MS } from '@/services/central/planningBoards.service';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from '@/features/planning/elements/smart/SmartElementRenderer';
 import { ResizeHandle } from '@/features/planning/canvas/selection/ResizeHandle';
@@ -131,9 +132,17 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const isVisible = element.visible !== false && elementLayer?.visible !== false;
   const currentUserId = useCollaborationStore((state) => state.currentUserId);
   const participants = useCollaborationStore((state) => state.participants);
-  const remoteLockedBy = (element as any).lockedBy as string | null | undefined;
-  const isLockedByOther = !!remoteLockedBy && remoteLockedBy !== currentUserId;
-  const isLockedBySelf = !!remoteLockedBy && remoteLockedBy === currentUserId;
+  const remoteLockedBy = (element as { lockedBy?: string | null }).lockedBy ?? null;
+  const remoteLockedAt = (element as { lockedAt?: string | null }).lockedAt ?? null;
+  const hasActiveRemoteLock = useMemo(() => {
+    if (!remoteLockedBy) return false;
+    if (!remoteLockedAt) return true;
+    const lockedAtTime = Date.parse(remoteLockedAt);
+    if (!Number.isFinite(lockedAtTime)) return true;
+    return Date.now() - lockedAtTime <= ELEMENT_LOCK_TTL_MS;
+  }, [remoteLockedAt, remoteLockedBy]);
+  const isLockedByOther = hasActiveRemoteLock && remoteLockedBy !== currentUserId;
+  const isLockedBySelf = hasActiveRemoteLock && remoteLockedBy === currentUserId;
   const isLayerLocked = !!elementLayer?.locked;
   const isLocked = isLayerLocked || isLockedByOther;
   const lockHolder = useMemo(() => {
@@ -357,7 +366,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         pointerEvents: isLocked ? 'none' : 'auto',
       }}
     >
-      {remoteLockedBy && (
+      {hasActiveRemoteLock && (
         <div
           role="status"
           aria-live="polite"
@@ -547,6 +556,8 @@ const CanvasElement = React.memo(CanvasElementInner, (prevProps, nextProps) => {
   if (prevEl.rotation !== nextEl.rotation) return false;
   if (prevEl.visible !== nextEl.visible) return false;
   if (prevEl.locked !== nextEl.locked) return false;
+  if ((prevEl as { lockedBy?: string | null }).lockedBy !== (nextEl as { lockedBy?: string | null }).lockedBy) return false;
+  if ((prevEl as { lockedAt?: string | null }).lockedAt !== (nextEl as { lockedAt?: string | null }).lockedAt) return false;
   if (prevEl.content !== nextEl.content) return false;
   if (prevEl.style !== nextEl.style) return false;
   if (prevEl.data !== nextEl.data) return false;
