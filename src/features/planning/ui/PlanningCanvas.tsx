@@ -38,6 +38,9 @@ type ExecutionTarget = {
   entityId: string;
   data?: Record<string, unknown>;
 };
+type SmartConversionSuggestion = Pick<SmartConversionPayload, 'targetEntityType' | 'suggestedData'> & {
+  sourceElementIds?: string[];
+};
 
 const mapProjectStatus = (state: ProjectRow['state']): Project['status'] => {
   if (state === 'completed') return 'success';
@@ -211,15 +214,17 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   }, [setViewportHostSize]);
 
   const handleSmartConversionSuggested = useCallback(
-    (suggestion: Pick<SmartConversionPayload, 'targetEntityType' | 'suggestedData'>) => {
-      if (selectedElementIds.length === 0) {
+    (suggestion: SmartConversionSuggestion) => {
+      const sourceElementIds = suggestion.sourceElementIds ?? selectedElementIds;
+
+      if (sourceElementIds.length === 0) {
         toast.error('حدد عناصر الكانفس المصدر قبل تحويل AI إلى سجل تنفيذي');
         return;
       }
 
       setConversionPayload({
         boardId: board.id,
-        sourceElementIds: selectedElementIds,
+        sourceElementIds,
         targetEntityType: suggestion.targetEntityType,
         suggestedData: suggestion.suggestedData,
         approval: { approved: false },
@@ -230,7 +235,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   useEffect(() => {
     const handleSmartConversionSuggestedEvent = (event: Event) => {
-      const detail = (event as CustomEvent<Pick<SmartConversionPayload, 'targetEntityType' | 'suggestedData'>>).detail;
+      const detail = (event as CustomEvent<SmartConversionSuggestion>).detail;
       if (!detail?.targetEntityType) return;
       handleSmartConversionSuggested(detail);
     };
