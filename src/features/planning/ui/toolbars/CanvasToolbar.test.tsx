@@ -47,7 +47,6 @@ describe('CanvasToolbar', () => {
   } as any;
 
   const onBack = vi.fn();
-  const onOpenAI = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -59,25 +58,23 @@ describe('CanvasToolbar', () => {
   });
 
   it('renders the board name and save label', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
     expect(screen.getByText('لوحة استراتيجية')).toBeInTheDocument();
     expect(screen.getByText('تم الحفظ قبل قليل')).toBeInTheDocument();
     expect(mockFormatBoardSaveStatusLabel).toHaveBeenCalled();
   });
 
-  it('routes back and AI actions to their callbacks', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+  it('routes back action to its callback', () => {
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
     fireEvent.click(screen.getByLabelText('العودة إلى القائمة'));
-    fireEvent.click(screen.getByText('AI'));
 
     expect(onBack).toHaveBeenCalled();
-    expect(onOpenAI).toHaveBeenCalled();
   });
 
   it('calls saveBoardState when save button is clicked', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
     fireEvent.click(screen.getByText('تم الحفظ'));
 
@@ -85,7 +82,7 @@ describe('CanvasToolbar', () => {
   });
 
   it('calls saveBoardState on Ctrl/Cmd + S', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
     fireEvent.keyDown(window, { key: 's', ctrlKey: true });
     fireEvent.keyDown(window, { key: 's', metaKey: true });
@@ -94,7 +91,7 @@ describe('CanvasToolbar', () => {
   });
 
   it('renames the board when editing ends with a new non-empty name', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
     fireEvent.doubleClick(screen.getByText('لوحة استراتيجية'));
     const input = screen.getByLabelText('اسم اللوحة');
@@ -105,7 +102,7 @@ describe('CanvasToolbar', () => {
   });
 
   it('reverts empty board name edits without renaming', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
     fireEvent.doubleClick(screen.getByText('لوحة استراتيجية'));
     const input = screen.getByLabelText('اسم اللوحة');
@@ -116,7 +113,7 @@ describe('CanvasToolbar', () => {
   });
 
   it('routes undo and redo actions', () => {
-    const { container } = render(<CanvasToolbar board={board} onBack={onBack} onOpenAI={onOpenAI} />);
+    const { container } = render(<CanvasToolbar board={board} onBack={onBack} />);
     const buttons = container.querySelectorAll('button');
     const undoButton = buttons[6];
     const redoButton = buttons[7];
