@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckSquare, AlertTriangle, Calendar, DollarSign, Users, Gauge, Maximize2 } from 'lucide-react';
+import { CheckSquare, AlertTriangle, Calendar, DollarSign, Users, Gauge, Maximize2, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +20,7 @@ interface TaskCardProps {
   data: TaskCardData;
   onUpdate: (data: Partial<TaskCardData>) => void;
   onExpand?: () => void;
+  onConvert?: () => void;
 }
 
 const STATE_LABELS: Record<NonNullable<TaskCardData['state']>, string> = {
@@ -39,7 +40,7 @@ const PRIORITY_LABELS: Record<NonNullable<TaskCardData['priority']>, string> = {
   critical: 'حرجة',
 };
 
-export const TaskCard: React.FC<TaskCardProps> = ({ data, onExpand }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({ data, onExpand, onConvert }) => {
   const taskName = data.taskName || 'مهمة جديدة';
   const state = data.state || 'draft';
   const priority = data.priority || 'medium';
@@ -79,6 +80,24 @@ export const TaskCard: React.FC<TaskCardProps> = ({ data, onExpand }) => {
               }}
             >
               <Maximize2 className="h-4 w-4" />
+            </Button>
+          )}
+          {onConvert && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="h-8 gap-1 px-2 text-xs"
+              title="اعتماد وتحويل المهمة"
+              aria-label="اعتماد وتحويل المهمة"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onConvert();
+              }}
+            >
+              <Wand2 className="h-3.5 w-3.5" />
+              اعتماد
             </Button>
           )}
         </div>
