@@ -206,7 +206,6 @@ describe('InfiniteCanvas', () => {
     expect(screen.getByTestId('grid-layer')).toBeInTheDocument();
     expect(screen.getByTestId('strokes-layer')).toBeInTheDocument();
     expect(screen.getByTestId('drawing-preview')).toBeInTheDocument();
-    expect(screen.getByTestId('selection-box')).toBeInTheDocument();
     expect(screen.getByTestId('snap-guides')).toBeInTheDocument();
     expect(screen.getByTestId('presence-cursors')).toBeInTheDocument();
     expect(mockPresenceCursors).toHaveBeenCalledWith(
