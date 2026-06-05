@@ -318,6 +318,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         realtimeStatus={connectionStatus}
         lastSyncAt={lastSyncAt}
         canEdit={canEditBoard}
+        elementPersistence={sync.persistence}
       />
       <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
         <div data-board-frame="true" className="flex-1 relative overflow-hidden">
