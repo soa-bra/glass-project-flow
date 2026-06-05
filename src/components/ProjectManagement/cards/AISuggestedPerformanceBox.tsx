@@ -34,24 +34,25 @@ export const AISuggestedPerformanceBox: React.FC<AISuggestedPerformanceCardProps
 
   const Icon = getIcon();
 
+  // بيانات الرسوم تأتي من الباك إند — تبدأ بصفر حتى تتوفر
   const lineData = [
-    { name: 'يناير', value: 65 },
-    { name: 'فبراير', value: 78 },
-    { name: 'مارس', value: 90 },
-    { name: 'أبريل', value: 94 }
+    { name: 'يناير', value: 0 },
+    { name: 'فبراير', value: 0 },
+    { name: 'مارس', value: 0 },
+    { name: 'أبريل', value: 0 }
   ];
 
   const barData = [
-    { name: 'أ', value: 20 },
-    { name: 'ب', value: 35 },
-    { name: 'ج', value: 25 },
-    { name: 'د', value: 30 }
+    { name: 'أ', value: 0 },
+    { name: 'ب', value: 0 },
+    { name: 'ج', value: 0 },
+    { name: 'د', value: 0 }
   ];
 
   const pieData = [
-    { name: 'مكتمل', value: 70, color: '#000000' },
-    { name: 'قيد التنفيذ', value: 20, color: '#aec2cf' },
-    { name: 'متبقي', value: 10, color: '#f0f0f0' }
+    { name: 'مكتمل', value: 0, color: '#000000' },
+    { name: 'قيد التنفيذ', value: 0, color: '#aec2cf' },
+    { name: 'متبقي', value: 1, color: '#f0f0f0' }
   ];
 
   const renderChart = () => {
