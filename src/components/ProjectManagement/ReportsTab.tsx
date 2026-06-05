@@ -50,10 +50,10 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">أنواع التقارير</h3>
         <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           {[
-            { icon: BarChart3, label: 'تقارير التقدم', count: 5, color: '#f1b5b9' },
-            { icon: PieChart, label: 'التقارير المالية', count: 4, color: '#a4e2f6' },
-            { icon: TrendingUp, label: 'تقارير الفريق', count: 3, color: '#d9d2fd' },
-            { icon: FileText, label: 'تقارير العملاء', count: 3, color: '#fbe2aa' },
+            { icon: BarChart3, label: 'تقارير التقدم', count: 0, color: '#f1b5b9' },
+            { icon: PieChart, label: 'التقارير المالية', count: 0, color: '#a4e2f6' },
+            { icon: TrendingUp, label: 'تقارير الفريق', count: 0, color: '#d9d2fd' },
+            { icon: FileText, label: 'تقارير العملاء', count: 0, color: '#fbe2aa' },
           ].map((item, i) => (
             <AppGridItem key={i} colSpan={3} tabletSpan={3}>
               <div className="text-center p-5 rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] h-full">
