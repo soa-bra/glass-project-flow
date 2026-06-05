@@ -11,6 +11,11 @@ const mocks = vi.hoisted(() => ({
     selfUserId: '22222222-2222-4222-8222-222222222222',
     broadcastCursor: vi.fn(),
   },
+  persistenceResult: {
+    status: 'idle',
+    error: null,
+    lastPersistedAt: null,
+  },
   usePlanningStoreSync: vi.fn(),
   usePlanningElementPersistence: vi.fn(),
 }));
@@ -27,6 +32,7 @@ describe('usePlanningCanvasPersistence', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.usePlanningStoreSync.mockReturnValue(mocks.syncResult);
+    mocks.usePlanningElementPersistence.mockReturnValue(mocks.persistenceResult);
   });
 
   it('wires realtime sync and element persistence through one official hook', () => {
@@ -37,7 +43,10 @@ describe('usePlanningCanvasPersistence', () => {
       }),
     );
 
-    expect(result.current).toBe(mocks.syncResult);
+    expect(result.current).toEqual({
+      ...mocks.syncResult,
+      persistence: mocks.persistenceResult,
+    });
     expect(mocks.usePlanningStoreSync).toHaveBeenCalledWith(
       '11111111-1111-4111-8111-111111111111',
       'مستخدم حالي',
@@ -49,7 +58,14 @@ describe('usePlanningCanvasPersistence', () => {
   });
 
   it('keeps readonly users subscribed while disabling persistence writes', () => {
-    renderHook(() =>
+    const readonlyPersistence = {
+      status: 'disabled',
+      error: null,
+      lastPersistedAt: null,
+    };
+    mocks.usePlanningElementPersistence.mockReturnValue(readonlyPersistence);
+
+    const { result } = renderHook(() =>
       usePlanningCanvasPersistence('11111111-1111-4111-8111-111111111111', {
         selfDisplayName: 'قارئ',
         canPersist: false,
@@ -64,5 +80,6 @@ describe('usePlanningCanvasPersistence', () => {
       '11111111-1111-4111-8111-111111111111',
       false,
     );
+    expect(result.current.persistence).toBe(readonlyPersistence);
   });
 });

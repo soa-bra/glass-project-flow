@@ -58,6 +58,12 @@ function resetStore(layerId = 'layer-a'): void {
   } as never);
 }
 
+async function flushPersistenceTimer(): Promise<void> {
+  await vi.advanceTimersByTimeAsync(710);
+  await Promise.resolve();
+  await Promise.resolve();
+}
+
 describe('usePlanningElementPersistence', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -70,10 +76,42 @@ describe('usePlanningElementPersistence', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it('persists a pure layerId move without requiring another element field change', async () => {
-    renderHook(() => usePlanningElementPersistence(boardId, true));
+    const { result } = renderHook(() => usePlanningElementPersistence(boardId, true));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      usePlanningStore.setState({ elements: [createElement('layer-b')] } as never);
+    });
+
+    expect(result.current.status).toBe('pending');
+
+    await act(async () => {
+      await flushPersistenceTimer();
+    });
+
+    expect(result.current.status).toBe('saved');
+    expect(mocks.upsertPlanningElements).toHaveBeenCalledTimes(1);
+    expect(mocks.upsertPlanningElements.mock.calls[0][0][0]).toMatchObject({
+      id: elementId,
+      board_id: boardId,
+      created_by: userId,
+      metadata: { layerId: 'layer-b' },
+    });
+    expect(result.current.error).toBeNull();
+    expect(result.current.lastPersistedAt).toBeInstanceOf(Date);
+  });
+
+  it('reports persistence failures instead of leaving them silent', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    mocks.upsertPlanningElements.mockRejectedValueOnce(new Error('database unavailable'));
+    const { result } = renderHook(() => usePlanningElementPersistence(boardId, true));
 
     await act(async () => {
       await Promise.resolve();
@@ -84,15 +122,11 @@ describe('usePlanningElementPersistence', () => {
     });
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(710);
+      await flushPersistenceTimer();
     });
 
-    expect(mocks.upsertPlanningElements).toHaveBeenCalledTimes(1);
-    expect(mocks.upsertPlanningElements.mock.calls[0][0][0]).toMatchObject({
-      id: elementId,
-      board_id: boardId,
-      created_by: userId,
-      metadata: { layerId: 'layer-b' },
-    });
+    expect(result.current.status).toBe('error');
+    expect(result.current.error).toBe('database unavailable');
+    expect(consoleError).toHaveBeenCalled();
   });
 });

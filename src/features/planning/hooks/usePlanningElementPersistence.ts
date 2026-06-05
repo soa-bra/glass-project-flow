@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PlanningBoardsService } from "@/services/central";
 import { usePlanningStore } from "@/features/planning/state/store";
@@ -11,6 +11,20 @@ const SAVE_DEBOUNCE_MS = 700;
 type SmartDocInsert = Database["public"]["Tables"]["smart_docs"]["Insert"];
 type DataLinkInsert = Database["public"]["Tables"]["data_links"]["Insert"];
 type AuditEventInsert = Database["public"]["Tables"]["audit_events"]["Insert"];
+
+export type PlanningElementPersistenceStatus =
+  | "disabled"
+  | "idle"
+  | "pending"
+  | "saving"
+  | "saved"
+  | "error";
+
+export type PlanningElementPersistenceState = {
+  status: PlanningElementPersistenceStatus;
+  error: string | null;
+  lastPersistedAt: Date | null;
+};
 
 function stableElementSignature(elements: CanvasElement[]): string {
   return JSON.stringify(
@@ -31,6 +45,10 @@ function stableElementSignature(elements: CanvasElement[]): string {
       }))
       .sort((a, b) => a.id.localeCompare(b.id)),
   );
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Unknown planning element persistence error";
 }
 
 async function upsertSmartDocsForElements(
@@ -135,11 +153,19 @@ async function upsertSmartDocsForElements(
   }
 }
 
-export function usePlanningElementPersistence(boardId: string | null, enabled = true): void {
+export function usePlanningElementPersistence(
+  boardId: string | null,
+  enabled = true,
+): PlanningElementPersistenceState {
   const userIdRef = useRef<string | null>(null);
   const lastPersistedSignatureRef = useRef<string>("");
   const lastElementIdsRef = useRef<Set<string>>(new Set());
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [persistenceState, setPersistenceState] = useState<PlanningElementPersistenceState>({
+    status: boardId && enabled ? "idle" : "disabled",
+    error: null,
+    lastPersistedAt: null,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -152,7 +178,20 @@ export function usePlanningElementPersistence(boardId: string | null, enabled = 
   }, []);
 
   useEffect(() => {
-    if (!boardId || !enabled) return;
+    if (!boardId || !enabled) {
+      setPersistenceState((current) => ({
+        ...current,
+        status: "disabled",
+        error: null,
+      }));
+      return;
+    }
+
+    setPersistenceState((current) => ({
+      ...current,
+      status: "idle",
+      error: null,
+    }));
 
     const initialElements = usePlanningStore.getState().elements;
     lastPersistedSignatureRef.current = stableElementSignature(initialElements);
@@ -165,10 +204,29 @@ export function usePlanningElementPersistence(boardId: string | null, enabled = 
       const signature = stableElementSignature(elements);
       if (signature === lastPersistedSignatureRef.current) return;
 
+      setPersistenceState((current) => ({
+        ...current,
+        status: "pending",
+        error: null,
+      }));
+
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(async () => {
         const userId = userIdRef.current;
-        if (!userId) return;
+        if (!userId) {
+          setPersistenceState((current) => ({
+            ...current,
+            status: "error",
+            error: "Cannot persist planning elements without an authenticated user",
+          }));
+          return;
+        }
+
+        setPersistenceState((current) => ({
+          ...current,
+          status: "saving",
+          error: null,
+        }));
 
         const currentElements = usePlanningStore.getState().elements;
         const currentPersistable = currentElements.filter((element) => isPlanningElementId(element.id));
@@ -184,8 +242,18 @@ export function usePlanningElementPersistence(boardId: string | null, enabled = 
 
           lastElementIdsRef.current = currentIds;
           lastPersistedSignatureRef.current = stableElementSignature(currentElements);
+          setPersistenceState({
+            status: "saved",
+            error: null,
+            lastPersistedAt: new Date(),
+          });
         } catch (error) {
           console.error("[usePlanningElementPersistence] Failed to persist planning elements", error);
+          setPersistenceState((current) => ({
+            ...current,
+            status: "error",
+            error: getErrorMessage(error),
+          }));
         }
       }, SAVE_DEBOUNCE_MS);
     });
@@ -198,6 +266,8 @@ export function usePlanningElementPersistence(boardId: string | null, enabled = 
       }
     };
   }, [boardId, enabled]);
+
+  return persistenceState;
 }
 
 export default usePlanningElementPersistence;
