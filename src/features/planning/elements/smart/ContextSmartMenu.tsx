@@ -21,6 +21,7 @@ import { useSmartElementAI } from '@/hooks/useSmartElementAI';
 import type { SmartElementType } from '@/types/smart-elements';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { isPlanningElementId } from '@/features/planning/state/createPlanningElementId';
 import { createSmartCanvasElement } from './factories/createTypedSmartElement';
 
 interface TransformOption {
@@ -102,6 +103,10 @@ export function calculateContextSmartMenuPosition(
   return { x: screenX, y: Math.max(boardFrameOffset.top + 60, screenY) };
 }
 
+export function areContextSmartMenuSelectionIdsPersistable(selectedElementIds: string[]): boolean {
+  return selectedElementIds.every(isPlanningElementId);
+}
+
 interface ContextSmartMenuProps {
   boardId?: string | null;
 }
@@ -153,6 +158,14 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   const ensureSelectionWithinLimit = () => {
     if (selectedElements.length <= 50) return true;
     toast.error('لا يمكن معالجة أكثر من 50 عنصر في طلب AI واحد');
+    return false;
+  };
+
+  const ensurePersistableSelection = () => {
+    if (areContextSmartMenuSelectionIdsPersistable(selectedElementIds)) return true;
+    toast.error('لا يمكن تحويل عناصر غير محفوظة أو قديمة', {
+      description: 'أعد إنشاء العنصر أو انتظر اكتمال حفظ اللوحة قبل اعتماد التحويل.',
+    });
     return false;
   };
 
@@ -284,7 +297,7 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   };
 
   const handleSuggestConversion = (targetEntityType: 'project' | 'task') => {
-    if (!ensureSelectionWithinLimit() || !ensureAIAllowed()) return;
+    if (!ensureSelectionWithinLimit() || !ensurePersistableSelection() || !ensureAIAllowed()) return;
     const title = getSelectionText().split('\n').find(Boolean) || (targetEntityType === 'project' ? 'مشروع من التخطيط' : 'مهمة من التخطيط');
 
     window.dispatchEvent(new CustomEvent('planning:smart-conversion-suggested', {

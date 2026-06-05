@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { calculateContextSmartMenuPosition } from './ContextSmartMenu';
+import {
+  areContextSmartMenuSelectionIdsPersistable,
+  calculateContextSmartMenuPosition,
+} from './ContextSmartMenu';
 
 describe('calculateContextSmartMenuPosition', () => {
   it('accounts for the board frame offset when positioning selected elements', () => {
@@ -23,5 +26,21 @@ describe('calculateContextSmartMenuPosition', () => {
     );
 
     expect(position).toEqual({ x: 60, y: 180 });
+  });
+});
+
+describe('areContextSmartMenuSelectionIdsPersistable', () => {
+  it('accepts UUID planning element ids for executable conversion', () => {
+    expect(areContextSmartMenuSelectionIdsPersistable([
+      '11111111-1111-4111-8111-111111111111',
+      '22222222-2222-4222-9222-222222222222',
+    ])).toBe(true);
+  });
+
+  it('rejects legacy or unsaved ids before executable conversion', () => {
+    expect(areContextSmartMenuSelectionIdsPersistable([
+      '11111111-1111-4111-8111-111111111111',
+      'legacy-note-id',
+    ])).toBe(false);
   });
 });
