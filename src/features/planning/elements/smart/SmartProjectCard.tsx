@@ -1,5 +1,5 @@
 import React from 'react';
-import { FolderKanban, CheckCircle2, Clock, Users, TrendingUp, Maximize2 } from 'lucide-react';
+import { FolderKanban, CheckCircle2, Clock, Users, TrendingUp, Maximize2, Wand2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -23,6 +23,7 @@ interface ProjectCardProps {
   data: ProjectCardData;
   onUpdate: (data: Partial<ProjectCardData>) => void;
   onExpand?: () => void;
+  onConvert?: () => void;
 }
 
 const STATUS_CONFIG = {
@@ -33,7 +34,7 @@ const STATUS_CONFIG = {
   cancelled: { label: 'ملغي', color: 'bg-red-500', textColor: 'text-red-600' },
 };
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ data, onExpand }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({ data, onExpand, onConvert }) => {
   const projectName = data.projectName || 'مشروع جديد';
   const status = data.status || 'planning';
   const totalTasks = data.totalTasks || 0;
@@ -90,6 +91,24 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ data, onExpand }) => {
               }}
             >
               <Maximize2 className="h-4 w-4" />
+            </Button>
+          )}
+          {onConvert && (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="h-8 gap-1 px-2 text-xs"
+              title="اعتماد وتحويل المشروع"
+              aria-label="اعتماد وتحويل المشروع"
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.stopPropagation();
+                onConvert();
+              }}
+            >
+              <Wand2 className="h-3.5 w-3.5" />
+              اعتماد
             </Button>
           )}
         </div>
