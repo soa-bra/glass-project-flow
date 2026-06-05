@@ -1,8 +1,28 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  areContextSmartMenuSelectionIdsPersistable,
+  areContextSmartMenuSelectionIdsPersisted,
   calculateContextSmartMenuPosition,
 } from './ContextSmartMenu';
+
+const mocks = vi.hoisted(() => ({
+  select: vi.fn(),
+  eq: vi.fn(),
+  in: vi.fn(),
+  from: vi.fn(),
+}));
+
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: {
+    from: mocks.from,
+  },
+}));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.from.mockReturnValue({ select: mocks.select });
+  mocks.select.mockReturnValue({ eq: mocks.eq });
+  mocks.eq.mockReturnValue({ in: mocks.in });
+});
 
 describe('calculateContextSmartMenuPosition', () => {
   it('accounts for the board frame offset when positioning selected elements', () => {
@@ -29,18 +49,30 @@ describe('calculateContextSmartMenuPosition', () => {
   });
 });
 
-describe('areContextSmartMenuSelectionIdsPersistable', () => {
-  it('accepts UUID planning element ids for executable conversion', () => {
-    expect(areContextSmartMenuSelectionIdsPersistable([
-      '11111111-1111-4111-8111-111111111111',
-      '22222222-2222-4222-9222-222222222222',
-    ])).toBe(true);
+describe('areContextSmartMenuSelectionIdsPersisted', () => {
+  const boardId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
+  const firstId = '11111111-1111-4111-8111-111111111111';
+  const secondId = '22222222-2222-4222-9222-222222222222';
+
+  it('accepts selected ids that already exist in planning_elements', async () => {
+    mocks.in.mockResolvedValue({ data: [{ id: firstId }, { id: secondId }], error: null });
+
+    await expect(areContextSmartMenuSelectionIdsPersisted(boardId, [firstId, secondId])).resolves.toBe(true);
+
+    expect(mocks.from).toHaveBeenCalledWith('planning_elements');
+    expect(mocks.eq).toHaveBeenCalledWith('board_id', boardId);
+    expect(mocks.in).toHaveBeenCalledWith('id', [firstId, secondId]);
   });
 
-  it('rejects legacy or unsaved ids before executable conversion', () => {
-    expect(areContextSmartMenuSelectionIdsPersistable([
-      '11111111-1111-4111-8111-111111111111',
-      'legacy-note-id',
-    ])).toBe(false);
+  it('rejects UUID ids that are not persisted yet', async () => {
+    mocks.in.mockResolvedValue({ data: [{ id: firstId }], error: null });
+
+    await expect(areContextSmartMenuSelectionIdsPersisted(boardId, [firstId, secondId])).resolves.toBe(false);
+  });
+
+  it('rejects legacy ids before querying persistence', async () => {
+    await expect(areContextSmartMenuSelectionIdsPersisted(boardId, [firstId, 'legacy-note-id'])).resolves.toBe(false);
+
+    expect(mocks.from).not.toHaveBeenCalled();
   });
 });
