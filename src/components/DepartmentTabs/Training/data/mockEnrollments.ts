@@ -58,36 +58,5 @@ export const mockCertificates: Certificate[] = [
   }
 ];
 
-export const mockEmployeeSkillMatrix: EmployeeSkillMatrix[] = [
-  {
-    employeeId: 'EMP-001',
-    skills: [
-      {
-        skillId: 'SKILL-001',
-        currentLevel: 'intermediate',
-        targetLevel: 'advanced',
-        lastUpdated: '2024-02-15',
-        certificationsEarned: ['CERT-2024-001']
-      },
-      {
-        skillId: 'SKILL-002',
-        currentLevel: 'beginner',
-        targetLevel: 'intermediate',
-        lastUpdated: '2024-01-20',
-        certificationsEarned: []
-      }
-    ]
-  },
-  {
-    employeeId: 'EMP-002',
-    skills: [
-      {
-        skillId: 'SKILL-001',
-        currentLevel: 'advanced',
-        targetLevel: 'expert',
-        lastUpdated: '2024-02-10',
-        certificationsEarned: ['CERT-2024-002']
-      }
-    ]
-  }
-];
+// تم مسح مصفوفة مهارات الموظفين الوهمية بناءً على طلب المستخدم.
+export const mockEmployeeSkillMatrix: EmployeeSkillMatrix[] = [];
