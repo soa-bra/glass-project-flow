@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'src/features/planning/**'
+      - 'src/hooks/useCollaboration.ts'
+      - 'src/hooks/useCollaboration.test.ts'
       - '.github/workflows/planning-canvas-checks.yml'
       - 'package.json'
       - 'package-lock.json'
@@ -16,6 +18,8 @@ on:
       - main
     paths:
       - 'src/features/planning/**'
+      - 'src/hooks/useCollaboration.ts'
+      - 'src/hooks/useCollaboration.test.ts'
       - '.github/workflows/planning-canvas-checks.yml'
       - 'package.json'
       - 'package-lock.json'
@@ -63,6 +67,7 @@ jobs:
           src/features/planning/state/slices/planningElementIds.test.ts
           src/features/planning/state/slices/selectionSlice.test.ts
           src/features/planning/ui/toolbars/CanvasToolbar.test.ts
+          src/hooks/useCollaboration.test.ts
 
       - name: Build
         run: npm run build
