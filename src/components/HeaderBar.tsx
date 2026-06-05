@@ -58,7 +58,7 @@ const glassStyle = {
 };
 
 const notificationMenuWidth = 320;
-const searchMenuWidth = 300;
+const searchMenuWidth = 270;
 const userMenuWidth = 224;
 const notificationViewportGap = 12;
 
