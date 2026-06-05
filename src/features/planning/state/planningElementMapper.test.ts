@@ -25,11 +25,25 @@ function createPlanningElement(overrides: Partial<PlanningElement> = {}): Planni
   } as PlanningElement;
 }
 
-describe('planningElementMapper layer membership', () => {
+describe('planningElementMapper layer membership and lock metadata', () => {
   it('restores layerId from persisted metadata', () => {
     const element = planningElementToCanvas(createPlanningElement());
 
     expect(element.layerId).toBe('layer-b');
+  });
+
+  it('restores official lock metadata from persisted planning elements', () => {
+    const lockedAt = '2026-01-02T01:00:00Z';
+    const element = planningElementToCanvas(
+      createPlanningElement({
+        locked_by: '44444444-4444-4444-8444-444444444444',
+        locked_at: lockedAt,
+      }),
+    );
+
+    expect(element.locked).toBe(true);
+    expect((element as { lockedBy?: string | null }).lockedBy).toBe('44444444-4444-4444-8444-444444444444');
+    expect((element as { lockedAt?: string | null }).lockedAt).toBe(lockedAt);
   });
 
   it('persists layerId in metadata when saving a canvas element', () => {

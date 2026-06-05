@@ -148,6 +148,7 @@ export function planningElementToCanvas(row: PlanningElement): CanvasElement {
     data,
     locked: !!row.locked_by,
     lockedBy: row.locked_by ?? null,
+    lockedAt: row.locked_at ?? null,
     boardId: row.board_id,
     createdBy: row.created_by,
     updatedAt: row.updated_at,
