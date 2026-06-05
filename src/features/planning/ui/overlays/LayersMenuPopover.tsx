@@ -110,7 +110,7 @@ export const LayersMenuPopover: React.FC<LayersMenuPopoverProps> = ({ isOpen, on
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] z-toolbar max-h-[500px] flex flex-col overflow-hidden">
+      <div className="absolute top-full right-0 mt-2 w-80 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[hsl(var(--border))] z-dropdown max-h-[500px] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[hsl(var(--border))]">
           <div className="flex items-center gap-2">
