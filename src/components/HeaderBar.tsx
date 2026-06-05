@@ -765,7 +765,7 @@ const HeaderBar = () => {
                       exit={{ opacity: 0, y: 8, filter: 'blur(8px)' }}
                       transition={{ duration: 0.25, ease: 'easeOut' }}
                       data-testid="header-search-popover"
-                      className="fixed max-h-[430px] w-[300px] overflow-y-auto rounded-[26px] p-2"
+                      className="fixed max-h-[430px] w-[270px] overflow-y-auto rounded-[26px] p-2"
                       style={{
                         ...glassStyle,
                         top: searchMenuPosition.top,
