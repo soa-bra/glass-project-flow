@@ -159,7 +159,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">الف</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">ريال سعودي والمتبقي منها 25 الف</div>
+                      <div className="text-xs font-Regular text-black font-arabic">ريال سعودي</div>
                     </Stagger.Item>
 
                     {/* الشكاوى */}
