@@ -7,11 +7,12 @@ interface BudgetCardProps {
 }
 
 export const BudgetBox: React.FC<BudgetCardProps> = ({ project }) => {
-  const totalBudget = parseInt(project.value.replace(/[^\d]/g, ''));
-  const spentAmount = Math.floor(totalBudget * 0.75);
+  // الأرقام الفعلية تأتي من الباك إند (الوحدة المالية). تبدأ بصفر حتى توفّر البيانات.
+  const totalBudget = parseInt((project.value || '').replace(/[^\d]/g, '')) || 0;
+  const spentAmount = 0;
   const remainingAmount = totalBudget - spentAmount;
-  const spentPercentage = (spentAmount / totalBudget) * 100;
-  const isOverBudget = spentAmount > totalBudget;
+  const spentPercentage = totalBudget > 0 ? (spentAmount / totalBudget) * 100 : 0;
+  const isOverBudget = spentAmount > totalBudget && totalBudget > 0;
 
   const totalBars = 60;
   const filledBars = Math.round((spentPercentage / 100) * totalBars);
