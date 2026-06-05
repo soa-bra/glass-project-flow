@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePlanningStore } from '@/features/planning/state/store';
 import type { CanvasElement } from '@/types/canvas';
@@ -58,6 +58,12 @@ function resetStore(layerId = 'layer-a'): void {
   } as never);
 }
 
+async function flushPersistenceTimer(): Promise<void> {
+  await vi.advanceTimersByTimeAsync(710);
+  await Promise.resolve();
+  await Promise.resolve();
+}
+
 describe('usePlanningElementPersistence', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -87,11 +93,10 @@ describe('usePlanningElementPersistence', () => {
     expect(result.current.status).toBe('pending');
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(710);
+      await flushPersistenceTimer();
     });
 
-    await waitFor(() => expect(result.current.status).toBe('saved'));
-
+    expect(result.current.status).toBe('saved');
     expect(mocks.upsertPlanningElements).toHaveBeenCalledTimes(1);
     expect(mocks.upsertPlanningElements.mock.calls[0][0][0]).toMatchObject({
       id: elementId,
@@ -117,11 +122,10 @@ describe('usePlanningElementPersistence', () => {
     });
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(710);
+      await flushPersistenceTimer();
     });
 
-    await waitFor(() => expect(result.current.status).toBe('error'));
-
+    expect(result.current.status).toBe('error');
     expect(result.current.error).toBe('database unavailable');
     expect(consoleError).toHaveBeenCalled();
   });
