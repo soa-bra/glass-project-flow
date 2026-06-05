@@ -24,6 +24,7 @@ const mockUpdateConnectionPosition = vi.fn();
 const mockHandleStartConnection = vi.fn();
 const mockPresenceCursors = vi.fn();
 const mockBroadcastCursor = vi.fn();
+const boxSelectSelector = vi.hoisted(() => Symbol('box-select-selector'));
 
 const canvasState: any = {
   elements: [
@@ -51,7 +52,6 @@ const interactionState: any = {
   isMode: vi.fn((kind: string) => kind === interactionState.mode.kind),
 };
 
-const boxSelectSelector = Symbol('box-select-selector');
 const boxSelectData = {
   startWorld: { x: 10, y: 20 },
   currentWorld: { x: 30, y: 50 },
