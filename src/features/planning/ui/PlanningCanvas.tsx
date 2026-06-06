@@ -53,6 +53,10 @@ type TaskExecutionDraft = {
   progress: number;
   executionNotes: string;
 };
+type ParsedNumberInput = {
+  value: number | null;
+  invalid: boolean;
+};
 
 const TASK_STATE_OPTIONS: Array<{ value: TaskState; label: string }> = [
   { value: 'draft', label: 'مسودة' },
@@ -80,11 +84,12 @@ const readNumber = (value: unknown): number | null =>
 const readString = (value: unknown): string =>
   typeof value === 'string' ? value : '';
 
-const normalizeNumberInput = (value: string): number | null => {
+const normalizeNumberInput = (value: string): ParsedNumberInput => {
   const trimmed = value.trim();
-  if (!trimmed) return null;
-  const parsed = Number(trimmed);
-  return Number.isFinite(parsed) ? Math.max(0, parsed) : null;
+  if (!trimmed) return { value: null, invalid: false };
+  const parsed = Number(trimmed.replace(',', '.'));
+  if (!Number.isFinite(parsed)) return { value: null, invalid: true };
+  return { value: Math.max(0, parsed), invalid: false };
 };
 
 const deriveTaskProgress = (task: TaskRow): number => {
@@ -338,8 +343,14 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const handleSaveTaskExecution = useCallback(async () => {
     if (!executionTask || !taskDraft) return;
 
-    const actualDuration = normalizeNumberInput(taskDraft.actualDuration);
-    const actualCost = normalizeNumberInput(taskDraft.actualCost);
+    const actualDurationInput = normalizeNumberInput(taskDraft.actualDuration);
+    const actualCostInput = normalizeNumberInput(taskDraft.actualCost);
+
+    if (actualDurationInput.invalid || actualCostInput.invalid) {
+      toast.error('أدخل المدة الفعلية والتكلفة الفعلية كأرقام فقط قبل الحفظ');
+      return;
+    }
+
     const nextMetadata = {
       ...asRecord(executionTask.metadata),
       executionProgress: taskDraft.progress,
@@ -351,8 +362,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     const updates: TaskUpdate = {
       state: taskDraft.state,
       priority: taskDraft.priority,
-      actual_duration: actualDuration,
-      actual_cost: actualCost,
+      actual_duration: actualDurationInput.value,
+      actual_cost: actualCostInput.value,
       metadata: nextMetadata,
       updated_at: new Date().toISOString(),
     };
