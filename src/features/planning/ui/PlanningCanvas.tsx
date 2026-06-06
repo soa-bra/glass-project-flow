@@ -87,9 +87,9 @@ const readString = (value: unknown): string =>
 const normalizeNumberInput = (value: string): ParsedNumberInput => {
   const trimmed = value.trim();
   if (!trimmed) return { value: null, invalid: false };
-  const parsed = Number(trimmed.replace(',', '.'));
-  if (!Number.isFinite(parsed)) return { value: null, invalid: true };
-  return { value: Math.max(0, parsed), invalid: false };
+  if (!/^\d+(\.\d+)?$/.test(trimmed)) return { value: null, invalid: true };
+  const parsed = Number(trimmed);
+  return { value: parsed, invalid: false };
 };
 
 const deriveTaskProgress = (task: TaskRow): number => {
