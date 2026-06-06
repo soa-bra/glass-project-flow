@@ -89,6 +89,7 @@ const normalizeNumberInput = (value: string): ParsedNumberInput => {
   if (!trimmed) return { value: null, invalid: false };
   if (!/^\d+(\.\d+)?$/.test(trimmed)) return { value: null, invalid: true };
   const parsed = Number(trimmed);
+  if (!Number.isFinite(parsed)) return { value: null, invalid: true };
   return { value: parsed, invalid: false };
 };
 
