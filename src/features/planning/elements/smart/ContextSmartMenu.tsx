@@ -235,6 +235,8 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
       }
 
       const title = smartType === 'interactive_sheet' ? 'جدول تفاعلي من التحديد' : 'مستند ذكي من التحديد';
+      const checkedSourceElementIds = selectedElementIds.filter(isPlanningElementId);
+
       addElement(createSmartCanvasElement({
         smartType,
         position: getInsertionPosition(),
@@ -242,6 +244,7 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
         data: smartType === 'interactive_sheet'
           ? {
               title,
+              sourceElementIds: checkedSourceElementIds,
               rows: Math.max(selectedElements.length + 1, 4),
               columns: 4,
               cells: selectedElements.reduce<Record<string, { value: string }>>((cells, element, index) => {
@@ -268,12 +271,13 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
               },
               meta: {
                 sourceSummary: (analysis as any).summary,
-                sourceElementIds: selectedElementIds,
+                sourceElementIds: checkedSourceElementIds,
                 enableFormulas: true,
               },
             }
           : {
               title,
+              sourceElementIds: checkedSourceElementIds,
               content: (analysis as any).summary || contentText,
               aiAssist: true,
               showToolbar: true,
@@ -286,11 +290,11 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
               ],
               meta: {
                 aiAssist: true,
-                sourceElementIds: selectedElementIds,
+                sourceElementIds: checkedSourceElementIds,
               },
             },
         metadata: {
-          sourceElementIds: selectedElementIds,
+          sourceElementIds: checkedSourceElementIds,
           generatedBy: 'context-smart-menu',
           documentStatus: 'draft',
         },
