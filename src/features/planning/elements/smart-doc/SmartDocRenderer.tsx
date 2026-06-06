@@ -16,6 +16,44 @@ const ICONS: Record<SmartDocType, React.ElementType> = {
   smart_text_doc: FileText,
 };
 
+type SheetUiCell = {
+  value?: string | number | boolean | null;
+  formula?: string;
+  format?: string | Record<string, unknown>;
+  align?: 'right' | 'center' | 'left';
+  bold?: boolean;
+  backgroundColor?: string;
+};
+
+const normalizeInteractiveSheetData = (data: any) => {
+  const cells = Object.fromEntries(
+    Object.entries((data?.cells ?? {}) as Record<string, SheetUiCell>).map(([cellId, cell]) => {
+      const format = typeof cell?.format === 'string'
+        ? { type: cell.format }
+        : (cell?.format ?? {});
+
+      return [
+        cellId,
+        {
+          ...cell,
+          value: cell?.value ?? '',
+          format: {
+            ...format,
+            ...(cell?.align ? { align: cell.align } : {}),
+            ...(typeof cell?.bold === 'boolean' ? { bold: cell.bold } : {}),
+            ...(cell?.backgroundColor ? { backgroundColor: cell.backgroundColor } : {}),
+          },
+        },
+      ];
+    }),
+  );
+
+  return {
+    ...data,
+    cells,
+  };
+};
+
 /**
  * SmartDocRenderer - Renderer for Smart Document elements
  * يعرض المستندات الذكية (ورقة تفاعلية، مستند نصي ذكي)
@@ -34,13 +72,16 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
 
   const handleSmartDocUpdate = useCallback((newData: any) => {
     const nextData = { ...data, ...newData };
+    const storeData = smartType === 'interactive_sheet'
+      ? normalizeInteractiveSheetData(nextData)
+      : nextData;
 
     if (smartElementId) {
-      updateSmartElementData(smartElementId, nextData as never);
+      updateSmartElementData(smartElementId, storeData as never);
     }
 
     onUpdate?.(nextData);
-  }, [data, onUpdate, smartElementId, updateSmartElementData]);
+  }, [data, onUpdate, smartElementId, smartType, updateSmartElementData]);
 
   // Interactive Sheet
   if (smartType === 'interactive_sheet') {
