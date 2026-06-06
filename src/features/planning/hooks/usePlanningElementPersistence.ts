@@ -51,6 +51,23 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Unknown planning element persistence error";
 }
 
+function asPlainRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function readSmartDocSourceElementIds(element: CanvasElement): string[] {
+  const data = asPlainRecord(element.data);
+  const dataMeta = asPlainRecord(data.meta);
+  const metadata = asPlainRecord(element.metadata);
+  const rawSourceIds = data.sourceElementIds ?? dataMeta.sourceElementIds ?? metadata.sourceElementIds;
+
+  return Array.isArray(rawSourceIds)
+    ? rawSourceIds.filter((sourceId): sourceId is string => isPlanningElementId(sourceId))
+    : [];
+}
+
 async function upsertSmartDocsForElements(
   boardId: string,
   userId: string,
@@ -62,7 +79,10 @@ async function upsertSmartDocsForElements(
       return smartType === "interactive_sheet" || smartType === "smart_text_doc";
     });
 
-  const rows: SmartDocInsert[] = smartDocElements.map((element) => ({
+  const rows: SmartDocInsert[] = smartDocElements.map((element) => {
+    const sourceElementIds = readSmartDocSourceElementIds(element);
+
+    return {
       board_id: boardId,
       element_id: element.id,
       title:
@@ -73,9 +93,12 @@ async function upsertSmartDocsForElements(
       metadata: {
         source: "planning-canvas",
         smartType: element.data?.smartType ?? element.metadata?.smartType,
+        sourceElementIds,
+        sourceElementCount: sourceElementIds.length,
       } as Json,
       created_by: userId,
-    }));
+    };
+  });
 
   if (rows.length === 0) return;
 
@@ -100,12 +123,7 @@ async function upsertSmartDocsForElements(
   }
 
   const linkRows: DataLinkInsert[] = smartDocElements.flatMap((element) => {
-    const data = (element.data ?? {}) as Record<string, unknown>;
-    const metadata = (element.metadata ?? {}) as Record<string, unknown>;
-    const rawSourceIds = data.sourceElementIds ?? metadata.sourceElementIds;
-    const sourceElementIds = Array.isArray(rawSourceIds)
-      ? rawSourceIds.filter((sourceId): sourceId is string => isPlanningElementId(sourceId))
-      : [];
+    const sourceElementIds = readSmartDocSourceElementIds(element);
 
     return sourceElementIds.map((sourceElementId) => ({
       board_id: boardId,
