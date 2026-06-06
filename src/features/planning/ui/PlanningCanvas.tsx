@@ -33,6 +33,9 @@ interface PlanningCanvasProps {
 
 type ProjectRow = Database['public']['Tables']['projects']['Row'];
 type TaskRow = Database['public']['Tables']['tasks']['Row'];
+type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
+type TaskState = TaskRow['state'];
+type TaskPriority = TaskRow['priority'];
 type ExecutionTarget = {
   entityType: 'project' | 'task';
   entityId: string;
@@ -41,6 +44,68 @@ type ExecutionTarget = {
 type SmartConversionSuggestion = Pick<SmartConversionPayload, 'targetEntityType' | 'suggestedData'> & {
   sourceBoardId?: string | null;
   sourceElementIds?: string[];
+};
+type TaskExecutionDraft = {
+  state: TaskState;
+  priority: TaskPriority;
+  actualDuration: string;
+  actualCost: string;
+  progress: number;
+  executionNotes: string;
+};
+
+const TASK_STATE_OPTIONS: Array<{ value: TaskState; label: string }> = [
+  { value: 'draft', label: 'مسودة' },
+  { value: 'planned', label: 'مخطط' },
+  { value: 'active', label: 'نشطة' },
+  { value: 'blocked', label: 'متوقفة' },
+  { value: 'paused', label: 'معلقة' },
+  { value: 'completed', label: 'مكتملة' },
+  { value: 'cancelled', label: 'ملغية' },
+];
+
+const TASK_PRIORITY_OPTIONS: Array<{ value: TaskPriority; label: string }> = [
+  { value: 'low', label: 'منخفضة' },
+  { value: 'medium', label: 'متوسطة' },
+  { value: 'high', label: 'مرتفعة' },
+  { value: 'critical', label: 'حرجة' },
+];
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : {};
+
+const readNumber = (value: unknown): number | null =>
+  typeof value === 'number' && Number.isFinite(value) ? value : null;
+
+const readString = (value: unknown): string =>
+  typeof value === 'string' ? value : '';
+
+const normalizeNumberInput = (value: string): number | null => {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const parsed = Number(trimmed);
+  return Number.isFinite(parsed) ? Math.max(0, parsed) : null;
+};
+
+const deriveTaskProgress = (task: TaskRow): number => {
+  const metadataProgress = readNumber(asRecord(task.metadata).executionProgress);
+  if (metadataProgress !== null) return Math.min(100, Math.max(0, metadataProgress));
+  if (task.state === 'completed') return 100;
+  if (task.state === 'active') return 50;
+  if (task.state === 'planned') return 20;
+  return 0;
+};
+
+const mapTaskDraft = (task: TaskRow): TaskExecutionDraft => {
+  const metadata = asRecord(task.metadata);
+  return {
+    state: task.state,
+    priority: task.priority,
+    actualDuration: task.actual_duration === null ? '' : String(task.actual_duration),
+    actualCost: task.actual_cost === null ? '' : String(task.actual_cost),
+    progress: deriveTaskProgress(task),
+    executionNotes: readString(metadata.executionNotes),
+  };
 };
 
 const mapProjectStatus = (state: ProjectRow['state']): Project['status'] => {
@@ -90,6 +155,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const [executionProject, setExecutionProject] = useState<Project | null>(null);
   const [executionTask, setExecutionTask] = useState<TaskRow | null>(null);
   const [executionLoading, setExecutionLoading] = useState(false);
+  const [taskDraft, setTaskDraft] = useState<TaskExecutionDraft | null>(null);
+  const [taskSaving, setTaskSaving] = useState(false);
   const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
   const participants = useCollaborationStore((state) => state.participants);
   const selfName =
@@ -124,6 +191,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
       if (!executionTarget) {
         setExecutionProject(null);
         setExecutionTask(null);
+        setTaskDraft(null);
         return;
       }
 
@@ -157,8 +225,10 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         if (error || !data) {
           toast.error('تعذر فتح تفاصيل المهمة المرتبطة');
           setExecutionTask(null);
+          setTaskDraft(null);
         } else {
           setExecutionTask(data);
+          setTaskDraft(mapTaskDraft(data));
         }
         setExecutionLoading(false);
       }
@@ -258,11 +328,53 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
           content: (typeof element.content === 'object' && element.content !== null && !Array.isArray(element.content)
             ? { ...(element.content as Record<string, unknown>) }
             : element.content) as never,
+          ...(canvasElement.type === 'smart' ? { data: canvasElement.data } : {}),
         });
       });
     },
     [updateElement],
   );
+
+  const handleSaveTaskExecution = useCallback(async () => {
+    if (!executionTask || !taskDraft) return;
+
+    const actualDuration = normalizeNumberInput(taskDraft.actualDuration);
+    const actualCost = normalizeNumberInput(taskDraft.actualCost);
+    const nextMetadata = {
+      ...asRecord(executionTask.metadata),
+      executionProgress: taskDraft.progress,
+      executionNotes: taskDraft.executionNotes.trim() || null,
+      planningCanvasLastEditedAt: new Date().toISOString(),
+      planningCanvasLastEditedBy: currentUserId,
+    } as TaskUpdate['metadata'];
+
+    const updates: TaskUpdate = {
+      state: taskDraft.state,
+      priority: taskDraft.priority,
+      actual_duration: actualDuration,
+      actual_cost: actualCost,
+      metadata: nextMetadata,
+      updated_at: new Date().toISOString(),
+    };
+
+    setTaskSaving(true);
+    const { data, error } = await supabase
+      .from('tasks')
+      .update(updates)
+      .eq('id', executionTask.id)
+      .select('*')
+      .maybeSingle();
+
+    setTaskSaving(false);
+    if (error || !data) {
+      toast.error('تعذر حفظ تحديثات المهمة التنفيذية');
+      return;
+    }
+
+    setExecutionTask(data);
+    setTaskDraft(mapTaskDraft(data));
+    toast.success('تم حفظ تحديثات المهمة التنفيذية');
+  }, [currentUserId, executionTask, taskDraft]);
 
   const handleElementsGenerated = useCallback(
     (elements: any[]) => {
@@ -385,41 +497,132 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
           if (!open) setExecutionTarget(null);
         }}
       >
-        <DialogContent className="h-[100dvh] w-screen max-w-none rounded-none p-4 sm:h-auto sm:w-full sm:max-w-2xl sm:rounded-lg sm:p-6">
-          <DialogHeader>
-            <div>
-              <DialogTitle>{executionTask?.name ?? 'جاري فتح المهمة'}</DialogTitle>
-              <DialogDescription>{executionTask?.description ?? 'تفاصيل المهمة التنفيذية المرتبطة باللوحة'}</DialogDescription>
-            </div>
+        <DialogContent className="flex h-[100dvh] w-screen max-w-none flex-col overflow-hidden rounded-none p-0 sm:h-[min(90dvh,760px)] sm:w-full sm:max-w-4xl sm:rounded-lg">
+          <DialogHeader className="border-b border-border px-5 py-4 text-right" dir="rtl">
+            <DialogTitle>{executionTask?.name ?? 'جاري فتح المهمة'}</DialogTitle>
+            <DialogDescription>{executionTask?.description ?? 'تفاصيل وإدارة المهمة التنفيذية المرتبطة بلوحة التخطيط'}</DialogDescription>
           </DialogHeader>
-          {executionTask && (
-            <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2" dir="rtl">
-              <div className="rounded-md border border-border p-3">
-                <p className="text-muted-foreground">الحالة</p>
-                <p className="font-semibold">{executionTask.state}</p>
+
+          {executionTask && taskDraft ? (
+            <div className="flex-1 overflow-y-auto px-5 py-4" dir="rtl">
+              <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-muted-foreground">المدة المقدرة</p>
+                  <p className="font-semibold">{executionTask.estimated_duration} ساعة</p>
+                </div>
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-muted-foreground">التكلفة المقدرة</p>
+                  <p className="font-semibold">{executionTask.estimated_cost.toLocaleString('ar-SA')} ريال</p>
+                </div>
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-muted-foreground">الفريق المطلوب</p>
+                  <p className="font-semibold">{executionTask.required_team_size} أعضاء</p>
+                </div>
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-muted-foreground">تاريخ البداية</p>
+                  <p className="font-semibold">{executionTask.start_date ?? '-'}</p>
+                </div>
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-muted-foreground">تاريخ التسليم</p>
+                  <p className="font-semibold">{executionTask.due_date ?? '-'}</p>
+                </div>
+                <div className="rounded-md border border-border p-3">
+                  <p className="text-muted-foreground">آخر تحديث</p>
+                  <p className="font-semibold">{new Date(executionTask.updated_at).toLocaleDateString('ar-SA')}</p>
+                </div>
               </div>
-              <div className="rounded-md border border-border p-3">
-                <p className="text-muted-foreground">الأولوية</p>
-                <p className="font-semibold">{executionTask.priority}</p>
+
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="space-y-2">
+                  <span className="text-sm font-medium text-foreground">حالة التنفيذ</span>
+                  <select
+                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                    value={taskDraft.state}
+                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, state: event.target.value as TaskState } : draft)}
+                  >
+                    {TASK_STATE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-sm font-medium text-foreground">الأولوية</span>
+                  <select
+                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                    value={taskDraft.priority}
+                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, priority: event.target.value as TaskPriority } : draft)}
+                  >
+                    {TASK_PRIORITY_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-sm font-medium text-foreground">المدة الفعلية بالساعات</span>
+                  <input
+                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                    inputMode="decimal"
+                    value={taskDraft.actualDuration}
+                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, actualDuration: event.target.value } : draft)}
+                    placeholder="0"
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-sm font-medium text-foreground">التكلفة الفعلية</span>
+                  <input
+                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
+                    inputMode="decimal"
+                    value={taskDraft.actualCost}
+                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, actualCost: event.target.value } : draft)}
+                    placeholder="0"
+                  />
+                </label>
               </div>
-              <div className="rounded-md border border-border p-3">
-                <p className="text-muted-foreground">المدة المقدرة</p>
-                <p className="font-semibold">{executionTask.estimated_duration} ساعة</p>
-              </div>
-              <div className="rounded-md border border-border p-3">
-                <p className="text-muted-foreground">التكلفة المقدرة</p>
-                <p className="font-semibold">{executionTask.estimated_cost.toLocaleString('ar-SA')} ﷼</p>
-              </div>
-              <div className="rounded-md border border-border p-3">
-                <p className="text-muted-foreground">تاريخ البداية</p>
-                <p className="font-semibold">{executionTask.start_date ?? '-'}</p>
-              </div>
-              <div className="rounded-md border border-border p-3">
-                <p className="text-muted-foreground">تاريخ التسليم</p>
-                <p className="font-semibold">{executionTask.due_date ?? '-'}</p>
-              </div>
+
+              <label className="mt-4 block space-y-2">
+                <span className="flex items-center justify-between text-sm font-medium text-foreground">
+                  <span>نسبة التقدم</span>
+                  <span>{taskDraft.progress}%</span>
+                </span>
+                <input
+                  className="w-full accent-primary"
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={taskDraft.progress}
+                  onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, progress: Number(event.target.value) } : draft)}
+                />
+              </label>
+
+              <label className="mt-4 block space-y-2">
+                <span className="text-sm font-medium text-foreground">ملاحظات التنفيذ</span>
+                <textarea
+                  className="min-h-[120px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                  value={taskDraft.executionNotes}
+                  onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, executionNotes: event.target.value } : draft)}
+                  placeholder="أضف آخر تقدم، عائق، أو قرار متعلق بهذه المهمة..."
+                />
+              </label>
             </div>
+          ) : (
+            <div className="flex-1 px-5 py-4 text-sm text-muted-foreground" dir="rtl">جاري تحميل بيانات المهمة...</div>
           )}
+
+          <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-4" dir="rtl">
+            <p className="text-xs text-muted-foreground">يتم حفظ تحديثات التنفيذ على سجل المهمة المرتبط بهذه البطاقة.</p>
+            <button
+              type="button"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
+              disabled={!executionTask || !taskDraft || taskSaving}
+              onClick={() => void handleSaveTaskExecution()}
+            >
+              {taskSaving ? 'جاري الحفظ...' : 'حفظ التحديثات'}
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
