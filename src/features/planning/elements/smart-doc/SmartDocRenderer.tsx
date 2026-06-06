@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { InteractiveSheet } from './InteractiveSheet';
@@ -28,16 +28,26 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
   
   // جلب البيانات من smartElementsStore إذا كان smartElementId موجوداً
   const smartElementId = element.data?.smartElementId;
-  const { getSmartElementData } = useSmartElementsStore();
+  const { getSmartElementData, updateSmartElementData } = useSmartElementsStore();
   const storedData = smartElementId ? getSmartElementData(smartElementId) : null;
   const data = storedData || element.data || {};
+
+  const handleSmartDocUpdate = useCallback((newData: Record<string, unknown>) => {
+    const nextData = { ...data, ...newData };
+
+    if (smartElementId) {
+      updateSmartElementData(smartElementId as SmartDocType, nextData as never);
+    }
+
+    onUpdate?.(nextData);
+  }, [data, onUpdate, smartElementId, updateSmartElementData]);
 
   // Interactive Sheet
   if (smartType === 'interactive_sheet') {
     return (
       <InteractiveSheet 
         data={data as any} 
-        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+        onUpdate={handleSmartDocUpdate} 
       />
     );
   }
@@ -47,7 +57,7 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
     return (
       <SmartTextDoc 
         data={data as any} 
-        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+        onUpdate={handleSmartDocUpdate} 
       />
     );
   }
