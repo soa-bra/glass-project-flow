@@ -32,11 +32,11 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
   const storedData = smartElementId ? getSmartElementData(smartElementId) : null;
   const data = storedData || element.data || {};
 
-  const handleSmartDocUpdate = useCallback((newData: Record<string, unknown>) => {
+  const handleSmartDocUpdate = useCallback((newData: any) => {
     const nextData = { ...data, ...newData };
 
     if (smartElementId) {
-      updateSmartElementData(smartElementId as SmartDocType, nextData as never);
+      updateSmartElementData(smartElementId, nextData as never);
     }
 
     onUpdate?.(nextData);
