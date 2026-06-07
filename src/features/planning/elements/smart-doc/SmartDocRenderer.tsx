@@ -68,7 +68,7 @@ const denormalizeInteractiveSheetForEditor = (data: Record<string, unknown>) => 
 
         return [cellId, {
           ...cell,
-          ...(formatType ? { format: formatType } : {}),
+          format: formatType,
           ...(typeof format.align === 'string' ? { align: format.align } : {}),
           ...(typeof format.bold === 'boolean' ? { bold: format.bold } : {}),
           ...(typeof format.backgroundColor === 'string' ? { backgroundColor: format.backgroundColor } : {}),
