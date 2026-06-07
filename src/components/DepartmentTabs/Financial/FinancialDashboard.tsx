@@ -6,7 +6,6 @@ import { BudgetsTab } from './BudgetsTab';
 import { TransactionsTab } from './TransactionsTab';
 import { InvoicesTab } from './InvoicesTab';
 import { AnalysisTab } from './AnalysisTab';
-import { SettingsTab } from './SettingsTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 
@@ -14,19 +13,18 @@ export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   
   const tabItems = [
-    { value: 'overview', label: 'النظرة العامة' },
-    { value: 'budgets', label: 'الميزانيات' },
-    { value: 'transactions', label: 'النفقات والإيرادات' },
+    { value: 'overview', label: 'نظرة عامة' },
+    { value: 'budgets', label: 'الميزانية' },
+    { value: 'transactions', label: 'المعاملات' },
     { value: 'invoices', label: 'الفواتير والمدفوعات' },
-    { value: 'analysis', label: 'التحليل والتقارير' },
-    { value: 'settings', label: 'الضبط' },
+    { value: 'analysis', label: 'مركز القرار المالي' },
     { value: 'templates', label: 'النماذج والقوالب' },
     { value: 'reports', label: 'التقارير' }
   ];
 
   return (
     <DashboardLayout
-      title="إدارة الأوضاع المالية"
+      title="إدارة العمليات المالية"
       tabs={tabItems}
       activeTab={activeTab}
       onTabChange={setActiveTab}
@@ -49,10 +47,6 @@ export const FinancialDashboard: React.FC = () => {
 
       <BaseTabContent value="analysis">
         <AnalysisTab />
-      </BaseTabContent>
-
-      <BaseTabContent value="settings">
-        <SettingsTab />
       </BaseTabContent>
 
       <BaseTabContent value="templates">
