@@ -4,7 +4,6 @@ import {
   type SmartElementType,
   parseSmartElementData,
 } from '@/types/smart-elements';
-import { createPlanningElementId } from '@/features/planning/state/createPlanningElementId';
 
 interface GeneratedAIElement {
   type: string;
@@ -105,7 +104,6 @@ export function createTypedSmartElement({
   const basePosition = element.position || { x: 100 + index * 50, y: 100 + index * 50 };
 
   return {
-    id: createPlanningElementId(),
     type: smartType,
     smartType,
     position: {
@@ -147,7 +145,6 @@ export function createSmartCanvasElement({
   const size = SMART_ELEMENT_SIZE_MAP[smartType];
 
   return {
-    id: createPlanningElementId(),
     type: smartType,
     smartType,
     position,
