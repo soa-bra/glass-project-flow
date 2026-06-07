@@ -8,13 +8,15 @@
  * 2. Maintain a Supabase Presence map of collaborators (user_id, displayName,
  *    color, cursor x/y, lastSeen). Live cursors are throttled via
  *    `broadcast` events (cheaper than Presence updates).
+ * 3. Broadcast lightweight element lock/editing hints so collaborators can see
+ *    which element is currently being edited before the persisted row changes.
  *
  * Constraints from docs/CANVAS_LIMITATIONS.md:
  * - Max 25 concurrent collaborators per channel.
  * - Cursor broadcast throttled to ~30ms.
  *
  * Usage:
- *   const { peers, broadcastCursor } = usePlanningRealtime({
+ *   const { peers, broadcastCursor, broadcastElementLock } = usePlanningRealtime({
  *     boardId,
  *     onElementInsert, onElementUpdate, onElementDelete,
  *   });
@@ -38,6 +40,12 @@ interface CursorBroadcastPayload {
   user_id: string;
   x: number;
   y: number;
+  t: number;
+}
+
+interface ElementLockBroadcastPayload {
+  user_id: string;
+  element_id: string | null;
   t: number;
 }
 
@@ -215,6 +223,22 @@ export function usePlanningRealtime({
             };
           });
         })
+        .on("broadcast", { event: "element-lock" }, ({ payload }) => {
+          const p = payload as ElementLockBroadcastPayload;
+          if (!p?.user_id || p.user_id === selfUserId) return;
+          setPeers((prev) => {
+            const existing = prev[p.user_id];
+            if (!existing) return prev;
+            return {
+              ...prev,
+              [p.user_id]: {
+                ...existing,
+                editing_element_id: p.element_id,
+                lastSeen: p.t,
+              },
+            };
+          });
+        })
         .subscribe(async (status) => {
           if (disposed) return;
           if (status === "SUBSCRIBED") {
@@ -301,6 +325,18 @@ export function usePlanningRealtime({
     });
   }, [selfUserId]);
 
+  /** Broadcast which element this user is editing/locking. */
+  const broadcastElementLock = useCallback((elementId: string | null) => {
+    const ch = channelRef.current;
+    if (!ch || !selfUserId) return;
+    const now = Date.now();
+    void ch.send({
+      type: "broadcast",
+      event: "element-lock",
+      payload: { user_id: selfUserId, element_id: elementId, t: now } satisfies ElementLockBroadcastPayload,
+    });
+  }, [selfUserId]);
+
   /** Patch self presence (e.g. which element is being edited). */
   const updateSelfPresence = useCallback(
     async (patch: Partial<Pick<PresencePeer, "editing_element_id">>) => {
@@ -310,8 +346,11 @@ export function usePlanningRealtime({
       const next: PresencePeer = { ...base, ...patch, lastSeen: Date.now() };
       selfStateRef.current = next;
       await ch.track(next);
+      if (Object.prototype.hasOwnProperty.call(patch, "editing_element_id")) {
+        broadcastElementLock(patch.editing_element_id ?? null);
+      }
     },
-    [],
+    [broadcastElementLock],
   );
 
   const peerList = useMemo(
@@ -324,6 +363,7 @@ export function usePlanningRealtime({
     peersById: peers,
     selfUserId,
     broadcastCursor,
+    broadcastElementLock,
     updateSelfPresence,
     isConnected: connectionStatus === "connected",
     connectionStatus,
