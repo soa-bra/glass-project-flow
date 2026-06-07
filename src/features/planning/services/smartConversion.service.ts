@@ -22,7 +22,15 @@ type SyncQueueInsert = Database['public']['Tables']['sync_queue']['Insert'];
 type ProjectEventInsert = Database['public']['Tables']['project_events']['Insert'];
 
 type CreatedEntity = Project | Task | FinancialBudget | FinancialTransaction;
-type DbWriteResult = PromiseLike<{ error: unknown }>;
+type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
+type DbInsertedIdResult = PromiseLike<{ data: { id: string } | null; error: unknown }>;
+
+export interface SmartConversionTraceReferences {
+  transformationIds: string[];
+  dataLinkIds: string[];
+  syncQueueId: string;
+  projectEventId?: string;
+}
 
 function getEntityDisplayName(entity: CreatedEntity): string {
   return asString((entity as any).name) ?? asString((entity as any).title) ?? 'كيان تنفيذي';
@@ -84,6 +92,7 @@ export interface SmartConversionPayload {
 export interface SmartConversionResult {
   entity: CreatedEntity;
   linkedElements: PlanningElement[];
+  traceReferences: SmartConversionTraceReferences;
   auditEventId?: string;
 }
 
@@ -298,11 +307,30 @@ async function createEntity(payload: SmartConversionPayload, ownerId: string): P
   }
 }
 
-async function assertRequiredWrite(operation: DbWriteResult, label: string): Promise<void> {
-  const { error } = await operation;
+async function requireInsertedIds(operation: DbInsertedIdsResult, label: string): Promise<string[]> {
+  const { data, error } = await operation;
   if (error) {
     throw new Error(`فشل تسجيل ${label}: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
   }
+
+  const ids = (data ?? []).map((row) => row.id).filter(Boolean);
+  if (ids.length === 0) {
+    throw new Error(`فشل تسجيل ${label}: لم يتم إرجاع معرفات السجلات.`);
+  }
+
+  return ids;
+}
+
+async function requireInsertedId(operation: DbInsertedIdResult, label: string): Promise<string> {
+  const { data, error } = await operation;
+  if (error) {
+    throw new Error(`فشل تسجيل ${label}: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+  }
+  if (!data?.id) {
+    throw new Error(`فشل تسجيل ${label}: لم يتم إرجاع معرف السجل.`);
+  }
+
+  return data.id;
 }
 
 async function loadSourcePlanningElements(payload: SmartConversionPayload): Promise<PlanningElement[]> {
@@ -366,7 +394,7 @@ async function recordTransformationLinksAndEvents(
   payload: SmartConversionPayload,
   entity: CreatedEntity,
   ownerId: string,
-): Promise<void> {
+): Promise<SmartConversionTraceReferences> {
   const projectId = getProjectIdForEvent(payload, entity);
 
   const transformationRows: ElementTransformationInsert[] = payload.sourceElementIds.map((sourceElementId) => ({
@@ -443,25 +471,33 @@ async function recordTransformationLinksAndEvents(
     created_by: ownerId,
   };
 
-  await assertRequiredWrite(
-    supabase.from('element_transformations').insert(transformationRows),
+  const transformationIds = await requireInsertedIds(
+    supabase.from('element_transformations').insert(transformationRows).select('id'),
     'تحولات عناصر التخطيط',
   );
-  await assertRequiredWrite(
-    supabase.from('data_links').insert(linkRows),
+  const dataLinkIds = await requireInsertedIds(
+    supabase.from('data_links').insert(linkRows).select('id'),
     'روابط البيانات الناتجة عن التحويل',
   );
-  await assertRequiredWrite(
-    supabase.from('sync_queue').insert(syncQueueRow),
+  const syncQueueId = await requireInsertedId(
+    supabase.from('sync_queue').insert(syncQueueRow).select('id').single(),
     'طلب مزامنة التحويل',
   );
 
+  let projectEventId: string | undefined;
   if (eventRow) {
-    await assertRequiredWrite(
-      supabase.from('project_events').insert(eventRow),
+    projectEventId = await requireInsertedId(
+      supabase.from('project_events').insert(eventRow).select('id').single(),
       'حدث المشروع الناتج عن التحويل',
     );
   }
+
+  return {
+    transformationIds,
+    dataLinkIds,
+    syncQueueId,
+    projectEventId,
+  };
 }
 
 async function recordConversionAudit(
@@ -518,8 +554,8 @@ export async function approveSmartConversion(
   const sourceElements = await loadSourcePlanningElements(approvedPayload);
   const entity = await createEntity(approvedPayload, ownerId);
   const linkedElements = await linkPlanningElements(approvedPayload, entity, sourceElements);
-  await recordTransformationLinksAndEvents(approvedPayload, entity, ownerId);
+  const traceReferences = await recordTransformationLinksAndEvents(approvedPayload, entity, ownerId);
   const auditEventId = await recordConversionAudit(approvedPayload, entity, ownerId);
 
-  return { entity, linkedElements, auditEventId };
+  return { entity, linkedElements, traceReferences, auditEventId };
 }
