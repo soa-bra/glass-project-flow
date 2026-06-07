@@ -44,6 +44,11 @@ const EDITING_TOOL_SHORTCUTS = new Set(['t', 'r', 'p', 'f', 'u', 's', 'd', 'n', 
 const MUTATING_MODIFIER_SHORTCUTS = new Set(['z', 'v', 'x', 'd', 'g', 'l']);
 const ARROW_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
 
+function isTextEntryTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false;
+  return target.closest('input, textarea, [contenteditable="true"], [role="textbox"]') !== null;
+}
+
 function isReadonlyEditingShortcut(e: KeyboardEvent, hasSelection: boolean): boolean {
   const key = e.key.toLowerCase();
   const hasModifier = e.ctrlKey || e.metaKey;
@@ -56,7 +61,7 @@ function isReadonlyEditingShortcut(e: KeyboardEvent, hasSelection: boolean): boo
     return true;
   }
 
-  if (hasSelection && !hasModifier && ARROW_KEYS.has(e.key)) {
+  if (hasSelection && ARROW_KEYS.has(e.key)) {
     return true;
   }
 
@@ -118,6 +123,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     if (canEdit) return;
 
     const blockReadonlyEditingShortcuts = (e: KeyboardEvent) => {
+      if (isTextEntryTarget(e.target)) return;
       if (!isReadonlyEditingShortcut(e, selectedElementIds.length > 0)) return;
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -452,6 +458,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           transform: `translate(${viewport.pan.x}px, ${viewport.pan.y}px) scale(${viewport.zoom})`,
           transition: 'none',
           willChange: 'transform',
+          pointerEvents: canEdit ? 'auto' : 'none',
         }}
       >
         <StrokesLayer />
