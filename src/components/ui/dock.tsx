@@ -10,21 +10,23 @@ import {
 } from "@/components/ui/tooltip"
 import { motion } from "framer-motion"
 
-interface DockProps {
-  className?: string
+interface DockProps extends React.HTMLAttributes<HTMLDivElement> {
   items: {
     icon: React.ComponentType<{ className?: string }>
     label: string
     onClick?: () => void
     isActive?: boolean
+    disabled?: boolean
+    ariaLabel?: string
+    ariaKeyshortcuts?: string
   }[]
 }
 
-export default function Dock({ items, className }: DockProps) {
+export default function Dock({ items, className, ...props }: DockProps) {
   const [hovered, setHovered] = React.useState<number | null>(null)
 
   return (
-    <div className={cn("flex items-center justify-center w-full", className)}>
+    <div {...props} className={cn("flex items-center justify-center w-full", className)}>
       <motion.div
         animate={{ y: [0, -1, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
@@ -38,16 +40,23 @@ export default function Dock({ items, className }: DockProps) {
       >
         <TooltipProvider delayDuration={100}>
           {items.map((item, i) => {
-            const isActive = item.isActive
-            const isHovered = hovered === i
+            const isDisabled = Boolean(item.disabled)
+            const isActive = item.isActive && !isDisabled
+            const isHovered = hovered === i && !isDisabled
 
             return (
               <Tooltip key={item.label}>
                 <TooltipTrigger asChild>
                   <button
+                    type="button"
+                    aria-label={item.ariaLabel ?? item.label}
+                    aria-keyshortcuts={item.ariaKeyshortcuts}
+                    aria-disabled={isDisabled || undefined}
+                    disabled={isDisabled}
                     onMouseEnter={() => setHovered(i)}
                     onMouseLeave={() => setHovered(null)}
                     onClick={() => {
+                      if (isDisabled) return
                       item.onClick?.()
                     }}
                     style={{
@@ -56,6 +65,7 @@ export default function Dock({ items, className }: DockProps) {
                     }}
                     className={cn(
                       "h-8 w-8 rounded-full flex items-center justify-center transition-colors",
+                      isDisabled && "cursor-not-allowed opacity-45",
                       isActive && "bg-[hsl(var(--ink))]",
                       isHovered && !isActive && "bg-[hsl(var(--ink-30))]",
                       !isActive && !isHovered && "bg-transparent"
@@ -64,7 +74,7 @@ export default function Dock({ items, className }: DockProps) {
                     <item.icon
                       className={cn(
                         "h-4 w-4 transition-colors",
-                        isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
+                        isDisabled ? "text-[hsl(var(--ink-30))]" : isActive ? "text-white" : "text-[hsl(var(--ink-60))]"
                       )}
                     />
                   </button>

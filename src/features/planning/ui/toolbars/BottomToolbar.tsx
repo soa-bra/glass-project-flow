@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   MousePointer2, 
   Pen, 
@@ -103,17 +103,33 @@ const tools: Tool[] = [
   },
 ];
 
-const BottomToolbar: React.FC<{ canEdit?: boolean }> = ({ canEdit: _canEdit = true }) => {
+const READONLY_TOOL_ID: ToolId = 'selection_tool';
+
+const BottomToolbar: React.FC<{ canEdit?: boolean }> = ({ canEdit = true }) => {
   const { activeTool, setActiveTool } = useCanvasStore();
 
-  const dockItems = tools.map((tool) => ({
-    icon: tool.icon,
-    label: `${tool.name} • ${tool.shortcut}`,
-    onClick: () => setActiveTool(tool.id),
-    isActive: activeTool === tool.id,
-    ariaLabel: tool.ariaLabel,
-    ariaKeyshortcuts: tool.shortcut,
-  }));
+  useEffect(() => {
+    if (!canEdit && activeTool !== READONLY_TOOL_ID) {
+      setActiveTool(READONLY_TOOL_ID);
+    }
+  }, [activeTool, canEdit, setActiveTool]);
+
+  const dockItems = tools.map((tool) => {
+    const disabled = !canEdit && tool.id !== READONLY_TOOL_ID;
+
+    return {
+      icon: tool.icon,
+      label: disabled ? `${tool.name} • ${tool.shortcut} • قراءة فقط` : `${tool.name} • ${tool.shortcut}`,
+      onClick: () => {
+        if (disabled) return;
+        setActiveTool(tool.id);
+      },
+      isActive: activeTool === tool.id,
+      disabled,
+      ariaLabel: disabled ? `${tool.ariaLabel} - غير متاح في وضع القراءة فقط` : tool.ariaLabel,
+      ariaKeyshortcuts: disabled ? undefined : tool.shortcut,
+    };
+  });
 
   return (
     <nav 
@@ -130,6 +146,7 @@ const BottomToolbar: React.FC<{ canEdit?: boolean }> = ({ canEdit: _canEdit = tr
       {/* Screen reader instructions */}
       <div className="sr-only" aria-live="polite">
         الأداة المفعلة حالياً: {tools.find(t => t.id === activeTool)?.name}
+        {!canEdit ? ' - وضع القراءة فقط، أدوات التحرير غير متاحة' : ''}
       </div>
     </nav>
   );
