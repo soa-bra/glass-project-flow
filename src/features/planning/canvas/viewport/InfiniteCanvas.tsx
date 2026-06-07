@@ -506,7 +506,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           />
         )}
 
-        <BoundingBox onGuidesChange={setSnapGuides} />
+        {canEdit && <BoundingBox onGuidesChange={setSnapGuides} />}
         {tempElement && canEdit && <DrawingPreview element={tempElement} />}
         <PresenceCursors peers={peers} />
       </div>
