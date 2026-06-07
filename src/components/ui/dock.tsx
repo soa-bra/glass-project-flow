@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/tooltip"
 import { motion } from "framer-motion"
 
-interface DockProps {
-  className?: string
+interface DockProps extends React.HTMLAttributes<HTMLDivElement> {
   items: {
     icon: React.ComponentType<{ className?: string }>
     label: string
@@ -23,11 +22,11 @@ interface DockProps {
   }[]
 }
 
-export default function Dock({ items, className }: DockProps) {
+export default function Dock({ items, className, ...props }: DockProps) {
   const [hovered, setHovered] = React.useState<number | null>(null)
 
   return (
-    <div className={cn("flex items-center justify-center w-full", className)}>
+    <div {...props} className={cn("flex items-center justify-center w-full", className)}>
       <motion.div
         animate={{ y: [0, -1, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
