@@ -44,10 +44,9 @@ const isFormatObject = (value: unknown): value is CellFormatObject =>
 
 const getCellFormat = (cell?: CellData): CellFormatObject => {
   if (!cell) return {};
-  const formatObject = isFormatObject(cell.format) ? cell.format : {};
+  if (isFormatObject(cell.format)) return cell.format;
 
   return {
-    ...formatObject,
     ...(typeof cell.format === 'string' ? { type: cell.format } : {}),
     ...(cell.align ? { align: cell.align } : {}),
     ...(typeof cell.bold === 'boolean' ? { bold: cell.bold } : {}),
