@@ -16,6 +16,41 @@ const ICONS: Record<SmartDocType, React.ElementType> = {
   smart_text_doc: FileText,
 };
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const normalizeInteractiveSheetForSmartStore = (data: Record<string, unknown>) => {
+  const cells = isRecord(data.cells) ? data.cells : {};
+
+  return {
+    ...data,
+    cells: Object.fromEntries(
+      Object.entries(cells).map(([cellId, cellData]) => {
+        const cell = isRecord(cellData) ? cellData : {};
+        const existingFormat = isRecord(cell.format) ? cell.format : {};
+        const formatType = typeof cell.format === 'string'
+          ? cell.format
+          : typeof existingFormat.type === 'string'
+            ? existingFormat.type
+            : undefined;
+        const format = {
+          ...existingFormat,
+          ...(formatType ? { type: formatType } : {}),
+          ...(typeof cell.align === 'string' ? { align: cell.align } : {}),
+          ...(typeof cell.bold === 'boolean' ? { bold: cell.bold } : {}),
+          ...(typeof cell.backgroundColor === 'string' ? { backgroundColor: cell.backgroundColor } : {}),
+        };
+
+        return [cellId, {
+          ...cell,
+          value: 'value' in cell ? cell.value : null,
+          format: Object.keys(format).length > 0 ? format : undefined,
+        }];
+      }),
+    ),
+  };
+};
+
 /**
  * SmartDocRenderer - Renderer for Smart Document elements
  * يعرض المستندات الذكية (ورقة تفاعلية، مستند نصي ذكي)
@@ -36,11 +71,15 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
     const nextData = { ...data, ...newData };
 
     if (smartElementId) {
-      updateSmartElementData(smartElementId, nextData as never);
+      const smartStoreData = smartType === 'interactive_sheet'
+        ? normalizeInteractiveSheetForSmartStore(nextData)
+        : nextData;
+
+      updateSmartElementData(smartElementId, smartStoreData as never);
     }
 
     onUpdate?.(nextData);
-  }, [data, onUpdate, smartElementId, updateSmartElementData]);
+  }, [data, onUpdate, smartElementId, smartType, updateSmartElementData]);
 
   // Interactive Sheet
   if (smartType === 'interactive_sheet') {
