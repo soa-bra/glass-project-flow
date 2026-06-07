@@ -43,7 +43,7 @@ const normalizeInteractiveSheetForSmartStore = (data: Record<string, unknown>) =
 
         return [cellId, {
           ...cell,
-          value: 'value' in cell ? cell.value : null,
+          value: cell.value ?? null,
           format: Object.keys(format).length > 0 ? format : undefined,
         }];
       }),
