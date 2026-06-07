@@ -40,6 +40,33 @@ interface InfiniteCanvasProps {
   canEdit?: boolean;
 }
 
+const EDITING_TOOL_SHORTCUTS = new Set(['t', 'r', 'p', 'f', 'u', 's', 'd', 'n', 'm', 'e']);
+const MUTATING_MODIFIER_SHORTCUTS = new Set(['z', 'v', 'x', 'd', 'g', 'l']);
+const ARROW_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
+
+function isReadonlyEditingShortcut(e: KeyboardEvent, hasSelection: boolean): boolean {
+  const key = e.key.toLowerCase();
+  const hasModifier = e.ctrlKey || e.metaKey;
+
+  if (!hasModifier && EDITING_TOOL_SHORTCUTS.has(key)) {
+    return true;
+  }
+
+  if ((e.key === 'Delete' || e.key === 'Backspace') && hasSelection) {
+    return true;
+  }
+
+  if (hasSelection && !hasModifier && ARROW_KEYS.has(e.key)) {
+    return true;
+  }
+
+  if (!hasModifier) {
+    return false;
+  }
+
+  return MUTATING_MODIFIER_SHORTCUTS.has(key);
+}
+
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   boardId: _boardId,
   peers = [],
@@ -79,6 +106,26 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   const { handleCanvasMouseDown, handleCanvasMouseMove, handleCanvasMouseUp } = useToolInteraction(containerRef);
   const { finishSelection } = useSelectionBox();
+
+  useEffect(() => {
+    if (canEdit) return;
+    if (activeTool !== 'selection_tool') {
+      useCanvasStore.getState().setActiveTool('selection_tool');
+    }
+  }, [activeTool, canEdit]);
+
+  useEffect(() => {
+    if (canEdit) return;
+
+    const blockReadonlyEditingShortcuts = (e: KeyboardEvent) => {
+      if (!isReadonlyEditingShortcut(e, selectedElementIds.length > 0)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    };
+
+    window.addEventListener('keydown', blockReadonlyEditingShortcuts, { capture: true });
+    return () => window.removeEventListener('keydown', blockReadonlyEditingShortcuts, { capture: true });
+  }, [canEdit, selectedElementIds.length]);
 
   useKeyboardShortcuts();
 
@@ -259,6 +306,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     [addElement, deleteElements, rootConnectorElements, updateElement, _boardId],
   );
 
+  const handleReadOnlyDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+  }, []);
+
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
@@ -293,6 +344,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       }
 
       if (
+        canEdit &&
         e.button === 0 &&
         (
           activeTool === 'file_uploader' ||
@@ -314,7 +366,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         clearSelection();
       }
     },
-    [activeTool, beginBoxSelection, beginPanning, clearSelection, handleCanvasMouseDown],
+    [activeTool, beginBoxSelection, beginPanning, canEdit, clearSelection, handleCanvasMouseDown],
   );
 
   const handleMouseMove = useCallback(
@@ -338,9 +390,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         return;
       }
 
-      handleCanvasMouseMove(e);
+      if (canEdit) {
+        handleCanvasMouseMove(e);
+      }
     },
-    [broadcastCursor, boxSelectData, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
+    [broadcastCursor, boxSelectData, canEdit, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -364,8 +418,10 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       completeBoxSelection();
     }
 
-    handleCanvasMouseUp();
-  }, [boxSelectData, cancelConnection, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
+    if (canEdit) {
+      handleCanvasMouseUp();
+    }
+  }, [boxSelectData, cancelConnection, canEdit, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -383,8 +439,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      onDrop={handleFileDrop}
-      onDragOver={handleFileDragOver}
+      onDrop={canEdit ? handleFileDrop : handleReadOnlyDrop}
+      onDragOver={canEdit ? handleFileDragOver : handleReadOnlyDrop}
       style={{ backgroundColor: settings.background, cursor: getCursorStyle() }}
     >
       <CanvasGridLayer />
@@ -444,7 +500,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         )}
 
         <BoundingBox onGuidesChange={setSnapGuides} />
-        {tempElement && <DrawingPreview element={tempElement} />}
+        {tempElement && canEdit && <DrawingPreview element={tempElement} />}
         <PresenceCursors peers={peers} />
       </div>
 
@@ -459,9 +515,9 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
       <SnapGuides guides={snapGuides} containerRef={containerRef} />
 
-      <PenInputLayer containerRef={containerRef} active={activeTool === 'smart_pen'} />
-      <FrameInputLayer containerRef={containerRef} active={activeTool === 'frame_tool'} />
-      <PenFloatingToolbar isVisible={activeTool === 'smart_pen'} />
+      <PenInputLayer containerRef={containerRef} active={canEdit && activeTool === 'smart_pen'} />
+      <FrameInputLayer containerRef={containerRef} active={canEdit && activeTool === 'frame_tool'} />
+      <PenFloatingToolbar isVisible={canEdit && activeTool === 'smart_pen'} />
 
     </div>
   );
