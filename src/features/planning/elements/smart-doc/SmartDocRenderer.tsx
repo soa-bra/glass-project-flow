@@ -51,6 +51,33 @@ const normalizeInteractiveSheetForSmartStore = (data: Record<string, unknown>) =
   };
 };
 
+const denormalizeInteractiveSheetForEditor = (data: Record<string, unknown>) => {
+  const cells = isRecord(data.cells) ? data.cells : {};
+
+  return {
+    ...data,
+    cells: Object.fromEntries(
+      Object.entries(cells).map(([cellId, cellData]) => {
+        const cell = isRecord(cellData) ? cellData : {};
+        const format = isRecord(cell.format) ? cell.format : {};
+        const formatType = typeof cell.format === 'string'
+          ? cell.format
+          : typeof format.type === 'string'
+            ? format.type
+            : undefined;
+
+        return [cellId, {
+          ...cell,
+          format: formatType,
+          ...(typeof format.align === 'string' ? { align: format.align } : {}),
+          ...(typeof format.bold === 'boolean' ? { bold: format.bold } : {}),
+          ...(typeof format.backgroundColor === 'string' ? { backgroundColor: format.backgroundColor } : {}),
+        }];
+      }),
+    ),
+  };
+};
+
 /**
  * SmartDocRenderer - Renderer for Smart Document elements
  * يعرض المستندات الذكية (ورقة تفاعلية، مستند نصي ذكي)
@@ -66,9 +93,12 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
   const { getSmartElementData, updateSmartElementData } = useSmartElementsStore();
   const storedData = smartElementId ? getSmartElementData(smartElementId) : null;
   const data = storedData || element.data || {};
+  const editorData = smartType === 'interactive_sheet'
+    ? denormalizeInteractiveSheetForEditor(data)
+    : data;
 
   const handleSmartDocUpdate = useCallback((newData: any) => {
-    const nextData = { ...data, ...newData };
+    const nextData = { ...editorData, ...newData };
 
     if (smartElementId) {
       const smartStoreData = smartType === 'interactive_sheet'
@@ -79,13 +109,13 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
     }
 
     onUpdate?.(nextData);
-  }, [data, onUpdate, smartElementId, smartType, updateSmartElementData]);
+  }, [editorData, onUpdate, smartElementId, smartType, updateSmartElementData]);
 
   // Interactive Sheet
   if (smartType === 'interactive_sheet') {
     return (
       <InteractiveSheet 
-        data={data as any} 
+        data={editorData as any} 
         onUpdate={handleSmartDocUpdate} 
       />
     );
@@ -95,7 +125,7 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
   if (smartType === 'smart_text_doc') {
     return (
       <SmartTextDoc 
-        data={data as any} 
+        data={editorData as any} 
         onUpdate={handleSmartDocUpdate} 
       />
     );
