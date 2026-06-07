@@ -4,10 +4,24 @@ import { Input } from '@/components/ui/input';
 import { Plus, Trash2, Table, Calculator } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type CellFormatType = 'text' | 'number' | 'currency' | 'percentage';
+type CellFormatObject = {
+  type?: CellFormatType | 'date' | 'boolean';
+  align?: 'right' | 'center' | 'left';
+  verticalAlign?: 'top' | 'middle' | 'bottom';
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  color?: string;
+  backgroundColor?: string;
+  fontSize?: number;
+  wrap?: boolean;
+};
+
 interface CellData {
   value: string;
   formula?: string;
-  format?: 'text' | 'number' | 'currency' | 'percentage';
+  format?: CellFormatType | CellFormatObject;
   align?: 'right' | 'center' | 'left';
   bold?: boolean;
   backgroundColor?: string;
@@ -24,6 +38,46 @@ interface InteractiveSheetProps {
   data: InteractiveSheetData;
   onUpdate: (data: Partial<InteractiveSheetData>) => void;
 }
+
+const isFormatObject = (value: unknown): value is CellFormatObject =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+
+const getCellFormat = (cell?: CellData): CellFormatObject => {
+  if (!cell) return {};
+  const formatObject = isFormatObject(cell.format) ? cell.format : {};
+
+  return {
+    ...formatObject,
+    ...(typeof cell.format === 'string' ? { type: cell.format } : {}),
+    ...(cell.align ? { align: cell.align } : {}),
+    ...(typeof cell.bold === 'boolean' ? { bold: cell.bold } : {}),
+    ...(cell.backgroundColor ? { backgroundColor: cell.backgroundColor } : {}),
+  };
+};
+
+const getCellFormatType = (cell?: CellData): CellFormatType | undefined => {
+  const type = getCellFormat(cell).type;
+  return type === 'text' || type === 'number' || type === 'currency' || type === 'percentage'
+    ? type
+    : undefined;
+};
+
+const getCellAlign = (cell?: CellData): CellData['align'] => getCellFormat(cell).align;
+const getCellBackgroundColor = (cell?: CellData): string | undefined => getCellFormat(cell).backgroundColor;
+const isCellBold = (cell?: CellData): boolean => getCellFormat(cell).bold ?? false;
+
+const withCellFormat = (cell: CellData | undefined, formatPatch: Partial<CellFormatObject>): CellData => {
+  const baseCell = cell ?? { value: '' };
+  const currentFormat = getCellFormat(baseCell);
+
+  return {
+    ...baseCell,
+    format: {
+      ...currentFormat,
+      ...formatPatch,
+    },
+  };
+};
 
 const getColumnLabel = (index: number): string => {
   let label = '';
@@ -366,11 +420,11 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
     onUpdate({ columns: columns - 1, cells: newCells });
   };
 
-  const formatCell = (format: CellData['format']) => {
+  const formatCell = (format: CellFormatType) => {
     if (!selectedCell) return;
     updateCells({
       ...cells,
-      [selectedCell]: { ...cells[selectedCell], format }
+      [selectedCell]: withCellFormat(cells[selectedCell], { type: format }),
     });
   };
 
@@ -378,10 +432,9 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
     if (!selectedCell) return;
     updateCells({
       ...cells,
-      [selectedCell]: { 
-        ...cells[selectedCell], 
-        bold: !cells[selectedCell]?.bold 
-      }
+      [selectedCell]: withCellFormat(cells[selectedCell], {
+        bold: !isCellBold(cells[selectedCell]),
+      }),
     });
   };
 
@@ -427,7 +480,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
           
           <div className="flex items-center gap-1 border-r border-border pr-2 mr-2">
             <Button
-              variant={cells[selectedCell]?.bold ? 'default' : 'ghost'}
+              variant={isCellBold(cells[selectedCell]) ? 'default' : 'ghost'}
               size="icon"
               className="h-6 w-6 text-xs font-bold"
               onClick={toggleBold}
@@ -435,7 +488,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
               B
             </Button>
             <Button
-              variant={cells[selectedCell]?.format === 'number' ? 'default' : 'ghost'}
+              variant={getCellFormatType(cells[selectedCell]) === 'number' ? 'default' : 'ghost'}
               size="sm"
               className="h-6 text-xs px-2"
               onClick={() => formatCell('number')}
@@ -443,7 +496,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
               123
             </Button>
             <Button
-              variant={cells[selectedCell]?.format === 'currency' ? 'default' : 'ghost'}
+              variant={getCellFormatType(cells[selectedCell]) === 'currency' ? 'default' : 'ghost'}
               size="sm"
               className="h-6 text-xs px-2"
               onClick={() => formatCell('currency')}
@@ -451,7 +504,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
               ﷼
             </Button>
             <Button
-              variant={cells[selectedCell]?.format === 'percentage' ? 'default' : 'ghost'}
+              variant={getCellFormatType(cells[selectedCell]) === 'percentage' ? 'default' : 'ghost'}
               size="sm"
               className="h-6 text-xs px-2"
               onClick={() => formatCell('percentage')}
@@ -490,13 +543,15 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
                   const isEditing = editingCell === cellId;
                   const isSelected = selectedCell === cellId;
                   const displayValue = getCellDisplayValue(cellId);
+                  const cellBackgroundColor = getCellBackgroundColor(cell);
                   
                   const formatValue = (val: string) => {
-                    if (!cell?.format || !val) return val;
+                    const formatType = getCellFormatType(cell);
+                    if (!formatType || !val) return val;
                     const num = parseFloat(val);
                     if (isNaN(num)) return val;
                     
-                    switch (cell.format) {
+                    switch (formatType) {
                       case 'currency':
                         return `${num.toLocaleString('ar-SA')} ﷼`;
                       case 'percentage':
@@ -514,11 +569,11 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
                       className={cn(
                         "h-8 border border-border transition-colors cursor-cell",
                         isSelected && "ring-2 ring-primary ring-inset",
-                        cell?.backgroundColor
+                        cellBackgroundColor
                       )}
                       style={{ 
-                        backgroundColor: cell?.backgroundColor,
-                        textAlign: cell?.align || 'right'
+                        backgroundColor: cellBackgroundColor,
+                        textAlign: getCellAlign(cell) || 'right'
                       }}
                       onClick={() => setSelectedCell(cellId)}
                       onDoubleClick={() => startEditing(cellId)}
@@ -547,7 +602,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
                         <span 
                           className={cn(
                             "block px-2 text-xs truncate",
-                            cell?.bold && "font-bold"
+                            isCellBold(cell) && "font-bold"
                           )}
                         >
                           {formatValue(displayValue)}
