@@ -30,6 +30,7 @@ interface CanvasToolbarProps {
   realtimeStatus?: RealtimeConnectionStatus;
   lastSyncAt?: number | null;
   canEdit?: boolean;
+  elementPersistence?: unknown;
 }
 
 const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
