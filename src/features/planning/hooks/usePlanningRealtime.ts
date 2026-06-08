@@ -194,7 +194,16 @@ export function usePlanningRealtime({
           const next: Record<string, PresencePeer> = {};
           for (const key of Object.keys(state)) {
             const meta = state[key]?.[0];
-            if (meta) next[key] = { ...meta, lastSeen: Date.now() };
+            if (meta) {
+              next[key] = {
+                user_id: meta.user_id ?? key,
+                display_name: meta.display_name ?? "متعاون",
+                color: meta.color ?? colorFromId(meta.user_id ?? key),
+                editing_element_id: meta.editing_element_id ?? null,
+                cursor: meta.cursor,
+                lastSeen: Date.now(),
+              };
+            }
           }
           setPeers(next);
           markSynced();
