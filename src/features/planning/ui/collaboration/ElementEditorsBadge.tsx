@@ -69,10 +69,10 @@ export function ElementEditorsBadge({
           <span
             key={p.user_id}
             className="inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold text-white ring-2 ring-card"
-            style={{ backgroundColor: p.color }}
-            title={p.display_name}
+            style={{ backgroundColor: p.color ?? "#64748b" }}
+            title={p.display_name ?? "متعاون"}
           >
-            {initials(p.display_name)}
+            {initials(p.display_name ?? "")}
           </span>
         ))}
         {overflow > 0 && (

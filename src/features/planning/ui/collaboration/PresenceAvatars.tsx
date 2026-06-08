@@ -25,20 +25,21 @@ export const PresenceAvatars = memo(function PresenceAvatars({
   max = 5,
 }: PresenceAvatarsProps) {
   if (peers.length === 0) return null;
-  const visible = peers.slice(0, max);
-  const overflow = peers.length - visible.length;
+  const safePeers = peers.filter((p): p is PresencePeer => Boolean(p && p.user_id));
+  const visible = safePeers.slice(0, max);
+  const overflow = safePeers.length - visible.length;
 
   return (
     <div className="flex items-center -space-x-2 rtl:space-x-reverse" dir="rtl">
       {visible.map((p) => (
         <div
           key={p.user_id}
-          title={p.display_name}
+          title={p.display_name ?? "متعاون"}
           className="size-8 rounded-full border-2 border-background flex items-center justify-center text-xs font-semibold text-white shadow-sm"
-          style={{ background: p.color }}
-          aria-label={`متعاون: ${p.display_name}`}
+          style={{ background: p.color ?? "#64748b" }}
+          aria-label={`متعاون: ${p.display_name ?? "متعاون"}`}
         >
-          {initialsOf(p.display_name)}
+          {initialsOf(p.display_name ?? "")}
         </div>
       ))}
       {overflow > 0 && (

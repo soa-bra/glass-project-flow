@@ -18,7 +18,9 @@ export const PresenceCursors = memo(function PresenceCursors({
   return (
     <div className="pointer-events-none absolute inset-0">
       {peers.map((p) => {
-        if (!p.cursor) return null;
+        if (!p || !p.cursor) return null;
+        const color = p.color ?? "#64748b";
+        const name = p.display_name ?? "متعاون";
         return (
           <div
             key={p.user_id}
@@ -30,7 +32,7 @@ export const PresenceCursors = memo(function PresenceCursors({
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <path
                 d="M2 2 L18 10 L10 12 L8 18 Z"
-                fill={p.color}
+                fill={color}
                 stroke="white"
                 strokeWidth="1.5"
                 strokeLinejoin="round"
@@ -38,9 +40,9 @@ export const PresenceCursors = memo(function PresenceCursors({
             </svg>
             <span
               className="absolute top-5 start-3 px-1.5 py-0.5 rounded-md text-[10px] font-medium text-white whitespace-nowrap shadow-sm"
-              style={{ background: p.color }}
+              style={{ background: color }}
             >
-              {p.display_name}
+              {name}
             </span>
           </div>
         );
