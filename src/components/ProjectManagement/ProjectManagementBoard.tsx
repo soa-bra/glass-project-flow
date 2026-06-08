@@ -164,32 +164,32 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                       <div className="text-xs font-Regular text-black font-arabic">ريال سعودي</div>
                     </Stagger.Item>
 
-                    {/* الشكاوى */}
+                    {/* المهام المتأخرة */}
                     <Stagger.Item className="text-right p-6 mx-0 py-0 px-[20px]">
                       <div className="mb-2">
-                        <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
+                        <span className="text-sm text-black font-arabic font-medium">المهام المتأخرة</span>
                       </div>
                       <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                         <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {String(mockStats.complaints || 0).padStart(2, '0')}
+                          {String(liveStats.overdueTasks || 0).padStart(2, '0')}
                         </div>
-                        <div className="text-xs text-black font-arabic font-bold">يوم</div>
+                        <div className="text-xs text-black font-arabic font-bold">مهمة</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">لا توجد مهام متبقية</div>
+                      <div className="text-xs font-Regular text-black font-arabic">{liveStats.overdueTasks === 0 ? 'لا توجد مهام متأخرة' : 'تجاوزت الاستحقاق'}</div>
                     </Stagger.Item>
 
-                    {/* المشاريع المتأخرة */}
+                    {/* أعضاء الفريق */}
                     <Stagger.Item className="text-right p-6 py-0 px-[20px]">
                       <div className="mb-2">
                         <span className="text-sm text-black font-arabic font-medium">عدد اعضاء فريق المشروع</span>
                       </div>
                       <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                         <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {String(mockStats.delayedProjects || 0).padStart(2, '0')}
+                          {String(liveStats.teamMembers || 0).padStart(2, '0')}
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">عضو</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">معدل الإنجاز العام —</div>
+                      <div className="text-xs font-Regular text-black font-arabic">معدل الإنجاز: {liveStats.completionRate}%</div>
                     </Stagger.Item>
                   </Stagger>
                 </div>
