@@ -12,6 +12,7 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
+import { useProjectMetrics } from '@/hooks/useProjectMetrics';
 import { cn } from '@/lib/utils';
 interface ProjectManagementBoardProps {
   project: Project;
