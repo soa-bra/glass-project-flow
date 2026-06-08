@@ -157,7 +157,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                       </div>
                       <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                         <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {mockStats.expectedRevenue || 0}
+                          {liveStats.expectedRevenue || 0}
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">الف</div>
                       </div>
