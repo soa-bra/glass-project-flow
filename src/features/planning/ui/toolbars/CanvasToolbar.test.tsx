@@ -6,8 +6,6 @@ import CanvasToolbar from './CanvasToolbar';
 const mockUndo = vi.fn();
 const mockRedo = vi.fn();
 const mockRenameBoard = vi.fn();
-const mockSaveBoardState = vi.fn();
-const mockFormatBoardSaveStatusLabel = vi.fn();
 
 vi.mock('@/stores/canvasStore', () => ({
   useCanvasStore: vi.fn(() => ({
@@ -21,17 +19,6 @@ vi.mock('@/stores/planningStore', () => ({
   usePlanningStore: vi.fn(() => ({
     renameBoard: mockRenameBoard,
   })),
-}));
-
-vi.mock('@/features/planning/hooks/useBoardSaveState', () => ({
-  useBoardSaveState: vi.fn(() => ({
-    status: 'saved',
-    lastSavedAt: new Date('2026-04-19T00:00:00.000Z'),
-    canSave: true,
-    saveBoardState: mockSaveBoardState,
-    isDirty: true,
-  })),
-  formatBoardSaveStatusLabel: (...args: any[]) => mockFormatBoardSaveStatusLabel(...args),
 }));
 
 vi.mock('../overlays/HistoryPopover', () => ({ HistoryPopover: () => <div data-testid="history-popover" /> }));
@@ -50,19 +37,18 @@ describe('CanvasToolbar', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockFormatBoardSaveStatusLabel.mockReturnValue('تم الحفظ قبل قليل');
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('renders the board name and save label', () => {
+  it('renders the board name without board save status', () => {
     render(<CanvasToolbar board={board} onBack={onBack} />);
 
     expect(screen.getByText('لوحة استراتيجية')).toBeInTheDocument();
-    expect(screen.getByText('تم الحفظ قبل قليل')).toBeInTheDocument();
-    expect(mockFormatBoardSaveStatusLabel).toHaveBeenCalled();
+    expect(screen.queryByText('تم الحفظ قبل قليل')).not.toBeInTheDocument();
+    expect(screen.queryByText('حفظ')).not.toBeInTheDocument();
   });
 
   it('routes back action to its callback', () => {
@@ -73,21 +59,13 @@ describe('CanvasToolbar', () => {
     expect(onBack).toHaveBeenCalled();
   });
 
-  it('calls saveBoardState when save button is clicked', () => {
-    render(<CanvasToolbar board={board} onBack={onBack} />);
-
-    fireEvent.click(screen.getByText('تم الحفظ'));
-
-    expect(mockSaveBoardState).toHaveBeenCalled();
-  });
-
-  it('calls saveBoardState on Ctrl/Cmd + S', () => {
+  it('does not bind Ctrl/Cmd + S to board snapshot saving', () => {
     render(<CanvasToolbar board={board} onBack={onBack} />);
 
     fireEvent.keyDown(window, { key: 's', ctrlKey: true });
     fireEvent.keyDown(window, { key: 's', metaKey: true });
 
-    expect(mockSaveBoardState).toHaveBeenCalledTimes(2);
+    expect(mockRenameBoard).not.toHaveBeenCalled();
   });
 
   it('renames the board when editing ends with a new non-empty name', () => {
