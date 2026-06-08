@@ -39,15 +39,15 @@ export function useBoardCanvasLifecycle(board: CanvasBoard | null): void {
       ? snapshot.activeLayerId
       : layers[0]?.id ?? DEFAULT_LAYER.id;
 
-    useCanvasStore.setState({
-      elements: [],
+    useCanvasStore.setState((state) => ({
+      ...state,
       layers,
       selectedElementIds: [],
-      viewport: snapshot?.viewport ? clone(snapshot.viewport) : { zoom: 1, pan: { x: 0, y: 0 } },
+      viewport: snapshot?.viewport ? clone(snapshot.viewport) : state.viewport,
       activeLayerId,
       editingTextId: null,
       history: { past: [], future: [] },
-    } as any);
+    }) as any);
   }, [board?.id]);
 }
 
