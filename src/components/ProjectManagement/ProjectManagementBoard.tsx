@@ -12,6 +12,7 @@ import { ReportsTab } from './ReportsTab';
 import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
+import { useProjectMetrics } from '@/hooks/useProjectMetrics';
 import { cn } from '@/lib/utils';
 interface ProjectManagementBoardProps {
   project: Project;
@@ -100,11 +101,13 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     label: 'التقارير'
   }];
 
-  // إحصائيات المشروع — تأتي من الباك إند، تبدأ بقيم صفرية
-  const mockStats = {
-    expectedRevenue: 0,
-    complaints: 0,
-    delayedProjects: 0
+  // إحصائيات المشروع الحيّة — من Supabase
+  const metrics = useProjectMetrics(project.id);
+  const liveStats = {
+    expectedRevenue: Math.round(metrics.budgetTotals.planned / 1000),
+    overdueTasks: metrics.taskStats.overdue,
+    teamMembers: metrics.teamStats.activeMembers,
+    completionRate: metrics.taskStats.completionRate,
   };
 
   // محتوى التبويبات المختلفة
@@ -155,39 +158,39 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
                       </div>
                       <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                         <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {mockStats.expectedRevenue || 0}
+                          {liveStats.expectedRevenue || 0}
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">الف</div>
                       </div>
                       <div className="text-xs font-Regular text-black font-arabic">ريال سعودي</div>
                     </Stagger.Item>
 
-                    {/* الشكاوى */}
+                    {/* المهام المتأخرة */}
                     <Stagger.Item className="text-right p-6 mx-0 py-0 px-[20px]">
                       <div className="mb-2">
-                        <span className="text-sm text-black font-arabic font-medium">الشكاوى</span>
+                        <span className="text-sm text-black font-arabic font-medium">المهام المتأخرة</span>
                       </div>
                       <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                         <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {String(mockStats.complaints || 0).padStart(2, '0')}
+                          {String(liveStats.overdueTasks || 0).padStart(2, '0')}
                         </div>
-                        <div className="text-xs text-black font-arabic font-bold">يوم</div>
+                        <div className="text-xs text-black font-arabic font-bold">مهمة</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">لا توجد مهام متبقية</div>
+                      <div className="text-xs font-Regular text-black font-arabic">{liveStats.overdueTasks === 0 ? 'لا توجد مهام متأخرة' : 'تجاوزت الاستحقاق'}</div>
                     </Stagger.Item>
 
-                    {/* المشاريع المتأخرة */}
+                    {/* أعضاء الفريق */}
                     <Stagger.Item className="text-right p-6 py-0 px-[20px]">
                       <div className="mb-2">
                         <span className="text-sm text-black font-arabic font-medium">عدد اعضاء فريق المشروع</span>
                       </div>
                       <div className="flex items-baseline gap-2 mb-1 px-0 mx-0">
                         <div className="text-3xl font-normal text-gray-900 font-arabic">
-                          {String(mockStats.delayedProjects || 0).padStart(2, '0')}
+                          {String(liveStats.teamMembers || 0).padStart(2, '0')}
                         </div>
                         <div className="text-xs text-black font-arabic font-bold">عضو</div>
                       </div>
-                      <div className="text-xs font-Regular text-black font-arabic">معدل الإنجاز العام —</div>
+                      <div className="text-xs font-Regular text-black font-arabic">معدل الإنجاز: {liveStats.completionRate}%</div>
                     </Stagger.Item>
                   </Stagger>
                 </div>

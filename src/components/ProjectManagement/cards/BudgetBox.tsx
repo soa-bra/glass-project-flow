@@ -1,28 +1,30 @@
 import React from 'react';
 import { BaseBox } from '@/components/ui/BaseBox';
 import { Project } from '@/types/project';
+import { useProjectMetrics } from '@/hooks/useProjectMetrics';
 
 interface BudgetCardProps {
   project: Project;
 }
 
 export const BudgetBox: React.FC<BudgetCardProps> = ({ project }) => {
-  // الأرقام الفعلية تأتي من الباك إند (الوحدة المالية). تبدأ بصفر حتى توفّر البيانات.
-  const totalBudget = parseInt((project.value || '').replace(/[^\d]/g, '')) || 0;
-  const spentAmount = 0;
-  const remainingAmount = totalBudget - spentAmount;
-  const spentPercentage = totalBudget > 0 ? (spentAmount / totalBudget) * 100 : 0;
-  const isOverBudget = spentAmount > totalBudget && totalBudget > 0;
+  const { budgetTotals, loading } = useProjectMetrics(project.id);
+
+  const fallbackBudget = parseInt((project.value || '').replace(/[^\d]/g, '')) || 0;
+  const totalBudget = budgetTotals.planned > 0 ? budgetTotals.planned : fallbackBudget;
+  const spentAmount = budgetTotals.spent;
+  const remainingAmount = Math.max(totalBudget - spentAmount, 0);
+  const spentPercentage = totalBudget > 0 ? Math.min(100, (spentAmount / totalBudget) * 100) : 0;
+  const isOverBudget = budgetTotals.isOverBudget || (spentAmount > totalBudget && totalBudget > 0);
 
   const totalBars = 60;
   const filledBars = Math.round((spentPercentage / 100) * totalBars);
 
-
   const cardBgColor = isOverBudget ? 'bg-[#f1b5b9]' : 'bg-[#96d8d0]';
+  const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
 
   return (
     <BaseBox className={`h-full flex flex-col ${cardBgColor} border-0`} overflow="hidden">
-      {/* Header */}
       <div className="flex items-center justify-between mb-3 flex-shrink-0">
         <h3 className="text-lg font-arabic font-bold text-black">النظرة المالية</h3>
         <div className="flex gap-1.5">
@@ -31,13 +33,11 @@ export const BudgetBox: React.FC<BudgetCardProps> = ({ project }) => {
         </div>
       </div>
 
-      {/* Main content — responsive flex layout */}
       <div className="flex-1 flex flex-col items-center justify-center gap-3 min-h-0 overflow-hidden">
-        {/* Circular chart — responsive sizing */}
         <div className="relative w-full max-w-[200px] aspect-square flex-shrink-0">
           <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
             <div className="text-4xl font-bold text-black">{Math.round(spentPercentage)}</div>
-            <div className="text-xs text-black font-arabic text-center px-4">إجمالي الأرباح والخسائر</div>
+            <div className="text-xs text-black font-arabic text-center px-4">نسبة الصرف من الميزانية</div>
           </div>
           <svg className="w-full h-full" viewBox="0 0 200 200">
             {Array.from({ length: totalBars }).map((_, index) => {
@@ -61,25 +61,25 @@ export const BudgetBox: React.FC<BudgetCardProps> = ({ project }) => {
           </svg>
         </div>
 
-        {/* Stats row — تعرض أصفار حتى تتوفر البيانات الحقيقية */}
         <div className="flex justify-center gap-6 flex-shrink-0 flex-wrap">
           <div className="text-center">
-            <div className="text-2xl font-bold text-black">00</div>
+            <div className="text-2xl font-bold text-black">{fmt(spentAmount)}</div>
             <div className="text-xs text-black font-arabic">المصروف</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-black">00</div>
-            <div className="text-xs text-black font-arabic">الفواتير</div>
+            <div className="text-2xl font-bold text-black">{budgetTotals.invoicesCount}</div>
+            <div className="text-xs text-black font-arabic">المعاملات</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-black">{Math.round(remainingAmount / 1000)}</div>
-            <div className="text-xs text-black font-arabic">المتبقي (ألف)</div>
+            <div className="text-2xl font-bold text-black">{fmt(remainingAmount)}</div>
+            <div className="text-xs text-black font-arabic">المتبقي</div>
           </div>
         </div>
 
-        {/* Footer text */}
         <div className="text-center flex-shrink-0">
-          <div className="text-xs text-black font-arabic">لا توجد بيانات مالية مرتبطة بعد</div>
+          <div className="text-xs text-black font-arabic">
+            {loading ? 'جاري تحميل البيانات المالية…' : totalBudget === 0 ? 'لا توجد ميزانية مرتبطة بعد' : `الميزانية الكلية: ${fmt(totalBudget)} ريال`}
+          </div>
         </div>
       </div>
     </BaseBox>

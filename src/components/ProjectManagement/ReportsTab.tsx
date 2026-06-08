@@ -1,59 +1,106 @@
-import React from 'react';
-import { Download, Eye, FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { FileText, BarChart3, PieChart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MetricHeroCard } from '@/components/shared/visual-data';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+import { useProjectMetrics } from '@/hooks/useProjectMetrics';
 
 interface ReportsTabProps {
-  project: any;
+  project: { id: string; title?: string };
 }
 
 export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
-  // تأتي التقارير والإحصائيات من الباك إند — تبدأ فارغة/صفر
-  const mockReports: Array<{ id: string; name: string; type: string; generatedDate: string; size: string; format: string; status: string }> = [];
+  const { tasks, transactions, budgetTotals, taskStats, loading } = useProjectMetrics(project.id);
 
-  const reportStats = { totalReports: 0, thisMonth: 0, avgGenTime: '0', exportCount: 0 };
+  const reports = useMemo(() => {
+    const list: Array<{ id: string; name: string; type: string; date: string; meta: string; icon: any; color: string }> = [];
+    if (taskStats.total > 0) {
+      list.push({
+        id: 'progress',
+        name: 'تقرير تقدم المهام',
+        type: 'progress',
+        date: new Date().toLocaleDateString('ar-SA'),
+        meta: `${taskStats.done}/${taskStats.total} منجزة (${taskStats.completionRate}%)`,
+        icon: BarChart3,
+        color: '#f1b5b9',
+      });
+    }
+    if (budgetTotals.planned > 0) {
+      list.push({
+        id: 'finance',
+        name: 'التقرير المالي',
+        type: 'finance',
+        date: new Date().toLocaleDateString('ar-SA'),
+        meta: `صُرف ${Math.round(budgetTotals.spent).toLocaleString()} من ${Math.round(budgetTotals.planned).toLocaleString()}`,
+        icon: PieChart,
+        color: '#a4e2f6',
+      });
+    }
+    if (transactions.length > 0) {
+      list.push({
+        id: 'transactions',
+        name: 'سجل المعاملات المالية',
+        type: 'transactions',
+        date: transactions[0]?.date || new Date().toISOString().slice(0, 10),
+        meta: `${transactions.length} معاملة مسجلة`,
+        icon: TrendingUp,
+        color: '#d9d2fd',
+      });
+    }
+    return list;
+  }, [tasks.length, transactions, budgetTotals, taskStats]);
+
+  const stats = {
+    totalReports: reports.length,
+    tasksTracked: taskStats.total,
+    transactionsTracked: transactions.length,
+    completionRate: taskStats.completionRate,
+  };
+
+  const typeCounts = {
+    progress: taskStats.total,
+    finance: budgetTotals.planned > 0 ? 1 : 0,
+    team: taskStats.inProgress,
+    transactions: transactions.length,
+  };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <AppCardSurface density="standard">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">مركز التقارير</h3>
           <div className="bg-[#bdeed3] px-4 py-1.5 rounded-full">
-            <span className="text-[11px] font-medium text-[#0B0F12]">محدث</span>
+            <span className="text-[11px] font-medium text-[#0B0F12]">{loading ? 'جاري التحميل' : 'محدّث'}</span>
           </div>
         </div>
-        <p className="text-sm text-[rgba(11,15,18,0.6)]">جميع التقارير محدثة وجاهزة للتصدير</p>
+        <p className="text-sm text-[rgba(11,15,18,0.6)]">تقارير مُولّدة آلياً من بيانات المشروع المحفوظة في Supabase</p>
       </AppCardSurface>
 
-      {/* Stats */}
       <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
         <AppGridItem colSpan={3} tabletSpan={3}>
-          <MetricHeroCard title="إجمالي التقارير" value={String(reportStats.totalReports)} unit="تقرير" badgeText="متاح" badgeColor="#bdeed3" />
+          <MetricHeroCard title="التقارير المتاحة" value={String(stats.totalReports)} unit="تقرير" badgeText="حيّة" badgeColor="#bdeed3" />
         </AppGridItem>
         <AppGridItem colSpan={3} tabletSpan={3}>
-          <MetricHeroCard title="هذا الشهر" value={String(reportStats.thisMonth)} unit="تقرير" badgeText="جديدة" badgeColor="#a4e2f6" />
+          <MetricHeroCard title="المهام المتتبّعة" value={String(stats.tasksTracked)} unit="مهمة" badgeText="من قاعدة البيانات" badgeColor="#a4e2f6" />
         </AppGridItem>
         <AppGridItem colSpan={3} tabletSpan={3}>
-          <MetricHeroCard title="متوسط التوليد" value={reportStats.avgGenTime} unit="دقيقة" badgeText="سريع" badgeColor="#d9d2fd" />
+          <MetricHeroCard title="المعاملات المالية" value={String(stats.transactionsTracked)} unit="معاملة" badgeText="مسجّلة" badgeColor="#d9d2fd" />
         </AppGridItem>
         <AppGridItem colSpan={3} tabletSpan={3}>
-          <MetricHeroCard title="مرات التصدير" value={String(reportStats.exportCount)} badgeText="هذا الشهر" badgeColor="#fbe2aa" />
+          <MetricHeroCard title="معدل الإنجاز" value={`${stats.completionRate}%`} badgeText="حالي" badgeColor="#fbe2aa" />
         </AppGridItem>
       </AppDashboardGrid>
 
-      {/* Report Types */}
       <AppCardSurface density="standard">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">أنواع التقارير</h3>
         <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
           {[
-            { icon: BarChart3, label: 'تقارير التقدم', count: 0, color: '#f1b5b9' },
-            { icon: PieChart, label: 'التقارير المالية', count: 0, color: '#a4e2f6' },
-            { icon: TrendingUp, label: 'تقارير الفريق', count: 0, color: '#d9d2fd' },
-            { icon: FileText, label: 'تقارير العملاء', count: 0, color: '#fbe2aa' },
+            { icon: BarChart3, label: 'تقارير التقدم', count: typeCounts.progress, color: '#f1b5b9' },
+            { icon: PieChart, label: 'التقارير المالية', count: typeCounts.finance, color: '#a4e2f6' },
+            { icon: TrendingUp, label: 'تقارير الفريق', count: typeCounts.team, color: '#d9d2fd' },
+            { icon: FileText, label: 'سجل المعاملات', count: typeCounts.transactions, color: '#fbe2aa' },
           ].map((item, i) => (
             <AppGridItem key={i} colSpan={3} tabletSpan={3}>
               <div className="text-center p-5 rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] h-full">
@@ -61,7 +108,7 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
                 <div className="text-[28px] font-bold text-[#0B0F12] mb-1">{item.count}</div>
                 <div className="text-[11px] text-[rgba(11,15,18,0.6)] mb-2">{item.label}</div>
                 <div className="inline-block px-3 py-1 rounded-full" style={{ backgroundColor: item.color }}>
-                  <span className="text-[10px] font-medium text-[#0B0F12]">{item.count} تقارير</span>
+                  <span className="text-[10px] font-medium text-[#0B0F12]">{item.count} عنصر</span>
                 </div>
               </div>
             </AppGridItem>
@@ -69,7 +116,6 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
         </AppDashboardGrid>
       </AppCardSurface>
 
-      {/* Reports List */}
       <AppCardSurface density="standard">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">التقارير المتاحة</h3>
@@ -78,75 +124,31 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ project }) => {
           </Button>
         </div>
         <div className="space-y-3">
-          {mockReports.length === 0 ? (
+          {loading ? (
+            <div className="py-10 text-center text-sm text-[rgba(11,15,18,0.55)]">جاري تحميل البيانات…</div>
+          ) : reports.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <FileText className="w-8 h-8 text-[rgba(11,15,18,0.25)] mb-2" />
-              <div className="text-sm text-[rgba(11,15,18,0.55)]">لا توجد تقارير بعد. أنشئ تقريراً جديداً للبدء.</div>
+              <div className="text-sm text-[rgba(11,15,18,0.55)]">لا توجد بيانات كافية لتوليد تقارير بعد.</div>
             </div>
-          ) : mockReports.map(report => (
-            <div key={report.id} className="rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-[#0B0F12]" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-[#0B0F12]">{report.name}</h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[11px] text-[rgba(11,15,18,0.5)]">{report.generatedDate}</span>
-                    <span className="text-[11px] text-[rgba(11,15,18,0.3)]">•</span>
-                    <span className="text-[11px] text-[rgba(11,15,18,0.5)]">{report.size}</span>
-                    <span className="text-[11px] text-[rgba(11,15,18,0.3)]">•</span>
-                    <span className="text-[11px] text-[rgba(11,15,18,0.5)]">{report.format}</span>
+          ) : reports.map(report => {
+            const Icon = report.icon;
+            return (
+              <div key={report.id} className="rounded-[18px] ring-1 ring-[rgba(11,15,18,0.08)] p-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: report.color }}>
+                    <Icon className="w-4 h-4 text-[#0B0F12]" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-[#0B0F12]">{report.name}</div>
+                    <div className="text-[11px] text-[rgba(11,15,18,0.6)]">{report.meta}</div>
                   </div>
                 </div>
+                <div className="text-[11px] text-[rgba(11,15,18,0.5)]">{report.date}</div>
               </div>
-              <div className="flex items-center gap-2">
-                <Button size="sm" variant="ghost" className="p-2 rounded-full"><Eye className="w-4 h-4" /></Button>
-                <Button size="sm" variant="ghost" className="p-2 rounded-full"><Download className="w-4 h-4" /></Button>
-                <div className="bg-[#bdeed3] px-3 py-1 rounded-full">
-                  <span className="text-[10px] font-medium text-[#0B0F12]">جاهز</span>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </AppCardSurface>
-
-      {/* Auto Reports Settings */}
-      <AppCardSurface density="standard">
-        <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide mb-5">الإعدادات والتقارير الآلية</h3>
-        <AppDashboardGrid columns={12} density="default" minRowHeight="auto">
-          <AppGridItem colSpan={6} tabletSpan={6}>
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التقارير الدورية</h4>
-              {[
-                { name: 'تقرير التقدم الأسبوعي', color: '#bdeed3', status: 'مفعل' },
-                { name: 'التقرير المالي الشهري', color: '#a4e2f6', status: 'مفعل' },
-                { name: 'تقييم الفريق الشهري', color: '#f1b5b9', status: 'معطل' },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-[14px] ring-1 ring-[rgba(11,15,18,0.08)]">
-                  <span className="text-sm text-[#0B0F12]">{item.name}</span>
-                  <div className="px-2.5 py-1 rounded-full" style={{ backgroundColor: item.color }}>
-                    <span className="text-[10px] font-medium text-[#0B0F12]">{item.status}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </AppGridItem>
-          <AppGridItem colSpan={6} tabletSpan={6}>
-            <div className="space-y-2">
-              <h4 className="text-sm font-bold text-[#0B0F12] mb-3">التصدير السريع</h4>
-              {['تصدير تقرير التقدم الحالي', 'تصدير البيانات المالية', 'تصدير تقرير الفريق'].map((label, i) => (
-                <Button key={i} className="w-full rounded-full text-sm font-medium ring-1 ring-[rgba(11,15,18,0.1)] bg-transparent text-[#0B0F12] hover:bg-[rgba(11,15,18,0.05)]">
-                  {label}
-                </Button>
-              ))}
-              <Button className="w-full bg-[#0B0F12] text-white rounded-full text-sm font-medium hover:bg-[rgba(11,15,18,0.85)]">
-                تصدير تقرير شامل
-              </Button>
-            </div>
-          </AppGridItem>
-        </AppDashboardGrid>
       </AppCardSurface>
     </div>
   );
