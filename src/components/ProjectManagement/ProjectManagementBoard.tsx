@@ -100,11 +100,13 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     label: 'التقارير'
   }];
 
-  // إحصائيات المشروع — تأتي من الباك إند، تبدأ بقيم صفرية
-  const mockStats = {
-    expectedRevenue: 0,
-    complaints: 0,
-    delayedProjects: 0
+  // إحصائيات المشروع الحيّة — من Supabase
+  const metrics = useProjectMetrics(project.id);
+  const liveStats = {
+    expectedRevenue: Math.round(metrics.budgetTotals.planned / 1000),
+    overdueTasks: metrics.taskStats.overdue,
+    teamMembers: metrics.teamStats.activeMembers,
+    completionRate: metrics.taskStats.completionRate,
   };
 
   // محتوى التبويبات المختلفة
