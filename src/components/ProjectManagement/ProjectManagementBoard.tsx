@@ -38,6 +38,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  // إحصائيات المشروع الحيّة — من Supabase (يجب استدعاؤها قبل أي return مبكر لاحترام Rules of Hooks)
+  const metrics = useProjectMetrics(project.id);
   if (!isVisible) return null;
   const handleDeleteProject = () => {
     setShowDeleteDialog(false);
@@ -101,14 +103,13 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     label: 'التقارير'
   }];
 
-  // إحصائيات المشروع الحيّة — من Supabase
-  const metrics = useProjectMetrics(project.id);
   const liveStats = {
     expectedRevenue: Math.round(metrics.budgetTotals.planned / 1000),
     overdueTasks: metrics.taskStats.overdue,
     teamMembers: metrics.teamStats.activeMembers,
     completionRate: metrics.taskStats.completionRate,
   };
+
 
   // محتوى التبويبات المختلفة
   const renderTabContent = () => {
