@@ -38,6 +38,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  // إحصائيات المشروع الحيّة — من Supabase (يجب استدعاؤها قبل أي return مبكر لاحترام Rules of Hooks)
+  const metrics = useProjectMetrics(project.id);
   if (!isVisible) return null;
   const handleDeleteProject = () => {
     setShowDeleteDialog(false);
