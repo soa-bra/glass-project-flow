@@ -1,3 +1,5 @@
+import { buildProjectAIContext } from './projectContextBuilder';
+
 export type AIContextRole = 'guest' | 'viewer' | 'editor' | 'host';
 
 export interface AIContextPermissions {
@@ -21,6 +23,7 @@ export interface BuildAIContextInput {
   selectedElements?: unknown[];
   activeSection?: string | null;
   activeTab?: string | null;
+  activeDepartment?: string | null;
   permissions?: AIContextPermissions | null;
   availableLinks?: AIContextLink[] | null;
   extraContext?: Record<string, unknown> | null;
@@ -31,8 +34,20 @@ export interface UnifiedAIContext {
   selectedElements: unknown[];
   activeSection: string | null;
   activeTab: string | null;
+  activeDepartment: string | null;
   permissions: AIContextPermissions;
   availableLinks: AIContextLink[];
+  project_summary: Record<string, unknown> | null;
+  active_department: Record<string, unknown> | null;
+  active_tab: Record<string, unknown> | null;
+  visible_boxes: unknown[];
+  linked_entities: unknown[];
+  recent_events: unknown[];
+  risks: unknown[];
+  financial_snapshot: Record<string, unknown> | null;
+  tasks_snapshot: Record<string, unknown> | null;
+  documents_snapshot: Record<string, unknown> | null;
+  permissions_scope: Record<string, unknown>;
   [key: string]: unknown;
 }
 
@@ -51,8 +66,11 @@ export function buildAIContext(input: BuildAIContextInput = {}): UnifiedAIContex
       ? (extraContext.permissions as AIContextPermissions)
       : {}) ?? {};
 
+  const projectContext = buildProjectAIContext(input);
+
   return {
     ...extraContext,
+    ...projectContext,
     boardId: normalizeString(input.boardId) ?? normalizeString(extraContext.boardId as string | null | undefined),
     selectedElements: toArray(
       input.selectedElements ?? (extraContext.selectedElements as unknown[] | null | undefined),
@@ -60,6 +78,10 @@ export function buildAIContext(input: BuildAIContextInput = {}): UnifiedAIContex
     activeSection:
       normalizeString(input.activeSection) ?? normalizeString(extraContext.activeSection as string | null | undefined),
     activeTab: normalizeString(input.activeTab) ?? normalizeString(extraContext.activeTab as string | null | undefined),
+    activeDepartment:
+      normalizeString(input.activeDepartment) ??
+      normalizeString(extraContext.activeDepartment as string | null | undefined) ??
+      normalizeString(extraContext.active_department as string | null | undefined),
     permissions: {
       ...contextPermissions,
       ...(input.permissions ?? {}),
