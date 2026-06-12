@@ -22,6 +22,7 @@ import type { CanvasElement, LayerInfo } from "@/features/planning/state/types";
 import { planningElementToCanvas } from "@/features/planning/state/planningElementMapper";
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
+import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
 
 function sortByZ(rows: PlanningElement[]): PlanningElement[] {
   return [...rows].sort((a, b) => {
@@ -76,6 +77,28 @@ export function usePlanningStoreSync(
   boardId: string | null,
   selfDisplayName?: string,
 ) {
+  const storeElements = usePlanningStore((state) => state.elements);
+
+  useAutoUnlockStaleLocks(
+    storeElements.map((element) => ({
+      id: element.id,
+      locked_by: (element as { lockedBy?: string | null }).lockedBy ?? null,
+      locked_at: (element as { lockedAt?: string | null }).lockedAt ?? null,
+    })),
+    {
+      enabled: Boolean(boardId),
+      onExpire: (elementId) => {
+        usePlanningStore.setState((state) => ({
+          elements: state.elements.map((element) =>
+            element.id === elementId
+              ? { ...element, locked: false, lockedBy: null, lockedAt: null }
+              : element,
+          ),
+        }));
+      },
+    },
+  );
+
   // Initial hydration.
   useEffect(() => {
     if (!boardId) {

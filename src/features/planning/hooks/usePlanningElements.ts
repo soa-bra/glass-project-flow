@@ -31,6 +31,7 @@ import {
   type PendingFieldStamps,
 } from "../state/conflictResolver";
 import { usePlanningRealtime } from "./usePlanningRealtime";
+import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
 
 function sortElements(rows: PlanningElement[]): PlanningElement[] {
   return [...rows].sort((a, b) => {
@@ -173,6 +174,19 @@ export function usePlanningElements(
     onElementInsert,
     onElementUpdate,
     onElementDelete,
+  });
+
+  useAutoUnlockStaleLocks(elements, {
+    enabled: Boolean(boardId),
+    onExpire: (elementId) => {
+      setElements((prev) =>
+        prev.map((element) =>
+          element.id === elementId
+            ? { ...element, locked_by: null, locked_at: null }
+            : element,
+        ),
+      );
+    },
   });
 
   // ── Optimistic mutations ──────────────────────────────────────────────────

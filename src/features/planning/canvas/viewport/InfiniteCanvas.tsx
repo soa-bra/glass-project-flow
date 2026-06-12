@@ -38,6 +38,8 @@ interface InfiniteCanvasProps {
   boardId: string;
   peers?: PresencePeer[];
   broadcastCursor?: (x: number, y: number) => void;
+  requestElementLock?: (elementId: string) => Promise<boolean>;
+  releaseElementLock?: () => Promise<void> | void;
   canEdit?: boolean;
 }
 
@@ -77,6 +79,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   boardId: _boardId,
   peers = [],
   broadcastCursor,
+  requestElementLock,
+  releaseElementLock,
   canEdit = true,
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -468,6 +472,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
             snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
             activeTool={activeTool}
+            requestElementLock={requestElementLock}
+            releaseElementLock={releaseElementLock}
             onStartConnection={handleStartConnection}
             onEndConnection={handleEndConnection}
             isConnecting={mindMapConnectionUI.isConnecting}

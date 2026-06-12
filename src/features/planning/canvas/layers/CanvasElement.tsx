@@ -38,6 +38,8 @@ interface CanvasElementProps {
   onSelect: (multiSelect: boolean) => void;
   snapToGrid?: (x: number, y: number) => { x: number; y: number };
   activeTool: string;
+  requestElementLock?: (elementId: string) => Promise<boolean>;
+  releaseElementLock?: () => Promise<void> | void;
   onStartConnection?: (nodeId: string, anchor: 'top' | 'bottom' | 'left' | 'right', position: { x: number; y: number }) => void;
   onEndConnection?: (nodeId: string, anchor: 'top' | 'bottom' | 'left' | 'right') => void;
   isConnecting?: boolean;
@@ -50,6 +52,8 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   onSelect,
   snapToGrid,
   activeTool,
+  requestElementLock,
+  releaseElementLock,
   onStartConnection,
   onEndConnection,
   isConnecting = false,
@@ -247,6 +251,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         }
       }
       isDraggingRef.current = false;
+      void releaseElementLock?.();
     }
   };
 
@@ -260,11 +265,11 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     window.removeEventListener('mouseup', stableMouseUp);
   }, [stableMouseMove]);
 
-  const startDrag = useCallback((e: React.MouseEvent) => {
+  const startDrag = useCallback((clientX: number, clientY: number) => {
     isDraggingRef.current = true;
     dragStartRef.current = {
-      x: e.clientX,
-      y: e.clientY,
+      x: clientX,
+      y: clientY,
       elementX: element.position.x,
       elementY: element.position.y,
     };
@@ -272,57 +277,83 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     window.addEventListener('mouseup', stableMouseUp);
   }, [element.position.x, element.position.y, stableMouseMove, stableMouseUp]);
 
+  const ensureEditLock = useCallback(async () => {
+    if (isLockedBySelf) return true;
+    return requestElementLock ? requestElementLock(element.id) : true;
+  }, [element.id, isLockedBySelf, requestElementLock]);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (isLocked) return;
+    if (isLocked) {
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
     const target = e.target as HTMLElement;
     if (target.classList.contains('resize-handle') || target.hasAttribute('data-resize-handle')) return;
     if (activeTool !== 'selection_tool') return;
     e.stopPropagation();
 
+    const clientX = e.clientX;
+    const clientY = e.clientY;
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
-    if (isSelected) {
-      if (multiSelect) {
-        const currentSelection = useCanvasStore.getState().selectedElementIds;
-        const newSelection = currentSelection.filter((id) => id !== element.id);
-        useCanvasStore.getState().selectElements(newSelection);
+    const beginEditableInteraction = async () => {
+      const granted = await ensureEditLock();
+      if (!granted) return;
+
+      if (isSelected) {
+        if (multiSelect) {
+          const currentSelection = useCanvasStore.getState().selectedElementIds;
+          const newSelection = currentSelection.filter((id) => id !== element.id);
+          useCanvasStore.getState().selectElements(newSelection);
+          return;
+        }
+
+        if (!isEditingThisText) {
+          startDrag(clientX, clientY);
+        }
         return;
       }
 
-      if (!isEditingThisText) {
-        startDrag(e);
-      }
-      return;
-    }
+      onSelect(multiSelect);
+      if (isEditingThisText) return;
+      startDrag(clientX, clientY);
+    };
 
-    onSelect(multiSelect);
-    if (isEditingThisText) return;
-    startDrag(e);
-  }, [activeTool, element.id, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
+    void beginEditableInteraction();
+  }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
     if (element.type === 'frame' && !isLocked) {
       e.stopPropagation();
-      setIsEditingTitle(true);
-      setEditedTitle((element as any).title || '');
+      void ensureEditLock().then((granted) => {
+        if (!granted) return;
+        setIsEditingTitle(true);
+        setEditedTitle((element as any).title || '');
+      });
     }
-  }, [element, isLocked]);
+  }, [element, ensureEditLock, isLocked]);
 
   const handleTextDoubleClick = useCallback((e: React.MouseEvent) => {
     if (element.type === 'text' && !isLocked) {
       e.stopPropagation();
-      const { setActiveTool } = useCanvasStore.getState();
-      setActiveTool('text_tool');
-      startEditingText(element.id);
+      void ensureEditLock().then((granted) => {
+        if (!granted) return;
+        const { setActiveTool } = useCanvasStore.getState();
+        setActiveTool('text_tool');
+        startEditingText(element.id);
+      });
     }
-  }, [element, isLocked, startEditingText]);
+  }, [element, ensureEditLock, isLocked, startEditingText]);
 
   const handleStickyDoubleClick = useCallback((e: React.MouseEvent) => {
     const shapeType = element.shapeType || element.data?.shapeType;
     if (element.type === 'shape' && shapeType === 'sticky' && !isLocked) {
       e.stopPropagation();
-      startEditingText(element.id);
+      void ensureEditLock().then((granted) => {
+        if (granted) startEditingText(element.id);
+      });
     }
-  }, [element, isLocked, startEditingText]);
+  }, [element, ensureEditLock, isLocked, startEditingText]);
 
   const isEditingStickyNote = element.type === 'shape' && (element.shapeType === 'sticky' || element.data?.shapeType === 'sticky') && editingTextId === element.id;
 
@@ -330,8 +361,9 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     if (element.type === 'frame') {
       updateFrameTitle(element.id, editedTitle);
       setIsEditingTitle(false);
+      void releaseElementLock?.();
     }
-  }, [editedTitle, element, updateFrameTitle]);
+  }, [editedTitle, element, releaseElementLock, updateFrameTitle]);
 
   const handleTitleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') handleTitleSave();
@@ -378,9 +410,27 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         boxShadow: shouldShowSelectionOutline ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : 'none',
         outline: 'none',
         opacity: isLocked ? 0.6 : 1,
-        pointerEvents: isLocked ? 'none' : 'auto',
+        pointerEvents: 'auto',
       }}
     >
+      {isLockedByOther && (
+        <div
+          className="absolute inset-0 z-[9] cursor-not-allowed"
+          aria-hidden
+          onPointerDownCapture={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onClickCapture={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+          onDoubleClickCapture={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+          }}
+        />
+      )}
       {hasActiveRemoteLock && (
         <div
           role="status"
@@ -429,7 +479,10 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
             <TextEditor
               element={element}
               onUpdate={(content) => updateTextContent(element.id, content)}
-              onClose={() => stopEditingText(element.id)}
+              onClose={() => {
+                stopEditingText(element.id);
+                void releaseElementLock?.();
+              }}
               onDoubleClick={handleTextDoubleClick}
             />
           ) : (
@@ -459,7 +512,10 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
                   updateElement(element.id, { size: { ...element.size, height: newHeight } });
                 }
               }}
-              onClose={() => stopEditingText(element.id)}
+              onClose={() => {
+                stopEditingText(element.id);
+                void releaseElementLock?.();
+              }}
             />
           ) : null}
           <ShapeRenderer
