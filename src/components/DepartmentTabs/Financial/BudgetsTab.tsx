@@ -11,6 +11,8 @@ import { CreateBudgetModal } from './CreateBudgetModal';
 import { BudgetManagementModal } from './BudgetManagementModal';
 import { BudgetTreeItem } from './types';
 import { toast } from 'sonner';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 export const BudgetsTab: React.FC = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -43,6 +45,14 @@ export const BudgetsTab: React.FC = () => {
       }))
     };
     setBudgetTree(prev => [...prev, newBudgetTreeItem]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'financial.budget.created',
+      eventKind: 'financial',
+      aggregateType: 'budget',
+      aggregateId: String(newBudgetTreeItem.id),
+      projectId: budgetData.projectId ?? null,
+      payload: { name: newBudgetTreeItem.name, amount: newBudgetTreeItem.amount, status: newBudgetTreeItem.status },
+    }).catch((error) => console.error('[BudgetsTab] emitProjectEvent(create) failed:', error));
   };
 
   const handleBudgetClick = (budget: BudgetTreeItem) => {
@@ -73,6 +83,14 @@ export const BudgetsTab: React.FC = () => {
       }
       return b;
     }));
+    void projectEventBus.emitProjectEvent({
+      eventType: 'financial.budget.updated',
+      eventKind: 'financial',
+      aggregateType: 'budget',
+      aggregateId: String(budgetId),
+      projectId: updateData.projectId ?? null,
+      payload: updateData,
+    }).catch((error) => console.error('[BudgetsTab] emitProjectEvent(update) failed:', error));
     toast.success('تم تحديث الميزانية بنجاح');
   };
 
@@ -91,7 +109,7 @@ export const BudgetsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-large font-semibold text-black font-arabic mx-[30px]">إدارة الميزانيات</h3>
+        <div className="flex items-center gap-2 mx-[30px]"><h3 className="text-large font-semibold text-black font-arabic">إدارة الميزانيات</h3><LinkIndicator projectId="financial-budgets" /></div>
         <button 
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors"
@@ -117,7 +135,7 @@ export const BudgetsTab: React.FC = () => {
                   <div className="flex items-center gap-3" onClick={() => handleBudgetClick(budget)}>
                     <BookOpen className="h-5 w-5 text-black" />
                     <div>
-                      <h4 className="text-sm font-bold text-black font-arabic">{budget.name}</h4>
+                      <div className="flex items-center gap-2"><h4 className="text-sm font-bold text-black font-arabic">{budget.name}</h4><LinkIndicator targetElementId={budget.id} compact /></div>
                       <p className="text-sm font-normal text-black font-arabic">{formatCurrency(budget.amount)}</p>
                     </div>
                   </div>
@@ -148,7 +166,7 @@ export const BudgetsTab: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <div className="w-3 h-3 bg-black rounded-full"></div>
                           <div>
-                            <h5 className="text-sm font-medium text-black font-arabic">{child.name}</h5>
+                            <div className="flex items-center gap-2"><h5 className="text-sm font-medium text-black font-arabic">{child.name}</h5><LinkIndicator targetElementId={child.id} compact /></div>
                             <p className="text-sm font-normal text-black font-arabic">{formatCurrency(child.amount)}</p>
                           </div>
                         </div>

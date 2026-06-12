@@ -46,6 +46,7 @@ export const FinancialDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
+      <div className="mb-4 flex justify-end"><LinkIndicator projectId="financial-dashboard" /></div>
       <BaseTabContent value="overview">
         <OverviewTab />
       </BaseTabContent>
