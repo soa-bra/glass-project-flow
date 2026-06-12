@@ -1,6 +1,11 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  sanitizeSelectedElementsForAI,
+  type ServerAIContextRole,
+  type ServerAIDataPermissions,
+} from './sanitizer.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -430,6 +435,13 @@ serve(async (req) => {
       selectedTool = 'analyze_selection';
     }
 
+    const userDataPermissions = await loadUserAIDataPermissions(supabaseClient, userId, context);
+    const sanitizedSelection = sanitizeSelectedElementsForAI(userId, selectedElements, {
+      permissions: userDataPermissions,
+    });
+    const sanitizedSelectedElements = sanitizedSelection.selectedElements;
+    const sanitizedPrompt = typeof prompt === 'string' ? prompt : undefined;
+
     const permissionCheck = await checkAiPermission(supabaseClient, userId, context);
     if (!permissionCheck.allowed) {
       await storeExplainabilityTrace(supabaseClient, {
@@ -437,8 +449,8 @@ serve(async (req) => {
         action: action || 'generate',
         selectedTool,
         model: 'google/gemini-2.5-flash',
-        prompt,
-        selectedElements,
+        prompt: sanitizedPrompt,
+        selectedElements: sanitizedSelectedElements,
         targetType: context?.targetType,
         confidenceSummary: null,
         escalation: 'permission_denied',
@@ -450,6 +462,8 @@ serve(async (req) => {
           approvedAt: null
         },
         outputSummary: null,
+        dataPermissions: userDataPermissions,
+        redactionSummary: sanitizedSelection.redactionSummary,
         denial: {
           code: 'AI_PERMISSION_DENIED',
           requiredPermission: permissionCheck.permissionCode,
@@ -477,30 +491,30 @@ serve(async (req) => {
     let userMessage = '';
     
     if (action === 'generate') {
-      userMessage = `أنشئ عناصر ذكية بناءً على الوصف التالي:\n${prompt}`;
+      userMessage = `أنشئ عناصر ذكية بناءً على الوصف التالي:\n${sanitizedPrompt || ''}`;
       if (context?.preferredType) {
         userMessage += `\n\nنوع العنصر المفضل: ${context.preferredType}`;
       }
     } else if (action === 'analyze') {
-      userMessage = `حلل العناصر المحددة التالية واقترح تحويلها إلى عناصر ذكية:\n${JSON.stringify(selectedElements, null, 2)}`;
-      if (prompt) {
-        userMessage += `\n\nتعليمات إضافية: ${prompt}`;
+      userMessage = `حلل العناصر المحددة التالية واقترح تحويلها إلى عناصر ذكية:\n${JSON.stringify(sanitizedSelectedElements, null, 2)}`;
+      if (sanitizedPrompt) {
+        userMessage += `\n\nتعليمات إضافية: ${sanitizedPrompt}`;
       }
     } else if (action === 'transform') {
-      userMessage = `حوّل العناصر التالية إلى ${context?.targetType || 'عنصر ذكي مناسب'}:\n${JSON.stringify(selectedElements, null, 2)}`;
-      if (prompt) {
-        userMessage += `\n\nتفاصيل إضافية: ${prompt}`;
+      userMessage = `حوّل العناصر التالية إلى ${context?.targetType || 'عنصر ذكي مناسب'}:\n${JSON.stringify(sanitizedSelectedElements, null, 2)}`;
+      if (sanitizedPrompt) {
+        userMessage += `\n\nتفاصيل إضافية: ${sanitizedPrompt}`;
       }
     } else {
-      userMessage = prompt;
+      userMessage = sanitizedPrompt || '';
     }
 
     console.log(`[smart-elements-ai] Action: ${action}, Tool: ${selectedTool}`);
 
     const sensitivityAssessment = assessTransformationSensitivity({
       action: action || 'generate',
-      prompt,
-      selectedElements,
+      prompt: sanitizedPrompt,
+      selectedElements: sanitizedSelectedElements,
       targetType: context?.targetType
     });
     const humanApprovalProvided = context?.humanApproval?.approved === true;
@@ -515,8 +529,8 @@ serve(async (req) => {
         action: action || 'generate',
         selectedTool,
         model: 'google/gemini-2.5-flash',
-        prompt,
-        selectedElements,
+        prompt: sanitizedPrompt,
+        selectedElements: sanitizedSelectedElements,
         targetType: context?.targetType,
         confidenceSummary: null,
         escalation: 'blocked_pending_human_approval',
@@ -528,7 +542,9 @@ serve(async (req) => {
           approvedAt: null,
           approvalReason: null
         },
-        outputSummary: null
+        outputSummary: null,
+        dataPermissions: userDataPermissions,
+        redactionSummary: sanitizedSelection.redactionSummary
       });
 
       return new Response(JSON.stringify({
@@ -624,8 +640,8 @@ serve(async (req) => {
       action: action || 'generate',
       selectedTool,
       model: 'google/gemini-2.5-flash',
-      prompt,
-      selectedElements,
+      prompt: sanitizedPrompt,
+      selectedElements: sanitizedSelectedElements,
       targetType: context?.targetType,
       confidenceSummary,
       escalation,
@@ -637,7 +653,9 @@ serve(async (req) => {
         approvedAt: context?.humanApproval?.approvedAt ?? null,
         approvalReason
       },
-      outputSummary: summarizeOutput(toolResult)
+      outputSummary: summarizeOutput(toolResult),
+      dataPermissions: userDataPermissions,
+      redactionSummary: sanitizedSelection.redactionSummary
     });
 
     if (action === 'transform' && humanApprovalProvided) {
@@ -645,11 +663,13 @@ serve(async (req) => {
         userId,
         selectedTool,
         targetType: context?.targetType,
-        selectedElements,
+        selectedElements: sanitizedSelectedElements,
         sensitivity: sensitivityAssessment,
         approvedAt: context?.humanApproval?.approvedAt ?? null,
         approverId: context?.humanApproval?.approverId ?? null,
-        approvalReason
+        approvalReason,
+        dataPermissions: userDataPermissions,
+        redactionSummary: sanitizedSelection.redactionSummary
       });
     }
 
@@ -721,6 +741,7 @@ type ValidatedAiContext = {
     approved: boolean;
     approverId?: string;
     approvedAt?: string;
+    approvalReason?: string;
   };
 };
 
@@ -803,7 +824,7 @@ function validateOptionalHumanApproval(
   }
 
   const rawApproval = value as Record<string, unknown>;
-  const allowedKeys = new Set(['approved', 'approverId', 'approvedAt']);
+  const allowedKeys = new Set(['approved', 'approverId', 'approvedAt', 'approvalReason']);
   for (const key of Object.keys(rawApproval)) {
     if (key.toLowerCase().includes('role')) {
       return { valid: false, error: 'Client-supplied roles are not accepted' };
@@ -829,12 +850,19 @@ function validateOptionalHumanApproval(
     }
   }
 
+  if (rawApproval.approvalReason !== undefined && rawApproval.approvalReason !== null) {
+    if (typeof rawApproval.approvalReason !== 'string' || rawApproval.approvalReason.length > 500) {
+      return { valid: false, error: 'Invalid humanApproval.approvalReason' };
+    }
+  }
+
   return {
     valid: true,
     value: {
       approved: rawApproval.approved,
       ...(typeof rawApproval.approverId === 'string' ? { approverId: rawApproval.approverId } : {}),
       ...(typeof rawApproval.approvedAt === 'string' ? { approvedAt: rawApproval.approvedAt } : {}),
+      ...(typeof rawApproval.approvalReason === 'string' ? { approvalReason: rawApproval.approvalReason } : {}),
     }
   };
 }
@@ -856,6 +884,81 @@ async function checkAiPermission(
   }
 
   return { allowed: data === true, permissionCode };
+}
+
+async function loadUserAIDataPermissions(
+  supabaseClient: ReturnType<typeof createClient>,
+  userId: string,
+  context?: ValidatedAiContext
+): Promise<ServerAIDataPermissions> {
+  const role = await loadUserAIContextRole(supabaseClient, userId, context);
+  const [canViewFinancialByPermission, canViewLegalByPermission, canViewSensitive] = await Promise.all([
+    hasAnyPermission(supabaseClient, userId, ['financial.read', 'finance.read', 'finance.view']),
+    hasAnyPermission(supabaseClient, userId, ['legal.read', 'legal.view']),
+    hasAnyPermission(supabaseClient, userId, ['ai.sensitive.read', 'sensitive.read', 'sensitive.view']),
+  ]);
+
+  return {
+    role,
+    canViewFinancial: role === 'host' || canViewFinancialByPermission,
+    canViewLegal: role === 'host' || canViewLegalByPermission,
+    canViewSensitive,
+  };
+}
+
+async function loadUserAIContextRole(
+  supabaseClient: ReturnType<typeof createClient>,
+  userId: string,
+  context?: ValidatedAiContext
+): Promise<ServerAIContextRole> {
+  if (context?.boardId) {
+    const { data, error } = await supabaseClient.rpc('get_user_board_role', {
+      board_id: context.boardId,
+      user_id: userId,
+    });
+
+    if (!error && (data === 'host' || data === 'editor' || data === 'viewer')) {
+      return data;
+    }
+
+    if (error) {
+      console.error('[smart-elements-ai] Failed to load board role from database:', error);
+    }
+
+    return 'guest';
+  }
+
+  const isOwner = await hasAnyPermission(supabaseClient, userId, ['rbac.manage']);
+  if (isOwner) return 'host';
+
+  const canUseProjectAI = context?.projectId
+    ? await hasAnyPermission(supabaseClient, userId, ['project.ai.use'])
+    : false;
+  const canUseCanvasAI = await hasAnyPermission(supabaseClient, userId, ['canvas.ai.use']);
+
+  return canUseProjectAI || canUseCanvasAI ? 'editor' : 'guest';
+}
+
+async function hasAnyPermission(
+  supabaseClient: ReturnType<typeof createClient>,
+  userId: string,
+  permissionCodes: string[],
+): Promise<boolean> {
+  for (const permissionCode of permissionCodes) {
+    const { data, error } = await supabaseClient.rpc('has_permission', {
+      _user_id: userId,
+      _permission_code: permissionCode,
+    });
+
+    if (error) {
+      console.error(`[smart-elements-ai] Failed to check permission ${permissionCode}:`, error);
+      continue;
+    }
+
+    if (data === true) return true;
+  }
+
+  return false;
 }
 
 type ExplainabilityTraceInput = {
@@ -891,6 +994,12 @@ type ExplainabilityTraceInput = {
     entityCount: number;
     relationshipCount: number;
   } | null;
+  dataPermissions?: ServerAIDataPermissions;
+  redactionSummary?: {
+    financial: number;
+    legal: number;
+    sensitive: number;
+  };
   denial?: {
     code: string;
     requiredPermission: string;
@@ -978,6 +1087,12 @@ async function storeHumanApprovalAuditEvent(
     approvedAt: string | null;
     approverId: string | null;
     approvalReason: string | null;
+    dataPermissions?: ServerAIDataPermissions;
+    redactionSummary?: {
+      financial: number;
+      legal: number;
+      sensitive: number;
+    };
   }
 ) {
   const { error } = await supabaseClient.from('audit_events').insert({
@@ -991,6 +1106,8 @@ async function storeHumanApprovalAuditEvent(
       targetType: input.targetType || null,
       selectedElementsCount: Array.isArray(input.selectedElements) ? input.selectedElements.length : 0,
       sensitivity: input.sensitivity,
+      dataPermissions: input.dataPermissions,
+      redactionSummary: input.redactionSummary,
       humanApproval: {
         approvedAt: input.approvedAt,
         approverId: input.approverId,
@@ -1046,6 +1163,8 @@ async function storeExplainabilityTrace(supabaseClient: ReturnType<typeof create
       approval: input.approval,
       approvalReason: input.approval.approvalReason,
       outputSummary: input.outputSummary,
+      dataPermissions: input.dataPermissions,
+      redactionSummary: input.redactionSummary,
       denial: input.denial,
     }
   };
