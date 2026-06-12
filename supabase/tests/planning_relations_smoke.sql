@@ -7,10 +7,14 @@ do $$
 declare
   owner_user_id uuid := '00000000-0000-0000-0000-00000000b101';
   board_id uuid := '00000000-0000-0000-0000-00000000b201';
-  source_element_id uuid := '00000000-0000-0000-0000-00000000b301';
-  target_element_id uuid := '00000000-0000-0000-0000-00000000b302';
-  connector_element_id uuid := '00000000-0000-0000-0000-00000000b303';
-  connector_id uuid := '00000000-0000-0000-0000-00000000b401';
+  visual_source_element_id uuid := '00000000-0000-0000-0000-00000000b301';
+  operational_source_element_id uuid := '00000000-0000-0000-0000-00000000b302';
+  smoke_target_element_id uuid := '00000000-0000-0000-0000-00000000b303';
+  visual_connector_element_id uuid := '00000000-0000-0000-0000-00000000b304';
+  operational_connector_element_id uuid := '00000000-0000-0000-0000-00000000b305';
+  visual_connector_id uuid := '00000000-0000-0000-0000-00000000b401';
+  operational_connector_id uuid := '00000000-0000-0000-0000-00000000b402';
+  operational_data_link_id uuid := '00000000-0000-0000-0000-00000000b403';
   smoke_project_id uuid := '00000000-0000-0000-0000-00000000b501';
   task_id uuid := '00000000-0000-0000-0000-00000000b601';
   event_count integer;
@@ -47,9 +51,11 @@ begin
 
   insert into public.planning_elements (id, board_id, element_type, created_by, content)
   values
-    (source_element_id, board_id, 'sticky', owner_user_id, '{"title":"Source"}'::jsonb),
-    (target_element_id, board_id, 'sticky', owner_user_id, '{"title":"Target"}'::jsonb),
-    (connector_element_id, board_id, 'root_connector', owner_user_id, '{"title":"Connector"}'::jsonb)
+    (visual_source_element_id, board_id, 'sticky', owner_user_id, '{"title":"Visual source"}'::jsonb),
+    (operational_source_element_id, board_id, 'sticky', owner_user_id, '{"title":"Operational source"}'::jsonb),
+    (smoke_target_element_id, board_id, 'sticky', owner_user_id, '{"title":"Target"}'::jsonb),
+    (visual_connector_element_id, board_id, 'root_connector', owner_user_id, '{"title":"Visual connector"}'::jsonb),
+    (operational_connector_element_id, board_id, 'root_connector', owner_user_id, '{"title":"Operational connector"}'::jsonb)
   on conflict (id) do nothing;
 
   insert into public.smart_connectors (
@@ -61,14 +67,45 @@ begin
     relationship_type,
     connector_kind,
     created_by
-  ) values (
-    connector_id,
+  ) values
+    (
+      visual_connector_id,
+      board_id,
+      visual_connector_element_id,
+      visual_source_element_id,
+      smoke_target_element_id,
+      'references',
+      'root_connector',
+      owner_user_id
+    ),
+    (
+      operational_connector_id,
+      board_id,
+      operational_connector_element_id,
+      operational_source_element_id,
+      smoke_target_element_id,
+      'blocks',
+      'root_connector',
+      owner_user_id
+    );
+
+  insert into public.data_links (
+    id,
     board_id,
-    connector_element_id,
     source_element_id,
     target_element_id,
+    link_kind,
+    relation_type,
+    metadata,
+    created_by
+  ) values (
+    operational_data_link_id,
+    board_id,
+    operational_source_element_id,
+    smoke_target_element_id,
+    'operational_relationship',
     'blocks',
-    'root_connector',
+    jsonb_build_object('connectorElementId', operational_connector_element_id, 'relationshipType', 'blocks'),
     owner_user_id
   );
 
@@ -112,10 +149,42 @@ begin
     raise exception 'Expected changing a budget-linked task to create one project_event, got %', event_count;
   end if;
 
-  delete from public.planning_elements where id = source_element_id;
+  delete from public.planning_elements where id = visual_source_element_id;
 
-  if exists (select 1 from public.smart_connectors where id = connector_id) then
-    raise exception 'Expected deleting an endpoint planning element to cascade-delete related smart_connectors';
+  if exists (select 1 from public.smart_connectors where id = visual_connector_id) then
+    raise exception 'Expected deleting a visual-only endpoint to delete the visual smart_connector';
+  end if;
+
+  if exists (select 1 from public.planning_elements where id = visual_connector_element_id) then
+    raise exception 'Expected deleting a visual-only endpoint to delete its connector canvas element';
+  end if;
+
+  delete from public.planning_elements where id = operational_source_element_id;
+
+  if not exists (
+    select 1
+    from public.smart_connectors
+    where id = operational_connector_id
+      and status = 'broken'
+      and source_element_id is null
+      and target_element_id = smoke_target_element_id
+  ) then
+    raise exception 'Expected deleting an operational endpoint to preserve a broken smart_connector';
+  end if;
+
+  if not exists (
+    select 1
+    from public.data_links
+    where id = operational_data_link_id
+      and status = 'broken'
+      and source_element_id is null
+      and target_element_id = smoke_target_element_id
+  ) then
+    raise exception 'Expected deleting an operational endpoint to preserve a broken data_link';
+  end if;
+
+  if not exists (select 1 from public.planning_elements where id = smoke_target_element_id) then
+    raise exception 'Deleting a visual endpoint must not delete the target entity';
   end if;
 end $$;
 
