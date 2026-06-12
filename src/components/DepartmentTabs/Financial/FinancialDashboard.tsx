@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
@@ -8,6 +8,8 @@ import { InvoicesTab } from './InvoicesTab';
 import { AnalysisTab } from './AnalysisTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
+import { getDepartmentTabDefinition } from '@/features/ai/context/departmentRegistry';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -21,6 +23,21 @@ export const FinancialDashboard: React.FC = () => {
     { value: 'templates', label: 'النماذج والقوالب' },
     { value: 'reports', label: 'التقارير' }
   ];
+
+  useEffect(() => {
+    const tabDefinition = getDepartmentTabDefinition('financial', activeTab);
+    return registerAIContextSource({
+      id: 'financial-dashboard-active-tab',
+      kind: 'financial',
+      data: {
+        active_department: { id: 'financial', label: 'إدارة العمليات المالية', category: 'financial' },
+        active_tab: { id: activeTab, label: tabDefinition?.label ?? activeTab, departmentId: 'financial' },
+        visible_boxes: tabDefinition?.boxKeys ?? [],
+        financial_snapshot: { activeView: activeTab },
+      },
+      permission_scope: { role: 'editor', allowed: true, canViewFinancial: true },
+    });
+  }, [activeTab]);
 
   return (
     <DashboardLayout

@@ -739,40 +739,61 @@ export type Database = {
           board_id: string
           created_at: string
           created_by: string
+          fields_map: Json
           id: string
           label: string | null
           link_kind: string
           mapping: Json
           metadata: Json
           project_id: string | null
+          relation_type: string
           source_element_id: string | null
+          source_id: string | null
+          source_type: string | null
+          sync_type: string
           target_element_id: string | null
+          target_id: string | null
+          target_type: string | null
         }
         Insert: {
           board_id: string
           created_at?: string
           created_by: string
-          id?: string
-          label?: string | null
-          link_kind: string
-          mapping?: Json
-          metadata?: Json
-          project_id?: string | null
-          source_element_id?: string | null
-          target_element_id?: string | null
-        }
-        Update: {
-          board_id?: string
-          created_at?: string
-          created_by?: string
+          fields_map?: Json
           id?: string
           label?: string | null
           link_kind?: string
           mapping?: Json
           metadata?: Json
           project_id?: string | null
+          relation_type?: string
           source_element_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          sync_type?: string
           target_element_id?: string | null
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          created_by?: string
+          fields_map?: Json
+          id?: string
+          label?: string | null
+          link_kind?: string
+          mapping?: Json
+          metadata?: Json
+          project_id?: string | null
+          relation_type?: string
+          source_element_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          sync_type?: string
+          target_element_id?: string | null
+          target_id?: string | null
+          target_type?: string | null
         }
         Relationships: []
       }
@@ -898,33 +919,45 @@ export type Database = {
           board_id: string
           created_at: string
           created_by: string
+          extracted_data: Json
           id: string
           metadata: Json
           result: Json
           source_element_id: string
           status: string
+          suggested_type: string | null
+          target_entity_id: string | null
+          target_entity_type: string | null
           transformation_type: string
         }
         Insert: {
           board_id: string
           created_at?: string
           created_by: string
+          extracted_data?: Json
           id?: string
           metadata?: Json
           result?: Json
           source_element_id: string
           status?: string
+          suggested_type?: string | null
+          target_entity_id?: string | null
+          target_entity_type?: string | null
           transformation_type: string
         }
         Update: {
           board_id?: string
           created_at?: string
           created_by?: string
+          extracted_data?: Json
           id?: string
           metadata?: Json
           result?: Json
           source_element_id?: string
           status?: string
+          suggested_type?: string | null
+          target_entity_id?: string | null
+          target_entity_type?: string | null
           transformation_type?: string
         }
         Relationships: []
@@ -2254,7 +2287,12 @@ export type Database = {
           event_type: string
           id: string
           payload: Json
+          processed_at: string | null
           project_id: string
+          retry_count: number
+          source_id: string | null
+          source_type: string | null
+          status: string
         }
         Insert: {
           actor_id: string
@@ -2266,7 +2304,12 @@ export type Database = {
           event_type: string
           id?: string
           payload?: Json
+          processed_at?: string | null
           project_id: string
+          retry_count?: number
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
         }
         Update: {
           actor_id?: string
@@ -2278,7 +2321,12 @@ export type Database = {
           event_type?: string
           id?: string
           payload?: Json
+          processed_at?: string | null
           project_id?: string
+          retry_count?: number
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
         }
         Relationships: []
       }
@@ -2410,6 +2458,7 @@ export type Database = {
           element_id: string
           id: string
           metadata: Json
+          source_element_ids: string[]
           status: string
           title: string
           updated_at: string
@@ -2422,6 +2471,7 @@ export type Database = {
           element_id: string
           id?: string
           metadata?: Json
+          source_element_ids?: string[]
           status?: string
           title: string
           updated_at?: string
@@ -2434,6 +2484,7 @@ export type Database = {
           element_id?: string
           id?: string
           metadata?: Json
+          source_element_ids?: string[]
           status?: string
           title?: string
           updated_at?: string
