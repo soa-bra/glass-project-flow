@@ -1,70 +1,61 @@
-import React from 'react';
-import { AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import type { SmartAssistantCommand } from '../hooks/useSmartAssistant';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import type { DataLinkImpact } from '../types/data-link.types';
+import { LinkIndicator } from './LinkIndicator';
 
-interface SmartConfirmationDialogProps {
+export interface SmartConfirmationDialogProps {
   open: boolean;
-  command: SmartAssistantCommand | null;
-  isLoading?: boolean;
+  title: string;
+  description: string;
+  impacts?: DataLinkImpact[];
+  confirmLabel?: string;
+  cancelLabel?: string;
   onConfirm: () => void;
-  onCancel: () => void;
+  onOpenChange: (open: boolean) => void;
 }
 
-export const SmartConfirmationDialog: React.FC<SmartConfirmationDialogProps> = ({
+export function SmartConfirmationDialog({
   open,
-  command,
-  isLoading = false,
+  title,
+  description,
+  impacts = [],
+  confirmLabel = 'تأكيد',
+  cancelLabel = 'إلغاء',
   onConfirm,
-  onCancel,
-}) => {
+  onOpenChange,
+}: SmartConfirmationDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen && !isLoading) onCancel(); }}>
-      <DialogContent className="max-w-xl font-arabic" dir="rtl">
-        <DialogHeader className="items-start text-right">
-          <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-amber-100 p-3 text-amber-700">
-              <AlertTriangle className="h-5 w-5" />
-            </div>
-            <div>
-              <DialogTitle>تأكيد إجراء الذكاء الاصطناعي</DialogTitle>
-              <DialogDescription className="mt-2 leading-6">
-                لن يتم تنفيذ أي إجراء تشغيلي أو توليد مسودة قابلة للاعتماد قبل موافقتك الصريحة.
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
 
-        {command && (
-          <div className="rounded-2xl border border-border bg-muted/30 p-4 text-right">
-            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              {command.title}
+        {impacts.length > 0 && (
+          <div className="space-y-2 rounded-lg border bg-muted/30 p-3">
+            <p className="text-sm font-medium text-foreground">التأثيرات بين الأقسام</p>
+            <div className="flex flex-wrap gap-2">
+              {impacts.map((impact) => (
+                <LinkIndicator key={impact.link.id} impact={impact} />
+              ))}
             </div>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{command.description}</p>
-            <p className="mt-3 text-xs leading-5 text-muted-foreground">
-              سيتم إرسال سياق المشروع المصرّح به فقط إلى بوابة الذكاء الاصطناعي، وستبقى النتائج كمقترحات حتى تعتمدها يدويًا.
-            </p>
           </div>
         )}
 
-        <DialogFooter className="flex-row-reverse justify-start gap-2">
-          <Button onClick={onConfirm} disabled={isLoading} className="font-arabic">
-            {isLoading ? 'جارٍ التنفيذ…' : 'أوافق وشغّل الأمر'}
-          </Button>
-          <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading} className="font-arabic">
-            إلغاء
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>{confirmLabel}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
-};
+}
