@@ -5,16 +5,79 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database, Json } from '@/integrations/supabase/types';
 import type { PlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
+import { isOperationalRelationshipType } from '@/features/planning/integration/connectors';
 import { audit } from '@/services/audit';
 
 export type SmartConnector = Database['public']['Tables']['smart_connectors']['Row'];
 type SmartConnectorInsert = Database['public']['Tables']['smart_connectors']['Insert'];
+type DataLinkInsert = Database['public']['Tables']['data_links']['Insert'];
 
 async function requireUserId(): Promise<string> {
   const { data, error } = await supabase.auth.getUser();
   if (error) throw error;
   if (!data.user) throw new Error('Not authenticated');
   return data.user.id;
+}
+
+async function refreshOperationalDataLink(
+  record: PlanningConnectorLogicalRecord,
+  createdBy: string,
+): Promise<void> {
+  const { error: deleteError } = await supabase
+    .from('data_links')
+    .delete()
+    .eq('board_id', record.board_id)
+    .eq('link_kind', 'operational_relationship')
+    .filter('metadata->>connectorElementId', 'eq', record.connector_element_id);
+
+  if (deleteError) throw deleteError;
+
+  if (!isOperationalRelationshipType(record.relationship_type)) return;
+
+  const payload: DataLinkInsert = {
+    board_id: record.board_id,
+    created_by: createdBy,
+    source_element_id: record.source_element_id,
+    target_element_id: record.target_element_id,
+    link_kind: 'operational_relationship',
+    label: record.label ?? record.relationship_type,
+    mapping: {
+      source: 'planning_connector',
+      relationshipType: record.relationship_type,
+      connectorKind: record.connector_kind,
+    } as Json,
+    metadata: {
+      ...record.metadata,
+      connectorElementId: record.connector_element_id,
+      relationshipType: record.relationship_type,
+      source: 'planningConnectorAdapter',
+    } as Json,
+  };
+
+  const { error: insertError } = await supabase.from('data_links').insert(payload);
+  if (insertError) throw insertError;
+}
+
+async function deleteOperationalDataLinksByConnectorElementId(
+  connectorElementId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('data_links')
+    .delete()
+    .eq('link_kind', 'operational_relationship')
+    .filter('metadata->>connectorElementId', 'eq', connectorElementId);
+  if (error) throw error;
+}
+
+export async function deleteDataLinksByElementId(elementId: string, boardId?: string): Promise<void> {
+  let query = supabase
+    .from('data_links')
+    .delete()
+    .or(`source_element_id.eq.${elementId},target_element_id.eq.${elementId},metadata->>connectorElementId.eq.${elementId}`);
+
+  if (boardId) query = query.eq('board_id', boardId);
+  const { error } = await query;
+  if (error) throw error;
 }
 
 function toSmartConnectorInsert(
@@ -47,6 +110,7 @@ export async function upsertSmartConnector(
     .single();
 
   if (error) throw error;
+  await refreshOperationalDataLink(record, payload.created_by);
   void audit({
     resource_type: 'smart_connector',
     action: 'canvas.connector.upserted',
@@ -79,6 +143,7 @@ export async function upsertSmartConnectors(
     .select('*');
 
   if (error) throw error;
+  await Promise.all(records.map((record) => refreshOperationalDataLink(record, createdBy)));
   (data ?? []).forEach((connector) => {
     void audit({
       resource_type: 'smart_connector',
@@ -109,6 +174,7 @@ export async function deleteSmartConnectorByElementId(connectorElementId: string
     .delete()
     .eq('connector_element_id', connectorElementId);
   if (error) throw error;
+  await deleteOperationalDataLinksByConnectorElementId(connectorElementId);
   if (existing) {
     void audit({
       resource_type: 'smart_connector',

@@ -43,6 +43,12 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   const [dragStartPoint, setDragStartPoint] = useState<ConnectorPoint | null>(null);
   const [dragCurrent, setDragCurrent] = useState<{ x: number; y: number } | null>(null);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
+  const [internalSelectedConnectorId, setInternalSelectedConnectorId] = useState<string | null>(null);
+  const effectiveSelectedConnectorId = selectedConnectorId ?? internalSelectedConnectorId;
+  const selectConnector = useCallback((id: string | null) => {
+    setInternalSelectedConnectorId(id);
+    onSelectConnector?.(id);
+  }, [onSelectConnector]);
   const svgGroupRef = useRef<SVGGElement | null>(null);
 
   // Only show anchors for selected, non-connector elements
@@ -61,6 +67,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       startPoint,
       endPoint,
       connectionType,
+      relationshipType: connectionType,
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
@@ -68,8 +75,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       updatedAt: new Date().toISOString(),
     };
     onConnectorsChange([...connectors, newConnector]);
-    onSelectConnector?.(newConnector.id);
-  }, [connectors, onConnectorsChange, onSelectConnector]);
+    selectConnector(newConnector.id);
+  }, [connectors, onConnectorsChange, selectConnector]);
 
   const handleUpdateConnector = useCallback((id: string, data: RootConnectorData) => {
     onConnectorsChange(connectors.map(c => c.id === id ? data : c));
@@ -77,8 +84,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
 
   const handleDeleteConnector = useCallback((id: string) => {
     onConnectorsChange(connectors.filter(c => c.id !== id));
-    if (selectedConnectorId === id) onSelectConnector?.(null);
-  }, [connectors, onConnectorsChange, selectedConnectorId, onSelectConnector]);
+    if (effectiveSelectedConnectorId === id) selectConnector(null);
+  }, [connectors, effectiveSelectedConnectorId, onConnectorsChange, selectConnector]);
 
   const handleAISuggest = useCallback(async (_connector: RootConnectorData): Promise<AISuggestion[]> => {
     await new Promise(resolve => setTimeout(resolve, 800));
@@ -258,13 +265,16 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
           <RootConnector
             key={connector.id}
             data={liveData}
-            isSelected={selectedConnectorId === connector.id}
+            isSelected={effectiveSelectedConnectorId === connector.id}
             onUpdate={(data) => handleUpdateConnector(connector.id, {
               ...data,
               // preserve the original anchor descriptors, never persist the resolved x/y
               startPoint: { ...connector.startPoint, anchorPoint: data.startPoint.anchorPoint },
               endPoint: { ...connector.endPoint, anchorPoint: data.endPoint.anchorPoint },
+              relationshipType: data.relationshipType || data.connectionType || 'references',
+              connectionType: data.connectionType || data.relationshipType || 'references',
             })}
+            onSelect={() => selectConnector(connector.id)}
             onDelete={() => handleDeleteConnector(connector.id)}
             onAISuggest={() => handleAISuggest(connector)}
             onInsertSuggestion={(suggestion) => handleInsertSuggestion(connector, suggestion)}
