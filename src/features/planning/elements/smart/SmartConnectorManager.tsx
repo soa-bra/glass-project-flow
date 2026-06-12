@@ -32,6 +32,7 @@ interface SmartConnectorManagerProps {
   selectedConnectorId?: string;
   onSelectConnector?: (id: string | null) => void;
   selectedElementIds?: string[];
+  hoveredElementId?: string | null;
   showAnchors?: boolean;
   canEditBoard?: boolean;
   canCreateOperationalRelationship?: boolean;
@@ -45,6 +46,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   selectedConnectorId,
   onSelectConnector,
   selectedElementIds = [],
+  hoveredElementId: hoveredConnectableElementId = null,
   showAnchors = true,
   canEditBoard = true,
   canCreateOperationalRelationship = true,
@@ -63,11 +65,12 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [onSelectConnector]);
   const svgGroupRef = useRef<SVGGElement | null>(null);
 
-  // Only show anchors for selected, non-connector elements
-  const anchoredElements = useMemo(
-    () => elements.filter((el) => selectedElementIds.includes(el.id)),
-    [elements, selectedElementIds],
-  );
+  // Show anchors for selected or hovered, non-connector elements.
+  const anchoredElements = useMemo(() => {
+    const anchorElementIds = new Set(selectedElementIds);
+    if (hoveredConnectableElementId) anchorElementIds.add(hoveredConnectableElementId);
+    return elements.filter((el) => anchorElementIds.has(el.id));
+  }, [elements, hoveredConnectableElementId, selectedElementIds]);
 
   const showPolicyRejection = useCallback((reason: string, point?: ConnectorPoint | { x: number; y: number }) => {
     const fallbackPoint = dragCurrent ?? dragStartPoint ?? { x: 24, y: 24 };
@@ -111,6 +114,19 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       endPoint,
       connectionType,
       relationshipType: connectionType,
+      status: 'approved',
+      direction: 'source_to_target',
+      connectorMode: 'semantic',
+      connectorPointType: 'anchor',
+      branchMode: 'single',
+      sourceSubAnchor: startPoint.anchorPoint,
+      targetSubAnchor: endPoint.anchorPoint,
+      permissionScope: 'board',
+      source: 'user',
+      requiresReview: false,
+      isAIGenerated: false,
+      approvedByUser: true,
+      smartActions: [],
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
@@ -290,19 +306,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         );
       })()}
 
-      {policyMessage && (
-        <g transform={`translate(${policyMessage.x + 12}, ${policyMessage.y + 12})`} className="pointer-events-none">
-          <rect width={280} height={44} rx={10} fill="#7F1D1D" opacity={0.92} />
-          <text x={264} y={18} textAnchor="end" fill="#FFFFFF" fontSize={11} fontWeight={600} direction="rtl">
-            تعذر إنشاء العلاقة
-          </text>
-          <text x={264} y={34} textAnchor="end" fill="#FEE2E2" fontSize={10} direction="rtl">
-            {policyMessage.message.length > 46 ? `${policyMessage.message.slice(0, 43)}…` : policyMessage.message}
-          </text>
-        </g>
-      )}
-
-      {/* Connection Anchors — only for selected elements */}
+      {/* Connection Anchors — selected or hovered elements */}
       {showAnchors && anchoredElements.map(element => (
         <ConnectionAnchors
           key={element.id}
