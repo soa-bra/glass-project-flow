@@ -109,59 +109,59 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  const HIT_RADIUS = 14;
-  const DOT_RADIUS = 4;
-  const [hoveredAnchor, setHoveredAnchor] = useState<AnchorPosition | null>(null);
-  const anchors: Array<{ anchorPoint: AnchorPosition; x: number; y: number }> = [
-    { anchorPoint: 'top', x: bounds.x + bounds.width / 2, y: bounds.y },
-    { anchorPoint: 'right', x: bounds.x + bounds.width, y: bounds.y + bounds.height / 2 },
-    { anchorPoint: 'bottom', x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height },
-    { anchorPoint: 'left', x: bounds.x, y: bounds.y + bounds.height / 2 },
-  ];
+  const HIT_RADIUS = 16;
+  const ARROW_SIZE = 6;
+  const CONNECTOR_OFFSET = 16;
+  const [isHovered, setIsHovered] = useState(false);
+  const anchor = {
+    anchorPoint: 'top' as const,
+    x: bounds.x + bounds.width / 2,
+    y: bounds.y - CONNECTOR_OFFSET,
+  };
 
   const handlePointerDown = (
     anchor: { anchorPoint: AnchorPosition; x: number; y: number },
-    event: React.PointerEvent<SVGCircleElement> | React.MouseEvent<SVGCircleElement>,
+    event: React.PointerEvent<SVGElement> | React.MouseEvent<SVGElement>,
   ) => {
     event.stopPropagation();
     event.preventDefault();
     onStartDrag({ elementId, x: anchor.x, y: anchor.y, anchorPoint: anchor.anchorPoint });
   };
 
+  const active = isHovered || isConnecting;
+
   return (
     <g
       className="connection-anchors"
       data-anchor-element-id={elementId}
+      data-anchor-position={anchor.anchorPoint}
       style={{ pointerEvents: 'auto' }}
     >
-      {anchors.map((anchor) => {
-        const active = hoveredAnchor === anchor.anchorPoint || isConnecting;
-        return (
-          <g key={anchor.anchorPoint} data-anchor-position={anchor.anchorPoint}>
-            <circle
-              cx={anchor.x}
-              cy={anchor.y}
-              r={HIT_RADIUS}
-              fill="transparent"
-              className="cursor-crosshair connection-anchor-hit"
-              onPointerEnter={() => setHoveredAnchor(anchor.anchorPoint)}
-              onPointerLeave={() => setHoveredAnchor((current) => current === anchor.anchorPoint ? null : current)}
-              onPointerDown={(event) => handlePointerDown(anchor, event)}
-              onMouseDown={(event) => handlePointerDown(anchor, event)}
-            />
-            <circle
-              cx={anchor.x}
-              cy={anchor.y}
-              r={active ? DOT_RADIUS + 1 : DOT_RADIUS}
-              fill="#FFFFFF"
-              stroke={active ? '#0B0F12' : '#9CA3AF'}
-              strokeWidth={1}
-              className="connection-anchor-dot transition-all"
-              pointerEvents="none"
-            />
-          </g>
-        );
-      })}
+      <circle
+        cx={anchor.x}
+        cy={anchor.y}
+        r={HIT_RADIUS}
+        fill="transparent"
+        className="cursor-crosshair connection-anchor-hit"
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
+        onPointerDown={(event) => handlePointerDown(anchor, event)}
+        onMouseDown={(event) => handlePointerDown(anchor, event)}
+      />
+      <path
+        d={`M ${anchor.x} ${anchor.y + ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y - ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y - ARROW_SIZE} Z`}
+        fill="#0B0F12"
+        stroke="#FFFFFF"
+        strokeWidth={1.5}
+        className="connection-anchor-dot drop-shadow-sm"
+        pointerEvents="none"
+        style={{
+          transform: active ? 'scale(1.3)' : 'scale(1)',
+          transformBox: 'fill-box',
+          transformOrigin: 'center',
+          transition: 'transform 120ms ease',
+        }}
+      />
     </g>
   );
 };

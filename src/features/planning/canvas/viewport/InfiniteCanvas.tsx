@@ -148,6 +148,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   });
 
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
+  const [hoveredConnectableElementId, setHoveredConnectableElementId] = useState<string | null>(null);
 
   const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
     containerRef,
@@ -243,6 +244,20 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         })),
     [visibleElements],
   );
+
+
+  const findHoveredConnectableElement = useCallback((x: number, y: number) => {
+    const connectorHoverMargin = 28;
+    const candidates = connectableElements.filter(
+      (element) =>
+        x >= element.x &&
+        x <= element.x + element.width &&
+        y >= element.y - connectorHoverMargin &&
+        y <= element.y + element.height,
+    );
+    const nonFrame = [...candidates].reverse().find((element) => element.type !== 'frame');
+    return nonFrame ?? candidates[candidates.length - 1] ?? null;
+  }, [connectableElements]);
 
   const syncRootConnectors = useCallback(
     (nextConnectors: RootConnectorData[]) => {
@@ -394,6 +409,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const pointer = updatePointerFromClient(e.clientX, e.clientY);
       if (pointer) {
         broadcastCursor?.(pointer.x, pointer.y);
+        if (canEdit && activeTool === 'selection_tool') {
+          setHoveredConnectableElementId(findHoveredConnectableElement(pointer.x, pointer.y)?.id ?? null);
+        } else if (hoveredConnectableElementId) {
+          setHoveredConnectableElementId(null);
+        }
       }
 
       if (mindMapConnectionRef.current.isConnecting) {
@@ -414,10 +434,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         handleCanvasMouseMove(e);
       }
     },
-    [broadcastCursor, boxSelectData, canEdit, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
+    [activeTool, broadcastCursor, boxSelectData, canEdit, findHoveredConnectableElement, handleCanvasMouseMove, hoveredConnectableElementId, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
 
   const handleMouseUp = useCallback(() => {
+    setHoveredConnectableElementId(null);
     const conn = mindMapConnectionRef.current;
     if (conn.isConnecting && conn.sourceNodeId) {
       if (conn.nearestAnchor) {
@@ -512,7 +533,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
               else clearSelection();
             }}
             selectedElementIds={selectedElementIds}
-            showAnchors={canEdit && activeTool === 'selection_tool' && selectedElementIds.length > 0}
+            hoveredElementId={hoveredConnectableElementId}
+            showAnchors={canEdit && activeTool === 'selection_tool' && (selectedElementIds.length > 0 || hoveredConnectableElementId !== null)}
           />
 
         </svg>

@@ -25,6 +25,7 @@ interface SmartConnectorManagerProps {
   selectedConnectorId?: string;
   onSelectConnector?: (id: string | null) => void;
   selectedElementIds?: string[];
+  hoveredElementId?: string | null;
   showAnchors?: boolean;
 }
 
@@ -36,6 +37,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   selectedConnectorId,
   onSelectConnector,
   selectedElementIds = [],
+  hoveredElementId: hoveredConnectableElementId = null,
   showAnchors = true,
 }) => {
   const viewport = useCanvasStore((state) => state.viewport);
@@ -51,11 +53,12 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [onSelectConnector]);
   const svgGroupRef = useRef<SVGGElement | null>(null);
 
-  // Only show anchors for selected, non-connector elements
-  const anchoredElements = useMemo(
-    () => elements.filter((el) => selectedElementIds.includes(el.id)),
-    [elements, selectedElementIds],
-  );
+  // Show anchors for selected or hovered, non-connector elements.
+  const anchoredElements = useMemo(() => {
+    const anchorElementIds = new Set(selectedElementIds);
+    if (hoveredConnectableElementId) anchorElementIds.add(hoveredConnectableElementId);
+    return elements.filter((el) => anchorElementIds.has(el.id));
+  }, [elements, hoveredConnectableElementId, selectedElementIds]);
 
   const handleCreateConnector = useCallback((
     startPoint: ConnectorPoint,
@@ -236,7 +239,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         );
       })()}
 
-      {/* Connection Anchors — only for selected elements */}
+      {/* Connection Anchors — selected or hovered elements */}
       {showAnchors && anchoredElements.map(element => (
         <ConnectionAnchors
           key={element.id}
