@@ -21,10 +21,15 @@ import {
   SMART_DOC_SCHEMA_VERSION,
   validateSmartDocContent,
 } from "@/features/planning/elements/smart-doc/contract";
-import { planningElementToConnectorLogicalRecord } from "@/features/planning/integration/connectors";
 import {
-  deleteDataLinksByElementId,
+  isOperationalRelationshipType,
+  planningElementToConnectorLogicalRecord,
+} from "@/features/planning/integration/connectors";
+import {
+  archiveSmartConnectorForElementUnlink,
   deleteSmartConnectorByElementId,
+  getSmartConnectorsForElement,
+  unlinkDataLinksByElementId,
   upsertSmartConnector,
   upsertSmartConnectors,
 } from "./smartConnectors.service";
@@ -290,39 +295,47 @@ export async function updatePlanningElement(
 export async function deletePlanningElement(id: string): Promise<void> {
   const existing = await getPlanningElement(id);
   if (existing) {
-    await deleteDataLinksByElementId(id, existing.board_id);
+    await unlinkDataLinksByElementId(id, existing.board_id);
 
-    const { data: dependentConnectors, error: dependentConnectorsError } = await supabase
-      .from("smart_connectors" as any)
-      .select("connector_element_id")
-      .or(`connector_element_id.eq.${id},source_element_id.eq.${id},target_element_id.eq.${id}`);
+    const dependentConnectors = await getSmartConnectorsForElement(id, existing.board_id);
+    const visualOnlyConnectorElementIds: string[] = [];
 
-    if (dependentConnectorsError) throw dependentConnectorsError;
+    for (const connector of dependentConnectors) {
+      const isConnectorCanvasElement = connector.connector_element_id === id;
+      const isOperational = isOperationalRelationshipType(connector.relationship_type);
 
-    const dependentConnectorElementIds = ((dependentConnectors ?? []) as Array<{ connector_element_id?: string | null }>)
-      .map((connector) => connector.connector_element_id)
-      .filter((connectorElementId): connectorElementId is string => Boolean(connectorElementId));
+      if (isOperational && !isConnectorCanvasElement) {
+        await archiveSmartConnectorForElementUnlink(connector, id);
+        continue;
+      }
 
-    await Promise.all(dependentConnectorElementIds.map((connectorElementId) => deleteSmartConnectorByElementId(connectorElementId)));
+      if (isOperational && isConnectorCanvasElement) {
+        await archiveSmartConnectorForElementUnlink(connector, id);
+      }
 
-    const orphanConnectorElementIds = dependentConnectorElementIds.filter((connectorElementId) => connectorElementId !== id);
-    if (orphanConnectorElementIds.length > 0) {
+      await deleteSmartConnectorByElementId(connector.connector_element_id);
+      if (connector.connector_element_id !== id) {
+        visualOnlyConnectorElementIds.push(connector.connector_element_id);
+      }
+    }
+
+    if (visualOnlyConnectorElementIds.length > 0) {
       const { data: orphanConnectorElements, error: orphanSelectError } = await supabase
         .from("planning_elements")
         .select("*")
-        .in("id", orphanConnectorElementIds);
+        .in("id", visualOnlyConnectorElementIds);
 
       if (orphanSelectError) throw orphanSelectError;
 
       const { error: orphanDeleteError } = await supabase
         .from("planning_elements")
         .delete()
-        .in("id", orphanConnectorElementIds);
+        .in("id", visualOnlyConnectorElementIds);
 
       if (orphanDeleteError) throw orphanDeleteError;
 
       (orphanConnectorElements ?? []).forEach((connectorElement) =>
-        recordCanvasElementAudit("canvas.connector.deleted", connectorElement, {
+        recordCanvasElementAudit("canvas.connector.archived", connectorElement, {
           deletedBecauseElementId: id,
         }),
       );

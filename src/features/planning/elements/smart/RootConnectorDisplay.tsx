@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link2, Sparkles, Edit2, Trash2, Save, X, Wand2, ArrowRight, Settings2 } from 'lucide-react';
+import { Link2, Sparkles, Edit2, Trash2, Save, X, Wand2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RootConnectorData, AISuggestion } from './RootConnector';
+import { audit } from '@/services/audit';
 
 interface RootConnectorDisplayProps {
   data: RootConnectorData;
@@ -21,6 +22,7 @@ export const RootConnectorDisplay: React.FC<RootConnectorDisplayProps> = ({
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [editedTitle, setEditedTitle] = useState(data.title || '');
   const [editedDescription, setEditedDescription] = useState(data.description || '');
+  const [isPreviewingAI, setIsPreviewingAI] = useState(false);
 
   const handleSave = () => {
     onUpdate?.({
@@ -67,9 +69,26 @@ export const RootConnectorDisplay: React.FC<RootConnectorDisplayProps> = ({
 
   const handleInsertSuggestion = (suggestion: AISuggestion) => {
     if (suggestion.type === 'connector') {
-      onUpdate?.({ style: 'animated' });
+      onUpdate?.({
+        style: 'animated',
+        status: 'approved',
+        source: data.source ?? 'ai',
+        aiConfidence: suggestion.confidence,
+        requiresReview: false,
+        approvedByUser: true,
+      });
+      void audit({
+        resource_type: 'smart_connector',
+        action: 'canvas.connector.ai_suggestion.approved',
+        resource_id: data.id,
+        metadata: {
+          suggestionId: suggestion.id,
+          suggestionType: suggestion.type,
+          aiConfidence: suggestion.confidence,
+        },
+      });
     }
-    // Remove inserted suggestion
+    // Remove approved suggestion
     if (data.aiSuggestions) {
       onUpdate?.({
         aiSuggestions: data.aiSuggestions.filter(s => s.id !== suggestion.id),
@@ -169,6 +188,12 @@ export const RootConnectorDisplay: React.FC<RootConnectorDisplayProps> = ({
               </div>
             </div>
 
+            {data.status === 'suggested' && (
+              <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
+                هذا الموصل مقترح من AI ويحتاج اعتماداً بشرياً قبل إنشاء أي علاقة تشغيلية.
+              </div>
+            )}
+
             {/* AI Suggestions */}
             {data.aiSuggestions && data.aiSuggestions.length > 0 && (
               <div className="flex-1 space-y-2 p-3 bg-gradient-to-br from-primary/5 to-accent/5 rounded-lg border border-primary/10 mb-4 overflow-auto">
@@ -193,11 +218,11 @@ export const RootConnectorDisplay: React.FC<RootConnectorDisplayProps> = ({
                       </span>
                       <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => handleInsertSuggestion(suggestion)}
-                        className="h-6 w-6 p-0 text-primary hover:text-primary"
+                        className="h-6 px-2 text-[10px] text-primary hover:text-primary"
                       >
-                        <ArrowRight className="h-3 w-3" />
+                        اعتماد
                       </Button>
                     </div>
                   </div>
@@ -234,14 +259,36 @@ export const RootConnectorDisplay: React.FC<RootConnectorDisplayProps> = ({
               {data.aiSuggestions && data.aiSuggestions.length > 0 && (
                 <Button
                   size="sm"
-                  onClick={() => data.aiSuggestions?.forEach(handleInsertSuggestion)}
-                  className="flex-1 text-xs h-9 gap-2 bg-gradient-to-r from-primary to-accent"
+                  variant="secondary"
+                  onClick={() => setIsPreviewingAI((current) => !current)}
+                  className="flex-1 text-xs h-9 gap-2"
                 >
                   <Wand2 className="h-4 w-4" />
-                  تحويل الكل
+                  {isPreviewingAI ? 'إخفاء المعاينة' : 'معاينة قبل الاعتماد'}
                 </Button>
               )}
             </div>
+
+            {isPreviewingAI && data.aiSuggestions && data.aiSuggestions.length > 0 && (
+              <div className="mt-3 rounded-lg border border-primary/15 bg-primary/5 p-3 text-xs">
+                <p className="mb-2 font-medium text-primary">اختر اقتراحاً واحداً لاعتماده:</p>
+                <div className="space-y-2">
+                  {data.aiSuggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.id}
+                      type="button"
+                      onClick={() => handleInsertSuggestion(suggestion)}
+                      className="w-full rounded-md border border-border bg-background p-2 text-right hover:border-primary/40"
+                    >
+                      <span className="block font-medium">{suggestion.title}</span>
+                      <span className="block text-[10px] text-muted-foreground">
+                        الثقة {Math.round(suggestion.confidence * 100)}% — {suggestion.description}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
         ) : (
           <motion.div

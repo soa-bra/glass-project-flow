@@ -15,6 +15,7 @@ alter type public.central_dependency_type add value if not exists 'references';
 alter type public.central_dependency_type add value if not exists 'funds';
 alter type public.central_dependency_type add value if not exists 'delivers';
 alter type public.central_dependency_type add value if not exists 'belongs_to';
+alter type public.data_link_kind add value if not exists 'operational_relationship';
 
 -- Keep this compatibility block aligned with smartConnectors.service.ts. The
 -- collaboration-data migration owns table creation; this migration only patches
@@ -23,7 +24,8 @@ alter table public.smart_connectors
   add column if not exists relationship_type text not null default 'references',
   add column if not exists connector_kind public.smart_connector_kind not null default 'visual_connector',
   add column if not exists style jsonb not null default '{}'::jsonb,
-  add column if not exists metadata jsonb not null default '{}'::jsonb;
+  add column if not exists metadata jsonb not null default '{}'::jsonb,
+  add column if not exists status text not null default 'active';
 
 create index if not exists idx_smart_connectors_relationship
   on public.smart_connectors(relationship_type);

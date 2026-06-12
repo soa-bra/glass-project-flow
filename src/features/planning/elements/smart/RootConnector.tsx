@@ -1,5 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { UNIFIED_RELATIONSHIP_TYPES, type UnifiedRelationshipType } from '@/features/planning/integration/connectors/relationshipTypes';
+import {
+  UNIFIED_RELATIONSHIP_TYPES,
+  getRelationshipTypeLabel,
+  type UnifiedRelationshipType,
+} from '@/features/planning/integration/connectors/relationshipTypes';
 import { Link2, Sparkles, X, Edit2, Save, ArrowRight, Wand2, Plus, Trash2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,22 +36,40 @@ export interface AISuggestion {
   data?: any;
 }
 
-export type ConnectorRelationshipStatus = 'suggested' | 'confirmed' | 'operational' | 'broken';
-export type ConnectorDirection = 'forward' | 'reverse' | 'bidirectional';
-export type ConnectorPurpose = 'visual-only' | 'semantic' | 'operational';
-export type ConnectorPermissionScope = 'allowed' | 'restricted' | 'blocked';
+export type ConnectorStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'active' | 'archived' | 'visual_only';
+export type ConnectorDirection = 'source_to_target' | 'target_to_source' | 'bidirectional' | 'undirected';
+export type ConnectorMode = 'visual' | 'semantic' | 'operational';
+export type ConnectorPointType = 'element' | 'anchor' | 'sub_anchor' | 'free_point';
+export type ConnectorBranchMode = 'single' | 'branch' | 'merge' | 'multi_target' | 'multi_source';
+export type ConnectorPermissionScope = 'owner' | 'team' | 'board' | 'workspace' | 'public';
+export type ConnectorSource = 'user' | 'ai' | 'system' | 'import';
 
-export interface ConnectorVisualState {
-  key: 'proposed' | 'confirmed' | 'operational' | 'broken' | 'restricted' | 'blocked';
+export interface SmartConnectorAction {
+  id: string;
   label: string;
-  color: string;
-  activeColor: string;
-  dasharray: string;
-  badgeClassName: string;
-  tag: string;
+  actionType: 'review' | 'approve' | 'convert' | 'navigate' | 'automate' | 'custom';
+  payload?: Record<string, unknown>;
 }
 
-export interface RootConnectorData {
+export interface UnifiedConnectorData {
+  status?: ConnectorStatus;
+  direction?: ConnectorDirection;
+  connectorMode?: ConnectorMode;
+  connectorPointType?: ConnectorPointType;
+  branchMode?: ConnectorBranchMode;
+  sourceSubAnchor?: string | null;
+  targetSubAnchor?: string | null;
+  permissionScope?: ConnectorPermissionScope;
+  source?: ConnectorSource;
+  reason?: string;
+  aiConfidence?: number;
+  requiresReview?: boolean;
+  isAIGenerated?: boolean;
+  approvedByUser?: boolean;
+  smartActions?: SmartConnectorAction[];
+}
+
+export interface RootConnectorData extends UnifiedConnectorData {
   id: string;
   startPoint: ConnectorPoint;
   endPoint: ConnectorPoint;
@@ -58,12 +80,11 @@ export interface RootConnectorData {
   style?: 'solid' | 'dashed' | 'dotted' | 'animated';
   connectionType?: UnifiedRelationshipType;
   relationshipType?: UnifiedRelationshipType;
-  status?: ConnectorRelationshipStatus;
-  direction?: ConnectorDirection;
-  purpose?: ConnectorPurpose;
-  permissionScope?: ConnectorPermissionScope;
+  status?: 'draft' | 'suggested' | 'approved';
+  source?: 'user' | 'ai' | 'system';
+  aiConfidence?: number;
   requiresReview?: boolean;
-  bidirectional?: boolean;
+  approvedByUser?: boolean;
   aiSuggestions?: AISuggestion[];
   createdAt?: string;
   updatedAt?: string;
@@ -81,91 +102,6 @@ export interface RootConnectorProps {
   onSelect?: () => void;
 }
 
-export const getConnectorVisualState = (data: Pick<RootConnectorData, 'status' | 'permissionScope' | 'requiresReview'>): ConnectorVisualState => {
-  if (data.permissionScope === 'blocked') {
-    return {
-      key: 'blocked',
-      label: 'محظور',
-      color: '#991B1B',
-      activeColor: '#7F1D1D',
-      dasharray: '2,3',
-      badgeClassName: 'border-red-700/30 bg-red-50 text-red-800',
-      tag: 'صلاحية محظورة',
-    };
-  }
-
-  if (data.permissionScope === 'restricted') {
-    return {
-      key: 'restricted',
-      label: 'مقيد',
-      color: '#D97706',
-      activeColor: '#B45309',
-      dasharray: '6,3',
-      badgeClassName: 'border-amber-700/30 bg-amber-50 text-amber-800',
-      tag: 'صلاحية مقيدة',
-    };
-  }
-
-  if (data.status === 'broken') {
-    return {
-      key: 'broken',
-      label: 'مكسور',
-      color: '#E5564D',
-      activeColor: '#B91C1C',
-      dasharray: '1,5',
-      badgeClassName: 'border-red-500/30 bg-red-50 text-red-700',
-      tag: 'يحتاج إصلاح',
-    };
-  }
-
-  if (data.status === 'operational' && !data.requiresReview) {
-    return {
-      key: 'operational',
-      label: 'تشغيلي',
-      color: '#3DBE8B',
-      activeColor: '#047857',
-      dasharray: 'none',
-      badgeClassName: 'border-emerald-600/30 bg-emerald-50 text-emerald-800',
-      tag: 'معتمد للتنفيذ',
-    };
-  }
-
-  if (data.status === 'confirmed' && !data.requiresReview) {
-    return {
-      key: 'confirmed',
-      label: 'مؤكد',
-      color: '#3DA8F5',
-      activeColor: '#0369A1',
-      dasharray: 'none',
-      badgeClassName: 'border-sky-600/30 bg-sky-50 text-sky-800',
-      tag: 'علاقة مؤكدة',
-    };
-  }
-
-  return {
-    key: 'proposed',
-    label: 'مقترح',
-    color: '#F6C445',
-    activeColor: '#D97706',
-    dasharray: '8,4',
-    badgeClassName: 'border-yellow-600/30 bg-yellow-50 text-yellow-800',
-    tag: data.requiresReview ? 'بانتظار الاعتماد' : 'اقتراح أولي',
-  };
-};
-
-const getRelationshipTypeLabel = (type?: string) => {
-  switch (type) {
-    case 'depends_on': return 'يعتمد على';
-    case 'causes': return 'يسبب';
-    case 'blocks': return 'يعطل';
-    case 'references': return 'يشير إلى';
-    case 'funds': return 'يمول';
-    case 'delivers': return 'يسلم';
-    case 'belongs_to': return 'ينتمي إلى';
-    default: return 'رابط';
-  }
-};
-
 // ============= Connection Anchors Component =============
 interface ConnectionAnchorsProps {
   elementId: string;
@@ -180,59 +116,59 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  const HIT_RADIUS = 14;
-  const DOT_RADIUS = 4;
-  const [hoveredAnchor, setHoveredAnchor] = useState<AnchorPosition | null>(null);
-  const anchors: Array<{ anchorPoint: AnchorPosition; x: number; y: number }> = [
-    { anchorPoint: 'top', x: bounds.x + bounds.width / 2, y: bounds.y },
-    { anchorPoint: 'right', x: bounds.x + bounds.width, y: bounds.y + bounds.height / 2 },
-    { anchorPoint: 'bottom', x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height },
-    { anchorPoint: 'left', x: bounds.x, y: bounds.y + bounds.height / 2 },
-  ];
+  const HIT_RADIUS = 16;
+  const ARROW_SIZE = 6;
+  const CONNECTOR_OFFSET = 16;
+  const [isHovered, setIsHovered] = useState(false);
+  const anchor = {
+    anchorPoint: 'top' as const,
+    x: bounds.x + bounds.width / 2,
+    y: bounds.y - CONNECTOR_OFFSET,
+  };
 
   const handlePointerDown = (
     anchor: { anchorPoint: AnchorPosition; x: number; y: number },
-    event: React.PointerEvent<SVGCircleElement> | React.MouseEvent<SVGCircleElement>,
+    event: React.PointerEvent<SVGElement> | React.MouseEvent<SVGElement>,
   ) => {
     event.stopPropagation();
     event.preventDefault();
     onStartDrag({ elementId, x: anchor.x, y: anchor.y, anchorPoint: anchor.anchorPoint });
   };
 
+  const active = isHovered || isConnecting;
+
   return (
     <g
       className="connection-anchors"
       data-anchor-element-id={elementId}
+      data-anchor-position={anchor.anchorPoint}
       style={{ pointerEvents: 'auto' }}
     >
-      {anchors.map((anchor) => {
-        const active = hoveredAnchor === anchor.anchorPoint || isConnecting;
-        return (
-          <g key={anchor.anchorPoint} data-anchor-position={anchor.anchorPoint}>
-            <circle
-              cx={anchor.x}
-              cy={anchor.y}
-              r={HIT_RADIUS}
-              fill="transparent"
-              className="cursor-crosshair connection-anchor-hit"
-              onPointerEnter={() => setHoveredAnchor(anchor.anchorPoint)}
-              onPointerLeave={() => setHoveredAnchor((current) => current === anchor.anchorPoint ? null : current)}
-              onPointerDown={(event) => handlePointerDown(anchor, event)}
-              onMouseDown={(event) => handlePointerDown(anchor, event)}
-            />
-            <circle
-              cx={anchor.x}
-              cy={anchor.y}
-              r={active ? DOT_RADIUS + 1 : DOT_RADIUS}
-              fill="#FFFFFF"
-              stroke={active ? '#0B0F12' : '#9CA3AF'}
-              strokeWidth={1}
-              className="connection-anchor-dot transition-all"
-              pointerEvents="none"
-            />
-          </g>
-        );
-      })}
+      <circle
+        cx={anchor.x}
+        cy={anchor.y}
+        r={HIT_RADIUS}
+        fill="transparent"
+        className="cursor-crosshair connection-anchor-hit"
+        onPointerEnter={() => setIsHovered(true)}
+        onPointerLeave={() => setIsHovered(false)}
+        onPointerDown={(event) => handlePointerDown(anchor, event)}
+        onMouseDown={(event) => handlePointerDown(anchor, event)}
+      />
+      <path
+        d={`M ${anchor.x} ${anchor.y + ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y - ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y - ARROW_SIZE} Z`}
+        fill="#0B0F12"
+        stroke="#FFFFFF"
+        strokeWidth={1.5}
+        className="connection-anchor-dot drop-shadow-sm"
+        pointerEvents="none"
+        style={{
+          transform: active ? 'scale(1.3)' : 'scale(1)',
+          transformBox: 'fill-box',
+          transformOrigin: 'center',
+          transition: 'transform 120ms ease',
+        }}
+      />
     </g>
   );
 };
@@ -311,11 +247,17 @@ interface ConnectorInspectorProps {
 }
 
 export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, onPatch }) => {
-  const relationshipType = data.relationshipType || data.connectionType || 'references';
-  const visualState = getConnectorVisualState(data);
+  const relationshipType = data.relationshipType || data.connectionType || 'reference';
 
   const handleRelationshipTypeChange = (value: UnifiedRelationshipType) => {
-    onPatch({ connectionType: value, relationshipType: value });
+    onPatch({
+      connectionType: value,
+      relationshipType: value,
+      status: isSuggested ? 'approved' : data.status,
+      requiresReview: false,
+      approvedByUser: true,
+      updatedAt: new Date().toISOString(),
+    });
   };
 
   return (
@@ -406,6 +348,12 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
           </Select>
         </div>
       </div>
+
+      {isSuggested && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] text-amber-800">
+          اقتراح AI بانتظار اعتمادك قبل إنشاء أي علاقة تشغيلية.
+        </div>
+      )}
 
       <div className="space-y-1">
         <span className="text-[10px] text-muted-foreground">نوع العلاقة</span>
@@ -586,11 +534,11 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
                       </span>
                       <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => onInsertSuggestion(suggestion)}
-                        className="h-6 w-6 p-0 text-primary hover:text-primary"
+                        className="h-6 px-2 text-[10px] text-primary hover:text-primary"
                       >
-                        <ArrowRight className="h-3 w-3" />
+                        اعتماد
                       </Button>
                     </div>
                   </div>
@@ -659,11 +607,12 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
               {data.aiSuggestions && data.aiSuggestions.length > 0 && (
                 <Button
                   size="sm"
-                  onClick={() => data.aiSuggestions?.forEach(onInsertSuggestion)}
-                  className="flex-1 text-xs h-8 gap-1.5 bg-gradient-to-r from-primary to-accent"
+                  variant="secondary"
+                  onClick={() => onInsertSuggestion(data.aiSuggestions![0])}
+                  className="flex-1 text-xs h-8 gap-1.5"
                 >
                   <Wand2 className="h-3.5 w-3.5" />
-                  تحويل الكل
+                  اعتماد المقترح
                 </Button>
               )}
             </div>
@@ -742,8 +691,10 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
     setIsLoadingAI(true);
     try {
       const suggestions = await onAISuggest(data);
-      onUpdate?.({ 
-        ...data, 
+      const connectorSuggestion = suggestions.find((suggestion) => suggestion.type === 'connector');
+      onUpdate?.({
+        ...data,
+        ...(connectorSuggestion?.data?.connectorPatch ?? {}),
         aiSuggestions: suggestions,
         updatedAt: new Date().toISOString(),
       });
@@ -756,6 +707,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
 
   const handleInsertSuggestion = (suggestion: AISuggestion) => {
     onInsertSuggestion?.(suggestion);
+    if (suggestion.type === 'connector') return;
     // Remove the inserted suggestion from the list
     if (data.aiSuggestions) {
       onUpdate?.({
@@ -964,7 +916,7 @@ export const RootConnectorCreator: React.FC<RootConnectorCreatorProps> = ({
 }) => {
   const [startPoint, setStartPoint] = useState<ConnectorPoint | null>(null);
   const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
-  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('references');
+  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('reference');
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
