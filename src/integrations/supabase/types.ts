@@ -745,6 +745,7 @@ export type Database = {
           link_kind: string
           mapping: Json
           metadata: Json
+          status: string
           project_id: string | null
           relation_type: string
           source_element_id: string | null
@@ -765,6 +766,7 @@ export type Database = {
           link_kind?: string
           mapping?: Json
           metadata?: Json
+          status?: string
           project_id?: string | null
           relation_type?: string
           source_element_id?: string | null
@@ -785,6 +787,7 @@ export type Database = {
           link_kind?: string
           mapping?: Json
           metadata?: Json
+          status?: string
           project_id?: string | null
           relation_type?: string
           source_element_id?: string | null
@@ -2412,9 +2415,10 @@ export type Database = {
           label: string | null
           metadata: Json
           relationship_type: string
-          source_element_id: string
+          source_element_id: string | null
+          status: string
           style: Json
-          target_element_id: string
+          target_element_id: string | null
           updated_at: string
         }
         Insert: {
@@ -2427,9 +2431,10 @@ export type Database = {
           label?: string | null
           metadata?: Json
           relationship_type: string
-          source_element_id: string
+          source_element_id?: string | null
+          status?: string
           style?: Json
-          target_element_id: string
+          target_element_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -2442,9 +2447,10 @@ export type Database = {
           label?: string | null
           metadata?: Json
           relationship_type?: string
-          source_element_id?: string
+          source_element_id?: string | null
+          status?: string
           style?: Json
-          target_element_id?: string
+          target_element_id?: string | null
           updated_at?: string
         }
         Relationships: []

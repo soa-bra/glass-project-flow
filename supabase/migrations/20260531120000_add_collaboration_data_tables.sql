@@ -10,7 +10,7 @@ create schema if not exists private;
 -- -----------------------------------------------------------------------------
 do $$
 begin
-  create type public.data_link_kind as enum ('reference', 'dependency', 'sync', 'embed', 'derivation');
+  create type public.data_link_kind as enum ('reference', 'dependency', 'sync', 'embed', 'derivation', 'operational_relationship');
 exception
   when duplicate_object then null;
 end $$;
@@ -232,12 +232,14 @@ create table if not exists public.data_links (
   label text,
   mapping jsonb not null default '{}'::jsonb,
   metadata jsonb not null default '{}'::jsonb,
+  status text not null default 'active',
   created_by uuid not null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint data_links_scope_check check (project_id is not null or board_id is not null),
   constraint data_links_source_board_check check (source_element_id is null or board_id is not null),
   constraint data_links_target_board_check check (target_element_id is null or board_id is not null),
+  constraint data_links_status_check check (status in ('active', 'broken', 'archived', 'unlinked')),
   constraint data_links_distinct_elements_check check (
     source_element_id is null or target_element_id is null or source_element_id <> target_element_id
   )
@@ -286,14 +288,15 @@ create table if not exists public.smart_connectors (
   id uuid primary key default gen_random_uuid(),
   board_id uuid not null references public.planning_boards(id) on delete cascade,
   connector_element_id uuid not null references public.planning_elements(id) on delete cascade,
-  source_element_id uuid not null,
-  target_element_id uuid not null,
+  source_element_id uuid,
+  target_element_id uuid,
   relationship_type text not null default 'references',
   connector_kind public.smart_connector_kind not null default 'visual_connector',
   label text,
   routing jsonb not null default '{}'::jsonb,
   style jsonb not null default '{}'::jsonb,
   metadata jsonb not null default '{}'::jsonb,
+  status text not null default 'active',
   created_by uuid not null default auth.uid(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -301,13 +304,16 @@ create table if not exists public.smart_connectors (
   constraint smart_connectors_relationship_type_check check (
     relationship_type in ('depends_on','causes','blocks','references','funds','delivers','belongs_to')
   ),
-  constraint smart_connectors_distinct_elements_check check (source_element_id <> target_element_id),
+  constraint smart_connectors_status_check check (status in ('active', 'broken', 'archived', 'unlinked')),
+  constraint smart_connectors_distinct_elements_check check (
+    source_element_id is null or target_element_id is null or source_element_id <> target_element_id
+  ),
   constraint smart_connectors_connector_board_fkey foreign key (connector_element_id, board_id)
     references public.planning_elements(id, board_id) on delete cascade,
   constraint smart_connectors_source_board_fkey foreign key (source_element_id, board_id)
-    references public.planning_elements(id, board_id) on delete cascade,
+    references public.planning_elements(id, board_id) on delete set null,
   constraint smart_connectors_target_board_fkey foreign key (target_element_id, board_id)
-    references public.planning_elements(id, board_id) on delete cascade
+    references public.planning_elements(id, board_id) on delete set null
 );
 
 create table if not exists public.element_transformations (
