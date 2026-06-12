@@ -292,18 +292,16 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   
   const ResizeHandle = ({ position, cursor, onStart }: { position: string; cursor: string; onStart: (e: React.PointerEvent) => void }) => {
     const positionStyles: Record<string, React.CSSProperties> = {
-      'nw': { top: -8, left: -8 },
-      'ne': { top: -8, right: -8 },
-      'sw': { bottom: -8, left: -8 },
-      'se': { bottom: -8, right: -8 },
-      'n': { top: -8, left: '50%', transform: 'translateX(-50%)' },
-      's': { bottom: -8, left: '50%', transform: 'translateX(-50%)' },
-      'w': { top: '50%', left: -8, transform: 'translateY(-50%)' },
-      'e': { top: '50%', right: -8, transform: 'translateY(-50%)' }
+      'nw': { top: -10, left: -10 },
+      'ne': { top: -10, right: -10 },
+      'sw': { bottom: -10, left: -10 },
+      'se': { bottom: -10, right: -10 },
+      'w': { top: '50%', left: -10, transform: 'translateY(-50%)' },
+      'e': { top: '50%', right: -10, transform: 'translateY(-50%)' }
     };
     return (
-      <div className="absolute pointer-events-auto group touch-none" style={{ ...positionStyles[position], cursor, width: 16, height: 16 }} onPointerDown={onStart}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white border-[1.5px] border-[hsl(var(--accent-blue))] rounded-full group-hover:scale-150 transition-transform shadow-sm" />
+      <div className="absolute pointer-events-auto group touch-none" style={{ ...positionStyles[position], cursor, width: 20, height: 20 }} onPointerDown={onStart}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#0B0F12] rounded-full group-hover:scale-125 transition-transform shadow-sm ring-2 ring-white" />
       </div>
     );
   };
@@ -316,9 +314,9 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         top: bounds.y,
         width: bounds.width,
         height: bounds.height,
-        border: isGrouped ? '2px solid hsl(var(--accent-green) / 0.9)' : '2px dashed hsl(var(--accent-blue) / 0.8)',
+        border: '2px solid #0B0F12',
         borderRadius: '4px',
-        backgroundColor: isGrouped ? 'hsl(var(--accent-green) / 0.05)' : 'transparent',
+        backgroundColor: 'transparent',
         zIndex: 9998
       }}
     >
@@ -335,8 +333,6 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       <ResizeHandle position="ne" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'ne')} />
       <ResizeHandle position="sw" cursor="nesw-resize" onStart={(e) => handleResizeStart(e, 'sw')} />
       <ResizeHandle position="se" cursor="nwse-resize" onStart={(e) => handleResizeStart(e, 'se')} />
-      <ResizeHandle position="n" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 'n')} />
-      <ResizeHandle position="s" cursor="ns-resize" onStart={(e) => handleResizeStart(e, 's')} />
       <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
       <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
       
