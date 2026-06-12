@@ -97,6 +97,8 @@ export interface RootConnectorProps {
   onDelete?: () => void;
   onAISuggest?: (connector: RootConnectorData) => Promise<AISuggestion[]>;
   onInsertSuggestion?: (suggestion: AISuggestion) => void;
+  onCreateWorkflow?: (connector: RootConnectorData) => void;
+  onCreateElement?: (connector: RootConnectorData) => void;
   onSelect?: () => void;
 }
 
@@ -183,6 +185,8 @@ interface FloatingPanelProps {
   onDelete: () => void;
   onAISuggest: () => void;
   onInsertSuggestion: (suggestion: AISuggestion) => void;
+  onCreateWorkflow?: () => void;
+  onCreateElement?: () => void;
   onPatch: (patch: Partial<RootConnectorData>) => void;
   isLoadingAI: boolean;
 }
@@ -195,6 +199,47 @@ const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; lab
   { value: 'animated', label: 'متحرك' },
 ];
 const WIDTH_OPTIONS = [0.25, 0.5, 0.75, 1];
+const STATUS_OPTIONS: Array<{ value: ConnectorRelationshipStatus; label: string }> = [
+  { value: 'suggested', label: 'مقترحة' },
+  { value: 'confirmed', label: 'مؤكدة' },
+  { value: 'operational', label: 'تشغيلية' },
+  { value: 'broken', label: 'مكسورة' },
+];
+const DIRECTION_OPTIONS: Array<{ value: ConnectorDirection; label: string }> = [
+  { value: 'forward', label: 'من البداية للنهاية' },
+  { value: 'reverse', label: 'من النهاية للبداية' },
+  { value: 'bidirectional', label: 'ثنائي الاتجاه' },
+];
+const PURPOSE_OPTIONS: Array<{ value: ConnectorPurpose; label: string }> = [
+  { value: 'visual-only', label: 'مرئي فقط' },
+  { value: 'semantic', label: 'دلالي' },
+  { value: 'operational', label: 'تشغيلي' },
+];
+const PERMISSION_OPTIONS: Array<{ value: ConnectorPermissionScope; label: string }> = [
+  { value: 'allowed', label: 'مسموح' },
+  { value: 'restricted', label: 'مقيد' },
+  { value: 'blocked', label: 'محظور' },
+];
+
+const getConnectorActionDisabledReason = (
+  data: RootConnectorData,
+  action: 'workflow' | 'element',
+  hasHandler: boolean,
+) => {
+  if (!hasHandler) return 'لا يوجد سياق تنفيذ متصل بهذه اللوحة.';
+  if (!data.startPoint?.elementId || !data.endPoint?.elementId) return 'لا يمكن الإنشاء قبل ربط طرفي العلاقة.';
+  if (data.permissionScope === 'blocked') return 'الصلاحية محظورة لهذه العلاقة.';
+  if (data.permissionScope === 'restricted') return 'الصلاحية مقيدة وتحتاج تفويضًا أعلى.';
+  if (data.requiresReview) return 'العلاقة بانتظار الاعتماد قبل الإنشاء.';
+  if ((data.status || 'suggested') === 'suggested') return 'العلاقة المقترحة لا تنشئ عناصر قبل الاعتماد.';
+  if (data.status === 'broken') return 'أصلح العلاقة المكسورة قبل الإنشاء.';
+  if ((data.purpose || 'semantic') === 'visual-only') return 'العلاقة مرئية فقط ولا تملك معنى تنفيذيًا.';
+  if (action === 'workflow' && (data.status !== 'operational' || data.purpose !== 'operational')) {
+    return 'إنشاء Workflow يتطلب علاقة تشغيلية معتمدة.';
+  }
+
+  return null;
+};
 
 interface ConnectorInspectorProps {
   data: RootConnectorData;
@@ -220,6 +265,9 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
       <div className="flex items-center gap-2">
         <Settings2 className="h-3.5 w-3.5 text-muted-foreground" />
         <span className="text-xs font-medium">خصائص الموصل</span>
+        <span className={`mr-auto rounded-full border px-2 py-0.5 text-[10px] font-medium ${visualState.badgeClassName}`}>
+          {visualState.label}
+        </span>
       </div>
 
       <div className="space-y-1">
@@ -248,6 +296,31 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
               />
             );
           })}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <span className="text-[10px] text-muted-foreground">حالة العلاقة</span>
+          <Select value={data.status || 'suggested'} onValueChange={(value) => onPatch({ status: value as ConnectorRelationshipStatus })}>
+            <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value} className="text-xs">{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <span className="text-[10px] text-muted-foreground">الاتجاه</span>
+          <Select value={data.direction || 'forward'} onValueChange={(value) => onPatch({ direction: value as ConnectorDirection, bidirectional: value === 'bidirectional' } as Partial<RootConnectorData>)}>
+            <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {DIRECTION_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value} className="text-xs">{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -294,6 +367,41 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
         </Select>
       </div>
 
+      <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-1">
+          <span className="text-[10px] text-muted-foreground">تمييز العلاقة</span>
+          <Select value={data.purpose || 'semantic'} onValueChange={(value) => onPatch({ purpose: value as ConnectorPurpose })}>
+            <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {PURPOSE_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value} className="text-xs">{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <span className="text-[10px] text-muted-foreground">نطاق الصلاحية</span>
+          <Select value={data.permissionScope || 'allowed'} onValueChange={(value) => onPatch({ permissionScope: value as ConnectorPermissionScope })}>
+            <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {PERMISSION_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value} className="text-xs">{option.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <label className="flex items-center gap-2 rounded-md border border-border/60 bg-background/70 px-2 py-1.5 text-[11px] text-muted-foreground">
+        <input
+          type="checkbox"
+          checked={Boolean(data.requiresReview)}
+          onChange={(event) => onPatch({ requiresReview: event.target.checked })}
+          className="h-3.5 w-3.5 accent-primary"
+        />
+        يتطلب اعتمادًا قبل التحويل لعلاقة تشغيلية
+      </label>
+
       <Button
         size="sm"
         variant="outline"
@@ -318,11 +426,16 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
   onDelete,
   onAISuggest,
   onInsertSuggestion,
+  onCreateWorkflow,
+  onCreateElement,
   onPatch,
   isLoadingAI,
 }) => {
   const [editedTitle, setEditedTitle] = useState(data.title || '');
   const [editedDescription, setEditedDescription] = useState(data.description || '');
+  const visualState = getConnectorVisualState(data);
+  const workflowDisabledReason = getConnectorActionDisabledReason(data, 'workflow', Boolean(onCreateWorkflow));
+  const elementDisabledReason = getConnectorActionDisabledReason(data, 'element', Boolean(onCreateElement));
 
   useEffect(() => {
     setEditedTitle(data.title || '');
@@ -359,6 +472,14 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
                   <span className="text-xs text-muted-foreground">
                     {getRelationshipTypeLabel(data.relationshipType || data.connectionType)}
                   </span>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${visualState.badgeClassName}`}>
+                      {visualState.label}
+                    </span>
+                    <span className="rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground">
+                      {visualState.tag}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-1">
@@ -426,6 +547,38 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
             )}
 
             {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-2 rounded-lg border border-border/60 bg-muted/20 p-2">
+              <div className="space-y-1">
+                <Button
+                  size="sm"
+                  onClick={onCreateWorkflow}
+                  disabled={Boolean(workflowDisabledReason)}
+                  className="w-full text-xs h-8 gap-1.5"
+                >
+                  <Wand2 className="h-3.5 w-3.5" />
+                  إنشاء Workflow
+                </Button>
+                {workflowDisabledReason && (
+                  <p className="text-[10px] leading-relaxed text-muted-foreground">{workflowDisabledReason}</p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={onCreateElement}
+                  disabled={Boolean(elementDisabledReason)}
+                  className="w-full text-xs h-8 gap-1.5"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  إنشاء عنصر
+                </Button>
+                {elementDisabledReason && (
+                  <p className="text-[10px] leading-relaxed text-muted-foreground">{elementDisabledReason}</p>
+                )}
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <Button
                 size="sm"
@@ -515,6 +668,8 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   onDelete,
   onAISuggest,
   onInsertSuggestion,
+  onCreateWorkflow,
+  onCreateElement,
   onSelect,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -648,11 +803,10 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
 
   const pathD = buildRoundedPath(points);
 
-  // ===== Visual style — thin grey by default, darker on hover/select =====
-  const NEUTRAL = '#9CA3AF';
-  const ACTIVE = '#0B0F12';
-  const baseStroke = data.color || NEUTRAL;
-  const activeStroke = data.color || ACTIVE;
+  // ===== Visual style — state-aware, with explicit suggested/confirmed/operational gating =====
+  const connectorVisualState = getConnectorVisualState(data);
+  const baseStroke = connectorVisualState.color;
+  const activeStroke = connectorVisualState.activeColor;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
   // Clamp legacy values: any stored width > 1 is treated as legacy and forced thin
   const storedWidth = data.strokeWidth ?? 0.25;
@@ -661,6 +815,8 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
+    if (connectorVisualState.dasharray !== 'none') return connectorVisualState.dasharray;
+
     switch (strokeStyle) {
       case 'dashed': return '8,4';
       case 'dotted': return '2,4';
@@ -735,6 +891,8 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
             onDelete={() => onDelete?.()}
             onAISuggest={handleAISuggest}
             onInsertSuggestion={handleInsertSuggestion}
+            onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
+            onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
             onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
             isLoadingAI={isLoadingAI}
           />
