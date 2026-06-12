@@ -180,6 +180,19 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const { peers, connectionStatus, lastSyncAt } = sync;
 
   useEffect(() => {
+    const handleCommandPaletteShortcut = (event: KeyboardEvent) => {
+      const isCommandPaletteShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      if (!isCommandPaletteShortcut) return;
+
+      event.preventDefault();
+      commandBar.open();
+    };
+
+    window.addEventListener('keydown', handleCommandPaletteShortcut);
+    return () => window.removeEventListener('keydown', handleCommandPaletteShortcut);
+  }, [commandBar]);
+
+  useEffect(() => {
     const handleOpenExecution = (event: Event) => {
       const detail = (event as CustomEvent<ExecutionTarget>).detail;
       if (!detail?.entityId || (detail.entityType !== 'project' && detail.entityType !== 'task')) return;
