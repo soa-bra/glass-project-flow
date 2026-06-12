@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { isPlanningElementId } from '@/features/planning/state/createPlanningElementId';
 import { createSmartCanvasElement } from './factories/createTypedSmartElement';
+import { AI_SELECTED_ELEMENTS_LIMIT_MESSAGE, MAX_AI_SELECTED_ELEMENTS } from '@/features/ai/context/limits';
 
 interface TransformOption {
   type: SmartElementType;
@@ -172,8 +173,8 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   };
 
   const ensureSelectionWithinLimit = () => {
-    if (selectedElements.length <= 50) return true;
-    toast.error('لا يمكن معالجة أكثر من 50 عنصر في طلب AI واحد');
+    if (selectedElements.length <= MAX_AI_SELECTED_ELEMENTS) return true;
+    toast.error(AI_SELECTED_ELEMENTS_LIMIT_MESSAGE);
     return false;
   };
 

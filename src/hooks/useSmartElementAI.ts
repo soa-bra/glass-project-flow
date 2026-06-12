@@ -5,6 +5,11 @@ import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
 import { buildAIContext } from '@/features/ai/context/contextBuilder';
 import { sanitizeAIContext } from '@/features/ai/context/contextSanitizer';
+import {
+  AI_SELECTED_ELEMENTS_LIMIT_MESSAGE,
+  MAX_AI_PROMPT_CHARS,
+  MAX_AI_SELECTED_ELEMENTS,
+} from '@/features/ai/context/limits';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   SmartTransformationApprovalDialog,
@@ -134,6 +139,19 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
       context?: Record<string, any>;
     }
   ) => {
+    if (Array.isArray(payload.selectedElements) && payload.selectedElements.length > MAX_AI_SELECTED_ELEMENTS) {
+      setError(AI_SELECTED_ELEMENTS_LIMIT_MESSAGE);
+      toast.error(AI_SELECTED_ELEMENTS_LIMIT_MESSAGE);
+      return null;
+    }
+
+    if (payload.prompt && payload.prompt.length > MAX_AI_PROMPT_CHARS) {
+      const message = `لا يمكن معالجة نص أطول من ${MAX_AI_PROMPT_CHARS} حرفًا في طلب ذكاء اصطناعي واحد. اختصر النص أو قسّمه.`;
+      setError(message);
+      toast.error(message);
+      return null;
+    }
+
     if (!ensureAIPermission(action)) {
       return null;
     }
