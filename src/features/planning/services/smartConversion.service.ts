@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { Database, Json } from '@/integrations/supabase/types';
+import type { Database } from '@/integrations/supabase/types';
 import { z } from 'zod';
 
 export const smartConversionTargetEntityTypes = [
@@ -16,62 +16,14 @@ type Task = Database['public']['Tables']['tasks']['Row'];
 type FinancialBudget = Database['public']['Tables']['financial_budgets']['Row'];
 type FinancialTransaction = Database['public']['Tables']['financial_transactions']['Row'];
 type PlanningElement = Database['public']['Tables']['planning_elements']['Row'];
-type ElementTransformationInsert = Database['public']['Tables']['element_transformations']['Insert'];
-type DataLinkInsert = Database['public']['Tables']['data_links']['Insert'];
-type SyncQueueInsert = Database['public']['Tables']['sync_queue']['Insert'];
-type ProjectEventInsert = Database['public']['Tables']['project_events']['Insert'];
 
 type CreatedEntity = Project | Task | FinancialBudget | FinancialTransaction;
-type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
-type DbInsertedIdResult = PromiseLike<{ data: { id: string } | null; error: unknown }>;
 
 export interface SmartConversionTraceReferences {
   transformationIds: string[];
   dataLinkIds: string[];
   syncQueueId: string;
   projectEventId?: string;
-}
-
-function getEntityDisplayName(entity: CreatedEntity): string {
-  return asString((entity as any).name) ?? asString((entity as any).title) ?? 'كيان تنفيذي';
-}
-
-function getProjectIdForEvent(payload: SmartConversionPayload, entity: CreatedEntity): string | null {
-  if (payload.targetEntityType === 'project') return entity.id;
-  if (payload.targetEntityType === 'task') return asString((entity as Task).linked_project_id) ?? null;
-  return asString((entity as any).project_id) ?? null;
-}
-
-function getSmartCardType(targetEntityType: SmartConversionTargetEntityType): string {
-  if (targetEntityType === 'project') return 'project_card';
-  if (targetEntityType === 'task') return 'task_card';
-  return 'finance_card';
-}
-
-function buildExecutableCardContent(
-  payload: SmartConversionPayload,
-  entity: CreatedEntity,
-): Record<string, unknown> {
-  const smartType = getSmartCardType(payload.targetEntityType);
-  const displayName = getEntityDisplayName(entity);
-
-  return {
-    smartType,
-    linkedEntityType: payload.targetEntityType,
-    linkedEntityId: entity.id,
-    title: displayName,
-    name: displayName,
-    projectName: payload.targetEntityType === 'project' ? displayName : undefined,
-    taskName: payload.targetEntityType === 'task' ? displayName : undefined,
-    status: (entity as any).state ?? (entity as any).status ?? 'draft',
-    state: (entity as any).state ?? 'draft',
-    priority: (entity as any).priority ?? payload.suggestedData.priority,
-    description: (entity as any).description ?? payload.suggestedData.description,
-    budget: (entity as any).budget ?? (entity as any).planned_amount,
-    estimatedCost: (entity as any).estimated_cost,
-    dueDate: (entity as any).due_date,
-    sourceElementIds: payload.sourceElementIds,
-  };
 }
 
 export interface SmartConversionApproval {
@@ -560,20 +512,14 @@ export async function approveSmartConversion(
     throw new Error('Smart conversion must be approved before creating an executable record.');
   }
 
-  const ownerId = await requireUserId();
-  await requireBoardEditor(parsed.boardId, ownerId);
-  const approval = {
-    ...parsed.approval,
-    approverId: parsed.approval.approverId ?? ownerId,
-    approvedAt: parsed.approval.approvedAt ?? new Date().toISOString(),
-  };
-  const approvedPayload: SmartConversionPayload = { ...parsed, approval };
+  const { data, error } = await supabase.rpc('approve_smart_conversion', {
+    p_payload: parsed,
+  });
 
-  const sourceElements = await loadSourcePlanningElements(approvedPayload);
-  const entity = await createEntity(approvedPayload, ownerId);
-  const linkedElements = await linkPlanningElements(approvedPayload, entity, sourceElements);
-  const traceReferences = await recordTransformationLinksAndEvents(approvedPayload, entity, ownerId);
-  const auditEventId = await recordConversionAudit(approvedPayload, entity, ownerId);
+  if (error) throw error;
+  if (!data) {
+    throw new Error('لم تُرجع عملية اعتماد التحويل الذرية أي نتيجة.');
+  }
 
-  return { entity, linkedElements, traceReferences, auditEventId };
+  return data as unknown as SmartConversionResult;
 }

@@ -3097,6 +3097,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_smart_conversion: {
+        Args: { p_payload: Json }
+        Returns: Json
+      }
       get_user_board_role: {
         Args: { board_id: string; user_id: string }
         Returns: Database["public"]["Enums"]["board_role"]
