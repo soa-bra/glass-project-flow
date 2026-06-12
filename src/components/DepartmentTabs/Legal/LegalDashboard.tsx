@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
 import { DashboardLayout } from '@/components/shared/DashboardLayout';
 import { BaseTabContent } from '@/components/shared';
 import { OverviewTab } from './OverviewTab';
@@ -29,6 +30,7 @@ export const LegalDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
+      <div className="mb-4 flex justify-end"><LinkIndicator projectId="legal-dashboard" /></div>
       <BaseTabContent value="overview">
         <OverviewTab />
       </BaseTabContent>

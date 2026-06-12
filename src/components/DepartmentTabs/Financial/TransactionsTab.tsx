@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import { AccountingEntryModal } from '@/components/custom/AccountingEntryModal';
 import { mockTransactions } from './data';
 import { formatCurrency, getStatusText } from './utils';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 export const TransactionsTab: React.FC = () => {
   const [isAccountingEntryModalOpen, setIsAccountingEntryModalOpen] = useState(false);
@@ -25,7 +27,14 @@ export const TransactionsTab: React.FC = () => {
   };
 
   const handleSaveAccountingEntry = (entry: any) => {
-    // Save accounting entry
+    void projectEventBus.emitProjectEvent({
+      eventType: 'financial.transaction.created',
+      eventKind: 'financial',
+      aggregateType: 'transaction',
+      aggregateId: String(entry.id ?? entry.description),
+      projectId: entry.projectId ?? null,
+      payload: entry,
+    }).catch((error) => console.error('[TransactionsTab] emitProjectEvent(create) failed:', error));
     alert(`تم حفظ القيد المحاسبي بنجاح: ${entry.description}`);
   };
 
@@ -33,7 +42,7 @@ export const TransactionsTab: React.FC = () => {
     <BaseTabContent value="transactions">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
-          <h3 className={buildTitleClasses()}>النفقات والإيرادات</h3>
+          <div className="flex items-center gap-2"><h3 className={buildTitleClasses()}>النفقات والإيرادات</h3><LinkIndicator projectId="financial-transactions" /></div>
           <div className="flex gap-3">
             <BaseActionButton 
               variant="primary" 
@@ -66,9 +75,9 @@ export const TransactionsTab: React.FC = () => {
                     }
                   </div>
                   <div>
-                    <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
+                    <div className="flex items-center gap-2"><h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
                       {transaction.description}
-                    </h4>
+                    </h4><LinkIndicator targetElementId={transaction.id} compact /></div>
                     <p className={cn(TYPOGRAPHY.SMALL, COLORS.SECONDARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
                       {transaction.date} • {transaction.category}
                     </p>

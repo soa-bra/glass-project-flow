@@ -8,6 +8,7 @@ import { InvoicesTab } from './InvoicesTab';
 import { AnalysisTab } from './AnalysisTab';
 import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
 
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -29,6 +30,7 @@ export const FinancialDashboard: React.FC = () => {
       activeTab={activeTab}
       onTabChange={setActiveTab}
     >
+      <div className="mb-4 flex justify-end"><LinkIndicator projectId="financial-dashboard" /></div>
       <BaseTabContent value="overview">
         <OverviewTab />
       </BaseTabContent>

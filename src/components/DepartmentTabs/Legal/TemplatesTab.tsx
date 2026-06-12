@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 import { FileText, Download, Plus, Search, Eye } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
@@ -43,6 +45,14 @@ export const TemplatesTab: React.FC = () => {
       status: 'active',
     };
     setTemplates(prev => [newTemplate, ...prev]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'legal.template.created',
+      eventKind: 'legal',
+      aggregateType: 'legal_template',
+      aggregateId: newTemplate.id,
+      projectId: null,
+      payload: newTemplate,
+    }).catch((error) => console.error('[TemplatesTab] emitProjectEvent(create) failed:', error));
   };
 
   const handleDownload = (template: any) => {
@@ -68,7 +78,7 @@ export const TemplatesTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-black font-arabic">النماذج والقوالب</h3>
+        <div className="flex items-center gap-2"><h3 className="text-xl font-semibold text-black font-arabic">النماذج والقوالب</h3><LinkIndicator projectId="legal-templates" /></div>
         <button onClick={() => setIsAddOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
           <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><Plus className="w-4 h-4" /></div>
           نموذج جديد
@@ -100,7 +110,7 @@ export const TemplatesTab: React.FC = () => {
                   <div onClick={() => handleDownload(template)} className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"><Download className="w-4 h-4 text-black" /></div>
                 </div>
               </div>
-              <h4 className="text-xl font-semibold text-black font-arabic mb-2">{template.name}</h4>
+              <div className="mb-2 flex items-center gap-2"><h4 className="text-xl font-semibold text-black font-arabic">{template.name}</h4><LinkIndicator targetElementId={template.id} compact /></div>
               <p className="text-sm font-normal text-black font-arabic mb-4">{template.description}</p>
               <div className="space-y-2 text-sm font-normal text-black font-arabic">
                 <div className="flex justify-between"><span>مرات الاستخدام:</span><span className="text-sm font-bold text-black font-arabic">{template.usage}</span></div>

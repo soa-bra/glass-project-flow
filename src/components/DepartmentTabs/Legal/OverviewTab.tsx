@@ -1,4 +1,5 @@
 import React from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
 import { AlertTriangle, FileText, Shield, TrendingUp, Bell, CheckCircle, Clock } from 'lucide-react';
 import { KPIStatsSection } from '@/components/shared/KPIStatsSection';
 import { NumericStatCard } from '@/components/shared/visual-data';

@@ -18,6 +18,8 @@ import {
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService, PermissionsService } from '@/services/central';
 import { toast } from 'sonner';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -159,6 +161,16 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {
         onSuccess: (created) => {
           toast.success(`تم إنشاء المشروع: ${created.name}`);
+          void projectEventBus.emitProjectEvent({
+            eventType: 'project.created',
+            eventKind: 'project',
+            aggregateType: 'project',
+            aggregateId: created.id,
+            projectId: created.id,
+            payload: { name: created.name },
+          }).catch((error) => {
+            console.error('[ProjectWorkspace] emitProjectEvent(create) failed:', error);
+          });
           void AuditService.log({
             action: 'central.project.create',
             resource_type: 'project',
@@ -204,6 +216,16 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {
         onSuccess: (project) => {
           toast.success('تم حفظ تعديلات المشروع');
+          void projectEventBus.emitProjectEvent({
+            eventType: 'project.updated',
+            eventKind: 'project',
+            aggregateType: 'project',
+            aggregateId: project.id,
+            projectId: project.id,
+            payload: { name: project.name },
+          }).catch((error) => {
+            console.error('[ProjectWorkspace] emitProjectEvent(update) failed:', error);
+          });
           void AuditService.log({
             action: 'central.project.update',
             resource_type: 'project',
@@ -238,6 +260,15 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       onSuccess: () => {
         toast.success('تم حذف المشروع');
         closePanel();
+        void projectEventBus.emitProjectEvent({
+          eventType: 'project.deleted',
+          eventKind: 'project',
+          aggregateType: 'project',
+          aggregateId: projectId,
+          projectId,
+        }).catch((error) => {
+          console.error('[ProjectWorkspace] emitProjectEvent(delete) failed:', error);
+        });
         void AuditService.log({
           action: 'central.project.delete',
           resource_type: 'project',
@@ -271,6 +302,15 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       onSuccess: () => {
         toast.success('تمت أرشفة المشروع');
         closePanel();
+        void projectEventBus.emitProjectEvent({
+          eventType: 'project.archived',
+          eventKind: 'project',
+          aggregateType: 'project',
+          aggregateId: projectId,
+          projectId,
+        }).catch((error) => {
+          console.error('[ProjectWorkspace] emitProjectEvent(archive) failed:', error);
+        });
         void AuditService.log({
           action: 'central.project.archive',
           resource_type: 'project',
@@ -322,6 +362,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           }}
           className="w-full h-full p-2 py-0 mx-0 px-[5px]"
         >
+          <div className="mb-2 flex justify-end"><LinkIndicator projectId={selectedProjectId ?? 'projects-workspace'} /></div>
           <ProjectsColumn
             projects={projects}
             selectedProjectId={selectedProjectId}
@@ -341,6 +382,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         }}
         className={`fixed z-workspace top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
       >
+        <div className="absolute left-4 top-4 z-10"><LinkIndicator projectId="operations-board" /></div>
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
 

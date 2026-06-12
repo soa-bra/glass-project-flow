@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
@@ -49,6 +51,14 @@ export const ContractsTab: React.FC = () => {
       startDate: data.startDate, endDate: data.endDate, signatories: [], riskLevel: 'low',
     };
     setContracts(prev => [newContract, ...prev]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'legal.contract.created',
+      eventKind: 'legal',
+      aggregateType: 'contract',
+      aggregateId: newContract.id,
+      projectId: null,
+      payload: { title: newContract.title, client: newContract.client, value: newContract.value },
+    }).catch((error) => console.error('[ContractsTab] emitProjectEvent(create) failed:', error));
   };
 
   const handleDownloadContract = (contract: any) => {
@@ -80,7 +90,7 @@ export const ContractsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-black font-arabic">إدارة العقود والاتفاقيات</h3>
+        <div className="flex items-center gap-2"><h3 className="text-xl font-semibold text-black font-arabic">إدارة العقود والاتفاقيات</h3><LinkIndicator projectId="legal-contracts" /></div>
         <button onClick={() => setIsCreateOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium mx-[25px] flex items-center gap-2 hover:bg-black/90 transition-colors">
           <Plus className="w-4 h-4" /> عقد جديد
         </button>

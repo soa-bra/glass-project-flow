@@ -14,6 +14,8 @@ import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
 import { useInvoices, useCreateInvoice, useUpdateInvoice } from '@/hooks/useInvoices';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
@@ -40,7 +42,7 @@ export const InvoicesTab: React.FC = () => {
 
   const handleCreateInvoice = async (data: Record<string, string>) => {
     try {
-      await createInvoiceMutation.mutateAsync({
+      const invoice = await createInvoiceMutation.mutateAsync({
         client: data.client,
         projectName: data.projectName,
         totalAmount: Number(data.totalAmount),
@@ -49,6 +51,14 @@ export const InvoicesTab: React.FC = () => {
         status: data.status,
         notes: data.notes,
       });
+      void projectEventBus.emitProjectEvent({
+        eventType: 'financial.invoice.created',
+        eventKind: 'financial',
+        aggregateType: 'invoice',
+        aggregateId: String(invoice?.id ?? data.projectName),
+        projectId: invoice?.projectId ?? null,
+        payload: { client: data.client, projectName: data.projectName, totalAmount: Number(data.totalAmount) },
+      }).catch((error) => console.error('[InvoicesTab] emitProjectEvent(create) failed:', error));
     } catch {
       // toast already shown by hook onError
     }
@@ -57,7 +67,7 @@ export const InvoicesTab: React.FC = () => {
   const handleEditInvoice = async (data: Record<string, string>) => {
     if (!editingInvoice) return;
     try {
-      await updateInvoiceMutation.mutateAsync({
+      const invoice = await updateInvoiceMutation.mutateAsync({
         id: editingInvoice.id,
         input: {
           client: data.client,
@@ -69,6 +79,14 @@ export const InvoicesTab: React.FC = () => {
           notes: data.notes,
         },
       });
+      void projectEventBus.emitProjectEvent({
+        eventType: 'financial.invoice.updated',
+        eventKind: 'financial',
+        aggregateType: 'invoice',
+        aggregateId: String(editingInvoice.id),
+        projectId: invoice?.projectId ?? editingInvoice.projectId ?? null,
+        payload: { client: data.client, projectName: data.projectName, totalAmount: Number(data.totalAmount) },
+      }).catch((error) => console.error('[InvoicesTab] emitProjectEvent(update) failed:', error));
       setEditingInvoice(null);
     } catch {
       // toast already shown by hook onError
@@ -112,7 +130,7 @@ export const InvoicesTab: React.FC = () => {
     <BaseTabContent value="invoices">
       <Reveal>
         <div className={cn('flex justify-between items-center', SPACING.SECTION_MARGIN)}>
-          <h3 className={buildTitleClasses()}>الفواتير والمدفوعات</h3>
+          <div className="flex items-center gap-2"><h3 className={buildTitleClasses()}>الفواتير والمدفوعات</h3><LinkIndicator projectId="financial-invoices" /></div>
           <BaseActionButton variant="primary" icon={<Receipt className="w-4 h-4" />} onClick={() => setIsCreateOpen(true)}>
             إنشاء فاتورة
           </BaseActionButton>
@@ -152,6 +170,7 @@ export const InvoicesTab: React.FC = () => {
                       <h4 className={cn(TYPOGRAPHY.BODY, 'font-semibold', COLORS.PRIMARY_TEXT, TYPOGRAPHY.ARABIC_FONT)}>
                         {invoice.id}
                       </h4>
+                      <LinkIndicator targetElementId={invoice.id} compact />
                     </div>
                     <button 
                       onClick={() => handleClientClick(invoice.client)}
