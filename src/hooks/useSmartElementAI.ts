@@ -148,6 +148,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
         selectedElements: payload.selectedElements,
         activeSection: rawContext.activeSection,
         activeTab: rawContext.activeTab,
+        activeDepartment: rawContext.activeDepartment ?? rawContext.active_department,
         permissions: rawContext.permissions,
         availableLinks: rawContext.availableLinks,
         extraContext: rawContext,
