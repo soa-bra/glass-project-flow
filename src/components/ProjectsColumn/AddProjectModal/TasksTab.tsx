@@ -3,6 +3,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Sparkles, Pencil, Trash2 } from 'lucide-react';
 import type { TaskData } from '@/types';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 interface TasksTabProps {
   tasks: TaskData[];
@@ -19,6 +21,29 @@ export const TasksTab: React.FC<TasksTabProps> = ({
   onEditTask,
   onDeleteTask,
 }) => {
+  const handleEditTask = (task: TaskData) => {
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.task.edit.requested',
+      eventKind: 'task',
+      aggregateType: 'task',
+      aggregateId: String(task.id ?? task.title),
+      projectId: null,
+      payload: { title: task.title },
+    }).catch((error) => console.error('[TasksTab] emitProjectEvent(edit) failed:', error));
+    onEditTask?.(task);
+  };
+
+  const handleDeleteTask = (taskId: number) => {
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.task.delete.requested',
+      eventKind: 'task',
+      aggregateType: 'task',
+      aggregateId: String(taskId),
+      projectId: null,
+    }).catch((error) => console.error('[TasksTab] emitProjectEvent(delete) failed:', error));
+    onDeleteTask?.(taskId);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -42,7 +67,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
               </Button>
             )}
           </div>
-          <h3 className="text-lg font-bold font-arabic">مهام المشروع</h3>
+          <div className="flex items-center gap-2"><LinkIndicator projectId="project-tasks" /><h3 className="text-lg font-bold font-arabic">مهام المشروع</h3></div>
         </div>
 
         {tasks.length === 0 ? (
@@ -64,7 +89,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
                     {onEditTask && (
                       <button
                         type="button"
-                        onClick={() => onEditTask(task)}
+                        onClick={() => handleEditTask(task)}
                         aria-label="تعديل المهمة"
                         className="h-8 w-8 inline-flex items-center justify-center rounded-full border border-black/20 bg-white/40 hover:bg-white/70 transition-colors"
                       >
@@ -74,7 +99,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
                     {onDeleteTask && (
                       <button
                         type="button"
-                        onClick={() => onDeleteTask(task.id as number)}
+                        onClick={() => handleDeleteTask(task.id as number)}
                         aria-label="حذف المهمة"
                         className="h-8 w-8 inline-flex items-center justify-center rounded-full border border-black/20 bg-white/40 hover:bg-red-100 text-red-600 transition-colors"
                       >
@@ -83,7 +108,7 @@ export const TasksTab: React.FC<TasksTabProps> = ({
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-bold font-arabic text-right">{task.title}</h4>
+                    <div className="flex items-center justify-end gap-2"><LinkIndicator targetElementId={task.id} compact /><h4 className="font-bold font-arabic text-right">{task.title}</h4></div>
                     <p className="text-sm text-black/60 font-arabic text-right mt-1">{task.description}</p>
                   </div>
                 </div>

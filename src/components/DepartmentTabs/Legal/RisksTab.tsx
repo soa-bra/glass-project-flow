@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 import { AlertTriangle, Shield, Activity } from 'lucide-react';
 import { mockRiskAssessments } from './data';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
@@ -64,6 +66,14 @@ export const RisksTab: React.FC = () => {
       targetResolution: data.targetResolution,
     };
     setRisks(prev => [newRisk, ...prev]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'legal.risk.created',
+      eventKind: 'legal',
+      aggregateType: 'legal_risk',
+      aggregateId: newRisk.id,
+      projectId: null,
+      payload: { title: newRisk.title, category: newRisk.category, severity: newRisk.severity },
+    }).catch((error) => console.error('[RisksTab] emitProjectEvent(create) failed:', error));
   };
 
   const handleMitigate = (id: string) => {
@@ -88,7 +98,7 @@ export const RisksTab: React.FC = () => {
 
   return <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-black font-arabic">إدارة المخاطر والنزاعات</h3>
+        <div className="flex items-center gap-2"><h3 className="text-xl font-semibold text-black font-arabic">إدارة المخاطر والنزاعات</h3><LinkIndicator projectId="legal-risks" /></div>
         <button onClick={() => setIsAddOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
           <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><AlertTriangle className="w-4 h-4" /></div>
           إضافة تقييم جديد
@@ -150,7 +160,7 @@ export const RisksTab: React.FC = () => {
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h4 className="font-medium text-black font-arabic">{risk.title}</h4>
+                    <div className="flex items-center gap-2"><h4 className="font-medium text-black font-arabic">{risk.title}</h4><LinkIndicator targetElementId={risk.id} compact /></div>
                     <span className={`px-3 py-1 text-xs rounded-full font-arabic ${getStatusColor(risk.status)}`}>{getStatusText(risk.status)}</span>
                   </div>
                   <p className="text-sm text-black/70 font-arabic mb-2">{risk.description}</p>

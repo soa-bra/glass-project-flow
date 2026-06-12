@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { REDACTED_VALUE, sanitizeAIContext } from './contextSanitizer';
 import type { UnifiedAIContext } from './contextBuilder';
+import { CANVAS_AI_DENIAL_REASONS, resolveCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
 
 const buildContext = (role: 'guest' | 'viewer' | 'editor' | 'host', permissions = {}): UnifiedAIContext => ({
   boardId: 'board-1',
@@ -55,6 +56,19 @@ describe('sanitizeAIContext', () => {
     expect(element.contractTerms).toBe(REDACTED_VALUE);
     expect(element.data.publicSummary).toBe('Visible summary');
     expect(sanitized.availableLinks[0].invoiceUrl).toBe(REDACTED_VALUE);
+  });
+
+
+  it('keeps guest AI context sanitized and denies AI execution permissions', () => {
+    const sanitized = sanitizeAIContext(buildContext('guest'));
+    const permissions = resolveCanvasAIPermissions({ role: 'guest', userId: null });
+
+    expect(sanitized.permissions.role).toBe('guest');
+    expect((sanitized.selectedElements[0] as Record<string, unknown>).budget).toBe(REDACTED_VALUE);
+    expect(permissions).toMatchObject({
+      canUseAI: false,
+      denialReason: CANVAS_AI_DENIAL_REASONS.guest,
+    });
   });
 
   it('allows editors with explicit permissions to keep financial and legal fields but still redacts sensitive fields', () => {

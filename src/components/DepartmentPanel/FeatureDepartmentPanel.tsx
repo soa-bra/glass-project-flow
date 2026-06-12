@@ -10,7 +10,7 @@
  *
  * @specRef Section 6 (Departments) — 12 dashboards / 94 tabs
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SpecDrivenDepartmentDashboard } from './SpecDrivenDepartmentDashboard';
 import { FinancialDashboard } from '../DepartmentTabs/Financial';
 import { LegalDashboard } from '../DepartmentTabs/Legal';
@@ -21,6 +21,8 @@ import { CSRDashboard } from '../DepartmentTabs/CSR';
 import { TrainingDashboard } from '../DepartmentTabs/Training';
 import { KMPADashboard } from '../DepartmentTabs/KMPA';
 import { BrandDashboard } from '../DepartmentTabs/Brand';
+import { getDepartmentDefinition } from '@/features/ai/context/departmentRegistry';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 interface FeatureDepartmentPanelProps {
   selectedDepartment: string;
@@ -46,6 +48,26 @@ export const FeatureDepartmentPanel: React.FC<FeatureDepartmentPanelProps> = ({
   const forceSpec =
     typeof window !== 'undefined' &&
     new URLSearchParams(window.location.search).get('spec') === '1';
+
+  useEffect(() => {
+    const department = getDepartmentDefinition(selectedDepartment);
+    return registerAIContextSource({
+      id: 'feature-department-panel',
+      kind: 'department',
+      data: {
+        active_department: department
+          ? { id: department.id, label: department.label, category: department.category }
+          : { id: selectedDepartment },
+        visible_boxes: department?.tabs.flatMap((tab) => tab.boxKeys ?? []) ?? [],
+      },
+      permission_scope: {
+        role: 'viewer',
+        allowed: Boolean(selectedDepartment),
+        canViewFinancial: selectedDepartment === 'financial',
+        canViewLegal: selectedDepartment === 'legal',
+      },
+    });
+  }, [selectedDepartment]);
 
   if (!forceSpec) {
     const Feature = FEATURE_DASHBOARDS[selectedDepartment];
