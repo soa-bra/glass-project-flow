@@ -18,6 +18,8 @@ import { CsrCard } from './CsrCard';
 import { CrmCard } from './CrmCard';
 import { RootConnectorDisplay } from './RootConnectorDisplay';
 import { SmartDocRenderer } from '../smart-doc';
+import { ExpandableExecutionCard, openExecutionPanel } from './ExpandableExecutionCard';
+import type { ExecutionEntityType } from '@/features/planning/execution/executionAdapters';
 import { 
   Brain, Kanban, Vote, Lightbulb, Calendar, Grid3X3, 
   BarChart3, GitBranch, FolderKanban, Wallet,
@@ -64,19 +66,22 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   const data = storedData || element.data || {};
   const metadata = element.metadata ?? {};
   const linkedEntityId = readString(data.linkedEntityId) ?? readString(metadata.linkedEntityId);
-  const dispatchOpenExecution = (entityType: 'project' | 'task') => {
-    if (!linkedEntityId) return;
-    window.dispatchEvent(new CustomEvent('planning:open-execution', {
-      detail: {
-        entityType,
-        entityId: linkedEntityId,
-        data: {
-          sourceElementId: element.id,
-          sourceSmartType: smartType,
-        },
+  const dispatchOpenExecution = (entityType: ExecutionEntityType) => {
+    const entityId = linkedEntityId ?? element.id;
+    openExecutionPanel({
+      entityType,
+      entityId,
+      element,
+      onUpdate,
+      data: {
+        ...data,
+        sourceElementId: element.id,
+        sourceSmartType: smartType,
       },
-    }));
+    });
   };
+  const requestedExecutionType = readString(data.executionEntityType) ?? readString(metadata.executionEntityType);
+  const cardExecutionType = requestedExecutionType as ExecutionEntityType | undefined;
   const dispatchSuggestConversion = (targetEntityType: 'project' | 'task') => {
     const title = readString(data.title)
       ?? readString(data.name)
@@ -189,12 +194,25 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   }
 
   // Interactive Sheet & Smart Text Doc - delegated to SmartDocRenderer
-  if (smartType === 'interactive_sheet' || smartType === 'smart_text_doc') {
+  if (smartType === 'interactive_sheet') {
     return (
-      <SmartDocRenderer 
-        element={element} 
-        onUpdate={onUpdate} 
-      />
+      <ExpandableExecutionCard entityType="sheet" entityId={element.id} element={element} onUpdate={onUpdate}>
+        <SmartDocRenderer 
+          element={element} 
+          onUpdate={onUpdate} 
+        />
+      </ExpandableExecutionCard>
+    );
+  }
+
+  if (smartType === 'smart_text_doc') {
+    return (
+      <ExpandableExecutionCard entityType="smart_doc" entityId={element.id} element={element} onUpdate={onUpdate}>
+        <SmartDocRenderer 
+          element={element} 
+          onUpdate={onUpdate} 
+        />
+      </ExpandableExecutionCard>
     );
   }
 
@@ -225,10 +243,18 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   // Finance Card
   if (smartType === 'finance_card') {
     return (
-      <FinanceCard 
-        data={data as any} 
-        onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
-      />
+      <ExpandableExecutionCard
+        entityType={cardExecutionType === 'invoice' || cardExecutionType === 'financial_transaction' ? cardExecutionType : 'financial_budget'}
+        entityId={linkedEntityId ?? element.id}
+        data={data as Record<string, unknown>}
+        element={element}
+        onUpdate={onUpdate}
+      >
+        <FinanceCard 
+          data={data as any} 
+          onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
+        />
+      </ExpandableExecutionCard>
     );
   }
 
