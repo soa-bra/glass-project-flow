@@ -240,6 +240,13 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           width: element.size.width,
           height: element.size.height,
           type: element.type === 'frame' ? 'frame' as const : element.type === 'smart' ? 'smart-element' as const : 'component' as const,
+          smartType: typeof element.data?.smartType === 'string' ? element.data.smartType : null,
+          entityType: typeof element.data?.entityType === 'string' ? element.data.entityType : null,
+          locked: Boolean(element.locked || element.data?.locked || element.data?.isLocked || element.metadata?.locked),
+          archived: element.data?.status === 'archived' || element.metadata?.status === 'archived' || element.metadata?.archived === true,
+          canRead: element.visible !== false,
+          canConnect: element.data?.canConnect !== false && element.metadata?.canConnect !== false,
+          canCreateOperationalRelationship: element.data?.canCreateOperationalRelationship !== false && element.metadata?.canCreateOperationalRelationship !== false,
         })),
     [visibleElements],
   );
@@ -498,6 +505,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             }}
             selectedElementIds={selectedElementIds}
             showAnchors={canEdit && activeTool === 'selection_tool' && selectedElementIds.length > 0}
+            canEditBoard={canEdit}
+            canCreateOperationalRelationship={canEdit}
           />
 
         </svg>

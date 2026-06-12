@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { 
   RootConnector, 
@@ -7,8 +8,14 @@ import {
   ConnectionAnchors,
 } from './RootConnector';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { toast } from 'sonner';
+import {
+  canCreateConnector,
+  canUpdateConnector,
+  type ConnectorPolicyElement,
+} from '@/features/planning/integration/connectors/connectorPolicy';
 
-interface ElementBounds {
+interface ElementBounds extends ConnectorPolicyElement {
   id: string;
   x: number;
   y: number;
@@ -26,6 +33,8 @@ interface SmartConnectorManagerProps {
   onSelectConnector?: (id: string | null) => void;
   selectedElementIds?: string[];
   showAnchors?: boolean;
+  canEditBoard?: boolean;
+  canCreateOperationalRelationship?: boolean;
 }
 
 export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
@@ -37,6 +46,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   onSelectConnector,
   selectedElementIds = [],
   showAnchors = true,
+  canEditBoard = true,
+  canCreateOperationalRelationship = true,
 }) => {
   const viewport = useCanvasStore((state) => state.viewport);
   const [isCreatingConnector, setIsCreatingConnector] = useState(false);
@@ -44,6 +55,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   const [dragCurrent, setDragCurrent] = useState<{ x: number; y: number } | null>(null);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const [internalSelectedConnectorId, setInternalSelectedConnectorId] = useState<string | null>(null);
+  const [policyMessage, setPolicyMessage] = useState<{ message: string; x: number; y: number } | null>(null);
   const effectiveSelectedConnectorId = selectedConnectorId ?? internalSelectedConnectorId;
   const selectConnector = useCallback((id: string | null) => {
     setInternalSelectedConnectorId(id);
@@ -57,11 +69,42 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     [elements, selectedElementIds],
   );
 
+  const showPolicyRejection = useCallback((reason: string, point?: ConnectorPoint | { x: number; y: number }) => {
+    const fallbackPoint = dragCurrent ?? dragStartPoint ?? { x: 24, y: 24 };
+    setPolicyMessage({
+      message: reason,
+      x: point?.x ?? fallbackPoint.x,
+      y: point?.y ?? fallbackPoint.y,
+    });
+    toast.error('تعذر إنشاء العلاقة', { description: reason });
+  }, [dragCurrent, dragStartPoint]);
+
   const handleCreateConnector = useCallback((
     startPoint: ConnectorPoint,
     endPoint: ConnectorPoint,
     connectionType: RootConnectorData['connectionType']
   ) => {
+    const source = elements.find((element) => element.id === startPoint.elementId);
+    const target = elements.find((element) => element.id === endPoint.elementId);
+
+    if (!source || !target) {
+      showPolicyRejection('تعذر العثور على أحد طرفي العلاقة داخل اللوحة.', endPoint);
+      return;
+    }
+
+    const policyDecision = canCreateConnector({
+      board: { canEditBoard, canCreateOperationalRelationship },
+      source,
+      target,
+      relationshipType: connectionType,
+    });
+
+    if (!policyDecision.allowed) {
+      showPolicyRejection(policyDecision.reason, endPoint);
+      return;
+    }
+
+    setPolicyMessage(null);
     const newConnector: RootConnectorData = {
       id: crypto.randomUUID(),
       startPoint,
@@ -76,11 +119,35 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     };
     onConnectorsChange([...connectors, newConnector]);
     selectConnector(newConnector.id);
-  }, [connectors, onConnectorsChange, selectConnector]);
+  }, [canCreateOperationalRelationship, canEditBoard, connectors, elements, onConnectorsChange, selectConnector, showPolicyRejection]);
 
   const handleUpdateConnector = useCallback((id: string, data: RootConnectorData) => {
+    const source = elements.find((element) => element.id === data.startPoint.elementId);
+    const target = elements.find((element) => element.id === data.endPoint.elementId);
+    const existingConnector = connectors.find((connector) => connector.id === id);
+
+    if (!source || !target) {
+      showPolicyRejection('تعذر العثور على أحد طرفي العلاقة داخل اللوحة.', data.endPoint);
+      return;
+    }
+
+    const policyDecision = canUpdateConnector({
+      board: { canEditBoard, canCreateOperationalRelationship },
+      source,
+      target,
+      relationshipType: data.relationshipType ?? data.connectionType,
+      connectorArchived: Boolean((existingConnector as RootConnectorData & { archived?: boolean })?.archived),
+      connectorLocked: Boolean((existingConnector as RootConnectorData & { locked?: boolean })?.locked),
+    });
+
+    if (!policyDecision.allowed) {
+      showPolicyRejection(policyDecision.reason, data.endPoint);
+      return;
+    }
+
+    setPolicyMessage(null);
     onConnectorsChange(connectors.map(c => c.id === id ? data : c));
-  }, [connectors, onConnectorsChange]);
+  }, [canCreateOperationalRelationship, canEditBoard, connectors, elements, onConnectorsChange, showPolicyRejection]);
 
   const handleDeleteConnector = useCallback((id: string) => {
     onConnectorsChange(connectors.filter(c => c.id !== id));
@@ -222,6 +289,18 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
           />
         );
       })()}
+
+      {policyMessage && (
+        <g transform={`translate(${policyMessage.x + 12}, ${policyMessage.y + 12})`} className="pointer-events-none">
+          <rect width={280} height={44} rx={10} fill="#7F1D1D" opacity={0.92} />
+          <text x={264} y={18} textAnchor="end" fill="#FFFFFF" fontSize={11} fontWeight={600} direction="rtl">
+            تعذر إنشاء العلاقة
+          </text>
+          <text x={264} y={34} textAnchor="end" fill="#FEE2E2" fontSize={10} direction="rtl">
+            {policyMessage.message.length > 46 ? `${policyMessage.message.slice(0, 43)}…` : policyMessage.message}
+          </text>
+        </g>
+      )}
 
       {/* Connection Anchors — only for selected elements */}
       {showAnchors && anchoredElements.map(element => (
