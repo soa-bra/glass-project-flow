@@ -71,6 +71,11 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
+      status: 'suggested',
+      direction: 'forward',
+      purpose: 'semantic',
+      permissionScope: 'allowed',
+      requiresReview: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
