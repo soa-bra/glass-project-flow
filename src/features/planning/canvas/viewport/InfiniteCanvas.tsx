@@ -21,6 +21,7 @@ import { PresenceCursors } from '@/features/planning/ui/collaboration';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import type { ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
 import { toPlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
 import {
   upsertSmartConnector,
@@ -330,6 +331,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           });
         }
 
+        const isUnapprovedSuggestion = connector.status === 'suggested' || connector.requiresReview || connector.approvedByUser === false;
+        if (isUnapprovedSuggestion) {
+          void deleteSmartConnectorByElementId(connector.id).catch((err) =>
+            console.warn('[smart_connectors] suggested connector cleanup failed', err),
+          );
+          return;
+        }
+
         // Logical persistence (best-effort; visual planning element remains the client source of truth).
         const connectorRecord = toPlanningConnectorLogicalRecord({
           id: connector.id,
@@ -532,6 +541,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         >
           <SmartConnectorManager
             elements={connectableElements}
+            boardId={_boardId}
+            readableAIElements={readableAIElements}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
             selectedConnectorId={selectedElementIds.find((id) => rootConnectorElements.some((element) => element.id === id)) ?? undefined}

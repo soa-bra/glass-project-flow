@@ -26,6 +26,8 @@ interface ElementBounds extends ConnectorPolicyElement {
 
 interface SmartConnectorManagerProps {
   elements: ElementBounds[];
+  boardId?: string | null;
+  readableAIElements?: ReadableConnectorElementForAI[];
   connectors: RootConnectorData[];
   onConnectorsChange: (connectors: RootConnectorData[]) => void;
   onInsertComponent?: (suggestion: AISuggestion, position: { x: number; y: number }) => void;
@@ -40,6 +42,8 @@ interface SmartConnectorManagerProps {
 
 export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   elements,
+  boardId,
+  readableAIElements = [],
   connectors,
   onConnectorsChange,
   onInsertComponent,
@@ -51,6 +55,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   canEditBoard = true,
   canCreateOperationalRelationship = true,
 }) => {
+  const aiPermissions = useCanvasAIPermissions(boardId);
   const viewport = useCanvasStore((state) => state.viewport);
   const [isCreatingConnector, setIsCreatingConnector] = useState(false);
   const [dragStartPoint, setDragStartPoint] = useState<ConnectorPoint | null>(null);
@@ -130,6 +135,10 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
+      source: 'user',
+      status: 'approved',
+      requiresReview: false,
+      approvedByUser: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -170,10 +179,71 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     if (effectiveSelectedConnectorId === id) selectConnector(null);
   }, [connectors, effectiveSelectedConnectorId, onConnectorsChange, selectConnector]);
 
-  const handleAISuggest = useCallback(async (_connector: RootConnectorData): Promise<AISuggestion[]> => {
-    await new Promise(resolve => setTimeout(resolve, 800));
-    return [];
-  }, []);
+  const handleAISuggest = useCallback(async (connector: RootConnectorData): Promise<AISuggestion[]> => {
+    if (!aiPermissions.canUseAI) {
+      throw new Error(aiPermissions.denialReason || 'لا تملك صلاحية استخدام الذكاء الاصطناعي على هذه اللوحة');
+    }
+
+    const readableElementsById = new Set(readableAIElements.map((element) => element.id));
+    const canReadBothEndpoints =
+      readableElementsById.has(connector.startPoint.elementId) &&
+      readableElementsById.has(connector.endPoint.elementId);
+
+    if (!canReadBothEndpoints) {
+      throw new Error('لا يمكن إرسال عناصر لا يملك المستخدم صلاحية قراءتها إلى AI');
+    }
+
+    const suggestion = await suggestSmartConnectorRelationship({
+      boardId,
+      sourceElementId: connector.startPoint.elementId,
+      targetElementId: connector.endPoint.elementId,
+      readableElements: readableAIElements,
+      existingLinks: connectors.map((item) => ({
+        id: item.id,
+        sourceElementId: item.startPoint.elementId,
+        targetElementId: item.endPoint.elementId,
+        relationshipType: item.relationshipType ?? item.connectionType,
+        status: item.status,
+      })),
+    });
+
+    if (!suggestion) return [];
+
+    void audit({
+      resource_type: 'smart_connector',
+      action: 'canvas.connector.ai_suggestion.created',
+      resource_id: connector.id,
+      scope_type: boardId ? 'board' : null,
+      scope_id: boardId ?? null,
+      metadata: {
+        sourceElementId: connector.startPoint.elementId,
+        targetElementId: connector.endPoint.elementId,
+        relationshipType: suggestion.relationshipType,
+        aiConfidence: suggestion.confidence,
+        readableElementCount: readableAIElements.length,
+      },
+    });
+
+    return [{
+      id: `ai-connector-${connector.id}-${Date.now()}`,
+      type: 'connector',
+      title: suggestion.title,
+      description: suggestion.description,
+      confidence: suggestion.confidence,
+      data: {
+        relationshipType: suggestion.relationshipType,
+        reasoning: suggestion.reasoning,
+        connectorPatch: {
+          relationshipType: suggestion.relationshipType,
+          status: 'suggested',
+          source: 'ai',
+          aiConfidence: suggestion.confidence,
+          requiresReview: true,
+          approvedByUser: false,
+        },
+      },
+    }];
+  }, [aiPermissions.canUseAI, aiPermissions.denialReason, boardId, connectors, readableAIElements]);
 
   const handleInsertSuggestion = useCallback((
     connector: RootConnectorData,
@@ -184,8 +254,41 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         x: (connector.startPoint.x + connector.endPoint.x) / 2,
         y: (connector.startPoint.y + connector.endPoint.y) / 2,
       });
+      return;
     }
-  }, [onInsertComponent]);
+
+    if (suggestion.type !== 'connector') return;
+
+    const relationshipType = (suggestion.data?.relationshipType ?? connector.relationshipType ?? connector.connectionType ?? 'references') as RootConnectorData['relationshipType'];
+    const now = new Date().toISOString();
+    const approvedConnector: RootConnectorData = {
+      ...connector,
+      connectionType: relationshipType,
+      relationshipType,
+      status: 'approved',
+      source: connector.source ?? 'ai',
+      aiConfidence: suggestion.confidence ?? connector.aiConfidence,
+      requiresReview: false,
+      approvedByUser: true,
+      aiSuggestions: connector.aiSuggestions?.filter((item) => item.id !== suggestion.id),
+      updatedAt: now,
+    };
+
+    handleUpdateConnector(connector.id, approvedConnector);
+    void audit({
+      resource_type: 'smart_connector',
+      action: 'canvas.connector.ai_suggestion.approved',
+      resource_id: connector.id,
+      scope_type: boardId ? 'board' : null,
+      scope_id: boardId ?? null,
+      metadata: {
+        sourceElementId: connector.startPoint.elementId,
+        targetElementId: connector.endPoint.elementId,
+        relationshipType,
+        aiConfidence: approvedConnector.aiConfidence,
+      },
+    });
+  }, [boardId, handleUpdateConnector, onInsertComponent]);
 
   const handleAnchorDragStart = useCallback((point: ConnectorPoint) => {
     setDragStartPoint(point);
