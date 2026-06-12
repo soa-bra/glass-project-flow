@@ -43,6 +43,11 @@ export interface RootConnectorData {
   style?: 'solid' | 'dashed' | 'dotted' | 'animated';
   connectionType?: UnifiedRelationshipType;
   relationshipType?: UnifiedRelationshipType;
+  status?: 'draft' | 'suggested' | 'approved';
+  source?: 'user' | 'ai' | 'system';
+  aiConfidence?: number;
+  requiresReview?: boolean;
+  approvedByUser?: boolean;
   aiSuggestions?: AISuggestion[];
   createdAt?: string;
   updatedAt?: string;
@@ -174,9 +179,17 @@ interface ConnectorInspectorProps {
 
 export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, onPatch }) => {
   const relationshipType = data.relationshipType || data.connectionType || 'references';
+  const isSuggested = data.status === 'suggested' || data.requiresReview;
 
   const handleRelationshipTypeChange = (value: UnifiedRelationshipType) => {
-    onPatch({ connectionType: value, relationshipType: value });
+    onPatch({
+      connectionType: value,
+      relationshipType: value,
+      status: isSuggested ? 'approved' : data.status,
+      requiresReview: false,
+      approvedByUser: true,
+      updatedAt: new Date().toISOString(),
+    });
   };
 
   return (
@@ -239,6 +252,12 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
           </Select>
         </div>
       </div>
+
+      {isSuggested && (
+        <div className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] text-amber-800">
+          اقتراح AI بانتظار اعتمادك قبل إنشاء أي علاقة تشغيلية.
+        </div>
+      )}
 
       <div className="space-y-1">
         <span className="text-[10px] text-muted-foreground">نوع العلاقة</span>
@@ -371,11 +390,11 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
                       </span>
                       <Button
                         size="sm"
-                        variant="ghost"
+                        variant="outline"
                         onClick={() => onInsertSuggestion(suggestion)}
-                        className="h-6 w-6 p-0 text-primary hover:text-primary"
+                        className="h-6 px-2 text-[10px] text-primary hover:text-primary"
                       >
-                        <ArrowRight className="h-3 w-3" />
+                        اعتماد
                       </Button>
                     </div>
                   </div>
@@ -412,11 +431,12 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
               {data.aiSuggestions && data.aiSuggestions.length > 0 && (
                 <Button
                   size="sm"
-                  onClick={() => data.aiSuggestions?.forEach(onInsertSuggestion)}
-                  className="flex-1 text-xs h-8 gap-1.5 bg-gradient-to-r from-primary to-accent"
+                  variant="secondary"
+                  onClick={() => onInsertSuggestion(data.aiSuggestions![0])}
+                  className="flex-1 text-xs h-8 gap-1.5"
                 >
                   <Wand2 className="h-3.5 w-3.5" />
-                  تحويل الكل
+                  اعتماد المقترح
                 </Button>
               )}
             </div>
@@ -493,8 +513,10 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
     setIsLoadingAI(true);
     try {
       const suggestions = await onAISuggest(data);
-      onUpdate?.({ 
-        ...data, 
+      const connectorSuggestion = suggestions.find((suggestion) => suggestion.type === 'connector');
+      onUpdate?.({
+        ...data,
+        ...(connectorSuggestion?.data?.connectorPatch ?? {}),
         aiSuggestions: suggestions,
         updatedAt: new Date().toISOString(),
       });
@@ -507,6 +529,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
 
   const handleInsertSuggestion = (suggestion: AISuggestion) => {
     onInsertSuggestion?.(suggestion);
+    if (suggestion.type === 'connector') return;
     // Remove the inserted suggestion from the list
     if (data.aiSuggestions) {
       onUpdate?.({

@@ -21,6 +21,7 @@ import { PresenceCursors } from '@/features/planning/ui/collaboration';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import type { ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
 import { toPlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
 import {
   upsertSmartConnector,
@@ -244,6 +245,28 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     [visibleElements],
   );
 
+  const readableAIElements = useMemo<ReadableConnectorElementForAI[]>(
+    () =>
+      visibleElements
+        .filter((element) => element.data?.smartType !== 'root_connector')
+        .map((element) => ({
+          id: element.id,
+          type: element.type,
+          smartType: typeof element.data?.smartType === 'string' ? element.data.smartType : null,
+          title: typeof element.data?.title === 'string'
+            ? element.data.title
+            : typeof element.data?.name === 'string'
+              ? element.data.name
+              : typeof element.content === 'string'
+                ? element.content.slice(0, 160)
+                : null,
+          description: typeof element.data?.description === 'string' ? element.data.description : null,
+          position: element.position,
+          size: element.size,
+        })),
+    [visibleElements],
+  );
+
   const syncRootConnectors = useCallback(
     (nextConnectors: RootConnectorData[]) => {
       const previousIds = new Set(rootConnectorElements.map((element) => element.id));
@@ -291,6 +314,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             data,
             metadata,
           });
+        }
+
+        const isUnapprovedSuggestion = connector.status === 'suggested' || connector.requiresReview || connector.approvedByUser === false;
+        if (isUnapprovedSuggestion) {
+          void deleteSmartConnectorByElementId(connector.id).catch((err) =>
+            console.warn('[smart_connectors] suggested connector cleanup failed', err),
+          );
+          return;
         }
 
         // Logical persistence (best-effort; visual planning element remains the client source of truth).
@@ -489,6 +520,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         >
           <SmartConnectorManager
             elements={connectableElements}
+            boardId={_boardId}
+            readableAIElements={readableAIElements}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
             selectedConnectorId={selectedElementIds.find((id) => rootConnectorElements.some((element) => element.id === id)) ?? undefined}
