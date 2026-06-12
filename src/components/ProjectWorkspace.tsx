@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
@@ -18,6 +18,7 @@ import {
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService, PermissionsService } from '@/services/central';
 import { toast } from 'sonner';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -159,6 +160,16 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {
         onSuccess: (created) => {
           toast.success(`تم إنشاء المشروع: ${created.name}`);
+          void projectEventBus.emitProjectEvent({
+            eventType: 'project.created',
+            eventKind: 'project',
+            aggregateType: 'project',
+            aggregateId: created.id,
+            projectId: created.id,
+            payload: { name: created.name },
+          }).catch((error) => {
+            console.error('[ProjectWorkspace] emitProjectEvent(create) failed:', error);
+          });
           void AuditService.log({
             action: 'central.project.create',
             resource_type: 'project',
@@ -204,6 +215,16 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       {
         onSuccess: (project) => {
           toast.success('تم حفظ تعديلات المشروع');
+          void projectEventBus.emitProjectEvent({
+            eventType: 'project.updated',
+            eventKind: 'project',
+            aggregateType: 'project',
+            aggregateId: project.id,
+            projectId: project.id,
+            payload: { name: project.name },
+          }).catch((error) => {
+            console.error('[ProjectWorkspace] emitProjectEvent(update) failed:', error);
+          });
           void AuditService.log({
             action: 'central.project.update',
             resource_type: 'project',
@@ -238,6 +259,15 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       onSuccess: () => {
         toast.success('تم حذف المشروع');
         closePanel();
+        void projectEventBus.emitProjectEvent({
+          eventType: 'project.deleted',
+          eventKind: 'project',
+          aggregateType: 'project',
+          aggregateId: projectId,
+          projectId,
+        }).catch((error) => {
+          console.error('[ProjectWorkspace] emitProjectEvent(delete) failed:', error);
+        });
         void AuditService.log({
           action: 'central.project.delete',
           resource_type: 'project',
@@ -271,6 +301,15 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
       onSuccess: () => {
         toast.success('تمت أرشفة المشروع');
         closePanel();
+        void projectEventBus.emitProjectEvent({
+          eventType: 'project.archived',
+          eventKind: 'project',
+          aggregateType: 'project',
+          aggregateId: projectId,
+          projectId,
+        }).catch((error) => {
+          console.error('[ProjectWorkspace] emitProjectEvent(archive) failed:', error);
+        });
         void AuditService.log({
           action: 'central.project.archive',
           resource_type: 'project',
@@ -305,6 +344,54 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
     ? projects.find((project) => project.id === displayedProjectId)
     : null;
 
+  useEffect(() => {
+    const visibleProjects = projects.slice(0, 12);
+    const delayedProjects = projects.filter((project) => project.status === 'warning' || project.status === 'error');
+
+    return registerAIContextSource({
+      id: 'project-workspace-visible-projects',
+      kind: 'project',
+      data: {
+        project_summary: {
+          totalProjects: projects.length,
+          visibleProjects: visibleProjects.length,
+          selectedProjectId,
+          displayedProjectId,
+          filters: currentFilters,
+          sort: currentSort,
+        },
+        visible_boxes: visibleProjects.map((project) => ({
+          id: project.id,
+          title: project.title,
+          status: project.status,
+          daysLeft: project.daysLeft,
+          tasksCount: project.tasksCount,
+        })),
+        linked_entities: visibleProjects.map((project) => ({
+          id: project.id,
+          type: 'project',
+          label: project.title,
+          owner: project.owner,
+        })),
+        tasks_snapshot: {
+          totalTasksInVisibleProjects: visibleProjects.reduce((sum, project) => sum + (project.tasksCount || 0), 0),
+          projectsWithOverdueTasks: projects.filter((project) => project.hasOverdueTasks).length,
+        },
+        financial_snapshot: {
+          visibleProjectBudgetCount: visibleProjects.filter((project) => Number(project.value) > 0).length,
+          overBudgetProjects: projects.filter((project) => project.isOverBudget).length,
+        },
+        risks: delayedProjects.map((project) => ({
+          type: 'project-status-risk',
+          projectId: project.id,
+          label: project.title,
+          status: project.status,
+        })),
+      },
+      permission_scope: { role: 'editor', allowed: true, canViewFinancial: true },
+    });
+  }, [currentFilters, currentSort, displayedProjectId, projects, selectedProjectId]);
+
   return (
     <ProjectTasksProvider>
       <div
@@ -322,6 +409,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           }}
           className="w-full h-full p-2 py-0 mx-0 px-[5px]"
         >
+          <div className="mb-2 flex justify-end"><LinkIndicator projectId={selectedProjectId ?? 'projects-workspace'} /></div>
           <ProjectsColumn
             projects={projects}
             selectedProjectId={selectedProjectId}
@@ -341,6 +429,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
         }}
         className={`fixed z-workspace top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
       >
+        <div className="absolute left-4 top-4 z-10"><LinkIndicator projectId="operations-board" /></div>
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
       </div>
 

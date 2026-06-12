@@ -11,6 +11,11 @@ import { ProjectModalHeader } from './AddProjectModal/components/ProjectModalHea
 import { ProjectModalTabs } from './AddProjectModal/components/ProjectModalTabs';
 import { ProjectModalFooter } from './AddProjectModal/components/ProjectModalFooter';
 import { ProjectModalDialogs } from './AddProjectModal/components/ProjectModalDialogs';
+import { SmartConfirmationDialog } from '@/components/shared/SmartConfirmationDialog';
+import { buildProjectContext } from '@/features/projects/context/projectContextBuilder';
+import { sanitizeAIContext } from '@/features/ai/context/contextSanitizer';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
+import { aiGatewayClient } from '@/features/ai/gateway/aiGateway.client';
 
 interface AddProjectModalProps {
   isOpen: boolean;
@@ -36,6 +41,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskData | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingSmartTasks, setPendingSmartTasks] = useState<TaskData[] | null>(null);
 
   const {
     projectData,
@@ -66,9 +72,47 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
     'سارة النجار'
   ];
 
-  const handleGenerateSmartTasks = () => {
+  const handleGenerateSmartTasks = async () => {
+    const projectContext = buildProjectContext({
+      projectId: editingProject?.id ?? projectData.name ?? 'new-project',
+      activeSection: 'projects',
+      activeTab: 'tasks',
+      selectedRecords: [{ name: projectData.name, description: projectData.description, team: projectData.team }],
+      permissions: { role: 'editor', canViewSensitive: false },
+    });
+    const sanitizedContext = sanitizeAIContext(projectContext);
+
+    try {
+      const response = await aiGatewayClient.request<{ tasks?: TaskData[] }>({
+        action: 'project.tasks.generate',
+        context: sanitizedContext,
+        payload: { requestedOutput: 'tasks' },
+      });
+      const gatewayTasks = response.result?.tasks;
+      if (Array.isArray(gatewayTasks) && gatewayTasks.length > 0) {
+        setPendingSmartTasks(gatewayTasks);
+        return;
+      }
+    } catch (error) {
+      console.warn('[AddProjectModal] aiGatewayClient.request failed; falling back to deterministic templates:', error);
+    }
+
     const smartTasks = generateSmartTasks(projectData, teamMembers);
-    smartTasks.forEach(task => addTask(task));
+    setPendingSmartTasks(smartTasks);
+  };
+
+  const confirmSmartTasks = () => {
+    if (!pendingSmartTasks) return;
+    pendingSmartTasks.forEach(task => addTask(task));
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.tasks.smart_generated',
+      eventKind: 'ai',
+      aggregateType: 'project_task',
+      aggregateId: `smart-tasks-${Date.now()}`,
+      projectId: editingProject?.id == null ? null : String(editingProject.id),
+      payload: { taskCount: pendingSmartTasks.length, source: 'aiGateway.client.ts' },
+    }).catch((error) => console.error('[AddProjectModal] emitProjectEvent(smart-tasks) failed:', error));
+    setPendingSmartTasks(null);
   };
 
   const handleSaveProject = () => {
@@ -92,6 +136,14 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         };
 
         onProjectUpdated?.(updatedProject);
+        void projectEventBus.emitProjectEvent({
+          eventType: 'project.updated.from_modal',
+          eventKind: 'project',
+          aggregateType: 'project',
+          aggregateId: String(updatedProject.id),
+          projectId: String(updatedProject.id),
+          payload: { name: updatedProject.name, tasksCount: updatedProject.tasksCount },
+        }).catch((error) => console.error('[AddProjectModal] emitProjectEvent(update) failed:', error));
         
         // إضافة المهام للمشروع
         if (projectData.tasks.length > 0) {
@@ -117,6 +169,14 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
         };
 
         onProjectAdded(newProject);
+        void projectEventBus.emitProjectEvent({
+          eventType: 'project.created.from_modal',
+          eventKind: 'project',
+          aggregateType: 'project',
+          aggregateId: String(newProject.id),
+          projectId: null,
+          payload: { name: newProject.name, tasksCount: newProject.tasksCount },
+        }).catch((error) => console.error('[AddProjectModal] emitProjectEvent(create) failed:', error));
         
         // إضافة المهام للمشروع الجديد
         if (projectData.tasks.length > 0) {
@@ -214,6 +274,14 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
           />
         </DialogContent>
       </Dialog>
+      <SmartConfirmationDialog
+        open={!!pendingSmartTasks}
+        title="تأكيد المهام المقترحة"
+        description="تم بناء سياق المشروع وتعقيمه قبل تجهيز المقترحات. راجع المهام قبل إضافتها."
+        proposedActions={(pendingSmartTasks ?? []).map((task) => `إضافة مهمة: ${task.title}`)}
+        onConfirm={confirmSmartTasks}
+        onCancel={() => setPendingSmartTasks(null)}
+      />
 
       <AddTaskModal
         isOpen={showAddTaskModal}

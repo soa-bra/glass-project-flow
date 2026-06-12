@@ -23,6 +23,7 @@ import {
 } from "@/features/planning/elements/smart-doc/contract";
 import { planningElementToConnectorLogicalRecord } from "@/features/planning/integration/connectors";
 import {
+  deleteDataLinksByElementId,
   deleteSmartConnectorByElementId,
   upsertSmartConnector,
   upsertSmartConnectors,
@@ -289,6 +290,8 @@ export async function updatePlanningElement(
 export async function deletePlanningElement(id: string): Promise<void> {
   const existing = await getPlanningElement(id);
   if (existing) {
+    await deleteDataLinksByElementId(id, existing.board_id);
+
     const { data: dependentConnectors, error: dependentConnectorsError } = await supabase
       .from("smart_connectors" as any)
       .select("connector_element_id")

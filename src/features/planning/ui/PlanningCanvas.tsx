@@ -20,134 +20,24 @@ import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPer
 import { SmartConversionReviewDialog } from '@/features/planning/ui/overlays/SmartConversionReviewDialog';
 import type { SmartConversionPayload, SmartConversionResult } from '@/features/planning/services/smartConversion.service';
 import { planningElementToCanvas } from '@/features/planning/state/planningElementMapper';
-import { ProjectManagementBoard } from '@/components/ProjectManagement/ProjectManagementBoard';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
-import type { Project } from '@/types/project';
+import { ExecutionPanelHost } from '@/features/planning/execution/ExecutionPanelHost';
 import { toast } from 'sonner';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
 }
 
-type ProjectRow = Database['public']['Tables']['projects']['Row'];
-type TaskRow = Database['public']['Tables']['tasks']['Row'];
-type TaskUpdate = Database['public']['Tables']['tasks']['Update'];
-type TaskState = TaskRow['state'];
-type TaskPriority = TaskRow['priority'];
-type ExecutionTarget = {
-  entityType: 'project' | 'task';
-  entityId: string;
-  data?: Record<string, unknown>;
-};
 type SmartConversionSuggestion = Pick<SmartConversionPayload, 'targetEntityType' | 'suggestedData'> & {
   sourceBoardId?: string | null;
   sourceElementIds?: string[];
 };
-type TaskExecutionDraft = {
-  state: TaskState;
-  priority: TaskPriority;
-  actualDuration: string;
-  actualCost: string;
-  progress: number;
-  executionNotes: string;
-};
-type ParsedNumberInput = {
-  value: number | null;
-  invalid: boolean;
-};
-
-const TASK_STATE_OPTIONS: Array<{ value: TaskState; label: string }> = [
-  { value: 'draft', label: 'مسودة' },
-  { value: 'planned', label: 'مخطط' },
-  { value: 'active', label: 'نشطة' },
-  { value: 'blocked', label: 'متوقفة' },
-  { value: 'paused', label: 'معلقة' },
-  { value: 'completed', label: 'مكتملة' },
-  { value: 'cancelled', label: 'ملغية' },
-];
-
-const TASK_PRIORITY_OPTIONS: Array<{ value: TaskPriority; label: string }> = [
-  { value: 'low', label: 'منخفضة' },
-  { value: 'medium', label: 'متوسطة' },
-  { value: 'high', label: 'مرتفعة' },
-  { value: 'critical', label: 'حرجة' },
-];
-
-const asRecord = (value: unknown): Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value) ? value as Record<string, unknown> : {};
-
-const readNumber = (value: unknown): number | null =>
-  typeof value === 'number' && Number.isFinite(value) ? value : null;
-
-const readString = (value: unknown): string =>
-  typeof value === 'string' ? value : '';
-
-const normalizeNumberInput = (value: string): ParsedNumberInput => {
-  const trimmed = value.trim();
-  if (!trimmed) return { value: null, invalid: false };
-  if (!/^\d+(\.\d+)?$/.test(trimmed)) return { value: null, invalid: true };
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed)) return { value: null, invalid: true };
-  return { value: parsed, invalid: false };
-};
-
-const deriveTaskProgress = (task: TaskRow): number => {
-  const metadataProgress = readNumber(asRecord(task.metadata).executionProgress);
-  if (metadataProgress !== null) return Math.min(100, Math.max(0, metadataProgress));
-  if (task.state === 'completed') return 100;
-  if (task.state === 'active') return 50;
-  if (task.state === 'planned') return 20;
-  return 0;
-};
-
-const mapTaskDraft = (task: TaskRow): TaskExecutionDraft => {
-  const metadata = asRecord(task.metadata);
-  return {
-    state: task.state,
-    priority: task.priority,
-    actualDuration: task.actual_duration === null ? '' : String(task.actual_duration),
-    actualCost: task.actual_cost === null ? '' : String(task.actual_cost),
-    progress: deriveTaskProgress(task),
-    executionNotes: readString(metadata.executionNotes),
-  };
-};
-
-const mapProjectStatus = (state: ProjectRow['state']): Project['status'] => {
-  if (state === 'completed') return 'success';
-  if (state === 'blocked' || state === 'cancelled') return 'error';
-  if (state === 'paused') return 'warning';
-  return 'info';
-};
-
-const daysUntil = (date?: string | null) => {
-  if (!date) return 0;
-  const due = new Date(date);
-  if (Number.isNaN(due.getTime())) return 0;
-  return Math.max(0, Math.ceil((due.getTime() - Date.now()) / 86_400_000));
-};
-
-const mapProjectRow = (row: ProjectRow): Project => ({
-  id: row.id,
-  title: row.name,
-  description: row.description ?? '',
-  daysLeft: daysUntil(row.due_date),
-  tasksCount: 0,
-  status: mapProjectStatus(row.state),
-  date: row.due_date ?? row.start_date ?? '',
-  owner: row.owner_id,
-  value: row.budget ? String(row.budget) : '0',
-  isOverBudget: false,
-  hasOverdueTasks: Boolean(row.due_date && daysUntil(row.due_date) === 0),
-  progress: row.state === 'completed' ? 100 : 0,
-});
-
 const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const setCurrentBoard = usePlanningStore((state) => state.setCurrentBoard);
   const activeTool = useCanvasStore((state) => state.activeTool);
   const setViewportHostSize = useCanvasStore((state) => state.setViewportHostSize);
   const addElement = useCanvasStore((state) => state.addElement);
+  const elements = useCanvasStore((state) => state.elements);
   const updateElement = useCanvasStore((state) => state.updateElement);
   const selectedElementIds = useCanvasStore((state) => state.selectedElementIds);
   const viewport = useCanvasStore((state) => state.viewport);
@@ -157,12 +47,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const canvasHostRef = useRef<HTMLDivElement>(null);
   const commandBar = useSmartCommandBar();
   const [conversionPayload, setConversionPayload] = useState<SmartConversionPayload | null>(null);
-  const [executionTarget, setExecutionTarget] = useState<ExecutionTarget | null>(null);
-  const [executionProject, setExecutionProject] = useState<Project | null>(null);
-  const [executionTask, setExecutionTask] = useState<TaskRow | null>(null);
-  const [executionLoading, setExecutionLoading] = useState(false);
-  const [taskDraft, setTaskDraft] = useState<TaskExecutionDraft | null>(null);
-  const [taskSaving, setTaskSaving] = useState(false);
   const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
   const participants = useCollaborationStore((state) => state.participants);
   const selfName =
@@ -173,91 +57,57 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   useBoardCanvasLifecycle(board);
 
+  useEffect(() => {
+    const selectedElements = elements.filter((element) => selectedElementIds.includes(element.id));
+    const selectedProjectCards = selectedElements.filter((element) => element.type === 'smart' && element.data?.type === 'project_card');
+    const selectedTaskCards = selectedElements.filter((element) => element.type === 'smart' && element.data?.type === 'task_card');
+
+    return registerAIContextSource({
+      id: `planning-canvas-${board.id}`,
+      kind: 'planning',
+      data: {
+        project_summary: {
+          boardId: board.id,
+          boardName: board.name,
+          boardStatus: board.status,
+          totalElements: elements.length,
+          selectedElementsCount: selectedElementIds.length,
+        },
+        active_tab: { id: 'planning-canvas', label: 'لوحة التخطيط', boardId: board.id },
+        visible_boxes: selectedElements.slice(0, 12).map((element) => ({
+          id: element.id,
+          type: element.type,
+          title: 'title' in element ? element.title : undefined,
+        })),
+        linked_entities: selectedElements.slice(0, 12).map((element) => ({
+          id: element.id,
+          type: element.type,
+          entityType: element.data?.type,
+        })),
+        tasks_snapshot: {
+          selectedTaskCards: selectedTaskCards.length,
+          selectedProjectCards: selectedProjectCards.length,
+        },
+        recent_events: [
+          { type: 'planning-canvas-opened', boardId: board.id, status: board.status },
+        ],
+        risks: board.status === 'archived' ? [{ type: 'archived-board-ai-context', severity: 'medium' }] : [],
+      },
+      permission_scope: {
+        role: boardRole.role,
+        allowed: aiPermissions.canUseAI,
+        reason: aiPermissions.denialReason,
+        canViewFinancial: boardRole.role === 'host' || boardRole.role === 'editor',
+        canViewSensitive: boardRole.role === 'host' || boardRole.role === 'editor',
+      },
+    });
+  }, [aiPermissions.canUseAI, aiPermissions.denialReason, board.id, board.name, board.status, boardRole.role, elements, selectedElementIds]);
+
   const sync = usePlanningCanvasPersistence(board.id, {
     selfDisplayName: selfName,
     canPersist: canEditBoard,
   });
   const { peers, connectionStatus, lastSyncAt } = sync;
-
-  useEffect(() => {
-    const handleCommandPaletteShortcut = (event: KeyboardEvent) => {
-      const isCommandPaletteShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
-      if (!isCommandPaletteShortcut) return;
-
-      event.preventDefault();
-      commandBar.open();
-    };
-
-    window.addEventListener('keydown', handleCommandPaletteShortcut);
-    return () => window.removeEventListener('keydown', handleCommandPaletteShortcut);
-  }, [commandBar]);
-
-  useEffect(() => {
-    const handleOpenExecution = (event: Event) => {
-      const detail = (event as CustomEvent<ExecutionTarget>).detail;
-      if (!detail?.entityId || (detail.entityType !== 'project' && detail.entityType !== 'task')) return;
-      setExecutionTarget(detail);
-    };
-
-    window.addEventListener('planning:open-execution', handleOpenExecution);
-    return () => window.removeEventListener('planning:open-execution', handleOpenExecution);
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadExecutionTarget = async () => {
-      if (!executionTarget) {
-        setExecutionProject(null);
-        setExecutionTask(null);
-        setTaskDraft(null);
-        return;
-      }
-
-      setExecutionLoading(true);
-      if (executionTarget.entityType === 'project') {
-        const { data, error } = await supabase
-          .from('projects')
-          .select('*')
-          .eq('id', executionTarget.entityId)
-          .maybeSingle();
-
-        if (!cancelled) {
-          if (error || !data) {
-            toast.error('تعذر فتح لوحة المشروع المرتبطة');
-            setExecutionProject(null);
-          } else {
-            setExecutionProject(mapProjectRow(data));
-          }
-          setExecutionLoading(false);
-        }
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .eq('id', executionTarget.entityId)
-        .maybeSingle();
-
-      if (!cancelled) {
-        if (error || !data) {
-          toast.error('تعذر فتح تفاصيل المهمة المرتبطة');
-          setExecutionTask(null);
-          setTaskDraft(null);
-        } else {
-          setExecutionTask(data);
-          setTaskDraft(mapTaskDraft(data));
-        }
-        setExecutionLoading(false);
-      }
-    };
-
-    void loadExecutionTarget();
-    return () => {
-      cancelled = true;
-    };
-  }, [executionTarget]);
 
   useEffect(() => {
     setConnected(sync.isConnected);
@@ -354,53 +204,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     [updateElement],
   );
 
-  const handleSaveTaskExecution = useCallback(async () => {
-    if (!executionTask || !taskDraft) return;
-
-    const actualDurationInput = normalizeNumberInput(taskDraft.actualDuration);
-    const actualCostInput = normalizeNumberInput(taskDraft.actualCost);
-
-    if (actualDurationInput.invalid || actualCostInput.invalid) {
-      toast.error('أدخل المدة الفعلية والتكلفة الفعلية كأرقام فقط قبل الحفظ');
-      return;
-    }
-
-    const nextMetadata = {
-      ...asRecord(executionTask.metadata),
-      executionProgress: taskDraft.progress,
-      executionNotes: taskDraft.executionNotes.trim() || null,
-      planningCanvasLastEditedAt: new Date().toISOString(),
-      planningCanvasLastEditedBy: currentUserId,
-    } as TaskUpdate['metadata'];
-
-    const updates: TaskUpdate = {
-      state: taskDraft.state,
-      priority: taskDraft.priority,
-      actual_duration: actualDurationInput.value,
-      actual_cost: actualCostInput.value,
-      metadata: nextMetadata,
-      updated_at: new Date().toISOString(),
-    };
-
-    setTaskSaving(true);
-    const { data, error } = await supabase
-      .from('tasks')
-      .update(updates)
-      .eq('id', executionTask.id)
-      .select('*')
-      .maybeSingle();
-
-    setTaskSaving(false);
-    if (error || !data) {
-      toast.error('تعذر حفظ تحديثات المهمة التنفيذية');
-      return;
-    }
-
-    setExecutionTask(data);
-    setTaskDraft(mapTaskDraft(data));
-    toast.success('تم حفظ تحديثات المهمة التنفيذية');
-  }, [currentUserId, executionTask, taskDraft]);
-
   const handleElementsGenerated = useCallback(
     (elements: any[]) => {
       if (!aiPermissions.canUseAI) {
@@ -496,160 +299,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         }}
         onApproved={handleSmartConversionApproved}
       />
-      <ProjectManagementBoard
-        project={executionProject ?? mapProjectRow({
-          id: executionTarget?.entityId ?? 'loading',
-          name: 'جاري فتح المشروع',
-          description: '',
-          owner_id: currentUserId,
-          state: 'draft',
-          priority: 'medium',
-          budget: null,
-          start_date: null,
-          due_date: null,
-          metadata: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })}
-        isVisible={executionTarget?.entityType === 'project' && (Boolean(executionProject) || executionLoading)}
-        onClose={() => setExecutionTarget(null)}
-        isSidebarCollapsed
-        presentation="planning-canvas"
-      />
-      <Dialog
-        open={executionTarget?.entityType === 'task' && (Boolean(executionTask) || executionLoading)}
-        onOpenChange={(open) => {
-          if (!open) setExecutionTarget(null);
-        }}
-      >
-        <DialogContent className="flex h-[100dvh] w-screen max-w-none flex-col overflow-hidden rounded-none p-0 sm:h-[min(90dvh,760px)] sm:w-full sm:max-w-4xl sm:rounded-lg">
-          <DialogHeader className="border-b border-border px-5 py-4 text-right" dir="rtl">
-            <DialogTitle>{executionTask?.name ?? 'جاري فتح المهمة'}</DialogTitle>
-            <DialogDescription>{executionTask?.description ?? 'تفاصيل وإدارة المهمة التنفيذية المرتبطة بلوحة التخطيط'}</DialogDescription>
-          </DialogHeader>
-
-          {executionTask && taskDraft ? (
-            <div className="flex-1 overflow-y-auto px-5 py-4" dir="rtl">
-              <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-                <div className="rounded-md border border-border p-3">
-                  <p className="text-muted-foreground">المدة المقدرة</p>
-                  <p className="font-semibold">{executionTask.estimated_duration} ساعة</p>
-                </div>
-                <div className="rounded-md border border-border p-3">
-                  <p className="text-muted-foreground">التكلفة المقدرة</p>
-                  <p className="font-semibold">{executionTask.estimated_cost.toLocaleString('ar-SA')} ريال</p>
-                </div>
-                <div className="rounded-md border border-border p-3">
-                  <p className="text-muted-foreground">الفريق المطلوب</p>
-                  <p className="font-semibold">{executionTask.required_team_size} أعضاء</p>
-                </div>
-                <div className="rounded-md border border-border p-3">
-                  <p className="text-muted-foreground">تاريخ البداية</p>
-                  <p className="font-semibold">{executionTask.start_date ?? '-'}</p>
-                </div>
-                <div className="rounded-md border border-border p-3">
-                  <p className="text-muted-foreground">تاريخ التسليم</p>
-                  <p className="font-semibold">{executionTask.due_date ?? '-'}</p>
-                </div>
-                <div className="rounded-md border border-border p-3">
-                  <p className="text-muted-foreground">آخر تحديث</p>
-                  <p className="font-semibold">{new Date(executionTask.updated_at).toLocaleDateString('ar-SA')}</p>
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-foreground">حالة التنفيذ</span>
-                  <select
-                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-                    value={taskDraft.state}
-                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, state: event.target.value as TaskState } : draft)}
-                  >
-                    {TASK_STATE_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-foreground">الأولوية</span>
-                  <select
-                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-                    value={taskDraft.priority}
-                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, priority: event.target.value as TaskPriority } : draft)}
-                  >
-                    {TASK_PRIORITY_OPTIONS.map((option) => (
-                      <option key={option.value} value={option.value}>{option.label}</option>
-                    ))}
-                  </select>
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-foreground">المدة الفعلية بالساعات</span>
-                  <input
-                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-                    inputMode="decimal"
-                    value={taskDraft.actualDuration}
-                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, actualDuration: event.target.value } : draft)}
-                    placeholder="0"
-                  />
-                </label>
-
-                <label className="space-y-2">
-                  <span className="text-sm font-medium text-foreground">التكلفة الفعلية</span>
-                  <input
-                    className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm"
-                    inputMode="decimal"
-                    value={taskDraft.actualCost}
-                    onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, actualCost: event.target.value } : draft)}
-                    placeholder="0"
-                  />
-                </label>
-              </div>
-
-              <label className="mt-4 block space-y-2">
-                <span className="flex items-center justify-between text-sm font-medium text-foreground">
-                  <span>نسبة التقدم</span>
-                  <span>{taskDraft.progress}%</span>
-                </span>
-                <input
-                  className="w-full accent-primary"
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={5}
-                  value={taskDraft.progress}
-                  onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, progress: Number(event.target.value) } : draft)}
-                />
-              </label>
-
-              <label className="mt-4 block space-y-2">
-                <span className="text-sm font-medium text-foreground">ملاحظات التنفيذ</span>
-                <textarea
-                  className="min-h-[120px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-                  value={taskDraft.executionNotes}
-                  onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, executionNotes: event.target.value } : draft)}
-                  placeholder="أضف آخر تقدم، عائق، أو قرار متعلق بهذه المهمة..."
-                />
-              </label>
-            </div>
-          ) : (
-            <div className="flex-1 px-5 py-4 text-sm text-muted-foreground" dir="rtl">جاري تحميل بيانات المهمة...</div>
-          )}
-
-          <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-4" dir="rtl">
-            <p className="text-xs text-muted-foreground">يتم حفظ تحديثات التنفيذ على سجل المهمة المرتبط بهذه البطاقة.</p>
-            <button
-              type="button"
-              className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={!executionTask || !taskDraft || taskSaving}
-              onClick={() => void handleSaveTaskExecution()}
-            >
-              {taskSaving ? 'جاري الحفظ...' : 'حفظ التحديثات'}
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ExecutionPanelHost currentUserId={currentUserId} />
     </div>
   );
 };

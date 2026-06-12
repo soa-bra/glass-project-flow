@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { BarChart, Download, Calendar, Filter, Eye } from 'lucide-react';
@@ -44,6 +46,14 @@ export const ReportsTab: React.FC = () => {
       status: 'ready',
     };
     setReports(prev => [newReport, ...prev]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'legal.report.created',
+      eventKind: 'legal',
+      aggregateType: 'legal_report',
+      aggregateId: newReport.id,
+      projectId: null,
+      payload: newReport,
+    }).catch((error) => console.error('[ReportsTab] emitProjectEvent(create) failed:', error));
   };
 
   const handleDownload = (report: any) => {
@@ -68,7 +78,7 @@ export const ReportsTab: React.FC = () => {
 
   return <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-black font-arabic">التقارير القانونية</h3>
+        <div className="flex items-center gap-2"><h3 className="text-xl font-semibold text-black font-arabic">التقارير القانونية</h3><LinkIndicator projectId="legal-reports" /></div>
         <button onClick={() => setIsCreateOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
           <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><BarChart className="w-4 h-4" /></div>
           إنشاء تقرير مخصص
@@ -120,7 +130,7 @@ export const ReportsTab: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center"><BarChart className="w-4 h-4 text-black" /></div>
                 </div>
                 <div>
-                  <h4 className="text-xl font-semibold text-black font-arabic">{report.title}</h4>
+                  <div className="flex items-center gap-2"><h4 className="text-xl font-semibold text-black font-arabic">{report.title}</h4><LinkIndicator targetElementId={report.id} compact /></div>
                   <p className="text-sm font-normal text-black font-arabic">{report.description}</p>
                   <div className="text-xs font-normal text-black font-arabic mt-1">آخر إنشاء: {new Date(report.lastGenerated).toLocaleDateString('ar-SA')}</div>
                 </div>

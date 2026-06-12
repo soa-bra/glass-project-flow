@@ -21,6 +21,7 @@ import { PresenceCursors } from '@/features/planning/ui/collaboration';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import { toPlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
 import {
   upsertSmartConnector,
   deleteSmartConnectorByElementId,
@@ -265,11 +266,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         const data = {
           ...connector,
           smartType: 'root_connector',
-          relationshipType: connector.connectionType ?? 'references',
+          relationshipType: connector.relationshipType ?? connector.connectionType ?? 'references',
         };
         const metadata = {
           smartType: 'root_connector',
-          relationshipType: connector.connectionType ?? 'references',
+          relationshipType: connector.relationshipType ?? connector.connectionType ?? 'references',
           sourceElementId: connector.startPoint.elementId,
           targetElementId: connector.endPoint.elementId,
         };
@@ -288,25 +289,19 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           });
         }
 
-        // Logical persistence (best-effort; visual element is the source of truth client-side)
-        void upsertSmartConnector({
-          connector_element_id: connector.id,
-          board_id: _boardId,
-          source_element_id: connector.startPoint.elementId,
-          target_element_id: connector.endPoint.elementId,
-          relationship_type: connector.connectionType ?? 'references',
-          connector_kind: 'root_connector',
-          label: connector.title ?? null,
-          style: {
-            color: connector.color ?? null,
-            strokeWidth: connector.strokeWidth ?? null,
-            style: connector.style ?? null,
-          },
-          metadata: {
-            startAnchor: connector.startPoint.anchorPoint,
-            endAnchor: connector.endPoint.anchorPoint,
-          },
-        }).catch((err) => console.warn('[smart_connectors] upsert failed', err));
+        // Logical persistence (best-effort; visual planning element remains the client source of truth).
+        const connectorRecord = toPlanningConnectorLogicalRecord({
+          id: connector.id,
+          type: 'smart',
+          position,
+          size,
+          style: {},
+          data,
+          metadata,
+        }, _boardId);
+        if (connectorRecord) {
+          void upsertSmartConnector(connectorRecord).catch((err) => console.warn('[smart_connectors] upsert failed', err));
+        }
       });
     },
     [addElement, deleteElements, rootConnectorElements, updateElement, _boardId],
@@ -490,6 +485,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             elements={connectableElements}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
+            selectedConnectorId={selectedElementIds.find((id) => rootConnectorElements.some((element) => element.id === id)) ?? undefined}
+            onSelectConnector={(id) => {
+              if (id) selectElement(id, false);
+              else clearSelection();
+            }}
             selectedElementIds={selectedElementIds}
             showAnchors={canEdit && activeTool === 'selection_tool' && selectedElementIds.length > 0}
           />

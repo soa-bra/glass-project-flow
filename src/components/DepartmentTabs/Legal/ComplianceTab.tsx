@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { Shield, AlertTriangle } from 'lucide-react';
@@ -55,6 +57,14 @@ export const ComplianceTab: React.FC = () => {
       documents: [],
     };
     setItems(prev => [newItem, ...prev]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'legal.compliance.created',
+      eventKind: 'legal',
+      aggregateType: 'compliance_requirement',
+      aggregateId: newItem.id,
+      projectId: null,
+      payload: { requirement: newItem.requirement, category: newItem.category },
+    }).catch((error) => console.error('[ComplianceTab] emitProjectEvent(create) failed:', error));
   };
 
   const handleMarkCompliant = (id: string) => {
@@ -75,7 +85,7 @@ export const ComplianceTab: React.FC = () => {
 
   return <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-black font-arabic">إدارة الامتثال القانوني</h3>
+        <div className="flex items-center gap-2"><h3 className="text-xl font-semibold text-black font-arabic">إدارة الامتثال القانوني</h3><LinkIndicator projectId="legal-compliance" /></div>
         <button onClick={() => setIsAddOpen(true)} className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:bg-black/90 transition-colors">
           <div className="w-8 h-8 rounded-full bg-transparent border border-black flex items-center justify-center">
             <Shield className="w-4 h-4" />
@@ -135,7 +145,7 @@ export const ComplianceTab: React.FC = () => {
               <tbody>
                 {items.map(item => <tr key={item.id} className="border-b border-black/10 hover:bg-white/10 transition-colors">
                     <td className="py-4">
-                      <div className="font-medium text-black font-arabic">{item.requirement}</div>
+                      <div className="flex items-center gap-2"><div className="font-medium text-black font-arabic">{item.requirement}</div><LinkIndicator targetElementId={item.id} compact /></div>
                       <div className="text-sm text-black/70 font-arabic">{item.id}</div>
                     </td>
                     <td className="py-4"><span className="px-3 py-1 text-xs rounded-full bg-[#a4e2f6] text-black font-arabic">{getStatusText(item.category)}</span></td>
