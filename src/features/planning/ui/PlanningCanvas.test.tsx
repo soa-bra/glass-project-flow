@@ -6,6 +6,7 @@ import PlanningCanvas from './PlanningCanvas';
 const mockSetCurrentBoard = vi.fn();
 const mockSetViewportHostSize = vi.fn();
 const mockAddElement = vi.fn();
+const mockUpdateElement = vi.fn();
 const mockOpen = vi.fn();
 const mockClose = vi.fn();
 const mockCreateTypedSmartElement = vi.fn();
@@ -22,9 +23,81 @@ vi.mock('@/stores/canvasStore', () => ({
       activeTool: 'selection_tool',
       setViewportHostSize: mockSetViewportHostSize,
       addElement: mockAddElement,
+      updateElement: mockUpdateElement,
+      selectedElementIds: [],
       viewport: { zoom: 2, pan: { x: 100, y: 50 } },
     }),
   ),
+}));
+
+
+vi.mock('@/stores/collaborationStore', () => ({
+  useCollaborationStore: vi.fn((selector: (state: any) => unknown) =>
+    selector({
+      currentUserId: 'editor-user',
+      participants: [],
+      setConnected: vi.fn(),
+      setCurrentUser: vi.fn(),
+      setParticipants: vi.fn(),
+    }),
+  ),
+}));
+
+vi.mock('@/features/planning/hooks/useBoardCanvasLifecycle', () => ({
+  useBoardCanvasLifecycle: vi.fn(),
+}));
+
+vi.mock('@/features/planning/hooks/usePlanningCanvasPersistence', () => ({
+  usePlanningCanvasPersistence: () => ({
+    peers: [],
+    connectionStatus: 'connected',
+    lastSyncAt: null,
+    isConnected: true,
+    selfUserId: 'editor-user',
+    broadcastCursor: vi.fn(),
+    persistence: {},
+  }),
+}));
+
+vi.mock('@/features/planning/hooks/useCurrentBoardRole', () => ({
+  canMutateCanvas: () => true,
+  useCurrentBoardRole: () => ({ role: 'editor', loading: false, userId: 'editor-user' }),
+}));
+
+vi.mock('@/features/planning/hooks/useCanvasAIPermissions', () => ({
+  useCanvasAIPermissions: () => ({ canUseAI: true, denialReason: null }),
+}));
+
+vi.mock('@/features/planning/domain/commands', () => ({
+  executeCommandWithAuthorization: (_command: unknown, handler: () => void) => handler(),
+}));
+
+vi.mock('@/features/planning/ui/widgets/AIAssistantButton', () => ({
+  AIAssistantButton: () => <button data-testid="ai-assistant-button">AI</button>,
+}));
+
+vi.mock('@/features/planning/ui/overlays/SmartConversionReviewDialog', () => ({
+  SmartConversionReviewDialog: () => <div data-testid="smart-conversion-review" />,
+}));
+
+vi.mock('@/components/ProjectManagement/ProjectManagementBoard', () => ({
+  ProjectManagementBoard: () => <div data-testid="project-management-board" />,
+}));
+
+vi.mock('@/components/ui/dialog', () => ({
+  Dialog: ({ children }: any) => <div>{children}</div>,
+  DialogContent: ({ children }: any) => <div>{children}</div>,
+  DialogDescription: ({ children }: any) => <div>{children}</div>,
+  DialogHeader: ({ children }: any) => <div>{children}</div>,
+  DialogTitle: ({ children }: any) => <div>{children}</div>,
+}));
+
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: { from: vi.fn() },
+}));
+
+vi.mock('sonner', () => ({
+  toast: { error: vi.fn(), success: vi.fn() },
 }));
 
 vi.mock('@/features/planning/canvas/viewport/InfiniteCanvas', () => ({
@@ -118,12 +191,14 @@ describe('PlanningCanvas', () => {
     expect(mockSetCurrentBoard).toHaveBeenCalledWith(null);
   });
 
-  it('routes toolbar AI action to smart command bar open handler', () => {
+  it('opens the unified command palette with Cmd/Ctrl + K without rendering a second palette', () => {
     render(<PlanningCanvas board={board} />);
 
-    fireEvent.click(screen.getByText('toolbar-ai'));
+    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
+    fireEvent.keyDown(window, { key: 'K', metaKey: true });
 
-    expect(mockOpen).toHaveBeenCalled();
+    expect(mockOpen).toHaveBeenCalledTimes(2);
+    expect(screen.getAllByTestId('smart-command-bar')).toHaveLength(1);
   });
 
   it('creates typed smart elements and adds them to canvas when smart command bar generates elements', () => {

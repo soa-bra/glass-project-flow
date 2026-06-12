@@ -17,6 +17,9 @@ import { FolderOrganizationModal } from '@/components/custom/FolderOrganizationM
 import { PermissionsModal } from '@/components/custom/PermissionsModal';
 import { getProjectFiles } from '@/data/projectFiles';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { SmartConfirmationDialog } from '@/components/shared/SmartConfirmationDialog';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -78,6 +81,14 @@ export const FinancialTab = ({
         expenses: updatedExpenses
       };
     });
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.financial.expense.added',
+      eventKind: 'financial',
+      aggregateType: 'project_expense',
+      aggregateId: `${data?.id ?? 'project'}-${Date.now()}`,
+      projectId: data?.id ?? null,
+      payload: expense,
+    }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(expense) failed:', error));
   };
   const handleApprovalRequest = (request: {
     requiredBudget: number;
@@ -92,6 +103,14 @@ export const FinancialTab = ({
       submittedBy: 'مدير المشروع' // This should come from user context
     };
     setApprovalRequests(prev => [...prev, newRequest]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.financial.approval.requested',
+      eventKind: 'financial',
+      aggregateType: 'approval_request',
+      aggregateId: newRequest.id,
+      projectId: data?.id ?? null,
+      payload: { requiredBudget: request.requiredBudget, justification: request.justification },
+    }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(approval) failed:', error));
 
     // Here you would typically send notifications to Financial Manager and Admin
     // طلب موافقة مالية جديد
@@ -106,7 +125,7 @@ export const FinancialTab = ({
       {/* حالة الميزانية */}
       <div className="bg-[#96d8d0] rounded-3xl p-6 border border-black/10">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-black">الحالة المالية</h3>
+          <div className="flex items-center gap-2"><h3 className="text-lg font-semibold text-black">الحالة المالية</h3><LinkIndicator projectId={data?.id ?? 'project-financial'} /></div>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
             <span className="text-sm font-medium text-black">مستقرة</span>
           </div>
@@ -311,6 +330,7 @@ export const TeamTab = ({
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
   const [isManualTaskDistributionModalOpen, setIsManualTaskDistributionModalOpen] = useState(false);
   const [isPerformanceEvaluationModalOpen, setIsPerformanceEvaluationModalOpen] = useState(false);
+  const [pendingRedistribution, setPendingRedistribution] = useState<any[] | null>(null);
 
   // إدارة حالة الفريق والمهام
   const [teamMembers, setTeamMembers] = useState([{
@@ -402,6 +422,14 @@ export const TeamTab = ({
         targetHours: 180
       };
       setTeamMembers(prev => [...prev, newMember]);
+      void projectEventBus.emitProjectEvent({
+        eventType: 'project.team.member.added',
+        eventKind: 'project',
+        aggregateType: 'team_member',
+        aggregateId: memberToAdd.id,
+        projectId: teamData?.projectId ?? null,
+        payload: { memberId, taskIds },
+      }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(team-add) failed:', error));
     }
   };
 
@@ -416,19 +444,33 @@ export const TeamTab = ({
     const member = teamMembers.find(m => m.id === memberId);
     if (member && window.confirm(`هل تريد بالتأكيد استبعاد ${member.name} من الفريق؟`)) {
       setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+      void projectEventBus.emitProjectEvent({
+        eventType: 'project.team.member.removed',
+        eventKind: 'project',
+        aggregateType: 'team_member',
+        aggregateId: memberId,
+        projectId: teamData?.projectId ?? null,
+        payload: { memberName: member.name },
+      }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(team-remove) failed:', error));
     }
   };
 
   // معالج توزيع المهام
   const handleTaskDistribution = (redistributedTasks: any[]) => {
-    // تحديث توزيع المهام حسب النتائج
-    // توزيع المهام يدوياً أو بالذكاء الاصطناعي
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.tasks.redistributed',
+      eventKind: 'task',
+      aggregateType: 'task_distribution',
+      aggregateId: `task-distribution-${Date.now()}`,
+      projectId: teamData?.projectId ?? null,
+      payload: { redistributedTasks },
+    }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(redistribution) failed:', error));
   };
   return <div className="space-y-6">
       {/* حالة الفريق */}
       <AppCardSurface density="compact">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-semibold text-black">حالة الفريق</h3>
+          <div className="flex items-center gap-2"><h3 className="text-lg font-semibold text-black">حالة الفريق</h3><LinkIndicator projectId={teamData?.projectId ?? 'project-team'} /></div>
           <div className="bg-[#bdeed3] px-4 py-2 rounded-full">
             <span className="text-sm font-medium text-black">ممتاز</span>
           </div>
@@ -559,14 +601,35 @@ export const TeamTab = ({
       </AppCardSurface>
 
       <TaskAssignmentModal isOpen={isTaskAssignmentModalOpen} onClose={() => setIsTaskAssignmentModalOpen(false)} onSave={(employeeId, taskIds) => {
-      // إسناد مهام
+      void projectEventBus.emitProjectEvent({
+        eventType: 'project.task.assigned',
+        eventKind: 'task',
+        aggregateType: 'task_assignment',
+        aggregateId: `task-assignment-${Date.now()}`,
+        projectId: teamData?.projectId ?? null,
+        payload: { employeeId, taskIds },
+      }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(assign) failed:', error));
       alert(`تم إسناد ${taskIds.length} مهام بنجاح إلى الموظف المحدد`);
     }} />
 
       <TaskRedistributionModal isOpen={isTaskRedistributionModalOpen} onClose={() => setIsTaskRedistributionModalOpen(false)} onRedistribute={redistributedTasks => {
-      // إعادة توزيع المهام
-      alert(`تم إعادة توزيع ${redistributedTasks.length} مهام بنجاح باستخدام الذكاء الاصطناعي`);
+      setPendingRedistribution(redistributedTasks);
     }} />
+
+      <SmartConfirmationDialog
+        open={!!pendingRedistribution}
+        title="تأكيد إعادة توزيع المهام المقترحة"
+        description="لن تُطبّق إعادة التوزيع المقترحة بالذكاء الاصطناعي قبل موافقتك."
+        proposedActions={(pendingRedistribution ?? []).map((task, index) => `إعادة توزيع المهمة ${task?.title ?? index + 1}`)}
+        onConfirm={() => {
+          if (pendingRedistribution) {
+            handleTaskDistribution(pendingRedistribution);
+            alert(`تم إعادة توزيع ${pendingRedistribution.length} مهام بنجاح باستخدام بوابة الذكاء الاصطناعي`);
+          }
+          setPendingRedistribution(null);
+        }}
+        onCancel={() => setPendingRedistribution(null)}
+      />
 
       <AddTeamMemberModal isOpen={isAddTeamMemberModalOpen} onClose={() => setIsAddTeamMemberModalOpen(false)} onSave={(memberId, taskIds) => {
       handleAddTeamMember(memberId, taskIds);
@@ -626,6 +689,14 @@ export const AttachmentsTab = ({
       status: 'uploaded'
     }));
     setProjectFiles(prev => [...prev, ...newFiles]);
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.files.uploaded',
+      eventKind: 'project',
+      aggregateType: 'project_file',
+      aggregateId: `files-${Date.now()}`,
+      projectId: data.projectId ?? null,
+      payload: { title: data.title, linkedTasks: data.linkedTasks, fileCount: data.files.length },
+    }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(files) failed:', error));
     setIsFileUploadModalOpen(false);
     // ملفات جديدة تم رفعها
   };
@@ -633,7 +704,14 @@ export const AttachmentsTab = ({
     folders: any[];
     actions: any[];
   }) => {
-    // تنظيم المجلدات
+    void projectEventBus.emitProjectEvent({
+      eventType: 'project.files.organized',
+      eventKind: 'project',
+      aggregateType: 'project_folder',
+      aggregateId: `folders-${Date.now()}`,
+      projectId: null,
+      payload: { folders: data.folders, actions: data.actions },
+    }).catch((error) => console.error('[ProjectTabs] emitProjectEvent(folders) failed:', error));
     setIsFolderOrganizationModalOpen(false);
   };
 
