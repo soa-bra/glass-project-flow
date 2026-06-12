@@ -270,11 +270,26 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         const data = {
           ...connector,
           smartType: 'root_connector',
-          relationshipType: connector.relationshipType ?? connector.connectionType ?? 'references',
+          relationshipType: connector.relationshipType ?? connector.connectionType,
         };
         const metadata = {
           smartType: 'root_connector',
-          relationshipType: connector.relationshipType ?? connector.connectionType ?? 'references',
+          relationshipType: connector.relationshipType ?? connector.connectionType,
+          connectorMode: connector.connectorMode ?? 'semantic',
+          status: connector.status ?? 'approved',
+          direction: connector.direction ?? 'source_to_target',
+          connectorPointType: connector.connectorPointType ?? 'anchor',
+          branchMode: connector.branchMode ?? 'single',
+          sourceSubAnchor: connector.sourceSubAnchor ?? connector.startPoint.anchorPoint,
+          targetSubAnchor: connector.targetSubAnchor ?? connector.endPoint.anchorPoint,
+          permissionScope: connector.permissionScope ?? 'board',
+          source: connector.source ?? 'user',
+          reason: connector.reason,
+          aiConfidence: connector.aiConfidence,
+          requiresReview: connector.requiresReview ?? false,
+          isAIGenerated: connector.isAIGenerated ?? false,
+          approvedByUser: connector.approvedByUser ?? true,
+          smartActions: connector.smartActions ?? [],
           sourceElementId: connector.startPoint.elementId,
           targetElementId: connector.endPoint.elementId,
         };

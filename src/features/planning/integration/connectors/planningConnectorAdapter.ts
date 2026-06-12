@@ -71,6 +71,25 @@ export function isPlanningConnectorElement(element: Pick<CanvasElement, 'type' |
   return element.type === 'smart' && isRootConnectorData((element.data ?? {}) as Record<string, unknown>);
 }
 
+function shouldPersistLogicalConnector(
+  data: Record<string, any>,
+  metadata: Record<string, unknown>,
+): boolean {
+  const connectorMode = (data.connectorMode ?? metadata.connectorMode) as string | undefined;
+  if (connectorMode === 'visual') return false;
+
+  const status = (data.status ?? metadata.status) as string | undefined;
+  if (status && ['draft', 'pending_review', 'rejected', 'visual_only'].includes(status)) return false;
+
+  const requiresReview = Boolean(data.requiresReview ?? metadata.requiresReview);
+  const isAIGenerated = Boolean(data.isAIGenerated ?? metadata.isAIGenerated);
+  const approvedByUser = Boolean(data.approvedByUser ?? metadata.approvedByUser);
+
+  if ((requiresReview || isAIGenerated) && !approvedByUser) return false;
+
+  return connectorMode === 'semantic' || connectorMode === 'operational' || status === 'approved' || approvedByUser;
+}
+
 export function toPlanningConnectorLogicalRecord(
   element: CanvasElement,
   boardId: string,
@@ -86,6 +105,8 @@ export function toPlanningConnectorLogicalRecord(
       (metadata.relationshipType as string | undefined) ??
       (data.connectionType as string | undefined),
   );
+
+  if (!relationshipType || !shouldPersistLogicalConnector(data, metadata)) return null;
 
   return {
     connector_element_id: element.id,
@@ -107,6 +128,15 @@ export function toPlanningConnectorLogicalRecord(
     metadata: {
       ...metadata,
       relationshipType,
+      connectorMode: data.connectorMode ?? metadata.connectorMode ?? 'semantic',
+      status: data.status ?? metadata.status,
+      permissionScope: data.permissionScope ?? metadata.permissionScope,
+      source: data.source ?? metadata.source,
+      reason: data.reason ?? metadata.reason,
+      aiConfidence: data.aiConfidence ?? metadata.aiConfidence,
+      requiresReview: data.requiresReview ?? metadata.requiresReview,
+      isAIGenerated: data.isAIGenerated ?? metadata.isAIGenerated,
+      approvedByUser: data.approvedByUser ?? metadata.approvedByUser,
       diagramType: data.diagramType,
       bidirectional: data.bidirectional,
     },
@@ -132,17 +162,21 @@ export function planningElementToConnectorLogicalRecord(
 
 export function withConnectorRelationship<T extends { data?: Record<string, unknown>; metadata?: Record<string, unknown> }>(
   element: T,
-  relationshipType: UnifiedRelationshipType = 'references',
+  relationshipType: UnifiedRelationshipType = 'reference',
 ): T {
   return {
     ...element,
     data: {
       ...(element.data ?? {}),
       relationshipType,
+      connectorMode: 'semantic',
     },
     metadata: {
       ...(element.metadata ?? {}),
       relationshipType,
+      connectorMode: 'semantic',
+      status: 'approved',
+      approvedByUser: true,
     },
   };
 }
