@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { 
   RootConnector, 
@@ -7,11 +8,14 @@ import {
   ConnectionAnchors,
 } from './RootConnector';
 import { useCanvasStore } from '@/stores/canvasStore';
-import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
-import { suggestSmartConnectorRelationship, type ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
-import { audit } from '@/services/audit';
+import { toast } from 'sonner';
+import {
+  canCreateConnector,
+  canUpdateConnector,
+  type ConnectorPolicyElement,
+} from '@/features/planning/integration/connectors/connectorPolicy';
 
-interface ElementBounds {
+interface ElementBounds extends ConnectorPolicyElement {
   id: string;
   x: number;
   y: number;
@@ -30,7 +34,10 @@ interface SmartConnectorManagerProps {
   selectedConnectorId?: string;
   onSelectConnector?: (id: string | null) => void;
   selectedElementIds?: string[];
+  hoveredElementId?: string | null;
   showAnchors?: boolean;
+  canEditBoard?: boolean;
+  canCreateOperationalRelationship?: boolean;
 }
 
 export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
@@ -43,7 +50,10 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   selectedConnectorId,
   onSelectConnector,
   selectedElementIds = [],
+  hoveredElementId: hoveredConnectableElementId = null,
   showAnchors = true,
+  canEditBoard = true,
+  canCreateOperationalRelationship = true,
 }) => {
   const aiPermissions = useCanvasAIPermissions(boardId);
   const viewport = useCanvasStore((state) => state.viewport);
@@ -52,6 +62,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   const [dragCurrent, setDragCurrent] = useState<{ x: number; y: number } | null>(null);
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const [internalSelectedConnectorId, setInternalSelectedConnectorId] = useState<string | null>(null);
+  const [policyMessage, setPolicyMessage] = useState<{ message: string; x: number; y: number } | null>(null);
   const effectiveSelectedConnectorId = selectedConnectorId ?? internalSelectedConnectorId;
   const selectConnector = useCallback((id: string | null) => {
     setInternalSelectedConnectorId(id);
@@ -59,23 +70,68 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [onSelectConnector]);
   const svgGroupRef = useRef<SVGGElement | null>(null);
 
-  // Only show anchors for selected, non-connector elements
-  const anchoredElements = useMemo(
-    () => elements.filter((el) => selectedElementIds.includes(el.id)),
-    [elements, selectedElementIds],
-  );
+  // Show anchors for selected or hovered, non-connector elements.
+  const anchoredElements = useMemo(() => {
+    const anchorElementIds = new Set(selectedElementIds);
+    if (hoveredConnectableElementId) anchorElementIds.add(hoveredConnectableElementId);
+    return elements.filter((el) => anchorElementIds.has(el.id));
+  }, [elements, hoveredConnectableElementId, selectedElementIds]);
+
+  const showPolicyRejection = useCallback((reason: string, point?: ConnectorPoint | { x: number; y: number }) => {
+    const fallbackPoint = dragCurrent ?? dragStartPoint ?? { x: 24, y: 24 };
+    setPolicyMessage({
+      message: reason,
+      x: point?.x ?? fallbackPoint.x,
+      y: point?.y ?? fallbackPoint.y,
+    });
+    toast.error('تعذر إنشاء العلاقة', { description: reason });
+  }, [dragCurrent, dragStartPoint]);
 
   const handleCreateConnector = useCallback((
     startPoint: ConnectorPoint,
     endPoint: ConnectorPoint,
     connectionType: RootConnectorData['connectionType']
   ) => {
+    const source = elements.find((element) => element.id === startPoint.elementId);
+    const target = elements.find((element) => element.id === endPoint.elementId);
+
+    if (!source || !target) {
+      showPolicyRejection('تعذر العثور على أحد طرفي العلاقة داخل اللوحة.', endPoint);
+      return;
+    }
+
+    const policyDecision = canCreateConnector({
+      board: { canEditBoard, canCreateOperationalRelationship },
+      source,
+      target,
+      relationshipType: connectionType,
+    });
+
+    if (!policyDecision.allowed) {
+      showPolicyRejection(policyDecision.reason, endPoint);
+      return;
+    }
+
+    setPolicyMessage(null);
     const newConnector: RootConnectorData = {
       id: crypto.randomUUID(),
       startPoint,
       endPoint,
       connectionType,
       relationshipType: connectionType,
+      status: 'approved',
+      direction: 'source_to_target',
+      connectorMode: 'semantic',
+      connectorPointType: 'anchor',
+      branchMode: 'single',
+      sourceSubAnchor: startPoint.anchorPoint,
+      targetSubAnchor: endPoint.anchorPoint,
+      permissionScope: 'board',
+      source: 'user',
+      requiresReview: false,
+      isAIGenerated: false,
+      approvedByUser: true,
+      smartActions: [],
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
@@ -88,11 +144,35 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     };
     onConnectorsChange([...connectors, newConnector]);
     selectConnector(newConnector.id);
-  }, [connectors, onConnectorsChange, selectConnector]);
+  }, [canCreateOperationalRelationship, canEditBoard, connectors, elements, onConnectorsChange, selectConnector, showPolicyRejection]);
 
   const handleUpdateConnector = useCallback((id: string, data: RootConnectorData) => {
+    const source = elements.find((element) => element.id === data.startPoint.elementId);
+    const target = elements.find((element) => element.id === data.endPoint.elementId);
+    const existingConnector = connectors.find((connector) => connector.id === id);
+
+    if (!source || !target) {
+      showPolicyRejection('تعذر العثور على أحد طرفي العلاقة داخل اللوحة.', data.endPoint);
+      return;
+    }
+
+    const policyDecision = canUpdateConnector({
+      board: { canEditBoard, canCreateOperationalRelationship },
+      source,
+      target,
+      relationshipType: data.relationshipType ?? data.connectionType,
+      connectorArchived: Boolean((existingConnector as RootConnectorData & { archived?: boolean })?.archived),
+      connectorLocked: Boolean((existingConnector as RootConnectorData & { locked?: boolean })?.locked),
+    });
+
+    if (!policyDecision.allowed) {
+      showPolicyRejection(policyDecision.reason, data.endPoint);
+      return;
+    }
+
+    setPolicyMessage(null);
     onConnectorsChange(connectors.map(c => c.id === id ? data : c));
-  }, [connectors, onConnectorsChange]);
+  }, [canCreateOperationalRelationship, canEditBoard, connectors, elements, onConnectorsChange, showPolicyRejection]);
 
   const handleDeleteConnector = useCallback((id: string) => {
     onConnectorsChange(connectors.filter(c => c.id !== id));
@@ -329,7 +409,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         );
       })()}
 
-      {/* Connection Anchors — only for selected elements */}
+      {/* Connection Anchors — selected or hovered elements */}
       {showAnchors && anchoredElements.map(element => (
         <ConnectionAnchors
           key={element.id}
