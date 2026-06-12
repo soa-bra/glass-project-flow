@@ -99,6 +99,65 @@ describe('useSmartElementAI permissions', () => {
     expect(toastErrorMock).toHaveBeenCalled();
   });
 
+  it('sends only Edge Function context fields while keeping selected elements in the request body', async () => {
+    authUserMock.mockReturnValue({ id: 'host-user' });
+    useCollaborationStore.setState({
+      currentUserId: 'host-user',
+      isHost: true,
+      participants: [],
+      isConnected: true,
+    });
+
+    invokeMock.mockResolvedValue({
+      data: {
+        success: true,
+        result: {
+          elements: [],
+          layout: 'grid',
+          summary: 'ok',
+          suggestions: [],
+          entities: [],
+        },
+      },
+      error: null,
+    });
+
+    const { result } = renderHook(() => useSmartElementAI());
+    const selectedElements = [{
+      id: 'element-1',
+      title: 'Budget roadmap',
+      data: {
+        secretToken: 'never-send-raw-token',
+        publicNote: 'safe text',
+      },
+    }];
+
+    await act(async () => {
+      await result.current.generateElements('أنشئ خطة', 'kanban');
+      await result.current.analyzeSelection(selectedElements, 'حلل العناصر');
+      await result.current.transformElements(selectedElements, 'timeline', 'حوّلها إلى خط زمني');
+    });
+
+    expect(invokeMock).toHaveBeenCalledTimes(3);
+
+    const generateBody = invokeMock.mock.calls[0][1].body;
+    expect(generateBody.action).toBe('generate');
+    expect(generateBody.context).toEqual({ preferredType: 'kanban' });
+    expect(generateBody.context).not.toHaveProperty('selectedElements');
+
+    const analyzeBody = invokeMock.mock.calls[1][1].body;
+    expect(analyzeBody.action).toBe('analyze');
+    expect(analyzeBody.context).toBeUndefined();
+    expect(analyzeBody.selectedElements).toHaveLength(1);
+    expect(analyzeBody.selectedElements[0].data.secretToken).toBe('[REDACTED]');
+
+    const transformBody = invokeMock.mock.calls[2][1].body;
+    expect(transformBody.action).toBe('transform');
+    expect(transformBody.context).toEqual({ targetType: 'timeline' });
+    expect(transformBody.context).not.toHaveProperty('selectedElements');
+    expect(transformBody.selectedElements).toHaveLength(1);
+  });
+
   it('waits for human approval before retrying a sensitive transformation', async () => {
     authUserMock.mockReturnValue({ id: 'host-user' });
     useCollaborationStore.setState({
@@ -169,17 +228,21 @@ describe('useSmartElementAI permissions', () => {
     expect(window.confirm).not.toHaveBeenCalled();
     expect(invokeMock).toHaveBeenCalledTimes(1);
 
-    let transformed: typeof approvedResult | null = null;
     await act(async () => {
       (result.current.approvalDialog as any).props.onApprove('تمت مراجعة التحويل واعتماده');
-      transformed = await transformPromise;
     });
+
+    const transformed = await transformPromise;
 
     expect(transformed).toEqual(approvedResult);
     expect(invokeMock).toHaveBeenCalledTimes(2);
-    expect(invokeMock.mock.calls[1][1].body.context.humanApproval).toMatchObject({
-      approved: true,
-      approverId: 'host-user',
+    expect(invokeMock.mock.calls[1][1].body.context).toEqual({
+      targetType: 'kanban',
+      humanApproval: {
+        approved: true,
+        approverId: 'host-user',
+        approvedAt: expect.any(String),
+      },
     });
     expect(invokeMock.mock.calls[1][1].body.context.humanApproval).not.toHaveProperty('approvalReason');
     expect(window.confirm).not.toHaveBeenCalled();

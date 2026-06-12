@@ -90,6 +90,7 @@ async function upsertSmartDocsForElements(
         (element.data?.smartType === "interactive_sheet" ? "جدول تفاعلي" : "مستند نصي ذكي"),
       content: (element.data ?? {}) as Json,
       status: "draft",
+      source_element_ids: sourceElementIds,
       metadata: {
         source: "planning-canvas",
         smartType: element.data?.smartType ?? element.metadata?.smartType,
@@ -130,9 +131,19 @@ async function upsertSmartDocsForElements(
       created_by: userId,
       source_element_id: sourceElementId,
       target_element_id: element.id,
+      source_type: "planning_element",
+      source_id: sourceElementId,
+      target_type: "smart_doc",
+      target_id: element.id,
       link_kind: "reference",
+      relation_type: "reference",
+      sync_type: "document_generation",
       label: "canvas.document.linked",
       mapping: {
+        source: "selected-canvas-elements",
+        target: element.data?.smartType ?? element.metadata?.smartType,
+      } as Json,
+      fields_map: {
         source: "selected-canvas-elements",
         target: element.data?.smartType ?? element.metadata?.smartType,
       } as Json,

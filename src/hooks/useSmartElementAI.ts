@@ -76,7 +76,52 @@ interface ApprovalPayload {
   approved: boolean;
   approvedAt: string;
   approverId: string;
-  approvalReason: string;
+  approvalReason?: string;
+}
+
+interface AIRequestContext {
+  boardId?: unknown;
+  projectId?: unknown;
+  preferredType?: unknown;
+  targetType?: unknown;
+  humanApproval?: {
+    approved?: unknown;
+    approverId?: unknown;
+    approvedAt?: unknown;
+  };
+}
+
+function buildAIRequestContext(rawContext: Record<string, unknown>): AIRequestContext | undefined {
+  const requestContext: AIRequestContext = {};
+
+  if (rawContext.boardId !== undefined && rawContext.boardId !== null) {
+    requestContext.boardId = rawContext.boardId;
+  }
+  if (rawContext.projectId !== undefined && rawContext.projectId !== null) {
+    requestContext.projectId = rawContext.projectId;
+  }
+  if (rawContext.preferredType !== undefined && rawContext.preferredType !== null) {
+    requestContext.preferredType = rawContext.preferredType;
+  }
+  if (rawContext.targetType !== undefined && rawContext.targetType !== null) {
+    requestContext.targetType = rawContext.targetType;
+  }
+
+  const humanApproval = rawContext.humanApproval;
+  if (humanApproval && typeof humanApproval === 'object' && !Array.isArray(humanApproval)) {
+    const rawApproval = humanApproval as Record<string, unknown>;
+    requestContext.humanApproval = {
+      approved: rawApproval.approved,
+      ...(rawApproval.approverId !== undefined && rawApproval.approverId !== null
+        ? { approverId: rawApproval.approverId }
+        : {}),
+      ...(rawApproval.approvedAt !== undefined && rawApproval.approvedAt !== null
+        ? { approvedAt: rawApproval.approvedAt }
+        : {}),
+    };
+  }
+
+  return Object.keys(requestContext).length > 0 ? requestContext : undefined;
 }
 
 interface ApprovalDialogState extends SmartTransformationApprovalRequest {
@@ -128,9 +173,31 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
         context: payload.context,
         departmentId: 'planning',
       });
-    } catch (err) {
-      if (err instanceof HumanApprovalRequiredError) {
-        throw err;
+      const aiPayloadContext = sanitizeAIContext(unifiedContext);
+      const requestContext = buildAIRequestContext(rawContext);
+
+      const { data, error: fnError } = await supabase.functions.invoke('smart-elements-ai', {
+        body: {
+          action,
+          prompt: payload.prompt,
+          selectedElements: Array.isArray(payload.selectedElements)
+            ? aiPayloadContext.selectedElements
+            : payload.selectedElements,
+          context: requestContext
+        }
+      });
+
+      const errorPayload = fnError ? await readFunctionErrorPayload(fnError) : null;
+      const responsePayload = errorPayload || data;
+
+      if (fnError) {
+        if (responsePayload?.code === 'HUMAN_APPROVAL_REQUIRED') {
+          throw new HumanApprovalRequiredError(
+            responsePayload.error || 'التحويل حساس ويتطلب موافقة بشرية قبل التنفيذ',
+            responsePayload.sensitivity || { isSensitive: true, score: 1, reasons: [] }
+          );
+        }
+        throw new Error(responsePayload?.error || fnError.message);
       }
 
       if (err instanceof AIGatewayError) {
