@@ -9,6 +9,8 @@ export interface PlanningConnectorEndpoint {
   anchor?: string | null;
 }
 
+export type PlanningConnectorDirection = 'source_to_target' | 'target_to_source' | 'bidirectional';
+
 export interface PlanningConnectorLogicalRecord {
   connector_element_id: string;
   board_id: string;
@@ -19,6 +21,120 @@ export interface PlanningConnectorLogicalRecord {
   label?: string | null;
   style: Record<string, unknown>;
   metadata: Record<string, unknown>;
+  sourceEntityId?: string | null;
+  sourceEntityType?: string | null;
+  targetEntityId?: string | null;
+  targetEntityType?: string | null;
+  direction: PlanningConnectorDirection;
+  confidence?: number | null;
+  source?: string | null;
+  createdBy?: string | null;
+  isAIGenerated: boolean;
+  approvedByUser: boolean;
+  approvedBy?: string | null;
+}
+
+function isRecord(value: unknown): value is Record<string, any> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function readString(...values: unknown[]): string | null {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return null;
+}
+
+function readBoolean(...values: unknown[]): boolean | null {
+  for (const value of values) {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (['true', 'yes', 'approved', 'user_approved'].includes(normalized)) return true;
+      if (['false', 'no', 'pending', 'rejected'].includes(normalized)) return false;
+    }
+  }
+  return null;
+}
+
+function readNumber(...values: unknown[]): number | null {
+  for (const value of values) {
+    const parsed = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : Number.NaN;
+    if (Number.isFinite(parsed)) return Math.min(1, Math.max(0, parsed));
+  }
+  return null;
+}
+
+function readSideRecord(container: Record<string, any>, side: 'source' | 'target'): Record<string, any> {
+  const nestedContainers = [container.entityBindings, container.entity_bindings, container.bindings, container.endpoints]
+    .filter(isRecord)
+    .map((nested) => nested[side]);
+  const candidates = [
+    container[side],
+    container[`${side}Entity`],
+    container[`${side}_entity`],
+    container[`${side}Binding`],
+    container[`${side}_binding`],
+    container[`${side}Endpoint`],
+    container[`${side}_endpoint`],
+    ...nestedContainers,
+  ];
+
+  for (const candidate of candidates) {
+    if (isRecord(candidate)) return candidate;
+  }
+  return {};
+}
+
+function readEntityBinding(
+  data: Record<string, any>,
+  metadata: Record<string, any>,
+  side: 'source' | 'target',
+): { entityId: string | null; entityType: string | null } {
+  const metadataSide = readSideRecord(metadata, side);
+  const dataSide = readSideRecord(data, side);
+
+  return {
+    entityId: readString(
+      metadata[`${side}EntityId`],
+      metadata[`${side}_entity_id`],
+      metadataSide.entityId,
+      metadataSide.entity_id,
+      metadataSide.id,
+      data[`${side}EntityId`],
+      data[`${side}_entity_id`],
+      dataSide.entityId,
+      dataSide.entity_id,
+      dataSide.id,
+    ),
+    entityType: readString(
+      metadata[`${side}EntityType`],
+      metadata[`${side}_entity_type`],
+      metadata[`${side}EntityTable`],
+      metadata[`${side}_entity_table`],
+      metadataSide.entityType,
+      metadataSide.entity_type,
+      metadataSide.entityTable,
+      metadataSide.entity_table,
+      metadataSide.type,
+      data[`${side}EntityType`],
+      data[`${side}_entity_type`],
+      data[`${side}EntityTable`],
+      data[`${side}_entity_table`],
+      dataSide.entityType,
+      dataSide.entity_type,
+      dataSide.entityTable,
+      dataSide.entity_table,
+      dataSide.type,
+    ),
+  };
+}
+
+function readDirection(data: Record<string, any>, metadata: Record<string, any>): PlanningConnectorDirection {
+  const raw = readString(metadata.direction, metadata.linkDirection, data.direction, data.linkDirection);
+  if (raw === 'target_to_source' || raw === 'reverse') return 'target_to_source';
+  if (raw === 'bidirectional' || raw === 'both') return 'bidirectional';
+  return 'source_to_target';
 }
 
 function getConnectorKind(type?: string): PlanningConnectorKind | null {
@@ -71,6 +187,25 @@ export function isPlanningConnectorElement(element: Pick<CanvasElement, 'type' |
   return element.type === 'smart' && isRootConnectorData((element.data ?? {}) as Record<string, unknown>);
 }
 
+function shouldPersistLogicalConnector(
+  data: Record<string, any>,
+  metadata: Record<string, unknown>,
+): boolean {
+  const connectorMode = (data.connectorMode ?? metadata.connectorMode) as string | undefined;
+  if (connectorMode === 'visual') return false;
+
+  const status = (data.status ?? metadata.status) as string | undefined;
+  if (status && ['draft', 'pending_review', 'rejected', 'visual_only'].includes(status)) return false;
+
+  const requiresReview = Boolean(data.requiresReview ?? metadata.requiresReview);
+  const isAIGenerated = Boolean(data.isAIGenerated ?? metadata.isAIGenerated);
+  const approvedByUser = Boolean(data.approvedByUser ?? metadata.approvedByUser);
+
+  if ((requiresReview || isAIGenerated) && !approvedByUser) return false;
+
+  return connectorMode === 'semantic' || connectorMode === 'operational' || status === 'approved' || approvedByUser;
+}
+
 export function toPlanningConnectorLogicalRecord(
   element: CanvasElement,
   boardId: string,
@@ -82,10 +217,33 @@ export function toPlanningConnectorLogicalRecord(
   const data = (element.data ?? {}) as Record<string, any>;
   const metadata = (element.metadata ?? {}) as Record<string, unknown>;
   const relationshipType = normalizeRelationshipType(
-    (data.relationshipType as string | undefined) ??
-      (metadata.relationshipType as string | undefined) ??
+    (metadata.relationshipType as string | undefined) ??
+      (data.relationshipType as string | undefined) ??
       (data.connectionType as string | undefined),
   );
+  const sourceBinding = readEntityBinding(data, metadata, 'source');
+  const targetBinding = readEntityBinding(data, metadata, 'target');
+  const direction = readDirection(data, metadata);
+  const confidence = readNumber(metadata.confidence, data.confidence, metadata.aiConfidence, data.aiConfidence);
+  const source = readString(metadata.source, data.source, metadata.generatedBy, data.generatedBy);
+  const createdBy = readString(metadata.createdBy, metadata.created_by, data.createdBy, data.created_by);
+  const approvedBy = readString(metadata.approvedBy, metadata.approved_by, data.approvedBy, data.approved_by);
+  const isAIGenerated = readBoolean(
+    metadata.isAIGenerated,
+    metadata.aiGenerated,
+    data.isAIGenerated,
+    data.aiGenerated,
+  ) ?? source === 'ai';
+  const approvedByUser = readBoolean(
+    metadata.approvedByUser,
+    metadata.userApproved,
+    metadata.isApproved,
+    data.approvedByUser,
+    data.userApproved,
+    data.isApproved,
+  ) ?? Boolean(approvedBy);
+
+  if (!relationshipType || !shouldPersistLogicalConnector(data, metadata)) return null;
 
   return {
     connector_element_id: element.id,
@@ -107,9 +265,40 @@ export function toPlanningConnectorLogicalRecord(
     metadata: {
       ...metadata,
       relationshipType,
+      connectorMode: data.connectorMode ?? metadata.connectorMode ?? 'semantic',
+      status: data.status ?? metadata.status,
+      permissionScope: data.permissionScope ?? metadata.permissionScope,
+      source: data.source ?? metadata.source,
+      reason: data.reason ?? metadata.reason,
+      aiConfidence: data.aiConfidence ?? metadata.aiConfidence,
+      requiresReview: data.requiresReview ?? metadata.requiresReview,
+      isAIGenerated: data.isAIGenerated ?? metadata.isAIGenerated,
+      approvedByUser: data.approvedByUser ?? metadata.approvedByUser,
       diagramType: data.diagramType,
       bidirectional: data.bidirectional,
+      sourceEntityId: sourceBinding.entityId,
+      sourceEntityType: sourceBinding.entityType,
+      targetEntityId: targetBinding.entityId,
+      targetEntityType: targetBinding.entityType,
+      direction,
+      confidence,
+      source,
+      createdBy,
+      isAIGenerated,
+      approvedByUser,
+      approvedBy,
     },
+    sourceEntityId: sourceBinding.entityId,
+    sourceEntityType: sourceBinding.entityType,
+    targetEntityId: targetBinding.entityId,
+    targetEntityType: targetBinding.entityType,
+    direction,
+    confidence,
+    source,
+    createdBy,
+    isAIGenerated,
+    approvedByUser,
+    approvedBy,
   };
 }
 
@@ -132,17 +321,21 @@ export function planningElementToConnectorLogicalRecord(
 
 export function withConnectorRelationship<T extends { data?: Record<string, unknown>; metadata?: Record<string, unknown> }>(
   element: T,
-  relationshipType: UnifiedRelationshipType = 'references',
+  relationshipType: UnifiedRelationshipType = 'reference',
 ): T {
   return {
     ...element,
     data: {
       ...(element.data ?? {}),
       relationshipType,
+      connectorMode: 'semantic',
     },
     metadata: {
       ...(element.metadata ?? {}),
       relationshipType,
+      connectorMode: 'semantic',
+      status: 'approved',
+      approvedByUser: true,
     },
   };
 }

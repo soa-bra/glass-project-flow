@@ -11,6 +11,8 @@ import { audit } from '@/services/audit';
 export type SmartConnector = Database['public']['Tables']['smart_connectors']['Row'];
 type SmartConnectorInsert = Database['public']['Tables']['smart_connectors']['Insert'];
 type DataLinkInsert = Database['public']['Tables']['data_links']['Insert'];
+type DependencyInsert = Database['public']['Tables']['dependencies']['Insert'];
+type CentralEntityType = Database['public']['Enums']['central_entity_type'];
 
 type SmartConnectorWithNullableEndpoints = Omit<SmartConnector, 'source_element_id' | 'target_element_id'> & {
   source_element_id: string | null;
@@ -25,10 +27,57 @@ async function requireUserId(): Promise<string> {
   return data.user.id;
 }
 
-function getMissingEndpoint(connector: Pick<SmartConnectorWithNullableEndpoints, 'source_element_id' | 'target_element_id'>, elementId: string): 'source' | 'target' | 'connector' | 'unknown' {
-  if (connector.source_element_id === elementId) return 'source';
-  if (connector.target_element_id === elementId) return 'target';
-  return 'unknown';
+const CENTRAL_ENTITY_TYPES = new Set<string>([
+  'central_board',
+  'department',
+  'project',
+  'task',
+  'tool',
+  'engine_job',
+  'project_card',
+  'task_card',
+]);
+
+function hasOperationalApproval(record: PlanningConnectorLogicalRecord): boolean {
+  return record.approvedByUser && isOperationalRelationshipType(record.relationship_type);
+}
+
+function isUuid(value?: string | null): boolean {
+  return Boolean(
+    value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value),
+  );
+}
+
+function hasEntityEndpoints(record: PlanningConnectorLogicalRecord): boolean {
+  return Boolean(
+    record.sourceEntityType &&
+      record.targetEntityType &&
+      isUuid(record.sourceEntityId) &&
+      isUuid(record.targetEntityId),
+  );
+}
+
+function isCentralEntityType(value?: string | null): value is CentralEntityType {
+  return Boolean(value && CENTRAL_ENTITY_TYPES.has(value));
+}
+
+function buildOperationalMapping(record: PlanningConnectorLogicalRecord): Record<string, unknown> {
+  return {
+    source: record.source ?? 'planningConnectorAdapter',
+    connectorSource: 'planning_connector',
+    relationshipType: record.relationship_type,
+    connectorKind: record.connector_kind,
+    sourceEntityId: record.sourceEntityId ?? null,
+    sourceEntityType: record.sourceEntityType ?? null,
+    targetEntityId: record.targetEntityId ?? null,
+    targetEntityType: record.targetEntityType ?? null,
+    direction: record.direction,
+    confidence: record.confidence ?? null,
+    createdBy: record.createdBy ?? null,
+    isAIGenerated: record.isAIGenerated,
+    approvedByUser: record.approvedByUser,
+    approvedBy: record.approvedBy ?? null,
+  };
 }
 
 async function refreshOperationalDataLink(
@@ -44,46 +93,86 @@ async function refreshOperationalDataLink(
 
   if (deleteError) throw deleteError;
 
-  if (!isOperationalRelationshipType(record.relationship_type)) return;
+  if (!hasOperationalApproval(record)) {
+    await refreshCentralDependencyLink(record);
+    return;
+  }
+
+  const mapping = buildOperationalMapping(record);
+  const hasRealEntities = hasEntityEndpoints(record);
 
   const payload: DataLinkInsert = {
     board_id: record.board_id,
     created_by: createdBy,
     source_element_id: record.source_element_id,
     target_element_id: record.target_element_id,
-    source_type: 'planning_element',
-    source_id: record.source_element_id,
-    target_type: 'planning_element',
-    target_id: record.target_element_id,
-    relation_type: record.relationship_type,
-    sync_type: 'manual',
+    source_type: hasRealEntities ? record.sourceEntityType : 'planning_element',
+    source_id: hasRealEntities ? record.sourceEntityId : record.source_element_id,
+    target_type: hasRealEntities ? record.targetEntityType : 'planning_element',
+    target_id: hasRealEntities ? record.targetEntityId : record.target_element_id,
     link_kind: 'operational_relationship',
+    relation_type: record.relationship_type,
+    sync_type: 'planning_connector',
     label: record.label ?? record.relationship_type,
-    mapping: {
-      source: 'planning_connector',
-      relationshipType: record.relationship_type,
-      connectorKind: record.connector_kind,
-    } as Json,
-    fields_map: {
-      source: 'planning_connector',
-      relationshipType: record.relationship_type,
-      connectorKind: record.connector_kind,
-    } as Json,
+    mapping: mapping as Json,
+    fields_map: mapping as Json,
     metadata: {
       ...record.metadata,
+      ...mapping,
       connectorElementId: record.connector_element_id,
       relationshipType: record.relationship_type,
-      source: 'planningConnectorAdapter',
-      status: 'active',
+      source: record.source ?? 'planningConnectorAdapter',
+      operationalLinkFallback: hasRealEntities
+        ? 'data_links stores EntityLink-compatible endpoints until a dedicated entity_links table is available.'
+        : undefined,
     } as Json,
     status: 'active',
   };
 
   const { error: insertError } = await supabase.from('data_links').insert(payload);
   if (insertError) throw insertError;
+
+  await refreshCentralDependencyLink(record);
 }
 
-async function deleteOperationalDataLinksByConnectorElementId(
+async function refreshCentralDependencyLink(record: PlanningConnectorLogicalRecord): Promise<void> {
+  const { error: deleteError } = await supabase
+    .from('dependencies')
+    .delete()
+    .filter('metadata->>connectorElementId', 'eq', record.connector_element_id);
+
+  if (deleteError) throw deleteError;
+
+  if (
+    !hasOperationalApproval(record) ||
+    !hasEntityEndpoints(record) ||
+    !isCentralEntityType(record.sourceEntityType) ||
+    !isCentralEntityType(record.targetEntityType)
+  ) {
+    return;
+  }
+
+  const payload: DependencyInsert = {
+    id: crypto.randomUUID(),
+    from_entity_type: record.sourceEntityType,
+    from_entity_id: record.sourceEntityId,
+    to_entity_type: record.targetEntityType,
+    to_entity_id: record.targetEntityId,
+    dependency_type: record.relationship_type,
+    description: record.label ?? null,
+    metadata: {
+      ...record.metadata,
+      ...buildOperationalMapping(record),
+      connectorElementId: record.connector_element_id,
+      boardId: record.board_id,
+    } as Json,
+  };
+
+  const { error: insertError } = await supabase.from('dependencies').insert(payload);
+  if (insertError) throw insertError;
+}
+
+async function deleteOperationalArtifactsByConnectorElementId(
   connectorElementId: string,
 ): Promise<void> {
   const { error } = await supabase
@@ -92,6 +181,12 @@ async function deleteOperationalDataLinksByConnectorElementId(
     .eq('link_kind', 'operational_relationship')
     .filter('metadata->>connectorElementId', 'eq', connectorElementId);
   if (error) throw error;
+
+  const { error: dependencyError } = await supabase
+    .from('dependencies')
+    .delete()
+    .filter('metadata->>connectorElementId', 'eq', connectorElementId);
+  if (dependencyError) throw dependencyError;
 }
 
 async function archiveOperationalDataLinksByConnector(
@@ -182,19 +277,32 @@ function toSmartConnectorInsert(
   record: PlanningConnectorLogicalRecord,
   createdBy: string,
 ): SmartConnectorInsert {
+  const hasRealEntities = hasEntityEndpoints(record);
+
   return {
     connector_element_id: record.connector_element_id,
     board_id: record.board_id,
     source_element_id: record.source_element_id,
     target_element_id: record.target_element_id,
+    source_type: hasRealEntities ? record.sourceEntityType : 'planning_element',
+    source_id: hasRealEntities ? record.sourceEntityId : record.source_element_id,
+    target_type: hasRealEntities ? record.targetEntityType : 'planning_element',
+    target_id: hasRealEntities ? record.targetEntityId : record.target_element_id,
     relationship_type: record.relationship_type,
     connector_kind: record.connector_kind,
     label: record.label ?? null,
     style: record.style as Json,
     metadata: record.metadata as Json,
-    status: 'active',
+    status: record.approvedByUser ? 'approved' : 'pending',
+    direction: record.direction,
+    confidence: record.confidence ?? null,
+    source: record.source ?? null,
     created_by: createdBy,
-  } as SmartConnectorInsert;
+    logical_created_by: record.createdBy ?? null,
+    is_ai_generated: record.isAIGenerated,
+    approved_by_user: record.approvedByUser,
+    approved_by: record.approvedBy ?? null,
+  };
 }
 
 export async function upsertSmartConnector(
@@ -320,15 +428,7 @@ export async function deleteSmartConnectorByElementId(connectorElementId: string
     .delete()
     .eq('connector_element_id', connectorElementId);
   if (error) throw error;
-  if (existing && isOperationalRelationshipType(existing.relationship_type)) {
-    await archiveOperationalDataLinksByConnector(
-      existing as SmartConnectorWithNullableEndpoints,
-      connectorElementId,
-      'connector',
-    );
-  } else {
-    await deleteOperationalDataLinksByConnectorElementId(connectorElementId);
-  }
+  await deleteOperationalArtifactsByConnectorElementId(connectorElementId);
   if (existing) {
     void audit({
       resource_type: 'smart_connector',

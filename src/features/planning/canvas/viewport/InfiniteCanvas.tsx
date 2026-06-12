@@ -21,6 +21,7 @@ import { PresenceCursors } from '@/features/planning/ui/collaboration';
 import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapConnectionLine';
 import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import type { ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
 import { toPlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
 import {
   upsertSmartConnector,
@@ -148,6 +149,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   });
 
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
+  const [hoveredConnectableElementId, setHoveredConnectableElementId] = useState<string | null>(null);
 
   const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
     containerRef,
@@ -240,9 +242,30 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           width: element.size.width,
           height: element.size.height,
           type: element.type === 'frame' ? 'frame' as const : element.type === 'smart' ? 'smart-element' as const : 'component' as const,
+          smartType: typeof element.data?.smartType === 'string' ? element.data.smartType : null,
+          entityType: typeof element.data?.entityType === 'string' ? element.data.entityType : null,
+          locked: Boolean(element.locked || element.data?.locked || element.data?.isLocked || element.metadata?.locked),
+          archived: element.data?.status === 'archived' || element.metadata?.status === 'archived' || element.metadata?.archived === true,
+          canRead: element.visible !== false,
+          canConnect: element.data?.canConnect !== false && element.metadata?.canConnect !== false,
+          canCreateOperationalRelationship: element.data?.canCreateOperationalRelationship !== false && element.metadata?.canCreateOperationalRelationship !== false,
         })),
     [visibleElements],
   );
+
+
+  const findHoveredConnectableElement = useCallback((x: number, y: number) => {
+    const connectorHoverMargin = 28;
+    const candidates = connectableElements.filter(
+      (element) =>
+        x >= element.x &&
+        x <= element.x + element.width &&
+        y >= element.y - connectorHoverMargin &&
+        y <= element.y + element.height,
+    );
+    const nonFrame = [...candidates].reverse().find((element) => element.type !== 'frame');
+    return nonFrame ?? candidates[candidates.length - 1] ?? null;
+  }, [connectableElements]);
 
   const syncRootConnectors = useCallback(
     (nextConnectors: RootConnectorData[]) => {
@@ -270,11 +293,26 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         const data = {
           ...connector,
           smartType: 'root_connector',
-          relationshipType: connector.relationshipType ?? connector.connectionType ?? 'references',
+          relationshipType: connector.relationshipType ?? connector.connectionType,
         };
         const metadata = {
           smartType: 'root_connector',
-          relationshipType: connector.relationshipType ?? connector.connectionType ?? 'references',
+          relationshipType: connector.relationshipType ?? connector.connectionType,
+          connectorMode: connector.connectorMode ?? 'semantic',
+          status: connector.status ?? 'approved',
+          direction: connector.direction ?? 'source_to_target',
+          connectorPointType: connector.connectorPointType ?? 'anchor',
+          branchMode: connector.branchMode ?? 'single',
+          sourceSubAnchor: connector.sourceSubAnchor ?? connector.startPoint.anchorPoint,
+          targetSubAnchor: connector.targetSubAnchor ?? connector.endPoint.anchorPoint,
+          permissionScope: connector.permissionScope ?? 'board',
+          source: connector.source ?? 'user',
+          reason: connector.reason,
+          aiConfidence: connector.aiConfidence,
+          requiresReview: connector.requiresReview ?? false,
+          isAIGenerated: connector.isAIGenerated ?? false,
+          approvedByUser: connector.approvedByUser ?? true,
+          smartActions: connector.smartActions ?? [],
           sourceElementId: connector.startPoint.elementId,
           targetElementId: connector.endPoint.elementId,
         };
@@ -291,6 +329,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             data,
             metadata,
           });
+        }
+
+        const isUnapprovedSuggestion = connector.status === 'suggested' || connector.requiresReview || connector.approvedByUser === false;
+        if (isUnapprovedSuggestion) {
+          void deleteSmartConnectorByElementId(connector.id).catch((err) =>
+            console.warn('[smart_connectors] suggested connector cleanup failed', err),
+          );
+          return;
         }
 
         // Logical persistence (best-effort; visual planning element remains the client source of truth).
@@ -379,6 +425,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const pointer = updatePointerFromClient(e.clientX, e.clientY);
       if (pointer) {
         broadcastCursor?.(pointer.x, pointer.y);
+        if (canEdit && activeTool === 'selection_tool') {
+          setHoveredConnectableElementId(findHoveredConnectableElement(pointer.x, pointer.y)?.id ?? null);
+        } else if (hoveredConnectableElementId) {
+          setHoveredConnectableElementId(null);
+        }
       }
 
       if (mindMapConnectionRef.current.isConnecting) {
@@ -399,10 +450,11 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         handleCanvasMouseMove(e);
       }
     },
-    [broadcastCursor, boxSelectData, canEdit, handleCanvasMouseMove, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
+    [activeTool, broadcastCursor, boxSelectData, canEdit, findHoveredConnectableElement, handleCanvasMouseMove, hoveredConnectableElementId, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
 
   const handleMouseUp = useCallback(() => {
+    setHoveredConnectableElementId(null);
     const conn = mindMapConnectionRef.current;
     if (conn.isConnecting && conn.sourceNodeId) {
       if (conn.nearestAnchor) {
@@ -489,6 +541,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         >
           <SmartConnectorManager
             elements={connectableElements}
+            boardId={_boardId}
+            readableAIElements={readableAIElements}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
             selectedConnectorId={selectedElementIds.find((id) => rootConnectorElements.some((element) => element.id === id)) ?? undefined}
@@ -497,7 +551,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
               else clearSelection();
             }}
             selectedElementIds={selectedElementIds}
-            showAnchors={canEdit && activeTool === 'selection_tool' && selectedElementIds.length > 0}
+            hoveredElementId={hoveredConnectableElementId}
+            showAnchors={canEdit && activeTool === 'selection_tool' && (selectedElementIds.length > 0 || hoveredConnectableElementId !== null)}
           />
 
         </svg>
