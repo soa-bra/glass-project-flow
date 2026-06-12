@@ -180,8 +180,8 @@ describe('useSmartElementAI permissions', () => {
     expect(invokeMock.mock.calls[1][1].body.context.humanApproval).toMatchObject({
       approved: true,
       approverId: 'host-user',
-      approvalReason: 'تمت مراجعة التحويل واعتماده',
     });
+    expect(invokeMock.mock.calls[1][1].body.context.humanApproval).not.toHaveProperty('approvalReason');
     expect(window.confirm).not.toHaveBeenCalled();
     expect(toastSuccessMock).toHaveBeenCalledWith('تم تحويل العناصر بنجاح', {
       description: approvedResult.summary,

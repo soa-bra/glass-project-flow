@@ -1,10 +1,7 @@
 import { createElement, useCallback, useState } from 'react';
 import type { ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { SmartElementType } from '@/types/smart-elements';
 import { toast } from 'sonner';
-import { buildAIContext } from '@/features/ai/context/contextBuilder';
-import { sanitizeAIContext } from '@/features/ai/context/contextSanitizer';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   SmartTransformationApprovalDialog,
@@ -16,6 +13,12 @@ import {
   useCanvasAIPermissions,
   type CanvasAIPermissionScope,
 } from '@/features/planning/hooks/useCanvasAIPermissions';
+import {
+  AIGatewayError,
+  HumanApprovalRequiredError,
+  invokeAIAction,
+} from '@/features/ai/gateway/aiGateway.client';
+import { getAIActionDefinition, type AIActionName } from '@/features/ai/gateway/aiActionRegistry';
 
 interface GeneratedElement {
   id: string;
@@ -80,31 +83,6 @@ interface ApprovalDialogState extends SmartTransformationApprovalRequest {
   resolve: (approval: { approved: boolean; approvalReason?: string }) => void;
 }
 
-class HumanApprovalRequiredError extends Error {
-  sensitivity: TransformationSensitivity;
-
-  constructor(message: string, sensitivity: TransformationSensitivity) {
-    super(message);
-    this.name = 'HumanApprovalRequiredError';
-    this.sensitivity = sensitivity;
-  }
-}
-
-async function readFunctionErrorPayload(fnError: any): Promise<any | null> {
-  const context = fnError?.context;
-  if (!context || typeof context.json !== 'function') return null;
-
-  try {
-    return await context.clone().json();
-  } catch {
-    try {
-      return await context.json();
-    } catch {
-      return null;
-    }
-  }
-}
-
 export function useSmartElementAI(boardId?: string | null): UseSmartElementAIReturn {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -127,14 +105,15 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
   }, [boardId, boardPermissions]);
 
   const callAI = useCallback(async (
-    action: CanvasAIPermissionScope,
+    action: AIActionName,
     payload: {
       prompt?: string;
       selectedElements?: any[];
       context?: Record<string, any>;
     }
   ) => {
-    if (!ensureAIPermission(action)) {
+    const actionDefinition = getAIActionDefinition(action);
+    if (!ensureAIPermission(actionDefinition.edgeAction as CanvasAIPermissionScope)) {
       return null;
     }
 
@@ -142,68 +121,36 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     setError(null);
 
     try {
-      const rawContext = payload.context ?? {};
-      const unifiedContext = buildAIContext({
-        boardId: rawContext.boardId,
+      return await invokeAIAction({
+        action,
+        prompt: payload.prompt,
         selectedElements: payload.selectedElements,
-        activeSection: rawContext.activeSection,
-        activeTab: rawContext.activeTab,
-        permissions: rawContext.permissions,
-        availableLinks: rawContext.availableLinks,
-        extraContext: rawContext,
+        context: payload.context,
+        departmentId: 'planning',
       });
-      const sanitizedContext = sanitizeAIContext(unifiedContext);
-
-      const { data, error: fnError } = await supabase.functions.invoke('smart-elements-ai', {
-        body: {
-          action,
-          prompt: payload.prompt,
-          selectedElements: Array.isArray(payload.selectedElements)
-            ? sanitizedContext.selectedElements
-            : payload.selectedElements,
-          context: sanitizedContext
-        }
-      });
-
-      const errorPayload = fnError ? await readFunctionErrorPayload(fnError) : null;
-      const responsePayload = errorPayload || data;
-
-      if (fnError) {
-        if (responsePayload?.code === 'HUMAN_APPROVAL_REQUIRED') {
-          throw new HumanApprovalRequiredError(
-            responsePayload.error || 'التحويل حساس ويتطلب موافقة بشرية قبل التنفيذ',
-            responsePayload.sensitivity || { isSensitive: true, score: 1, reasons: [] }
-          );
-        }
-        throw new Error(responsePayload?.error || fnError.message);
-      }
-
-      if (!data.success) {
-        const errorMessage = data.error || 'فشل في معالجة الطلب';
-        
-        // Handle specific error codes
-        if (data.code === 'RATE_LIMIT_EXCEEDED') {
-          toast.error('تم تجاوز حد الطلبات', {
-            description: 'يرجى الانتظار قليلاً ثم المحاولة مجدداً'
-          });
-        } else if (data.code === 'PAYMENT_REQUIRED') {
-          toast.error('الرصيد غير كافٍ', {
-            description: 'يرجى إضافة رصيد لاستخدام الذكاء الاصطناعي'
-          });
-        } else if (data.code === 'HUMAN_APPROVAL_REQUIRED') {
-          throw new HumanApprovalRequiredError(
-            errorMessage,
-            data.sensitivity || { isSensitive: true, score: 1, reasons: [] }
-          );
-        }
-        
-        throw new Error(errorMessage);
-      }
-
-      return data.result;
     } catch (err) {
       if (err instanceof HumanApprovalRequiredError) {
         throw err;
+      }
+
+      if (err instanceof AIGatewayError) {
+        if (err.code === 'RATE_LIMIT_EXCEEDED') {
+          toast.error('تم تجاوز حد الطلبات', {
+            description: 'يرجى الانتظار قليلاً ثم المحاولة مجدداً'
+          });
+        } else if (err.code === 'PAYMENT_REQUIRED') {
+          toast.error('الرصيد غير كافٍ', {
+            description: 'يرجى إضافة رصيد لاستخدام الذكاء الاصطناعي'
+          });
+        } else if (err.code === 'AI_PERMISSION_DENIED') {
+          toast.error('تعذر بدء إجراء الذكاء الاصطناعي', {
+            description: err.message
+          });
+        } else if (err.code === 'INVALID_INPUT') {
+          toast.error('مدخلات الذكاء الاصطناعي غير صالحة', {
+            description: err.message
+          });
+        }
       }
 
       const message = err instanceof Error ? err.message : 'حدث خطأ غير متوقع';
@@ -239,7 +186,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     prompt: string,
     preferredType?: SmartElementType
   ): Promise<GenerationResult | null> => {
-    const result = await callAI('generate', {
+    const result = await callAI('generate_smart_doc', {
       prompt,
       context: preferredType ? { preferredType } : undefined
     });
@@ -262,7 +209,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
       return null;
     }
 
-    return await callAI('analyze', {
+    return await callAI('analyze_project_impact', {
       selectedElements: elements,
       prompt: additionalPrompt
     });
@@ -285,7 +232,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     let result: GenerationResult | null = null;
 
     try {
-      result = await callAI('transform', {
+      result = await callAI('convert_to_tasks', {
         selectedElements: elements,
         prompt,
         context: { targetType }
@@ -301,7 +248,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
         targetType,
         selectedElements: elements,
         prompt,
-        sensitivity: err.sensitivity,
+        sensitivity: (err.sensitivity as TransformationSensitivity) || { isSensitive: true, score: 1, reasons: [] },
       });
 
       if (!approval.approved) {
@@ -323,7 +270,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
         approvalReason: approval.approvalReason || 'اعتماد بشري من واجهة التحويل الذكي',
       };
 
-      result = await callAI('transform', {
+      result = await callAI('convert_to_tasks', {
         selectedElements: elements,
         prompt,
         context: {
