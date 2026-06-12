@@ -1,5 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { UNIFIED_RELATIONSHIP_TYPES, type UnifiedRelationshipType } from '@/features/planning/integration/connectors/relationshipTypes';
+import {
+  UNIFIED_RELATIONSHIP_TYPES,
+  getRelationshipTypeLabel,
+  type UnifiedRelationshipType,
+} from '@/features/planning/integration/connectors/relationshipTypes';
 import { Link2, Sparkles, X, Edit2, Save, ArrowRight, Wand2, Plus, Trash2, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,7 +36,40 @@ export interface AISuggestion {
   data?: any;
 }
 
-export interface RootConnectorData {
+export type ConnectorStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'active' | 'archived' | 'visual_only';
+export type ConnectorDirection = 'source_to_target' | 'target_to_source' | 'bidirectional' | 'undirected';
+export type ConnectorMode = 'visual' | 'semantic' | 'operational';
+export type ConnectorPointType = 'element' | 'anchor' | 'sub_anchor' | 'free_point';
+export type ConnectorBranchMode = 'single' | 'branch' | 'merge' | 'multi_target' | 'multi_source';
+export type ConnectorPermissionScope = 'owner' | 'team' | 'board' | 'workspace' | 'public';
+export type ConnectorSource = 'user' | 'ai' | 'system' | 'import';
+
+export interface SmartConnectorAction {
+  id: string;
+  label: string;
+  actionType: 'review' | 'approve' | 'convert' | 'navigate' | 'automate' | 'custom';
+  payload?: Record<string, unknown>;
+}
+
+export interface UnifiedConnectorData {
+  status?: ConnectorStatus;
+  direction?: ConnectorDirection;
+  connectorMode?: ConnectorMode;
+  connectorPointType?: ConnectorPointType;
+  branchMode?: ConnectorBranchMode;
+  sourceSubAnchor?: string | null;
+  targetSubAnchor?: string | null;
+  permissionScope?: ConnectorPermissionScope;
+  source?: ConnectorSource;
+  reason?: string;
+  aiConfidence?: number;
+  requiresReview?: boolean;
+  isAIGenerated?: boolean;
+  approvedByUser?: boolean;
+  smartActions?: SmartConnectorAction[];
+}
+
+export interface RootConnectorData extends UnifiedConnectorData {
   id: string;
   startPoint: ConnectorPoint;
   endPoint: ConnectorPoint;
@@ -57,19 +94,6 @@ export interface RootConnectorProps {
   onInsertSuggestion?: (suggestion: AISuggestion) => void;
   onSelect?: () => void;
 }
-
-const getRelationshipTypeLabel = (type?: string) => {
-  switch (type) {
-    case 'depends_on': return 'يعتمد على';
-    case 'causes': return 'يسبب';
-    case 'blocks': return 'يعطل';
-    case 'references': return 'يشير إلى';
-    case 'funds': return 'يمول';
-    case 'delivers': return 'يسلم';
-    case 'belongs_to': return 'ينتمي إلى';
-    default: return 'رابط';
-  }
-};
 
 // ============= Connection Anchors Component =============
 interface ConnectionAnchorsProps {
@@ -173,7 +197,7 @@ interface ConnectorInspectorProps {
 }
 
 export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, onPatch }) => {
-  const relationshipType = data.relationshipType || data.connectionType || 'references';
+  const relationshipType = data.relationshipType || data.connectionType || 'reference';
 
   const handleRelationshipTypeChange = (value: UnifiedRelationshipType) => {
     onPatch({ connectionType: value, relationshipType: value });
@@ -712,7 +736,7 @@ export const RootConnectorCreator: React.FC<RootConnectorCreatorProps> = ({
 }) => {
   const [startPoint, setStartPoint] = useState<ConnectorPoint | null>(null);
   const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
-  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('references');
+  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('reference');
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
