@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Receipt, FileText, ExternalLink, CreditCard, Edit, Download } from 'lucide-react';
 import { BaseTabContent } from '@/components/shared/BaseTabContent';
 import { BaseBox } from '@/components/ui/BaseBox';
@@ -14,8 +14,7 @@ import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
 import { useInvoices, useCreateInvoice, useUpdateInvoice } from '@/hooks/useInvoices';
-import { LinkIndicator } from '@/components/shared/LinkIndicator';
-import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);
@@ -25,6 +24,51 @@ export const InvoicesTab: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
   const [viewingInvoice, setViewingInvoice] = useState<any>(null);
+
+  const invoiceContext = useMemo(() => {
+    const totalOutstanding = invoices
+      .filter((invoice: any) => invoice.status !== 'paid')
+      .reduce((sum: number, invoice: any) => sum + Number(invoice.totalAmount ?? 0), 0);
+    const overdueInvoices = invoices.filter((invoice: any) => invoice.status === 'overdue').length;
+
+    return {
+      financial_snapshot: {
+        invoiceCount: invoices.length,
+        pendingInvoiceCount: invoices.filter((invoice: any) => invoice.status === 'pending').length,
+        paidInvoiceCount: invoices.filter((invoice: any) => invoice.status === 'paid').length,
+        overdueInvoices,
+        totalOutstanding,
+        isLoading,
+        error: error instanceof Error ? error.message : null,
+      },
+      linked_entities: invoices.slice(0, 8).map((invoice: any) => ({
+        id: invoice.id,
+        type: 'invoice',
+        label: invoice.client,
+        projectName: invoice.projectName,
+        status: invoice.status,
+        dueDate: invoice.dueDate,
+      })),
+      recent_events: invoices.slice(0, 5).map((invoice: any) => ({
+        type: 'invoice-visible',
+        entityId: invoice.id,
+        label: invoice.client,
+        status: invoice.status,
+        dueDate: invoice.dueDate,
+      })),
+      risks: overdueInvoices > 0 ? [{ type: 'financial-overdue-invoices', severity: 'high', count: overdueInvoices }] : [],
+      visible_boxes: ['invoice-list', 'payment-progress', selectedClient ? 'client-card' : null].filter(Boolean),
+    };
+  }, [error, invoices, isLoading, selectedClient]);
+
+  useEffect(() => {
+    return registerAIContextSource({
+      id: 'financial-invoices-tab',
+      kind: 'financial',
+      data: invoiceContext,
+      permission_scope: { role: 'editor', allowed: true, canViewFinancial: true },
+    });
+  }, [invoiceContext]);
 
   const createFields: FormField[] = [
     { name: 'client', label: 'اسم العميل', type: 'text', required: true, placeholder: 'أدخل اسم العميل' },

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import ProjectsColumn from '@/components/ProjectsColumn';
 import OperationsBoard from '@/components/OperationsBoard';
 import { ProjectManagementBoard } from '@/components/ProjectManagement';
@@ -18,8 +18,7 @@ import {
 import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAdapter';
 import { AuditService, PermissionsService } from '@/services/central';
 import { toast } from 'sonner';
-import { LinkIndicator } from '@/components/shared/LinkIndicator';
-import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
@@ -344,6 +343,54 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   const shownProject = displayedProjectId
     ? projects.find((project) => project.id === displayedProjectId)
     : null;
+
+  useEffect(() => {
+    const visibleProjects = projects.slice(0, 12);
+    const delayedProjects = projects.filter((project) => project.status === 'warning' || project.status === 'error');
+
+    return registerAIContextSource({
+      id: 'project-workspace-visible-projects',
+      kind: 'project',
+      data: {
+        project_summary: {
+          totalProjects: projects.length,
+          visibleProjects: visibleProjects.length,
+          selectedProjectId,
+          displayedProjectId,
+          filters: currentFilters,
+          sort: currentSort,
+        },
+        visible_boxes: visibleProjects.map((project) => ({
+          id: project.id,
+          title: project.title,
+          status: project.status,
+          daysLeft: project.daysLeft,
+          tasksCount: project.tasksCount,
+        })),
+        linked_entities: visibleProjects.map((project) => ({
+          id: project.id,
+          type: 'project',
+          label: project.title,
+          owner: project.owner,
+        })),
+        tasks_snapshot: {
+          totalTasksInVisibleProjects: visibleProjects.reduce((sum, project) => sum + (project.tasksCount || 0), 0),
+          projectsWithOverdueTasks: projects.filter((project) => project.hasOverdueTasks).length,
+        },
+        financial_snapshot: {
+          visibleProjectBudgetCount: visibleProjects.filter((project) => Number(project.value) > 0).length,
+          overBudgetProjects: projects.filter((project) => project.isOverBudget).length,
+        },
+        risks: delayedProjects.map((project) => ({
+          type: 'project-status-risk',
+          projectId: project.id,
+          label: project.title,
+          status: project.status,
+        })),
+      },
+      permission_scope: { role: 'editor', allowed: true, canViewFinancial: true },
+    });
+  }, [currentFilters, currentSort, displayedProjectId, projects, selectedProjectId]);
 
   return (
     <ProjectTasksProvider>
