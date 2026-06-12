@@ -4,6 +4,7 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { WorkspaceErrorBoundary } from '@/components/shared/WorkspaceErrorBoundary';
 import { CrossWorkspaceSearch } from '@/features/cross-search';
 import { Loader2 } from 'lucide-react';
+import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 
 // Code-split heavy workspaces (P5 — performance)
 const ProjectWorkspace = lazy(() => import('./ProjectWorkspace'));
@@ -30,6 +31,19 @@ const MainContent = () => {
       setIsSidebarCollapsed(previousSidebarState);
     }
   }, [navigationState.activeSection, previousSidebarState]);
+
+  useEffect(() => {
+    return registerAIContextSource({
+      id: 'main-content-route',
+      kind: 'navigation',
+      data: {
+        activeSection: navigationState.activeSection,
+        active_tab: { id: navigationState.activeSection, label: navigationState.activeSection },
+        visible_boxes: [{ id: `${navigationState.activeSection}-workspace`, source: 'MainContent' }],
+      },
+      permission_scope: { role: 'viewer', allowed: true },
+    });
+  }, [navigationState.activeSection]);
 
   // Cmd/Ctrl + K toggles cross-workspace search (P5)
   useEffect(() => {
