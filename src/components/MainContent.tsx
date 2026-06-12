@@ -23,7 +23,9 @@ const MainContent = () => {
   const { navigationState, setActiveSection } = useNavigation();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [previousSidebarState, setPreviousSidebarState] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const smartAssistant = useSmartAssistant({ activeSection: navigationState.activeSection });
 
   // Update local state when navigation state changes
   useEffect(() => {
@@ -50,7 +52,7 @@ const MainContent = () => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        setSearchOpen((s) => !s);
+        setPaletteOpen((open) => !open);
       }
     };
     window.addEventListener('keydown', onKey);
@@ -64,6 +66,16 @@ const MainContent = () => {
       setIsSidebarCollapsed(previousSidebarState);
     }
     setActiveSection(section);
+  };
+
+  const openCrossWorkspaceSearch = () => {
+    setPaletteOpen(false);
+    setSearchOpen(true);
+  };
+
+  const runSmartCommand = (commandId: SmartAssistantCommandId) => {
+    setPaletteOpen(false);
+    smartAssistant.requestCommand(commandId);
   };
 
   const forceCollapsed = navigationState.activeSection === 'planning';
@@ -102,7 +114,64 @@ const MainContent = () => {
         </Suspense>
       </WorkspaceErrorBoundary>
 
+      <CommandDialog open={paletteOpen} onOpenChange={setPaletteOpen}>
+        <CommandInput placeholder="ابحث أو شغّل أمرًا ذكيًا…" dir="rtl" className="font-arabic text-right" />
+        <CommandList className="max-h-[420px] font-arabic" dir="rtl">
+          <CommandEmpty>لا توجد أوامر مطابقة.</CommandEmpty>
+          <CommandGroup heading="البحث الموحد">
+            <CommandItem onSelect={openCrossWorkspaceSearch} value="بحث شامل cross workspace search">
+              <Search className="ml-2 h-4 w-4" />
+              <div className="flex flex-col text-right">
+                <span>بحث شامل في مساحات العمل</span>
+                <span className="text-xs text-muted-foreground">افتح CrossWorkspaceSearch من داخل الـ palette.</span>
+              </div>
+              <CommandShortcut className="mr-auto ml-0">بحث</CommandShortcut>
+            </CommandItem>
+          </CommandGroup>
+
+          <CommandSeparator />
+
+          <CommandGroup heading="أوامر الذكاء الاصطناعي">
+            {smartAssistant.commands.map((command) => (
+              <CommandItem
+                key={command.id}
+                onSelect={() => runSmartCommand(command.id)}
+                value={`${command.title} ${command.description}`}
+              >
+                {command.category === 'risk' ? (
+                  <FileSearch className="ml-2 h-4 w-4" />
+                ) : command.category === 'analysis' ? (
+                  <BrainCircuit className="ml-2 h-4 w-4" />
+                ) : (
+                  <Sparkles className="ml-2 h-4 w-4" />
+                )}
+                <div className="flex flex-col text-right">
+                  <span>{command.title}</span>
+                  <span className="text-xs text-muted-foreground">{command.description}</span>
+                </div>
+                <CommandShortcut className="mr-auto ml-0">AI</CommandShortcut>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        </CommandList>
+      </CommandDialog>
+
       <CrossWorkspaceSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <SoaBraAIAssistant
+        open={smartAssistant.assistantOpen}
+        command={smartAssistant.activeCommand}
+        result={smartAssistant.result}
+        isLoading={smartAssistant.isLoading}
+        error={smartAssistant.error}
+        onOpenChange={smartAssistant.setAssistantOpen}
+      />
+      <SmartConfirmationDialog
+        open={smartAssistant.confirmationOpen}
+        command={smartAssistant.pendingCommand}
+        isLoading={smartAssistant.isLoading}
+        onConfirm={smartAssistant.confirmPendingCommand}
+        onCancel={smartAssistant.cancelPendingCommand}
+      />
     </div>
   );
 };
