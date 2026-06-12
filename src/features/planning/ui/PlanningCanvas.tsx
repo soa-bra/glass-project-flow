@@ -15,6 +15,8 @@ import { executeCommandWithAuthorization } from '@/features/planning/domain/comm
 import { useCollaborationStore } from '@/stores/collaborationStore';
 import { useBoardCanvasLifecycle } from '@/features/planning/hooks/useBoardCanvasLifecycle';
 import { usePlanningCanvasPersistence } from '@/features/planning/hooks/usePlanningCanvasPersistence';
+import { useElementLock } from '@/features/planning/hooks/useElementLock';
+import { useElementLockAcquire } from '@/features/planning/hooks/useElementLockAcquire';
 import { canMutateCanvas, useCurrentBoardRole } from '@/features/planning/hooks/useCurrentBoardRole';
 import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
 import { SmartConversionReviewDialog } from '@/features/planning/ui/overlays/SmartConversionReviewDialog';
@@ -177,7 +179,9 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     selfDisplayName: selfName,
     canPersist: canEditBoard,
   });
-  const { peers, connectionStatus, lastSyncAt } = sync;
+  const { peers, peersById, connectionStatus, lastSyncAt } = sync;
+  const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
+  const requestElementLock = useElementLockAcquire(elementLock.acquire, peersById);
 
   useEffect(() => {
     const handleOpenExecution = (event: Event) => {
@@ -458,6 +462,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
             boardId={board.id}
             peers={peers}
             broadcastCursor={sync.broadcastCursor}
+            requestElementLock={requestElementLock}
+            releaseElementLock={elementLock.release}
             canEdit={canEditBoard}
           />
           <div id="planning-floating-overlay" data-floating-overlay="true" className="absolute inset-0 pointer-events-none" />

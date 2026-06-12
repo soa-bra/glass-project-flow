@@ -149,6 +149,7 @@ export function planningElementToCanvas(row: PlanningElement): CanvasElement {
     locked: !!row.locked_by,
     lockedBy: row.locked_by ?? null,
     lockedAt: row.locked_at ?? null,
+    schemaVersion: row.schema_version ?? 1,
     boardId: row.board_id,
     createdBy: row.created_by,
     updatedAt: row.updated_at,
@@ -180,5 +181,8 @@ export function canvasToPlanningInsert(
       withSmartType(el.metadata, smartType),
       layerId,
     ) as PlanningElementInsert["metadata"],
+    schema_version: typeof (el as { schemaVersion?: unknown }).schemaVersion === "number"
+      ? (el as { schemaVersion: number }).schemaVersion
+      : 1,
   };
 }
