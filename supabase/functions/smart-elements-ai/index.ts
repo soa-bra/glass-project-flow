@@ -415,16 +415,16 @@ serve(async (req) => {
     }
 
     // Validate prompt length
-    if (prompt && (typeof prompt !== 'string' || prompt.length > 5000)) {
-      return new Response(JSON.stringify({ error: 'Prompt too long (max 5000 chars)', code: 'INVALID_INPUT' }), {
+    if (prompt && (typeof prompt !== 'string' || prompt.length > MAX_AI_PROMPT_CHARS)) {
+      return new Response(JSON.stringify({ error: `لا يمكن معالجة نص أطول من ${MAX_AI_PROMPT_CHARS} حرفًا في طلب ذكاء اصطناعي واحد. اختصر النص أو قسّمه.`, code: 'INVALID_INPUT' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
     // Validate selectedElements size
-    if (selectedElements && (!Array.isArray(selectedElements) || selectedElements.length > 50)) {
-      return new Response(JSON.stringify({ error: 'Too many selected elements (max 50)', code: 'INVALID_INPUT' }), {
+    if (selectedElements && (!Array.isArray(selectedElements) || selectedElements.length > MAX_AI_SELECTED_ELEMENTS)) {
+      return new Response(JSON.stringify({ error: AI_SELECTED_ELEMENTS_LIMIT_MESSAGE, code: 'INVALID_INPUT' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
