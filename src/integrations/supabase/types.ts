@@ -2409,12 +2409,24 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
+          approved_by: string | null
+          approved_by_user: boolean
+          confidence: number | null
+          direction: string
+          is_ai_generated: boolean
           label: string | null
+          logical_created_by: string | null
           metadata: Json
           relationship_type: string
+          source: string | null
           source_element_id: string
+          source_id: string | null
+          source_type: string | null
+          status: string
           style: Json
           target_element_id: string
+          target_id: string | null
+          target_type: string | null
           updated_at: string
         }
         Insert: {
@@ -2424,12 +2436,24 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
+          approved_by?: string | null
+          approved_by_user?: boolean
+          confidence?: number | null
+          direction?: string
+          is_ai_generated?: boolean
           label?: string | null
+          logical_created_by?: string | null
           metadata?: Json
           relationship_type: string
+          source?: string | null
           source_element_id: string
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
           style?: Json
           target_element_id: string
+          target_id?: string | null
+          target_type?: string | null
           updated_at?: string
         }
         Update: {
@@ -2439,12 +2463,24 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
+          approved_by?: string | null
+          approved_by_user?: boolean
+          confidence?: number | null
+          direction?: string
+          is_ai_generated?: boolean
           label?: string | null
+          logical_created_by?: string | null
           metadata?: Json
           relationship_type?: string
+          source?: string | null
           source_element_id?: string
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
           style?: Json
           target_element_id?: string
+          target_id?: string | null
+          target_type?: string | null
           updated_at?: string
         }
         Relationships: []
