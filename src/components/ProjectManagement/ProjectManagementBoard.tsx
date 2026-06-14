@@ -263,7 +263,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     ? {
         borderRadius: 'clamp(0px, 2vw, 24px)',
         background: 'var(--sb-column-3-bg)',
-        border: '1px solid rgba(255,255,255,0.2)',
         transition: 'all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)',
         padding: 'clamp(12px, 2vw, 24px)',
         display: 'flex',
@@ -275,7 +274,6 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
         height: 'calc(100vh - var(--sidebar-top-offset))',
         borderRadius: '24px',
         background: 'var(--sb-column-3-bg)',
-        border: '1px solid rgba(255,255,255,0.2)',
         transition: 'all var(--animation-duration-main) cubic-bezier(0.4,0,0.2,1)',
         padding: '24px',
         display: 'flex',
@@ -285,12 +283,14 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
 
   return <>
       {isPlanningCanvasPresentation && <div className="fixed inset-0 z-toolbar bg-black/30 backdrop-blur-sm" onClick={onClose} />}
-      <div data-testid="project-management-board" className={cn(panelClassName, isPlanningCanvasPresentation && 'shadow-2xl')} style={panelStyle}>
+      <div data-testid="project-management-board" className={cn('sb-surface-panel', panelClassName, isPlanningCanvasPresentation && 'shadow-2xl')} style={panelStyle}>
         {/* الرأس */}
         <ProjectManagementHeader project={project} onClose={onClose} onDelete={() => setShowDeleteDialog(true)} onArchive={() => setShowArchiveDialog(true)} onEdit={handleEditProject} activeTab={activeTab} onTabChange={setActiveTab} tabs={tabs} />
 
         {/* محتوى التبويبة النشطة */}
-        {renderTabContent()}
+        <div className="min-h-0 flex-1 overflow-auto">
+          {renderTabContent()}
+        </div>
 
         {/* حوارات التأكيد */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

@@ -8,7 +8,6 @@ import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
 import { TrainingDashboard } from '../DepartmentTabs/Training/TrainingDashboard';
 import { KMPADashboard } from '../DepartmentTabs/KMPA';
 import { BrandDashboard } from '../DepartmentTabs/Brand';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface BaseDepartmentPanelProps {
   selectedDepartment: string;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tabs } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
 import { Reveal } from './motion';
@@ -15,6 +16,8 @@ interface DashboardLayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   children: React.ReactNode;
+  headerSlot?: React.ReactNode;
+  contentSlot?: React.ReactNode;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -23,6 +26,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   activeTab,
   onTabChange,
   children,
+  headerSlot,
+  contentSlot,
 }) => {
   return (
     <div className="flex h-full min-h-0 flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
@@ -34,7 +39,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Reveal>
         <Reveal delay={0.15}>
           <div className="w-fit">
-            <AnimatedTabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} />
+            {headerSlot ?? <AnimatedTabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} />}
           </div>
         </Reveal>
       </div>

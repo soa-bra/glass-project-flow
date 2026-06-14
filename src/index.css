@@ -46,6 +46,8 @@
     --sb-column-2-bg: #EBEFF2;    /* العمود الثاني: المشاريع/الإدارات/الأرشيف/الإعدادات */
     --sb-column-3-bg: #F8F9FA;    /* العمود الثالث: جميع اللوحات */
     --sb-box-standard: #FFFFFF;   /* الصناديق العادية */
+    --sb-surface-panel-bg: var(--sb-column-3-bg); /* سطح اللوحات */
+    --sb-surface-box-bg: var(--sb-box-standard);  /* سطح الصناديق */
     --sb-box-border: #DADCE0;     /* حدود الصناديق */
     --sb-shadow-strong: 0 10px 24px rgba(15,23,42,0.12);
     --sb-shadow-soft: 0 6px 18px rgba(15,23,42,0.06);
@@ -307,7 +309,7 @@
 @layer components {
   /* SoaBra UI Components - v1.2.6 */
   .sb-surface-panel {
-    @apply bg-[var(--sb-column-3-bg)] rounded-[24px];
+    @apply bg-[var(--sb-surface-panel-bg)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-strong);
   }
@@ -331,7 +333,7 @@
   }
   
   .sb-surface-box {
-    @apply bg-[var(--sb-box-standard)] rounded-[24px];
+    @apply bg-[var(--sb-surface-box-bg)] rounded-[24px];
     border: 1px solid var(--sb-box-border);
     box-shadow: var(--sb-shadow-soft);
   }
