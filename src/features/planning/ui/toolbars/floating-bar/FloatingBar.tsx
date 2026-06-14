@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { useSmartElementAI } from "@/hooks/useSmartElementAI";
+import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
@@ -63,7 +63,11 @@ function getViewportCenterWorldPosition(
   };
 }
 
-export const FloatingBar: React.FC = () => {
+interface FloatingBarProps {
+  boardId?: string | null;
+}
+
+export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
   const {
     elements,
     selectedElementIds,
@@ -81,8 +85,8 @@ export const FloatingBar: React.FC = () => {
   } = useCanvasStore();
 
   const activeTextEditor = useActiveTextEditor();
-  const { analyzeSelection, transformElements, isLoading: isAILoading, approvalDialog } = useSmartElementAI();
-  const [isTransforming, setIsTransforming] = useState(false);
+  const smartActions = useContextSmartActions(boardId);
+  const { isLoading: isAILoading, isTransforming, approvalDialog } = smartActions;
   const selectionMeta = useSelectionMeta();
 
   const {
@@ -323,44 +327,18 @@ export const FloatingBar: React.FC = () => {
     }
   }, [activeTextEditor, firstElement, isEditingActiveText, updateElement]);
 
-  const handleQuickGenerate = useCallback(async () => {
-    if (selectedElements.length === 0) return;
-    setIsTransforming(true);
-    try {
-      const analysis = await analyzeSelection(selectedElements.map((el) => el.id));
-      if (analysis) toast.success("تم تحليل التحديد بنجاح");
-    } catch {
-      toast.error("حدث خطأ أثناء التحليل");
-    } finally {
-      setIsTransforming(false);
-    }
-  }, [selectedElements, analyzeSelection]);
+  const handleQuickGenerate = useCallback(() => {
+    void smartActions.quickGenerate();
+  }, [smartActions]);
 
-  const handleTransform = useCallback(async (type: SmartElementType) => {
-    if (selectedElements.length === 0) return;
-    setIsTransforming(true);
-    try {
-      await transformElements(selectedElements.map((el) => el.id), type);
-      toast.success(`تم التحويل إلى ${type}`);
-    } catch {
-      toast.error("حدث خطأ أثناء التحويل");
-    } finally {
-      setIsTransforming(false);
-    }
-  }, [selectedElements, transformElements]);
+  const handleTransform = useCallback((type: SmartElementType) => {
+    void smartActions.transform(type);
+  }, [smartActions]);
 
-  const handleCustomTransform = useCallback(async (prompt: string) => {
-    if (selectedElements.length === 0 || !prompt.trim()) return;
-    setIsTransforming(true);
-    try {
-      await transformElements(selectedElements.map((el) => el.id), "brainstorming", prompt);
-      toast.success("تم التحويل المخصص بنجاح");
-    } catch {
-      toast.error("حدث خطأ أثناء التحويل");
-    } finally {
-      setIsTransforming(false);
-    }
-  }, [selectedElements, transformElements]);
+  const handleCustomTransform = useCallback((prompt: string) => {
+    if (!prompt.trim()) return;
+    void smartActions.transform("brainstorming");
+  }, [smartActions]);
 
   const handleDeleteElements = useCallback((ids: string[]) => {
     ids.forEach((id) => deleteElement(id));
@@ -436,6 +414,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -477,6 +456,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -531,6 +511,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -581,6 +562,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -622,6 +604,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -665,6 +648,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -696,6 +680,7 @@ export const FloatingBar: React.FC = () => {
         onQuickGenerate={handleQuickGenerate}
         onTransform={handleTransform}
         onCustomTransform={handleCustomTransform}
+        boardId={boardId}
       />
     );
   };
