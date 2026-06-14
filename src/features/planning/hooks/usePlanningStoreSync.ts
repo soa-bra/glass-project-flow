@@ -102,7 +102,7 @@ export function usePlanningStoreSync(
   // Initial hydration.
   useEffect(() => {
     if (!boardId) {
-      usePlanningStore.setState({ elements: [] });
+      usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
       return;
     }
     let cancelled = false;
@@ -133,6 +133,7 @@ export function usePlanningStoreSync(
 
   const onElementInsert = useCallback((row: PlanningElement) => {
     usePlanningStore.setState((state) => {
+      if (state.pendingDeletedElementIds.includes(row.id)) return state;
       if (state.elements.some((e) => e.id === row.id)) return state;
       const layers = ensureLayers(state.layers);
       const element = assignLayerIds([planningElementToCanvas(row)], layers)[0];
@@ -146,6 +147,7 @@ export function usePlanningStoreSync(
 
   const onElementUpdate = useCallback((row: PlanningElement) => {
     usePlanningStore.setState((state) => {
+      if (state.pendingDeletedElementIds.includes(row.id)) return state;
       const layers = ensureLayers(state.layers);
       const idx = state.elements.findIndex((e) => e.id === row.id);
       if (idx === -1) {
@@ -171,8 +173,12 @@ export function usePlanningStoreSync(
 
   const onElementDelete = useCallback((id: string) => {
     usePlanningStore.setState((state) => {
-      if (!state.elements.some((e) => e.id === id)) return state;
       const idsToDelete = new Set<string>([id]);
+      if (!state.elements.some((e) => e.id === id)) {
+        return {
+          pendingDeletedElementIds: state.pendingDeletedElementIds.filter((pendingId) => pendingId !== id),
+        };
+      }
       state.elements.forEach((element) => {
         if (!isPlanningConnectorElement(element)) return;
         const data = element.data as any;
@@ -189,6 +195,7 @@ export function usePlanningStoreSync(
       const layers = ensureLayers(state.layers);
       return {
         elements,
+        pendingDeletedElementIds: state.pendingDeletedElementIds.filter((pendingId) => !idsToDelete.has(pendingId)),
         layers: rebuildLayerMembership(layers, elements),
         selectedElementIds: state.selectedElementIds.filter((selectedId) =>
           !idsToDelete.has(selectedId),
