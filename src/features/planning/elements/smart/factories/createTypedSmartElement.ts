@@ -9,6 +9,7 @@ interface GeneratedAIElement {
   type: string;
   title: string;
   description?: string;
+  content?: string;
   data: Record<string, any>;
   position?: { x: number; y: number };
   connections?: Array<{
@@ -53,6 +54,28 @@ const SMART_ELEMENT_SIZE_MAP: Record<SmartElementType, { width: number; height: 
   smart_text_doc: { width: 420, height: 320 },
 };
 
+const getDisplayContentFallback = (title?: string, content?: string, description?: string): string => {
+  return [content, description, title].find((value) => typeof value === 'string' && value.trim().length > 0) || '';
+};
+
+const withRenderableAIFallback = (
+  parsedData: Record<string, any>,
+  smartType: SmartElementType,
+  title?: string,
+  content?: string,
+  description?: string,
+): Record<string, any> => {
+  const safeTitle = [title, parsedData.title, parsedData.label, parsedData.topic, smartType]
+    .find((value) => typeof value === 'string' && value.trim().length > 0) as string;
+  const safeContent = getDisplayContentFallback(title, content ?? parsedData.content, description ?? parsedData.description);
+
+  return {
+    ...parsedData,
+    title: parsedData.title ?? safeTitle,
+    content: parsedData.content ?? safeContent,
+  };
+};
+
 const SMART_TYPE_ALIASES: Record<string, SmartElementType> = {
   thinking: 'thinking_board',
   thinking_board: 'thinking_board',
@@ -94,12 +117,13 @@ export function createTypedSmartElement({
   viewport,
 }: CreateTypedSmartElementOptions): Omit<CanvasElement, 'id'> & { id?: string } {
   const smartType = normalizeSmartElementType(element.type);
-  const parsedData = parseSmartElementData(smartType, {
+  const parsedData = withRenderableAIFallback(parseSmartElementData(smartType, {
     ...(element.data || {}),
     smartType,
     title: element.title,
+    content: element.content,
     description: element.description,
-  });
+  }) as Record<string, any>, smartType, element.title, element.content, element.description);
   const size = SMART_ELEMENT_SIZE_MAP[smartType];
   const basePosition = element.position || { x: 100 + index * 50, y: 100 + index * 50 };
 
@@ -136,12 +160,13 @@ export function createSmartCanvasElement({
   description,
   metadata = {},
 }: CreateSmartCanvasElementOptions): Omit<CanvasElement, 'id'> & { id?: string } {
-  const parsedData = parseSmartElementData(smartType, {
+  const parsedData = withRenderableAIFallback(parseSmartElementData(smartType, {
     ...data,
     smartType,
     title: title ?? data.title ?? smartType,
+    content: data.content,
     description: description ?? data.description,
-  });
+  }) as Record<string, any>, smartType, title ?? data.title, data.content, description ?? data.description);
   const size = SMART_ELEMENT_SIZE_MAP[smartType];
 
   return {
