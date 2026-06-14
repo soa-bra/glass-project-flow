@@ -30,7 +30,7 @@ export function useCanvasDropController({ containerRef, viewport }: UseCanvasDro
       const smartElementData = e.dataTransfer.getData('application/smart-element');
       if (smartElementData) {
         try {
-          const parsed = JSON.parse(smartElementData) as { type?: unknown; name?: unknown };
+          const parsed = JSON.parse(smartElementData) as { type?: unknown; name?: unknown; data?: unknown };
           const smartType = normalizeSmartElementType(parsed.type);
           const smartName = typeof parsed.name === 'string' ? parsed.name : 'عنصر ذكي';
 
@@ -39,7 +39,10 @@ export function useCanvasDropController({ containerRef, viewport }: UseCanvasDro
             return;
           }
 
-          useSmartElementsStore.getState().addSmartElement(smartType, canvasPoint, { title: smartName });
+          useSmartElementsStore.getState().addSmartElement(smartType, canvasPoint, {
+            ...(typeof parsed.data === 'object' && parsed.data !== null ? parsed.data : {}),
+            title: smartName,
+          });
           toast.success(`تم إدراج ${smartName}`);
           return;
         } catch {

@@ -11,6 +11,7 @@ import {
   FileSpreadsheet,
   Network,
   FolderKanban,
+  CheckSquare,
   DollarSign,
   Users,
   Building,
@@ -21,6 +22,8 @@ import {
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementAI } from '@/hooks/useSmartElementAI';
+import { useAllProjectTasks, useProjects } from '@/hooks/central/useCentral';
+import type { Project, Task } from '@/types/central';
 import type { SmartElementType } from '@/types/smart-elements';
 import type { MindMapNodeData } from '@/types/mindmap-canvas';
 import { NODE_COLORS } from '@/types/mindmap-canvas';
@@ -190,6 +193,18 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
     ]
   },
   {
+    id: 'task_card',
+    name: 'Task Card',
+    nameAr: 'بطاقة مهمة',
+    icon: <CheckSquare size={20} />,
+    category: 'cards',
+    description: 'عرض المهام الفعلية من النظام بشكل تفاعلي',
+    settings: [
+      { key: 'showAlerts', label: 'عرض التنبيهات', type: 'checkbox', defaultValue: true },
+      { key: 'compactMode', label: 'وضع مضغوط', type: 'checkbox', defaultValue: false },
+    ]
+  },
+  {
     id: 'finance_card',
     name: 'Finance Card',
     nameAr: 'بطاقة مالية',
@@ -229,6 +244,69 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
   },
 ];
 
+
+const normalizeCentralState = (state?: string | null) => {
+  if (state === 'archived' || state === 'failed') return 'cancelled';
+  return state ?? 'draft';
+};
+
+const mapProjectToCardData = (project: Project, tasks: Task[]) => {
+  const completedTasks = tasks.filter((task) => task.state === 'completed').length;
+
+  return {
+    projectId: project.id,
+    linkedEntityId: project.id,
+    executionEntityType: 'project',
+    sourceReference: {
+      source: 'central.projects',
+      type: 'project',
+      id: project.id,
+    },
+    title: project.name,
+    projectName: project.name,
+    status: normalizeCentralState(project.state),
+    priority: project.priority,
+    budget: project.budget ?? 0,
+    startDate: project.start_date ?? undefined,
+    endDate: project.due_date ?? undefined,
+    totalTasks: tasks.length,
+    completedTasks,
+    totalPhases: 0,
+    completedPhases: 0,
+    teamSize: 0,
+    estimatedHours: tasks.reduce((sum, task) => sum + (task.estimated_duration ?? 0), 0),
+    actualHours: 0,
+    description: project.description ?? undefined,
+  };
+};
+
+const mapTaskToCardData = (task: Task, project?: Project) => ({
+  taskId: task.id,
+  projectId: task.linked_project_id,
+  linkedEntityId: task.id,
+  executionEntityType: 'task',
+  sourceReference: {
+    source: 'central.tasks',
+    type: 'task',
+    id: task.id,
+    projectId: task.linked_project_id,
+  },
+  title: task.name,
+  taskName: task.name,
+  state: normalizeCentralState(task.state),
+  priority: task.priority ?? 'medium',
+  complexity: task.complexity ?? 'simple',
+  estimatedDuration: task.estimated_duration ?? 0,
+  estimatedCost: task.estimated_cost ?? 0,
+  requiredTeamSize: task.required_team_size ?? 1,
+  startDate: task.start_date ?? undefined,
+  dueDate: task.due_date ?? undefined,
+  actualDuration: 0,
+  actualCost: 0,
+  description: task.description ?? undefined,
+  projectName: project?.name,
+});
+
 const CATEGORIES = [
   { id: 'all', label: 'الكل' },
   { id: 'collaboration', label: 'تعاون' },
@@ -250,14 +328,50 @@ const SmartElementsPanel: React.FC = () => {
   
   const { addSmartElement } = useSmartElementsStore();
   const { viewport } = useCanvasStore();
+  const { data: projects = [] } = useProjects();
+  const tasks = useAllProjectTasks(projects.map((project) => project.id));
   const { generateElements, isLoading: aiLoading } = useSmartElementAI();
 
+  const tasksByProject = tasks.reduce<Record<string, Task[]>>((acc, task) => {
+    (acc[task.linked_project_id] ||= []).push(task);
+    return acc;
+  }, {});
+
+  const projectCards = projects.map((project) => ({
+    id: `project-${project.id}`,
+    type: 'project_card' as SmartElementType,
+    name: project.name,
+    nameAr: project.name,
+    icon: <FolderKanban size={20} />,
+    category: 'cards' as const,
+    description: project.description || 'بطاقة مشروع من بيانات النظام',
+    settings: SMART_ELEMENTS.find((element) => element.id === 'project_card')?.settings ?? [],
+    data: mapProjectToCardData(project, tasksByProject[project.id] ?? []),
+  }));
+
+  const taskCards = tasks.map((task) => {
+    const project = projects.find((item) => item.id === task.linked_project_id);
+    return {
+      id: `task-${task.id}`,
+      type: 'task_card' as SmartElementType,
+      name: task.name,
+      nameAr: task.name,
+      icon: <CheckSquare size={20} />,
+      category: 'cards' as const,
+      description: project ? `مهمة ضمن ${project.name}` : 'بطاقة مهمة من بيانات النظام',
+      settings: SMART_ELEMENTS.find((element) => element.id === 'task_card')?.settings ?? [],
+      data: mapTaskToCardData(task, project),
+    };
+  });
+
+  const availableElements = [...SMART_ELEMENTS, ...projectCards, ...taskCards];
+
   const filteredElements = selectedCategory === 'all' 
-    ? SMART_ELEMENTS 
-    : SMART_ELEMENTS.filter(el => el.category === selectedCategory);
+    ? availableElements 
+    : availableElements.filter(el => el.category === selectedCategory);
 
   // Initialize settings when element is selected
-  const handleSelectElement = (element: SmartElementConfig) => {
+  const handleSelectElement = (element: SmartElementConfig & { data?: Record<string, any>; type?: SmartElementType }) => {
     setSelectedElement(element);
     const initialSettings: Record<string, any> = {};
     element.settings.forEach(setting => {
@@ -268,7 +382,7 @@ const SmartElementsPanel: React.FC = () => {
     setAiPrompt('');
     
     // ✅ إخبار canvasStore بالعنصر المختار وتفعيل الأداة
-    useCanvasStore.getState().setSelectedSmartElement(element.id);
+    useCanvasStore.getState().setSelectedSmartElement(element.type ?? element.id);
     useCanvasStore.getState().setActiveTool('smart_element_tool');
   };
 
@@ -306,6 +420,7 @@ const SmartElementsPanel: React.FC = () => {
     // ✅ المخطط البصري يُنشأ كعنصر ذكي عادي (يُعرض بـ SmartElementRenderer)
 
     const initialData: Record<string, any> = {
+      ...(selectedElement as any).data,
       title: elementTitle || selectedElement.nameAr,
       ...settings,
     };
@@ -333,7 +448,7 @@ const SmartElementsPanel: React.FC = () => {
     }
 
     addSmartElement(
-      selectedElement.id,
+      ((selectedElement as any).type ?? selectedElement.id) as SmartElementType,
       { x: centerX, y: centerY },
       initialData
     );
@@ -405,8 +520,9 @@ const SmartElementsPanel: React.FC = () => {
               draggable
               onDragStart={(e) => {
                 e.dataTransfer.setData('application/smart-element', JSON.stringify({
-                  type: element.id,
+                  type: (element as any).type ?? element.id,
                   name: element.nameAr,
+                  data: (element as any).data,
                 }));
                 e.dataTransfer.effectAllowed = 'copy';
               }}
