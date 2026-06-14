@@ -41,7 +41,7 @@ interface SmartElementConfig {
   name: string;
   nameAr: string;
   icon: React.ReactNode;
-  category: 'planning' | 'analysis' | 'collaboration' | 'cards';
+  category: 'planning' | 'analysis' | 'collaboration' | 'cards' | 'boxes';
   description: string;
   settings: SmartElementSetting[];
 }
@@ -312,8 +312,10 @@ const CATEGORIES = [
   { id: 'collaboration', label: 'تعاون' },
   { id: 'planning', label: 'تخطيط' },
   { id: 'analysis', label: 'تحليل' },
-  { id: 'cards', label: 'بطاقات' },
+  { id: 'boxes', label: 'صناديق' },
 ] as const;
+
+const normalizeCategoryId = (categoryId: string) => categoryId === 'cards' ? 'boxes' : categoryId;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Component
@@ -322,9 +324,11 @@ const CATEGORIES = [
 const SmartElementsPanel: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedElement, setSelectedElement] = useState<SmartElementConfig | null>(null);
+  const [selectedBoxSource, setSelectedBoxSource] = useState<DepartmentBoxSource | null>(null);
   const [elementTitle, setElementTitle] = useState('');
   const [settings, setSettings] = useState<Record<string, any>>({});
   const [aiPrompt, setAiPrompt] = useState('');
+  const [boxSearch, setBoxSearch] = useState('');
   
   const { addSmartElement } = useSmartElementsStore();
   const { viewport } = useCanvasStore();
@@ -380,9 +384,28 @@ const SmartElementsPanel: React.FC = () => {
     setSettings(initialSettings);
     setElementTitle('');
     setAiPrompt('');
+    setSelectedBoxSource(null);
     
     // ✅ إخبار canvasStore بالعنصر المختار وتفعيل الأداة
     useCanvasStore.getState().setSelectedSmartElement(element.type ?? element.id);
+    useCanvasStore.getState().setActiveTool('smart_element_tool');
+  };
+
+  const handleSelectBoxSource = (source: DepartmentBoxSource) => {
+    const element = SMART_ELEMENTS.find(el => el.id === source.smartElementType);
+    if (!element) return;
+
+    const initialSettings: Record<string, any> = {};
+    element.settings.forEach(setting => {
+      initialSettings[setting.key] = setting.defaultValue;
+    });
+
+    setSelectedElement(element);
+    setSelectedBoxSource(source);
+    setSettings(initialSettings);
+    setElementTitle(source.title);
+    setAiPrompt('');
+    useCanvasStore.getState().setSelectedSmartElement(element.id);
     useCanvasStore.getState().setActiveTool('smart_element_tool');
   };
 
@@ -423,7 +446,16 @@ const SmartElementsPanel: React.FC = () => {
       ...(selectedElement as any).data,
       title: elementTitle || selectedElement.nameAr,
       ...settings,
+      ...(selectedBoxSource ? createDepartmentBoxElementData(selectedBoxSource) : {}),
     };
+
+    if (selectedBoxSource && elementTitle.trim()) {
+      initialData.title = elementTitle.trim();
+      initialData.sourceSnapshot = {
+        ...initialData.sourceSnapshot,
+        title: elementTitle.trim(),
+      };
+    }
 
     // Add type-specific initial data
     if (selectedElement.id === 'kanban' && settings.columnNames) {
@@ -507,6 +539,72 @@ const SmartElementsPanel: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Department Box Sources */}
+      {shouldShowBoxes && (
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h4 className="text-[13px] font-semibold text-foreground">
+              صناديق الإدارات
+            </h4>
+            <span className="text-[10px] text-muted-foreground">
+              {filteredBoxSources.length} صندوق
+            </span>
+          </div>
+          {departmentBoxSources.length > 8 && (
+            <Input
+              value={boxSearch}
+              onChange={(e) => setBoxSearch(e.target.value)}
+              placeholder="بحث في الصناديق أو الإدارات..."
+              className="h-8 text-[12px] mb-3"
+            />
+          )}
+          <div className="space-y-3 max-h-[260px] overflow-y-auto pr-1">
+            {Object.entries(boxSourcesByDepartment).map(([departmentLabel, boxes]) => (
+              <div key={departmentLabel} className="space-y-2">
+                <h5 className="text-[11px] font-semibold text-muted-foreground">
+                  {departmentLabel}
+                </h5>
+                <div className="grid grid-cols-1 gap-2">
+                  {boxes.map((box) => (
+                    <button
+                      key={box.id}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('application/smart-element', JSON.stringify({
+                          type: box.smartElementType,
+                          name: box.title,
+                          data: createDepartmentBoxElementData(box),
+                        }));
+                        e.dataTransfer.effectAllowed = 'copy';
+                      }}
+                      onClick={() => handleSelectBoxSource(box)}
+                      className={`text-right rounded-xl border p-3 transition-all cursor-grab active:cursor-grabbing ${
+                        selectedBoxSource?.id === box.id
+                          ? 'border-[hsl(var(--accent-green))] bg-[hsl(var(--accent-green))]/10'
+                          : 'border-border bg-muted hover:bg-muted/80'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[12px] font-semibold text-foreground">{box.title}</span>
+                        <span className="rounded-full bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+                          {box.boxType === 'action' ? 'إجراء' : 'عملية'}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-[10px] text-muted-foreground">
+                        {box.tabLabel} · {box.status}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {filteredBoxSources.length === 0 && (
+              <p className="text-[11px] text-muted-foreground">لا توجد صناديق مطابقة للبحث.</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Elements Grid */}
       <div>

@@ -33,6 +33,9 @@ export function useCanvasDropController({ containerRef, viewport }: UseCanvasDro
           const parsed = JSON.parse(smartElementData) as { type?: unknown; name?: unknown; data?: unknown };
           const smartType = normalizeSmartElementType(parsed.type);
           const smartName = typeof parsed.name === 'string' ? parsed.name : 'عنصر ذكي';
+          const initialData = typeof parsed.data === 'object' && parsed.data !== null
+            ? { title: smartName, ...parsed.data }
+            : { title: smartName };
 
           if (!smartType) {
             toast.error('تعذر إدراج العنصر الذكي: النوع غير مدعوم');

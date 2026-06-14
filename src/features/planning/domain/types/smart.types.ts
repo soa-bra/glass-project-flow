@@ -536,6 +536,20 @@ export type MindMapData = z.infer<typeof MindMapDataSchema>;
 // SMART CARDS - البطاقات الذكية
 // ═══════════════════════════════════════════════════════════════════════════
 
+
+const DepartmentBoxSnapshotSchema = z.object({
+  title: z.string(),
+  status: z.string(),
+});
+
+const DepartmentBoxLinkSchema = z.object({
+  title: z.string().optional(),
+  sourceDepartment: z.string().optional(),
+  sourceBoxId: z.string().optional(),
+  boxType: z.enum(['action', 'operation']).optional(),
+  sourceSnapshot: DepartmentBoxSnapshotSchema.optional(),
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 10. Project Card - بطاقة المشروع
 // ─────────────────────────────────────────────────────────────────────────────
@@ -615,7 +629,7 @@ export const FinanceCardDataSchema = z.object({
   refreshInterval: z.number().default(0),
   compactMode: z.boolean().default(false),
   showForecast: z.boolean().default(false),
-});
+}).merge(DepartmentBoxLinkSchema);
 
 export type FinanceMetrics = z.infer<typeof FinanceMetricsSchema>;
 export type FinanceCardData = z.infer<typeof FinanceCardDataSchema>;
@@ -642,7 +656,7 @@ export const CsrCardDataSchema = z.object({
   impactCategories: z.array(z.string()).default([
     'بيئي', 'اجتماعي', 'تعليمي', 'صحي'
   ]),
-});
+}).merge(DepartmentBoxLinkSchema);
 
 export type CsrMetrics = z.infer<typeof CsrMetricsSchema>;
 export type CsrCardData = z.infer<typeof CsrCardDataSchema>;
@@ -674,7 +688,7 @@ export const CrmCardDataSchema = z.object({
     retentionWarning: z.number().default(80),
     responseTimeWarning: z.number().default(24), // hours
   }).default({}),
-});
+}).merge(DepartmentBoxLinkSchema);
 
 export type CrmMetrics = z.infer<typeof CrmMetricsSchema>;
 export type CrmCardData = z.infer<typeof CrmCardDataSchema>;
