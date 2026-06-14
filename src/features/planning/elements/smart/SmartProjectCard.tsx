@@ -78,6 +78,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ data, onExpand, onConv
           )}
           {onExpand && (
             <Button
+              data-interactive-control
               type="button"
               variant="ghost"
               size="icon"
@@ -95,6 +96,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ data, onExpand, onConv
           )}
           {onConvert && (
             <Button
+              data-interactive-control
               type="button"
               variant="secondary"
               size="sm"
