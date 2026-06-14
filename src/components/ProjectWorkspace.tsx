@@ -395,7 +395,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
   return (
     <ProjectTasksProvider>
       <div
-        className={`fixed z-workspace h-[calc(100vh-var(--sidebar-top-offset))] ${projectsColumnClass}`}
+        className={`fixed z-workspace flex h-[calc(100vh-var(--sidebar-top-offset))] min-h-0 flex-col ${projectsColumnClass}`}
         style={{
           top: 'var(--sidebar-top-offset)',
           right: projectsColumnRight,
@@ -407,17 +407,19 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           style={{
             transition: 'all var(--animation-duration-main) var(--animation-easing)',
           }}
-          className="w-full h-full p-2 py-0 mx-0 px-[5px]"
+          className="flex h-full min-h-0 w-full flex-col p-2 py-0 mx-0 px-[5px]"
         >
-          <div className="mb-2 flex justify-end"><LinkIndicator projectId={selectedProjectId ?? 'projects-workspace'} /></div>
-          <ProjectsColumn
-            projects={projects}
-            selectedProjectId={selectedProjectId}
-            onProjectSelect={handleProjectSelect}
-            onProjectAdded={handleProjectAdded}
-            onApplyFilter={handleApplyFilter}
-            onApplySort={handleApplySort}
-          />
+          <div className="mb-2 flex flex-shrink-0 justify-end"><LinkIndicator projectId={selectedProjectId ?? 'projects-workspace'} /></div>
+          <div className="min-h-0 flex-1">
+            <ProjectsColumn
+              projects={projects}
+              selectedProjectId={selectedProjectId}
+              onProjectSelect={handleProjectSelect}
+              onProjectAdded={handleProjectAdded}
+              onApplyFilter={handleApplyFilter}
+              onApplySort={handleApplySort}
+            />
+          </div>
         </div>
       </div>
 
@@ -427,7 +429,7 @@ const ProjectWorkspace: React.FC<ProjectWorkspaceProps> = ({ isSidebarCollapsed 
           width: operationsBoardWidth,
           transition: 'all var(--animation-duration-main) var(--animation-easing)',
         }}
-        className={`fixed z-workspace top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] mx-0 ${operationsBoardClass}`}
+        className={`fixed z-workspace top-[var(--sidebar-top-offset)] flex h-[calc(100vh-var(--sidebar-top-offset))] min-h-0 flex-col mx-0 ${operationsBoardClass}`}
       >
         <div className="absolute left-4 top-4 z-10"><LinkIndicator projectId="operations-board" /></div>
         <OperationsBoard isSidebarCollapsed={isSidebarCollapsed} />
