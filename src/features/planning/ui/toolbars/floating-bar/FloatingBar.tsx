@@ -43,8 +43,18 @@ import {
 import type { SmartElementType } from "@/types/smart-elements";
 import type { CanvasElement } from "@/types/canvas";
 import type { TextFormatCommand } from "@/features/planning/elements/text/TextFormattingController";
+import { createSmartCanvasElement } from "@/features/planning/elements/smart/factories/createTypedSmartElement";
 
 const DEFAULT_VIEWPORT_HOST_SIZE = { width: 1280, height: 720 };
+function hasNonEmptyTransformPayload(element: { title?: unknown; content?: unknown; description?: unknown; data?: unknown }): boolean {
+  const hasText = [element.title, element.content, element.description].some(
+    (value) => typeof value === "string" && value.trim().length > 0,
+  );
+  if (hasText) return true;
+
+  return !!element.data && typeof element.data === "object" && Object.keys(element.data).length > 0;
+}
+
 
 function getViewportCenterWorldPosition(
   viewport: { zoom: number; pan: { x: number; y: number } },
@@ -327,18 +337,71 @@ export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
     }
   }, [activeTextEditor, firstElement, isEditingActiveText, updateElement]);
 
-  const handleQuickGenerate = useCallback(() => {
-    void smartActions.quickGenerate();
-  }, [smartActions]);
+  const handleQuickGenerate = useCallback(async () => {
+    if (selectedElements.length === 0) return;
+    setIsTransforming(true);
+    try {
+      const analysis = await analyzeSelection(selectedElements.map((el) => el.id));
+      if (analysis) toast.success("تم تحليل التحديد بنجاح");
+    } catch {
+      toast.error("حدث خطأ أثناء التحليل");
+    } finally {
+      setIsTransforming(false);
+    }
+  }, [selectedElements, analyzeSelection]);
 
-  const handleTransform = useCallback((type: SmartElementType) => {
-    void smartActions.transform(type);
-  }, [smartActions]);
+  const handleTransform = useCallback(async (type: SmartElementType) => {
+    if (selectedElements.length === 0) return;
+    setIsTransforming(true);
+    try {
+      const result = await transformElements(selectedElements, type);
+      const renderableElements = (result?.elements || []).filter(hasNonEmptyTransformPayload);
 
-  const handleCustomTransform = useCallback((prompt: string) => {
-    if (!prompt.trim()) return;
-    void smartActions.transform("brainstorming");
-  }, [smartActions]);
+      if (renderableElements.length === 0) {
+        toast.info("لم يُرجع الذكاء الاصطناعي بيانات قابلة للعرض");
+        return;
+      }
+
+      const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+      const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+
+      renderableElements.forEach((element, index) => {
+        addElement(createSmartCanvasElement({
+          smartType: element.type || type,
+          position: element.position || { x: centerX + index * 30, y: centerY + index * 30 },
+          title: element.title,
+          description: element.description,
+          data: {
+            ...(element.data || {}),
+            content: element.content ?? element.data?.content,
+          },
+          metadata: {
+            sourceElementIds: selectedElementIds,
+            generatedBy: "floating-bar",
+          },
+        }) as CanvasElement);
+      });
+
+      toast.success(`تم التحويل إلى ${type}`);
+    } catch {
+      toast.error("حدث خطأ أثناء التحويل");
+    } finally {
+      setIsTransforming(false);
+    }
+  }, [addElement, selectedElementIds, selectedElements, transformElements]);
+
+  const handleCustomTransform = useCallback(async (prompt: string) => {
+    if (selectedElements.length === 0 || !prompt.trim()) return;
+    setIsTransforming(true);
+    try {
+      await transformElements(selectedElements.map((el) => el.id), "brainstorming", prompt);
+      toast.success("تم التحويل المخصص بنجاح");
+    } catch {
+      toast.error("حدث خطأ أثناء التحويل");
+    } finally {
+      setIsTransforming(false);
+    }
+  }, [selectedElements, transformElements]);
 
   const handleDeleteElements = useCallback((ids: string[]) => {
     ids.forEach((id) => deleteElement(id));

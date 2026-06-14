@@ -67,6 +67,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ data, onExpand, onConvert })
           <span className="text-xs px-2 py-1 rounded-full bg-muted text-foreground">{PRIORITY_LABELS[priority]}</span>
           {onExpand && (
             <Button
+              data-interactive-control
               type="button"
               variant="ghost"
               size="icon"
@@ -84,6 +85,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ data, onExpand, onConvert })
           )}
           {onConvert && (
             <Button
+              data-interactive-control
               type="button"
               variant="secondary"
               size="sm"

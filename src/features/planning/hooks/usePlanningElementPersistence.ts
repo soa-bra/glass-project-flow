@@ -264,6 +264,7 @@ export function usePlanningElementPersistence(
 
         try {
           await Promise.all(deletedIds.map((id) => PlanningBoardsService.deletePlanningElement(id)));
+          usePlanningStore.getState().acknowledgeDeletedElements(deletedIds);
           await PlanningBoardsService.upsertPlanningElements(
             currentPersistable.map((element) => canvasToPlanningInsert(element, boardId, userId)),
           );

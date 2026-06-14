@@ -4,12 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, LayoutGrid, Network, Calendar, Table2, Zap, Loader2, X, ChevronDown, FileText, FolderKanban, CheckSquare, Search } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { Button } from '@/components/ui/button';
-import type { SmartElementType } from '@/types/smart-elements';
-import {
-  areContextSmartMenuSelectionIdsPersisted,
-  CONTEXT_SMART_TRANSFORM_OPTIONS,
-  useContextSmartActions,
-} from './useContextSmartActions';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { isPlanningElementId } from '@/features/planning/state/createPlanningElementId';
+import { createSmartCanvasElement } from './factories/createTypedSmartElement';
+import { AI_SELECTED_ELEMENTS_LIMIT_MESSAGE, MAX_AI_SELECTED_ELEMENTS } from '@/features/ai/context/limits';
+import { SupraMenuOption } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
+
+interface TransformOption {
+  type: SmartElementType;
+  label: string;
+  icon: React.ReactNode;
+  description: string;
+}
 
 export { areContextSmartMenuSelectionIdsPersisted };
 
@@ -140,39 +147,60 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
               </Button>
             </div>
 
-            <div className="px-3 pb-2 text-[10px] text-muted-foreground text-center">{selectedElements.length} عنصر محدد</div>
-            {!canUseAI && <div className="px-3 pb-2 text-center text-[10px] text-destructive">{denialReason || 'أدوات AI غير متاحة لهذا الدور'}</div>}
-
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="border-t border-border overflow-hidden">
-                  <div className="p-2 space-y-1">
-                    <div className="text-[10px] text-muted-foreground px-2 py-1">أوامر تنفيذية:</div>
-                    <button onClick={closeAfter(() => suggestConversion('project'))} disabled={busy || !canUseAI} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50">
-                      <FolderKanban size={16} className="text-[hsl(var(--accent-green))]" />
-                      <div className="flex-1"><div className="text-[12px] font-medium text-foreground">تحويل إلى مشروع</div><div className="text-[10px] text-muted-foreground">إنشاء سجل مشروع وربطه بالعناصر المصدر</div></div>
-                    </button>
-                    <button onClick={closeAfter(() => suggestConversion('task'))} disabled={busy || !canUseAI} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50">
-                      <CheckSquare size={16} className="text-[hsl(var(--accent-green))]" />
-                      <div className="flex-1"><div className="text-[12px] font-medium text-foreground">تحويل إلى مهمة</div><div className="text-[10px] text-muted-foreground">إنشاء مهمة تنفيذية مرتبطة بالتخطيط</div></div>
-                    </button>
-                    <button onClick={closeAfter(() => generateSmartDoc('interactive_sheet'))} disabled={busy || !canUseAI} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50">
-                      <Table2 size={16} className="text-[hsl(var(--accent-green))]" />
-                      <div className="flex-1"><div className="text-[12px] font-medium text-foreground">توليد جدول تفاعلي</div><div className="text-[10px] text-muted-foreground">جدول محفوظ داخل اللوحة وقابل للربط</div></div>
-                    </button>
-                    <div className="text-[10px] text-muted-foreground px-2 pt-2 pb-1">تنظيم بصري:</div>
-                    {CONTEXT_SMART_TRANSFORM_OPTIONS.map((option) => (
-                      <button key={option.type} onClick={closeAfter(() => transform(option.type))} disabled={busy || !canUseAI} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50">
-                        <span className="text-[hsl(var(--accent-green))]">{TRANSFORM_ICONS[option.type]}</span>
-                        <div className="flex-1"><div className="text-[12px] font-medium text-foreground">{option.label}</div><div className="text-[10px] text-muted-foreground">{option.description}</div></div>
-                      </button>
-                    ))}
+          {/* Expanded Options */}
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="border-t border-border overflow-hidden"
+              >
+                <div className="p-2 space-y-1">
+                  <div className="text-[10px] text-muted-foreground px-2 py-1">
+                    أوامر تنفيذية:
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
+                  <SupraMenuOption
+                    onClick={() => void handleSuggestConversion('project')}
+                    disabled={isLoading || isTransforming || !canUseAI}
+                    icon={<FolderKanban size={16} />}
+                    label="تحويل إلى مشروع"
+                    description="إنشاء سجل مشروع وربطه بالعناصر المصدر"
+                  />
+                  <SupraMenuOption
+                    onClick={() => void handleSuggestConversion('task')}
+                    disabled={isLoading || isTransforming || !canUseAI}
+                    icon={<CheckSquare size={16} />}
+                    label="تحويل إلى مهمة"
+                    description="إنشاء مهمة تنفيذية مرتبطة بالتخطيط"
+                  />
+                  <SupraMenuOption
+                    onClick={() => handleGenerateSmartDoc('interactive_sheet')}
+                    disabled={isLoading || isTransforming || !canUseAI}
+                    icon={<Table2 size={16} />}
+                    label="توليد جدول تفاعلي"
+                    description="جدول محفوظ داخل اللوحة وقابل للربط"
+                  />
+                  <div className="text-[10px] text-muted-foreground px-2 pt-2 pb-1">
+                    تنظيم بصري:
+                  </div>
+                  {TRANSFORM_OPTIONS.map((option) => (
+                    <SupraMenuOption
+                      key={option.type}
+                      onClick={() => handleTransform(option.type)}
+                      disabled={isLoading || isTransforming || !canUseAI}
+                      icon={option.icon}
+                      label={option.label}
+                      description={option.description}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
       </AnimatePresence>
     </>,
     document.body,

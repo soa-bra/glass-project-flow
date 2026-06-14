@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, expect, it, beforeEach, vi } from 'vitest';
 import FloatingBar from './FloatingBar';
 
@@ -20,8 +20,8 @@ const mockToastError = vi.fn();
 
 const canvasState: any = {
   elements: [
-    { id: 'el-1', type: 'shape', style: {}, data: {} },
-    { id: 'el-2', type: 'shape', style: {}, data: {}, metadata: { groupId: 'group-1' } },
+    { id: 'el-1', type: 'text', content: 'Launch plan', position: { x: 100, y: 120 }, style: {}, data: { text: 'Launch plan' } },
+    { id: 'el-2', type: 'shape', content: 'Build MVP', position: { x: 160, y: 180 }, style: {}, data: {}, metadata: { groupId: 'group-1' } },
     { id: 'el-3', type: 'shape', style: {}, data: {}, metadata: { groupId: 'group-2' } },
   ],
   selectedElementIds: ['el-1', 'el-2'],
@@ -90,7 +90,11 @@ vi.mock('./hooks', () => ({
 }));
 
 vi.mock('./groups', () => ({
-  CommonActions: () => <div data-testid="common-actions" />,
+  CommonActions: ({ onTransform }: any) => (
+    <div data-testid="common-actions">
+      <button onClick={() => onTransform('kanban')}>transform-kanban</button>
+    </div>
+  ),
   MindmapActions: () => <div data-testid="mindmap-actions" />,
   VisualDiagramActions: () => <div data-testid="visual-actions" />,
   TextActions: () => <div data-testid="text-actions" />,
@@ -134,6 +138,7 @@ vi.mock('framer-motion', () => ({
 describe('FloatingBar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    document.body.innerHTML = '<div id="planning-floating-overlay"></div>';
     selectionMeta.selectionType = 'multiple';
     selectionMeta.hasSelection = true;
     selectionMeta.areElementsGrouped = false;
@@ -208,4 +213,42 @@ describe('FloatingBar', () => {
     expect(mockAlignHorizontally).toHaveBeenCalledWith('center');
     expect(mockAlignVertically).toHaveBeenCalledWith('middle');
   });
+
+  it('creates a renderable kanban smart element after transforming text selection', async () => {
+    mockTransformElements.mockResolvedValueOnce({
+      elements: [{
+        id: 'generated-kanban',
+        type: 'kanban',
+        title: 'Launch Kanban',
+        content: 'Tasks extracted from the selected text',
+        data: {
+          columns: [{
+            id: 'todo',
+            title: 'To do',
+            cards: [{ id: 'task-1', title: 'Build MVP', description: 'Create the first release', order: 0 }],
+            collapsed: false,
+          }],
+        },
+        position: { x: 220, y: 240 },
+      }],
+      layout: 'grid',
+      summary: 'created kanban',
+    });
+
+    render(<FloatingBar />);
+
+    fireEvent.click(screen.getByText('transform-kanban'));
+
+    await waitFor(() => {
+      expect(mockAddElement).toHaveBeenCalledTimes(1);
+    });
+
+    const createdElement = mockAddElement.mock.calls[0][0];
+    expect(createdElement.type).toBe('kanban');
+    expect(createdElement.content).toBe('Launch Kanban');
+    expect(createdElement.data.title).toBe('Launch Kanban');
+    expect(createdElement.data.content).toBe('Tasks extracted from the selected text');
+    expect(createdElement.data.columns[0].cards[0].title).toBe('Build MVP');
+  });
+
 });
