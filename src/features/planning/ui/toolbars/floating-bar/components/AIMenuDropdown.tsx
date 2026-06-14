@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Loader2, LayoutGrid, Network, Calendar, Table2, Zap } from "lucide-react";
+import { Sparkles, Loader2, LayoutGrid, Network, Calendar, Table2, Zap, Workflow } from "lucide-react";
 import type { SmartElementType } from "@/types/smart-elements";
 import { useCanvasAIPermissions } from "@/features/planning/hooks/useCanvasAIPermissions";
 
@@ -27,6 +27,7 @@ interface AIMenuDropdownProps {
   onQuickGenerate: () => void;
   onTransform: (type: SmartElementType) => void;
   onCustomTransform: (prompt: string) => void;
+  onWorkflowTransform: () => void;
   selectedCount: number;
 }
 
@@ -35,6 +36,7 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
   onQuickGenerate,
   onTransform,
   onCustomTransform,
+  onWorkflowTransform,
   selectedCount,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -121,6 +123,26 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
               >
                 {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                 <span>إنشاء عنصر ذكي تلقائياً</span>
+              </button>
+            </div>
+
+            <div className="p-2 border-b border-[hsl(var(--border))]">
+              <button
+                type="button"
+                onClick={() => {
+                  onWorkflowTransform();
+                  setIsOpen(false);
+                }}
+                disabled={isAIDisabled}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-[#F0FBF7] hover:bg-[#E1F7EF] transition-colors text-right disabled:opacity-50 border border-[#3DBE8B]/20"
+              >
+                <span className="text-[#3DBE8B]">
+                  <Workflow size={16} />
+                </span>
+                <div className="flex-1">
+                  <div className="text-[12px] font-semibold text-black">Workflow</div>
+                  <div className="text-[10px] text-[hsl(var(--ink-60))]">حفظ علاقات تشغيلية بين العناصر وروابطها</div>
+                </div>
               </button>
             </div>
 

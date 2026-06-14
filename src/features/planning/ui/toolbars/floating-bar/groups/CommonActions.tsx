@@ -80,6 +80,7 @@ interface CommonActionsProps {
   onQuickGenerate: () => void;
   onTransform: (type: SmartElementType) => void;
   onCustomTransform: (prompt: string) => void;
+  onWorkflowTransform: () => void;
 }
 
 export const CommonActions: React.FC<CommonActionsProps> = ({
@@ -107,6 +108,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
   onQuickGenerate,
   onTransform,
   onCustomTransform,
+  onWorkflowTransform,
 }) => {
   return (
     <>
@@ -133,6 +135,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
         onQuickGenerate={onQuickGenerate}
         onTransform={onTransform}
         onCustomTransform={onCustomTransform}
+        onWorkflowTransform={onWorkflowTransform}
         selectedCount={selectedCount}
       />
 
