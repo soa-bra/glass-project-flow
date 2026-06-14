@@ -279,29 +279,28 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   }, [selectedElements]);
   
   const isAllArrows = useMemo(() => selectedElements.every(el => el.type === 'shape' && isArrowShape(el.shapeType || el.data?.shapeType)), [selectedElements]);
-  const isAllText = useMemo(() => selectedElements.length > 0 && selectedElements.every(el => el.type === 'text'), [selectedElements]);
   const isGrouped = useMemo(() => {
     if (selectedElements.length === 0) return false;
     const groupIds = new Set(selectedElements.map(el => el.metadata?.groupId).filter(Boolean));
     return groupIds.size > 0;
   }, [selectedElements]);
   
-  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows || isAllText) {
+  if (activeTool !== 'selection_tool' || selectedElements.length === 0 || isAllArrows) {
     return null;
   }
   
   const ResizeHandle = ({ position, cursor, onStart }: { position: string; cursor: string; onStart: (e: React.PointerEvent) => void }) => {
     const positionStyles: Record<string, React.CSSProperties> = {
-      'nw': { top: -10, left: -10 },
-      'ne': { top: -10, right: -10 },
-      'sw': { bottom: -10, left: -10 },
-      'se': { bottom: -10, right: -10 },
-      'w': { top: '50%', left: -10, transform: 'translateY(-50%)' },
-      'e': { top: '50%', right: -10, transform: 'translateY(-50%)' }
+      'nw': { top: -8, left: -8 },
+      'ne': { top: -8, right: -8 },
+      'sw': { bottom: -8, left: -8 },
+      'se': { bottom: -8, right: -8 },
+      'w': { top: '50%', left: -8, transform: 'translateY(-50%)' },
+      'e': { top: '50%', right: -8, transform: 'translateY(-50%)' }
     };
     return (
-      <div className="absolute pointer-events-auto group touch-none" style={{ ...positionStyles[position], cursor, width: 20, height: 20 }} onPointerDown={onStart}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-[#0B0F12] rounded-full group-hover:scale-125 transition-transform shadow-sm ring-2 ring-white" />
+      <div className="absolute pointer-events-auto group touch-none" style={{ ...positionStyles[position], cursor, width: 16, height: 16 }} onPointerDown={onStart}>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-black rounded-full group-hover:scale-125 transition-transform shadow-sm ring-2 ring-white" />
       </div>
     );
   };
@@ -314,7 +313,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         top: bounds.y,
         width: bounds.width,
         height: bounds.height,
-        border: '2px solid #0B0F12',
+        border: '2px solid #000000',
         borderRadius: '4px',
         backgroundColor: 'transparent',
         zIndex: 9998

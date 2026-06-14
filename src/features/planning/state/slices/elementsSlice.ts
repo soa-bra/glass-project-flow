@@ -17,12 +17,14 @@ import {
 
 export interface ElementsSlice {
   elements: CanvasElement[];
+  pendingDeletedElementIds: string[];
 
   // Element Actions
   addElement: (element: Omit<CanvasElement, 'id'> & { id?: string }) => void;
   updateElement: (elementId: string, updates: Partial<CanvasElement>) => void;
   deleteElement: (elementId: string) => void;
   deleteElements: (elementIds: string[]) => void;
+  acknowledgeDeletedElements: (elementIds: string[]) => void;
   duplicateElement: (elementId: string) => void;
   moveElements: (elementIds: string[], deltaX: number, deltaY: number) => void;
   resizeElements: (elementIds: string[], scaleX: number, scaleY: number, origin: { x: number; y: number }) => void;
@@ -126,6 +128,7 @@ export const createElementsSlice: StateCreator<
   ElementsSlice
 > = (set, get) => ({
   elements: [],
+  pendingDeletedElementIds: [],
 
   addElement: (elementData) => {
     runCanvasTransaction(set, (state: any) => {
@@ -209,13 +212,32 @@ export const createElementsSlice: StateCreator<
         elements: layer.elements.filter((id: string) => !idsToDelete.includes(id)),
       }));
 
+      const pendingDeletedElementIds = Array.from(new Set([
+        ...(state.pendingDeletedElementIds || []),
+        ...idsToDelete,
+      ]));
+
       return {
         elements: state.elements.filter((el: CanvasElement) => !idsToDelete.includes(el.id)),
+        pendingDeletedElementIds,
         selectedElementIds: state.selectedElementIds.filter((id: string) => !idsToDelete.includes(id)),
         layers: updatedLayers,
         activeLayerId: state.activeLayerId && updatedLayers.some((layer: LayerInfo) => layer.id === state.activeLayerId)
           ? state.activeLayerId
           : updatedLayers[0]?.id ?? DEFAULT_LAYER.id,
+      };
+    });
+  },
+
+  acknowledgeDeletedElements: (elementIds) => {
+    if (elementIds.length === 0) return;
+
+    set((state: any) => {
+      const acknowledgedIds = new Set(elementIds);
+      return {
+        pendingDeletedElementIds: (state.pendingDeletedElementIds || []).filter(
+          (id: string) => !acknowledgedIds.has(id),
+        ),
       };
     });
   },

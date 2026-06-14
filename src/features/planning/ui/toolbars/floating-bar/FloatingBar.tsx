@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { useSmartElementAI } from "@/hooks/useSmartElementAI";
+import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
@@ -40,11 +40,75 @@ import {
   addNewText,
   createFrameFromSelection,
 } from "./actions";
+import { upsertSmartConnectors } from "@/services/central/smartConnectors.service";
+import {
+  isPlanningConnectorElement,
+  toPlanningConnectorLogicalRecord,
+  type PlanningConnectorLogicalRecord,
+} from "@/features/planning/integration/connectors";
 import type { SmartElementType } from "@/types/smart-elements";
 import type { CanvasElement } from "@/types/canvas";
 import type { TextFormatCommand } from "@/features/planning/elements/text/TextFormattingController";
+import { createSmartCanvasElement } from "@/features/planning/elements/smart/factories/createTypedSmartElement";
 
 const DEFAULT_VIEWPORT_HOST_SIZE = { width: 1280, height: 720 };
+function hasNonEmptyTransformPayload(element: { title?: unknown; content?: unknown; description?: unknown; data?: unknown }): boolean {
+  const hasText = [element.title, element.content, element.description].some(
+    (value) => typeof value === "string" && value.trim().length > 0,
+  );
+  if (hasText) return true;
+
+  return !!element.data && typeof element.data === "object" && Object.keys(element.data).length > 0;
+}
+
+
+function readWorkflowEntityBinding(element: CanvasElement, side: "source" | "target") {
+  const metadata = element.metadata ?? {};
+  const data = element.data ?? {};
+  const entityId = metadata.linkedEntityId ?? metadata.entityId ?? data.linkedEntityId ?? data.entityId ?? null;
+  const entityType = metadata.linkedEntityType ?? metadata.entityType ?? data.linkedEntityType ?? data.entityType ?? null;
+  return {
+    [`${side}EntityId`]: typeof entityId === "string" ? entityId : null,
+    [`${side}EntityType`]: typeof entityType === "string" ? entityType : null,
+  };
+}
+
+function createWorkflowRecord(
+  boardId: string,
+  source: CanvasElement,
+  target: CanvasElement,
+  index: number,
+  connectorElementId?: string,
+): PlanningConnectorLogicalRecord {
+  return {
+    connector_element_id: connectorElementId ?? crypto.randomUUID(),
+    board_id: boardId,
+    source_element_id: source.id,
+    target_element_id: target.id,
+    relationship_type: index === 0 ? "depends_on" : "delivers",
+    connector_kind: "root_connector",
+    label: index === 0 ? "Workflow dependency" : "Workflow handoff",
+    style: { stroke: "#3DBE8B", strokeWidth: 2 },
+    metadata: {
+      source: "workflow_transform",
+      connectorMode: "operational",
+      status: "approved",
+      approvedByUser: true,
+      relationshipType: index === 0 ? "depends_on" : "delivers",
+      workflowGenerated: true,
+      virtualConnector: !connectorElementId,
+      ...readWorkflowEntityBinding(source, "source"),
+      ...readWorkflowEntityBinding(target, "target"),
+    },
+    ...readWorkflowEntityBinding(source, "source"),
+    ...readWorkflowEntityBinding(target, "target"),
+    direction: "source_to_target",
+    confidence: 1,
+    source: "workflow_transform",
+    isAIGenerated: false,
+    approvedByUser: true,
+  };
+}
 
 function getViewportCenterWorldPosition(
   viewport: { zoom: number; pan: { x: number; y: number } },
@@ -63,7 +127,11 @@ function getViewportCenterWorldPosition(
   };
 }
 
-export const FloatingBar: React.FC = () => {
+interface FloatingBarProps {
+  boardId?: string | null;
+}
+
+export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
   const {
     elements,
     selectedElementIds,
@@ -81,8 +149,8 @@ export const FloatingBar: React.FC = () => {
   } = useCanvasStore();
 
   const activeTextEditor = useActiveTextEditor();
-  const { analyzeSelection, transformElements, isLoading: isAILoading, approvalDialog } = useSmartElementAI();
-  const [isTransforming, setIsTransforming] = useState(false);
+  const smartActions = useContextSmartActions(boardId);
+  const { isLoading: isAILoading, isTransforming, approvalDialog } = smartActions;
   const selectionMeta = useSelectionMeta();
 
   const {
@@ -340,14 +408,41 @@ export const FloatingBar: React.FC = () => {
     if (selectedElements.length === 0) return;
     setIsTransforming(true);
     try {
-      await transformElements(selectedElements.map((el) => el.id), type);
+      const result = await transformElements(selectedElements, type);
+      const renderableElements = (result?.elements || []).filter(hasNonEmptyTransformPayload);
+
+      if (renderableElements.length === 0) {
+        toast.info("لم يُرجع الذكاء الاصطناعي بيانات قابلة للعرض");
+        return;
+      }
+
+      const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+      const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+
+      renderableElements.forEach((element, index) => {
+        addElement(createSmartCanvasElement({
+          smartType: element.type || type,
+          position: element.position || { x: centerX + index * 30, y: centerY + index * 30 },
+          title: element.title,
+          description: element.description,
+          data: {
+            ...(element.data || {}),
+            content: element.content ?? element.data?.content,
+          },
+          metadata: {
+            sourceElementIds: selectedElementIds,
+            generatedBy: "floating-bar",
+          },
+        }) as CanvasElement);
+      });
+
       toast.success(`تم التحويل إلى ${type}`);
     } catch {
       toast.error("حدث خطأ أثناء التحويل");
     } finally {
       setIsTransforming(false);
     }
-  }, [selectedElements, transformElements]);
+  }, [addElement, selectedElementIds, selectedElements, transformElements]);
 
   const handleCustomTransform = useCallback(async (prompt: string) => {
     if (selectedElements.length === 0 || !prompt.trim()) return;
@@ -361,6 +456,70 @@ export const FloatingBar: React.FC = () => {
       setIsTransforming(false);
     }
   }, [selectedElements, transformElements]);
+
+  const handleWorkflowTransform = useCallback(async () => {
+    if (selectedElements.length < 2) {
+      toast.info("حدد عنصرين أو أكثر لإنشاء Workflow تشغيلي");
+      return;
+    }
+
+    if (!currentBoard?.id) {
+      toast.error("لا يمكن حفظ علاقات Workflow بدون لوحة نشطة");
+      return;
+    }
+
+    const selectedIds = new Set(selectedElementIds);
+    const selectedConnectors = elements.filter((element) => selectedIds.has(element.id) && isPlanningConnectorElement(element));
+    const linkedConnectors = elements.filter((element) => {
+      if (!isPlanningConnectorElement(element)) return false;
+      const data = element.data ?? {};
+      const sourceId = data.startPoint?.elementId ?? data.startNodeId;
+      const targetId = data.endPoint?.elementId ?? data.endNodeId;
+      return selectedIds.has(sourceId) && selectedIds.has(targetId);
+    });
+    const connectorRecords = [...selectedConnectors, ...linkedConnectors]
+      .filter((connector, index, connectors) => connectors.findIndex((item) => item.id === connector.id) === index)
+      .map((connector) => toPlanningConnectorLogicalRecord({
+        ...connector,
+        data: {
+          ...(connector.data ?? {}),
+          connectorMode: "operational",
+          relationshipType: connector.data?.relationshipType ?? "depends_on",
+          approvedByUser: true,
+        },
+        metadata: {
+          ...(connector.metadata ?? {}),
+          connectorMode: "operational",
+          relationshipType: connector.metadata?.relationshipType ?? connector.data?.relationshipType ?? "depends_on",
+          status: "approved",
+          approvedByUser: true,
+          source: "workflow_transform",
+        },
+      }, currentBoard.id))
+      .filter((record): record is PlanningConnectorLogicalRecord => Boolean(record));
+
+    const nodeElements = selectedElements.filter((element) => !isPlanningConnectorElement(element));
+    const fallbackRecords = connectorRecords.length === 0
+      ? nodeElements.slice(0, -1).map((source, index) => createWorkflowRecord(currentBoard.id, source, nodeElements[index + 1], index))
+      : [];
+    const records = connectorRecords.length > 0 ? connectorRecords : fallbackRecords;
+
+    if (records.length === 0) {
+      toast.info("حدد عنصرين مرتبطين على الأقل أو عنصرين لإنشاء Workflow تشغيلي");
+      return;
+    }
+
+    setIsTransforming(true);
+    try {
+      await upsertSmartConnectors(records);
+      toast.success(`تم حفظ ${records.length} علاقة Workflow تشغيلية`);
+    } catch (error) {
+      console.error("[workflow_transform] failed", error);
+      toast.error("تعذر حفظ علاقات Workflow التشغيلية");
+    } finally {
+      setIsTransforming(false);
+    }
+  }, [currentBoard?.id, elements, selectedElementIds, selectedElements]);
 
   const handleDeleteElements = useCallback((ids: string[]) => {
     ids.forEach((id) => deleteElement(id));
@@ -436,6 +595,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -477,6 +637,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -531,6 +692,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -581,6 +743,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -622,6 +785,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -665,6 +829,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -696,6 +861,7 @@ export const FloatingBar: React.FC = () => {
         onQuickGenerate={handleQuickGenerate}
         onTransform={handleTransform}
         onCustomTransform={handleCustomTransform}
+        boardId={boardId}
       />
     );
   };

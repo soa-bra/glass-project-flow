@@ -76,7 +76,7 @@ export const BaseDepartmentPanel: React.FC<BaseDepartmentPanelProps> = ({
   const tabItems = content.tabs.map(tab => ({ value: tab, label: tab }));
 
   return (
-    <div className="h-full flex flex-col bg-transparent overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col bg-transparent">
       {/* Header with Title and Tabs — fixed */}
       <div className="flex items-center justify-between px-6 py-[24px] my-[24px] flex-shrink-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -92,16 +92,18 @@ export const BaseDepartmentPanel: React.FC<BaseDepartmentPanelProps> = ({
       </div>
 
       {/* Content — scrollable */}
-      <div className="min-h-0 flex-1 overflow-auto">
-        <div className="px-6 pb-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
-            {content.tabs.map(tab => (
-              <TabsContent key={tab} value={tab} className="space-y-6">
-                {renderTabContent(tab, selectedDepartment)}
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
+      <div className="min-h-0 flex-1">
+        <ScrollArea className="h-full w-full">
+          <div className="px-6 pb-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">
+              {content.tabs.map(tab => (
+                <TabsContent key={tab} value={tab} className="space-y-6">
+                  {renderTabContent(tab, selectedDepartment)}
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );
