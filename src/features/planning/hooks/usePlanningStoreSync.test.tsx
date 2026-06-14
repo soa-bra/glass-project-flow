@@ -58,6 +58,7 @@ function resetStore(): void {
       { id: 'layer-b', name: 'Layer B', visible: true, locked: false, elements: [] },
     ],
     selectedElementIds: [],
+    pendingDeletedElementIds: [],
     activeLayerId: 'layer-a',
     history: { past: [], future: [] },
   } as never);
@@ -114,4 +115,52 @@ describe('usePlanningStoreSync layer membership', () => {
     ]);
     expect(state.layers.find((layer) => layer.id === 'layer-b')?.elements).toEqual([]);
   });
+  it('does not restore a locally deleted element when a stale realtime update arrives', async () => {
+    const deletedId = '44444444-4444-4444-8444-444444444444';
+    mocks.listPlanningElements.mockResolvedValueOnce([]);
+
+    renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+
+    await waitFor(() => {
+      expect(mocks.realtimeOptions?.onElementUpdate).toBeTypeOf('function');
+    });
+
+    act(() => {
+      usePlanningStore.getState().addElement({
+        id: deletedId,
+        type: 'text',
+        position: { x: 1, y: 2 },
+        size: { width: 100, height: 40 },
+        style: {},
+        content: 'Local element',
+        layerId: 'layer-a',
+      });
+    });
+
+    act(() => {
+      usePlanningStore.getState().deleteElements([deletedId]);
+    });
+
+    expect(usePlanningStore.getState().elements.some((element) => element.id === deletedId)).toBe(false);
+    expect(usePlanningStore.getState().pendingDeletedElementIds).toContain(deletedId);
+
+    await act(async () => {
+      mocks.realtimeOptions.onElementUpdate(
+        createPlanningElement({
+          id: deletedId,
+          metadata: { layerId: 'layer-a' },
+          updated_at: '2026-01-01T00:00:00Z',
+        }),
+      );
+    });
+
+    expect(usePlanningStore.getState().elements.some((element) => element.id === deletedId)).toBe(false);
+
+    await act(async () => {
+      mocks.realtimeOptions.onElementDelete(deletedId);
+    });
+
+    expect(usePlanningStore.getState().pendingDeletedElementIds).not.toContain(deletedId);
+  });
+
 });
