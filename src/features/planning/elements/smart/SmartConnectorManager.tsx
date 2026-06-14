@@ -14,6 +14,10 @@ import {
   canUpdateConnector,
   type ConnectorPolicyElement,
 } from '@/features/planning/integration/connectors/connectorPolicy';
+import { UNIFIED_RELATIONSHIP_TYPES } from '@/features/planning/integration/connectors/relationshipTypes';
+import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
+import { suggestSmartConnectorRelationship, type ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
+import { audit } from '@/services/audit';
 
 interface ElementBounds extends ConnectorPolicyElement {
   id: string;
@@ -272,7 +276,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
 
     if (suggestion.type !== 'connector') return;
 
-    const relationshipType = (suggestion.data?.relationshipType ?? connector.relationshipType ?? connector.connectionType ?? 'references') as RootConnectorData['relationshipType'];
+    const relationshipType = (suggestion.data?.relationshipType ?? connector.relationshipType ?? connector.connectionType ?? UNIFIED_RELATIONSHIP_TYPES[0]) as RootConnectorData['relationshipType'];
     const now = new Date().toISOString();
     const approvedConnector: RootConnectorData = {
       ...connector,
@@ -302,6 +306,74 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       },
     });
   }, [boardId, handleUpdateConnector, onInsertComponent]);
+
+
+  const handleCreateWorkflow = useCallback((connector: RootConnectorData) => {
+    const now = new Date().toISOString();
+    handleUpdateConnector(connector.id, {
+      ...connector,
+      status: 'operational',
+      purpose: 'operational',
+      connectorMode: 'operational',
+      requiresReview: false,
+      approvedByUser: true,
+      updatedAt: now,
+    });
+    toast.success('تم تجهيز Workflow من العلاقة', {
+      description: 'تم تحويل العلاقة إلى حالة تشغيلية ويمكن ربطها بخطوات العمل.',
+    });
+    void audit({
+      resource_type: 'smart_connector',
+      action: 'canvas.connector.workflow.create_requested',
+      resource_id: connector.id,
+      scope_type: boardId ? 'board' : null,
+      scope_id: boardId ?? null,
+      metadata: {
+        sourceElementId: connector.startPoint.elementId,
+        targetElementId: connector.endPoint.elementId,
+        relationshipType: connector.relationshipType ?? connector.connectionType,
+      },
+    });
+  }, [boardId, handleUpdateConnector]);
+
+  const handleCreateElementFromConnector = useCallback((connector: RootConnectorData) => {
+    const position = {
+      x: (connector.startPoint.x + connector.endPoint.x) / 2,
+      y: (connector.startPoint.y + connector.endPoint.y) / 2,
+    };
+    const suggestion: AISuggestion = {
+      id: `connector-element-${connector.id}-${Date.now()}`,
+      type: 'component',
+      title: 'عنصر من علاقة',
+      description: `عنصر مولّد من علاقة ${connector.relationshipType ?? connector.connectionType ?? UNIFIED_RELATIONSHIP_TYPES[0]}`,
+      confidence: 1,
+      data: {
+        position,
+        sourceConnectorId: connector.id,
+        relationshipType: connector.relationshipType ?? connector.connectionType,
+      },
+    };
+
+    if (onInsertComponent) {
+      onInsertComponent(suggestion, position);
+      toast.success('تم إنشاء عنصر من العلاقة');
+    } else {
+      toast.info('تم طلب إنشاء عنصر من العلاقة', { description: 'لم يتم تمرير معالج إدراج عنصر لهذه اللوحة.' });
+    }
+
+    void audit({
+      resource_type: 'smart_connector',
+      action: 'canvas.connector.element.create_requested',
+      resource_id: connector.id,
+      scope_type: boardId ? 'board' : null,
+      scope_id: boardId ?? null,
+      metadata: {
+        sourceElementId: connector.startPoint.elementId,
+        targetElementId: connector.endPoint.elementId,
+        relationshipType: connector.relationshipType ?? connector.connectionType,
+      },
+    });
+  }, [boardId, onInsertComponent]);
 
   const handleAnchorDragStart = useCallback((point: ConnectorPoint) => {
     setDragStartPoint(point);
@@ -372,7 +444,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
               anchorPoint: edge.anchor,
               subAnchor: resolveSubAnchor(target, p.x, p.y),
             },
-            'references',
+            UNIFIED_RELATIONSHIP_TYPES[0],
           );
         }
       }
@@ -471,15 +543,17 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
             onUpdate={(data) => handleUpdateConnector(connector.id, {
               ...data,
               // preserve the original anchor descriptors, never persist the resolved x/y
-              startPoint: { ...connector.startPoint, anchorPoint: data.startPoint.anchorPoint, subAnchor: data.startPoint.subAnchor },
-              endPoint: { ...connector.endPoint, anchorPoint: data.endPoint.anchorPoint, subAnchor: data.endPoint.subAnchor },
-              relationshipType: data.relationshipType || data.connectionType || 'references',
-              connectionType: data.connectionType || data.relationshipType || 'references',
+              startPoint: { ...connector.startPoint, anchorPoint: data.startPoint.anchorPoint },
+              endPoint: { ...connector.endPoint, anchorPoint: data.endPoint.anchorPoint },
+              relationshipType: data.relationshipType || data.connectionType || UNIFIED_RELATIONSHIP_TYPES[0],
+              connectionType: data.connectionType || data.relationshipType || UNIFIED_RELATIONSHIP_TYPES[0],
             })}
             onSelect={() => selectConnector(connector.id)}
             onDelete={() => handleDeleteConnector(connector.id)}
             onAISuggest={() => handleAISuggest(connector)}
             onInsertSuggestion={(suggestion) => handleInsertSuggestion(connector, suggestion)}
+            onCreateWorkflow={handleCreateWorkflow}
+            onCreateElement={handleCreateElementFromConnector}
           />
         );
       })}

@@ -45,14 +45,14 @@ export interface AISuggestion {
   data?: any;
 }
 
-export type ConnectorStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'active' | 'archived' | 'visual_only' | 'suggested' | 'confirmed' | 'operational' | 'broken';
-export type ConnectorDirection = 'source_to_target' | 'target_to_source' | 'bidirectional' | 'undirected' | 'forward' | 'reverse';
+export type ConnectorRelationshipStatus = 'draft' | 'suggested' | 'confirmed' | 'approved' | 'operational' | 'broken' | 'pending_review' | 'rejected' | 'active' | 'archived' | 'visual_only';
+export type ConnectorStatus = ConnectorRelationshipStatus;
+export type ConnectorDirection = 'source_to_target' | 'target_to_source' | 'forward' | 'reverse' | 'bidirectional' | 'undirected';
+export type ConnectorPurpose = 'visual-only' | 'semantic' | 'operational';
 export type ConnectorMode = 'visual' | 'semantic' | 'operational';
 export type ConnectorPointType = 'element' | 'anchor' | 'sub_anchor' | 'free_point';
 export type ConnectorBranchMode = 'single' | 'branch' | 'merge' | 'multi_target' | 'multi_source';
 export type ConnectorPermissionScope = 'owner' | 'team' | 'board' | 'workspace' | 'public' | 'allowed' | 'restricted' | 'blocked';
-export type ConnectorPurpose = 'visual-only' | 'semantic' | 'operational';
-export type ConnectorRelationshipStatus = ConnectorStatus;
 export type ConnectorSource = 'user' | 'ai' | 'system' | 'import';
 
 export interface SmartConnectorAction {
@@ -93,8 +93,9 @@ export interface RootConnectorData extends UnifiedConnectorData {
   style?: 'solid' | 'dashed' | 'dotted' | 'animated';
   connectionType?: UnifiedRelationshipType;
   relationshipType?: UnifiedRelationshipType;
+  status?: ConnectorRelationshipStatus;
   purpose?: ConnectorPurpose;
-  source?: ConnectorSource;
+  source?: 'user' | 'ai' | 'system';
   aiConfidence?: number;
   requiresReview?: boolean;
   approvedByUser?: boolean;
@@ -131,12 +132,12 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
 }) => {
   const HIT_RADIUS = 16;
   const ARROW_SIZE = 6;
-  const CONNECTOR_OFFSET = 16;
+  const ARROW_HOVER_SCALE = 1.35;
   const [isHovered, setIsHovered] = useState(false);
   const anchor = {
     anchorPoint: 'top' as const,
     x: bounds.x + bounds.width / 2,
-    y: bounds.y - CONNECTOR_OFFSET,
+    y: bounds.y,
   };
 
   const handlePointerDown = (
@@ -169,14 +170,14 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         onMouseDown={(event) => handlePointerDown(anchor, event)}
       />
       <path
-        d={`M ${anchor.x} ${anchor.y + ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y - ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y - ARROW_SIZE} Z`}
+        d={`M ${anchor.x} ${anchor.y - ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y + ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y + ARROW_SIZE} Z`}
         fill="#0B0F12"
         stroke="#FFFFFF"
         strokeWidth={1.5}
         className="connection-anchor-dot drop-shadow-sm"
         pointerEvents="none"
         style={{
-          transform: active ? 'scale(1.3)' : 'scale(1)',
+          transform: active ? `scale(${ARROW_HOVER_SCALE})` : 'scale(1)',
           transformBox: 'fill-box',
           transformOrigin: 'center',
           transition: 'transform 120ms ease',
@@ -204,23 +205,7 @@ interface FloatingPanelProps {
   isLoadingAI: boolean;
 }
 
-
-export const getConnectorVisualState = (data: RootConnectorData) => {
-  const status = data.status ?? 'suggested';
-  if (data.permissionScope === 'blocked') {
-    return { key: 'blocked', label: 'محظور', tag: 'صلاحية محظورة', color: '#E5564D', activeColor: '#C93F36', dasharray: '2,4', badgeClassName: 'border-red-200 bg-red-50 text-red-700' };
-  }
-  if (data.permissionScope === 'restricted') {
-    return { key: 'restricted', label: 'مقيّد', tag: 'يتطلب صلاحية', color: '#F6C445', activeColor: '#D8A824', dasharray: '8,4', badgeClassName: 'border-amber-200 bg-amber-50 text-amber-700' };
-  }
-  if (data.requiresReview || status === 'suggested' || status === 'pending_review' || data.approvedByUser === false) {
-    return { key: 'proposed', label: 'مقترح', tag: 'بانتظار الاعتماد', color: '#9CA3AF', activeColor: '#6B7280', dasharray: '8,4', badgeClassName: 'border-slate-200 bg-slate-50 text-slate-700' };
-  }
-  if (status === 'operational' || data.connectorMode === 'operational' || data.purpose === 'operational') {
-    return { key: 'operational', label: 'تشغيلي', tag: 'قابل للتنفيذ', color: '#3DBE8B', activeColor: '#249E70', dasharray: 'none', badgeClassName: 'border-emerald-200 bg-emerald-50 text-emerald-700' };
-  }
-  return { key: 'confirmed', label: 'مؤكد', tag: 'علاقة دلالية', color: data.color || '#0B0F12', activeColor: data.color || '#0B0F12', dasharray: 'none', badgeClassName: 'border-blue-200 bg-blue-50 text-blue-700' };
-};
+const DEFAULT_RELATIONSHIP_TYPE = UNIFIED_RELATIONSHIP_TYPES[0];
 
 const COLOR_SWATCHES = ['#9CA3AF', '#0B0F12', '#3DA8F5', '#3DBE8B', '#F6C445', '#E5564D'];
 const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; label: string }> = [
@@ -229,7 +214,8 @@ const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; lab
   { value: 'dotted', label: 'منقّط' },
   { value: 'animated', label: 'متحرك' },
 ];
-const WIDTH_OPTIONS = [0.25, 0.5, 0.75, 1];
+const DEFAULT_CONNECTOR_STROKE_WIDTH = 1.5;
+const WIDTH_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
 const STATUS_OPTIONS: Array<{ value: ConnectorRelationshipStatus; label: string }> = [
   { value: 'suggested', label: 'مقترحة' },
   { value: 'confirmed', label: 'مؤكدة' },
@@ -251,6 +237,24 @@ const PERMISSION_OPTIONS: Array<{ value: ConnectorPermissionScope; label: string
   { value: 'restricted', label: 'مقيد' },
   { value: 'blocked', label: 'محظور' },
 ];
+
+
+const getConnectorVisualState = (data: RootConnectorData) => {
+  const status = data.status || 'suggested';
+  if (status === 'broken' || status === 'rejected') {
+    return { label: 'مكسورة', tag: 'تحتاج إصلاح', color: '#E5564D', activeColor: '#DC2626', dasharray: '2,4', badgeClassName: 'border-red-200 bg-red-50 text-red-700' };
+  }
+  if (data.requiresReview || status === 'suggested' || status === 'pending_review') {
+    return { label: 'مقترحة', tag: 'قيد المراجعة', color: '#F6C445', activeColor: '#D97706', dasharray: '6,4', badgeClassName: 'border-amber-200 bg-amber-50 text-amber-700' };
+  }
+  if (status === 'operational' || data.connectorMode === 'operational' || data.purpose === 'operational') {
+    return { label: 'تشغيلية', tag: 'قابلة للتنفيذ', color: '#3DBE8B', activeColor: '#059669', dasharray: 'none', badgeClassName: 'border-emerald-200 bg-emerald-50 text-emerald-700' };
+  }
+  if (status === 'confirmed' || status === 'approved' || data.approvedByUser) {
+    return { label: 'مؤكدة', tag: 'دلالية', color: data.color || '#9CA3AF', activeColor: '#0B0F12', dasharray: 'none', badgeClassName: 'border-slate-200 bg-slate-50 text-slate-700' };
+  }
+  return { label: 'مسودة', tag: 'مرئية', color: data.color || '#9CA3AF', activeColor: '#0B0F12', dasharray: 'none', badgeClassName: 'border-border bg-muted/60 text-muted-foreground' };
+};
 
 const getConnectorActionDisabledReason = (
   data: RootConnectorData,
@@ -278,9 +282,9 @@ interface ConnectorInspectorProps {
 }
 
 export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, onPatch }) => {
-  const relationshipType = data.relationshipType || data.connectionType || 'reference';
+  const relationshipType = data.relationshipType || data.connectionType || DEFAULT_RELATIONSHIP_TYPE;
   const visualState = getConnectorVisualState(data);
-  const isSuggested = visualState.key === 'proposed';
+  const isSuggested = (data.status || 'suggested') === 'suggested';
 
   const handleRelationshipTypeChange = (value: UnifiedRelationshipType) => {
     onPatch({
@@ -371,7 +375,7 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
         </div>
         <div className="space-y-1">
           <span className="text-[10px] text-muted-foreground">السماكة</span>
-          <Select value={String(data.strokeWidth ?? 0.25)} onValueChange={(value) => onPatch({ strokeWidth: parseFloat(value) })}>
+          <Select value={String(data.strokeWidth ?? DEFAULT_CONNECTOR_STROKE_WIDTH)} onValueChange={(value) => onPatch({ strokeWidth: parseFloat(value) })}>
             <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               {WIDTH_OPTIONS.map((width) => (
@@ -445,6 +449,75 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
         عكس الاتجاه
       </Button>
     </div>
+  );
+};
+
+
+interface ConnectorQuickPanelProps {
+  x: number;
+  y: number;
+  data: RootConnectorData;
+  onPatch: (patch: Partial<RootConnectorData>) => void;
+  onCreateWorkflow?: () => void;
+  onCreateElement?: () => void;
+}
+
+const ConnectorQuickPanel: React.FC<ConnectorQuickPanelProps> = ({
+  x,
+  y,
+  data,
+  onPatch,
+  onCreateWorkflow,
+  onCreateElement,
+}) => {
+  const relationshipType = data.relationshipType || data.connectionType || DEFAULT_RELATIONSHIP_TYPE;
+  const workflowDisabledReason = getConnectorActionDisabledReason(data, 'workflow', Boolean(onCreateWorkflow));
+  const elementDisabledReason = getConnectorActionDisabledReason(data, 'element', Boolean(onCreateElement));
+
+  return (
+    <foreignObject x={x - 132} y={y - 130} width="264" height="148" className="overflow-visible" data-interactive-control>
+      <div
+        className="rounded-xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur-sm"
+        dir="rtl"
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <span className="text-[10px] text-muted-foreground">نوع العلاقة</span>
+            <Select value={relationshipType} onValueChange={(value) => onPatch({ connectionType: value as UnifiedRelationshipType, relationshipType: value as UnifiedRelationshipType })}>
+              <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {UNIFIED_RELATIONSHIP_TYPES.map((type) => (
+                  <SelectItem key={type} value={type} className="text-xs">{getRelationshipTypeLabel(type)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] text-muted-foreground">حالة العلاقة</span>
+            <Select value={data.status || 'suggested'} onValueChange={(value) => onPatch({ status: value as ConnectorRelationshipStatus })}>
+              <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="text-xs">{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Button size="sm" onClick={onCreateWorkflow} disabled={Boolean(workflowDisabledReason)} className="h-8 text-xs gap-1.5" title={workflowDisabledReason ?? undefined}>
+            <Wand2 className="h-3.5 w-3.5" />
+            إنشاء Workflow
+          </Button>
+          <Button size="sm" variant="outline" onClick={onCreateElement} disabled={Boolean(elementDisabledReason)} className="h-8 text-xs gap-1.5" title={elementDisabledReason ?? undefined}>
+            <Plus className="h-3.5 w-3.5" />
+            إنشاء عنصر
+          </Button>
+        </div>
+      </div>
+    </foreignObject>
   );
 };
 
@@ -708,6 +781,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [isQuickPanelOpen, setIsQuickPanelOpen] = useState(false);
 
   const handleSave = (title: string, description: string) => {
     onUpdate?.({
@@ -827,10 +901,9 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const baseStroke = connectorVisualState.color;
   const activeStroke = connectorVisualState.activeColor;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  // Clamp legacy values: any stored width > 1 is treated as legacy and forced thin
-  const storedWidth = data.strokeWidth ?? 0.25;
-  const baseWidth = storedWidth > 1 ? 0.25 : storedWidth;
-  const strokeWidth = isSelected ? Math.max(0.5, baseWidth) : baseWidth;
+  // Apply the new visual default only when older connectors do not store a custom width.
+  const baseWidth = data.strokeWidth ?? DEFAULT_CONNECTOR_STROKE_WIDTH;
+  const strokeWidth = baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
@@ -891,6 +964,44 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         </>
       )}
 
+      {/* Midpoint quick action opens the compact relationship panel. */}
+      <foreignObject
+        x={midX - 12}
+        y={midY - 28}
+        width="24"
+        height="24"
+        className="overflow-visible"
+        data-interactive-control
+      >
+        <button
+          type="button"
+          className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="فتح لوحة العلاقة المختصرة"
+          data-interactive-control
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect?.();
+            setIsQuickPanelOpen((open) => !open);
+          }}
+        >
+          <Settings2 className="h-3.5 w-3.5" />
+        </button>
+      </foreignObject>
+
+      <AnimatePresence>
+        {isQuickPanelOpen && (
+          <ConnectorQuickPanel
+            x={midX}
+            y={midY}
+            data={data}
+            onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
+            onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
+            onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
+          />
+        )}
+      </AnimatePresence>
+
       {/* Floating info panel — only when selected or editing */}
       <AnimatePresence>
         {(isSelected || isEditing) && (
@@ -932,7 +1043,7 @@ export const RootConnectorCreator: React.FC<RootConnectorCreatorProps> = ({
 }) => {
   const [startPoint, setStartPoint] = useState<ConnectorPoint | null>(null);
   const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
-  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('reference');
+  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>(DEFAULT_RELATIONSHIP_TYPE);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {

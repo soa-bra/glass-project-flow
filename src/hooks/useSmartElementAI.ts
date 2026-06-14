@@ -1,6 +1,6 @@
 import { createElement, useCallback, useState } from 'react';
 import type { ReactNode } from 'react';
-import { SmartElementType } from '@/types/smart-elements';
+import { SmartElementType, type SmartElementDataType } from '@/types/smart-elements';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -20,12 +20,16 @@ import {
 } from '@/features/ai/gateway/aiGateway.client';
 import { getAIActionDefinition, type AIActionName } from '@/features/ai/gateway/aiActionRegistry';
 
-interface GeneratedElement {
+export interface SmartTransformationElement<T extends SmartElementType = SmartElementType> {
   id: string;
-  type: SmartElementType;
+  type: T;
+  /** Human-readable title used for the canvas element content and data.title fallback. */
   title: string;
+  /** Renderable body/summary used for data.content fallback when the target schema has no body field. */
+  content: string;
   description?: string;
-  data: Record<string, any>;
+  /** Target-type payload that must contain displayable fields for the requested smart element. */
+  data: SmartElementDataType<T> & { title?: string; content?: string };
   position: { x: number; y: number };
   connections?: Array<{
     targetIndex: number;
@@ -34,8 +38,8 @@ interface GeneratedElement {
   }>;
 }
 
-interface GenerationResult {
-  elements: GeneratedElement[];
+export interface GenerationResult {
+  elements: SmartTransformationElement[];
   layout: 'horizontal' | 'vertical' | 'radial' | 'grid' | 'freeform';
   summary: string;
 }
@@ -149,7 +153,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     return false;
   }, [boardId, boardPermissions]);
 
-  const callAI = useCallback(async (
+  const callAI = useCallback(async <TResult,>(
     action: AIActionName,
     payload: {
       prompt?: string;
@@ -166,40 +170,14 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     setError(null);
 
     try {
-      return await invokeAIAction({
+      return await invokeAIAction<TResult>({
         action,
         prompt: payload.prompt,
         selectedElements: payload.selectedElements,
         context: payload.context,
         departmentId: 'planning',
       });
-      const aiPayloadContext = sanitizeAIContext(unifiedContext);
-      const requestContext = buildAIRequestContext(rawContext);
-
-      const { data, error: fnError } = await supabase.functions.invoke('smart-elements-ai', {
-        body: {
-          action,
-          prompt: payload.prompt,
-          selectedElements: Array.isArray(payload.selectedElements)
-            ? aiPayloadContext.selectedElements
-            : payload.selectedElements,
-          context: requestContext
-        }
-      });
-
-      const errorPayload = fnError ? await readFunctionErrorPayload(fnError) : null;
-      const responsePayload = errorPayload || data;
-
-      if (fnError) {
-        if (responsePayload?.code === 'HUMAN_APPROVAL_REQUIRED') {
-          throw new HumanApprovalRequiredError(
-            responsePayload.error || 'التحويل حساس ويتطلب موافقة بشرية قبل التنفيذ',
-            responsePayload.sensitivity || { isSensitive: true, score: 1, reasons: [] }
-          );
-        }
-        throw new Error(responsePayload?.error || fnError.message);
-      }
-
+    } catch (err) {
       if (err instanceof AIGatewayError) {
         if (err.code === 'RATE_LIMIT_EXCEEDED') {
           toast.error('تم تجاوز حد الطلبات', {
@@ -223,6 +201,11 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
       const message = err instanceof Error ? err.message : 'حدث خطأ غير متوقع';
       setError(message);
       console.error('[useSmartElementAI] Error:', err);
+
+      if (err instanceof HumanApprovalRequiredError) {
+        throw err;
+      }
+
       return null;
     } finally {
       setIsLoading(false);
@@ -253,7 +236,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     prompt: string,
     preferredType?: SmartElementType
   ): Promise<GenerationResult | null> => {
-    const result = await callAI('generate_smart_doc', {
+    const result = await callAI<GenerationResult>('generate_smart_doc', {
       prompt,
       context: preferredType ? { preferredType } : undefined
     });
@@ -276,7 +259,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
       return null;
     }
 
-    return await callAI('analyze_project_impact', {
+    return await callAI<AnalysisResult>('analyze_project_impact', {
       selectedElements: elements,
       prompt: additionalPrompt
     });
@@ -299,7 +282,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
     let result: GenerationResult | null = null;
 
     try {
-      result = await callAI('convert_to_tasks', {
+      result = await callAI<GenerationResult>('convert_to_tasks', {
         selectedElements: elements,
         prompt,
         context: { targetType }
@@ -337,7 +320,7 @@ export function useSmartElementAI(boardId?: string | null): UseSmartElementAIRet
         approvalReason: approval.approvalReason || 'اعتماد بشري من واجهة التحويل الذكي',
       };
 
-      result = await callAI('convert_to_tasks', {
+      result = await callAI<GenerationResult>('convert_to_tasks', {
         selectedElements: elements,
         prompt,
         context: {
