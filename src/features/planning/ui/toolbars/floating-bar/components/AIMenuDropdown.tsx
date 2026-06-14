@@ -28,6 +28,7 @@ interface AIMenuDropdownProps {
   onQuickGenerate: () => void;
   onTransform: (type: SmartElementType) => void;
   onCustomTransform: (prompt: string) => void;
+  onWorkflowTransform: () => void;
   selectedCount: number;
   boardId?: string | null;
 }
@@ -37,6 +38,7 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
   onQuickGenerate,
   onTransform,
   onCustomTransform,
+  onWorkflowTransform,
   selectedCount,
   boardId,
 }) => {

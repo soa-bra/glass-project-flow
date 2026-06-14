@@ -135,6 +135,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
         onQuickGenerate={onQuickGenerate}
         onTransform={onTransform}
         onCustomTransform={onCustomTransform}
+        onWorkflowTransform={onWorkflowTransform}
         selectedCount={selectedCount}
         boardId={boardId}
       />
