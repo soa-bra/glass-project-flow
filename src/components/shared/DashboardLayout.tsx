@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tabs } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { TYPOGRAPHY, COLORS, LAYOUT } from './design-system/constants';
 import { Reveal } from './motion';
@@ -15,6 +16,8 @@ interface DashboardLayoutProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   children: React.ReactNode;
+  headerSlot?: React.ReactNode;
+  contentSlot?: React.ReactNode;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -23,10 +26,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   activeTab,
   onTabChange,
   children,
+  headerSlot,
+  contentSlot,
 }) => {
   return (
-    <div className="flex min-h-full flex-col" style={{ background: 'var(--sb-column-3-bg)' }}>
-      <div dir="rtl" className={`${LAYOUT.FLEX_BETWEEN} sticky top-0 z-20 my-0 flex-shrink-0 px-6 py-[45px]`} style={{ background: 'var(--sb-column-3-bg)' }}>
+    <div className="sb-surface-panel flex h-full min-h-0 flex-col overflow-hidden">
+      <div
+        dir="rtl"
+        data-dashboard-slot="header"
+        className={`${LAYOUT.FLEX_BETWEEN} z-20 my-0 flex-shrink-0 px-6 py-[45px]`}
+      >
         <Reveal delay={0}>
           <h2 className={`whitespace-nowrap px-[24px] text-3xl font-medium ${COLORS.PRIMARY_TEXT} ${TYPOGRAPHY.ARABIC_FONT}`}>
             {title}
@@ -34,14 +43,25 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </Reveal>
         <Reveal delay={0.15}>
           <div className="w-fit">
-            <AnimatedTabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} />
+            {headerSlot ?? <AnimatedTabs tabs={tabs} activeTab={activeTab} onTabChange={onTabChange} />}
           </div>
         </Reveal>
       </div>
 
-      <Tabs value={activeTab} onValueChange={onTabChange} className="flex w-full flex-col px-6 pb-6" dir="rtl">
-        {children}
-      </Tabs>
+      <div data-dashboard-slot="scroll-content" className="min-h-0 flex-1 overflow-hidden">
+        <ScrollArea className="h-full w-full">
+          {contentSlot ?? (
+            <Tabs
+              value={activeTab}
+              onValueChange={onTabChange}
+              className="flex min-h-0 w-full flex-col px-6 pb-6"
+              dir="rtl"
+            >
+              {children}
+            </Tabs>
+          )}
+        </ScrollArea>
+      </div>
     </div>
   );
 };
