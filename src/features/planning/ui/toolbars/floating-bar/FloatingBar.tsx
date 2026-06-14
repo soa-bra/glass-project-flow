@@ -2,8 +2,7 @@ import React, { useMemo, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { usePlanningStore } from "@/stores/planningStore";
-import { useSmartElementAI } from "@/hooks/useSmartElementAI";
+import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
@@ -50,8 +49,18 @@ import {
 import type { SmartElementType } from "@/types/smart-elements";
 import type { CanvasElement } from "@/types/canvas";
 import type { TextFormatCommand } from "@/features/planning/elements/text/TextFormattingController";
+import { createSmartCanvasElement } from "@/features/planning/elements/smart/factories/createTypedSmartElement";
 
 const DEFAULT_VIEWPORT_HOST_SIZE = { width: 1280, height: 720 };
+function hasNonEmptyTransformPayload(element: { title?: unknown; content?: unknown; description?: unknown; data?: unknown }): boolean {
+  const hasText = [element.title, element.content, element.description].some(
+    (value) => typeof value === "string" && value.trim().length > 0,
+  );
+  if (hasText) return true;
+
+  return !!element.data && typeof element.data === "object" && Object.keys(element.data).length > 0;
+}
+
 
 function readWorkflowEntityBinding(element: CanvasElement, side: "source" | "target") {
   const metadata = element.metadata ?? {};
@@ -118,7 +127,11 @@ function getViewportCenterWorldPosition(
   };
 }
 
-export const FloatingBar: React.FC = () => {
+interface FloatingBarProps {
+  boardId?: string | null;
+}
+
+export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
   const {
     elements,
     selectedElementIds,
@@ -136,9 +149,8 @@ export const FloatingBar: React.FC = () => {
   } = useCanvasStore();
 
   const activeTextEditor = useActiveTextEditor();
-  const currentBoard = usePlanningStore((state) => state.currentBoard);
-  const { analyzeSelection, transformElements, isLoading: isAILoading, approvalDialog } = useSmartElementAI();
-  const [isTransforming, setIsTransforming] = useState(false);
+  const smartActions = useContextSmartActions(boardId);
+  const { isLoading: isAILoading, isTransforming, approvalDialog } = smartActions;
   const selectionMeta = useSelectionMeta();
 
   const {
@@ -396,14 +408,41 @@ export const FloatingBar: React.FC = () => {
     if (selectedElements.length === 0) return;
     setIsTransforming(true);
     try {
-      await transformElements(selectedElements.map((el) => el.id), type);
+      const result = await transformElements(selectedElements, type);
+      const renderableElements = (result?.elements || []).filter(hasNonEmptyTransformPayload);
+
+      if (renderableElements.length === 0) {
+        toast.info("لم يُرجع الذكاء الاصطناعي بيانات قابلة للعرض");
+        return;
+      }
+
+      const centerX = selectedElements.reduce((sum, el) => sum + (el.position?.x || 0), 0) / selectedElements.length;
+      const centerY = selectedElements.reduce((sum, el) => sum + (el.position?.y || 0), 0) / selectedElements.length;
+
+      renderableElements.forEach((element, index) => {
+        addElement(createSmartCanvasElement({
+          smartType: element.type || type,
+          position: element.position || { x: centerX + index * 30, y: centerY + index * 30 },
+          title: element.title,
+          description: element.description,
+          data: {
+            ...(element.data || {}),
+            content: element.content ?? element.data?.content,
+          },
+          metadata: {
+            sourceElementIds: selectedElementIds,
+            generatedBy: "floating-bar",
+          },
+        }) as CanvasElement);
+      });
+
       toast.success(`تم التحويل إلى ${type}`);
     } catch {
       toast.error("حدث خطأ أثناء التحويل");
     } finally {
       setIsTransforming(false);
     }
-  }, [selectedElements, transformElements]);
+  }, [addElement, selectedElementIds, selectedElements, transformElements]);
 
   const handleCustomTransform = useCallback(async (prompt: string) => {
     if (selectedElements.length === 0 || !prompt.trim()) return;
@@ -556,7 +595,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
-            onWorkflowTransform={handleWorkflowTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -598,7 +637,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
-            onWorkflowTransform={handleWorkflowTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -653,7 +692,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
-            onWorkflowTransform={handleWorkflowTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -704,7 +743,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
-            onWorkflowTransform={handleWorkflowTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -746,7 +785,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
-            onWorkflowTransform={handleWorkflowTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -790,7 +829,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
-            onWorkflowTransform={handleWorkflowTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -822,7 +861,7 @@ export const FloatingBar: React.FC = () => {
         onQuickGenerate={handleQuickGenerate}
         onTransform={handleTransform}
         onCustomTransform={handleCustomTransform}
-        onWorkflowTransform={handleWorkflowTransform}
+        boardId={boardId}
       />
     );
   };

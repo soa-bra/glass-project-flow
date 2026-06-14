@@ -6,7 +6,6 @@ import { useCollaborationStore } from '@/stores/collaborationStore';
 import { getActiveElementLock, getElementLockExpiryDelayMs } from './elementLockState';
 import type { CanvasElement as CanvasElementType } from '@/types/canvas';
 import { SmartElementRenderer } from '@/features/planning/elements/smart/SmartElementRenderer';
-import { ResizeHandle } from '@/features/planning/canvas/selection/ResizeHandle';
 import { TextEditor } from '@/features/planning/elements/text/TextEditor';
 import { StickyNoteEditor } from '@/features/planning/elements/text/StickyNoteEditor';
 import { ShapeRenderer } from '@/features/planning/elements/shared';
@@ -20,6 +19,12 @@ import MindMapConnector from '@/features/planning/elements/mindmap/MindMapConnec
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
+
+export const isInteractiveCanvasTarget = (target: HTMLElement): boolean => {
+  return Boolean(
+    target.closest('button, input, textarea, select, [contenteditable="true"], [data-interactive-control]'),
+  );
+};
 
 const isArrowShape = (shapeType: string | undefined): boolean => {
   if (!shapeType) return false;
@@ -290,6 +295,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     }
     const target = e.target as HTMLElement;
     if (target.classList.contains('resize-handle') || target.hasAttribute('data-resize-handle')) return;
+    if (isInteractiveCanvasTarget(target)) return;
     if (activeTool !== 'selection_tool') return;
     e.stopPropagation();
 
@@ -387,7 +393,6 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     };
   }, [stableMouseMove, stableMouseUp]);
 
-  const shouldShowSelectionOutline = isSelected && !(element.type === 'text' && isEditingThisText) && !isElementArrow(element);
   const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
 
   return (
@@ -402,12 +407,12 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         top: element.position.y,
         width: element.size.width,
         height: element.size.height,
-        border: shouldShowSelectionOutline ? '2px solid hsl(var(--accent-green))' : 'none',
+        border: 'none',
         borderRadius: '0',
         padding: '0',
         boxSizing: 'border-box',
         backgroundColor: 'transparent',
-        boxShadow: shouldShowSelectionOutline ? '0 0 0 2px rgba(61, 190, 139, 0.2)' : 'none',
+        boxShadow: 'none',
         outline: 'none',
         opacity: isLocked ? 0.6 : 1,
         pointerEvents: 'auto',
@@ -590,22 +595,10 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
         </div>
       )}
 
-      {isSelected && !isLocked && !(element.type === 'text' && isEditingThisText) && (
-        element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) ? (
+      {isSelected && !isLocked && !(element.type === 'text' && isEditingThisText) &&
+        element.type === 'shape' && isArrowShape(element.shapeType || element.data?.shapeType) && (
           <ArrowControlPoints element={element} viewport={viewport} />
-        ) : (
-          <>
-            <ResizeHandle position="nw" elementId={element.id} />
-            <ResizeHandle position="ne" elementId={element.id} />
-            <ResizeHandle position="sw" elementId={element.id} />
-            <ResizeHandle position="se" elementId={element.id} />
-            <ResizeHandle position="n" elementId={element.id} />
-            <ResizeHandle position="s" elementId={element.id} />
-            <ResizeHandle position="w" elementId={element.id} />
-            <ResizeHandle position="e" elementId={element.id} />
-          </>
-        )
-      )}
+        )}
     </div>
   );
 };

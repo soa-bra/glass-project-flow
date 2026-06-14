@@ -27,6 +27,7 @@ import { NODE_COLORS } from '@/types/mindmap-canvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { SupraMenuOption, supraMenuOptionClassName } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Smart Element Configuration
@@ -381,17 +382,13 @@ const SmartElementsPanel: React.FC = () => {
         </h4>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map(cat => (
-            <button
+            <SupraMenuOption
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors ${
-                selectedCategory === cat.id
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              {cat.label}
-            </button>
+              selected={selectedCategory === cat.id}
+              className="w-auto px-3 py-1.5 text-[11px]"
+              label={cat.label}
+            />
           ))}
         </div>
       </div>
@@ -414,13 +411,13 @@ const SmartElementsPanel: React.FC = () => {
                 e.dataTransfer.effectAllowed = 'copy';
               }}
               onClick={() => handleSelectElement(element)}
-              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all cursor-grab active:cursor-grabbing ${
+              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all cursor-grab active:cursor-grabbing ${supraMenuOptionClassName} ${
                 selectedElement?.id === element.id
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
+                  ? 'bg-black font-bold text-white hover:bg-black'
+                  : 'bg-transparent'
               }`}
             >
-              <span className={selectedElement?.id === element.id ? 'text-white' : 'text-foreground'}>
+              <span className={selectedElement?.id === element.id ? 'text-white' : 'text-black'}>
                 {element.icon}
               </span>
               <span className="text-[10px] font-medium text-center">
@@ -484,7 +481,7 @@ const SmartElementsPanel: React.FC = () => {
                   <select
                     value={settings[setting.key] || ''}
                     onChange={(e) => updateSetting(setting.key, e.target.value)}
-                    className="w-full h-8 px-2 text-[12px] border border-border rounded-lg bg-background"
+                    className={`w-full h-8 px-2 text-[12px] border border-border bg-background ${supraMenuOptionClassName}`}
                   >
                     {setting.options?.map(opt => (
                       <option key={opt.value} value={opt.value}>

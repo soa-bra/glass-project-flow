@@ -5,7 +5,6 @@
 
 import React from "react";
 import { useCanvasStore } from "@/stores/canvasStore";
-import ContextSmartMenu from "@/features/planning/elements/smart/ContextSmartMenu";
 import FloatingBar from "./floating-bar";
 import type { ToolbarMode } from "./floating-bar/types";
 
@@ -44,8 +43,7 @@ const ContextualToolbarManager: React.FC<ContextualToolbarManagerProps> = ({ boa
     case "floating":
       return (
         <>
-          <FloatingBar />
-          <ContextSmartMenu boardId={boardId} />
+          <FloatingBar boardId={boardId} />
         </>
       );
     case "none":
