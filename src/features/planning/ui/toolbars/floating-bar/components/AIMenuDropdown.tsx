@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, LayoutGrid, Network, Calendar, Table2, Zap } from "lucide-react";
 import type { SmartElementType } from "@/types/smart-elements";
 import { useCanvasAIPermissions } from "@/features/planning/hooks/useCanvasAIPermissions";
+import { SupraMenuOption } from "./SupraMenuOption";
 
 // خيارات التحويل للعناصر الذكية
 const TRANSFORM_OPTIONS = [
@@ -127,24 +128,17 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
             <div className="p-2 space-y-1">
               <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">تحويل إلى:</div>
               {TRANSFORM_OPTIONS.map((option) => (
-                <button
+                <SupraMenuOption
                   key={option.type}
-                  type="button"
                   onClick={() => {
                     onTransform(option.type);
                     setIsOpen(false);
                   }}
                   disabled={isAIDisabled}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50"
-                >
-                  <span className="text-[#3DBE8B]">
-                    <option.icon size={16} />
-                  </span>
-                  <div className="flex-1">
-                    <div className="text-[12px] font-medium text-black">{option.label}</div>
-                    <div className="text-[10px] text-[hsl(var(--ink-60))]">{option.description}</div>
-                  </div>
-                </button>
+                  icon={<option.icon size={16} />}
+                  label={option.label}
+                  description={option.description}
+                />
               ))}
             </div>
 

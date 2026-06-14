@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { isPlanningElementId } from '@/features/planning/state/createPlanningElementId';
 import { createSmartCanvasElement } from './factories/createTypedSmartElement';
 import { AI_SELECTED_ELEMENTS_LIMIT_MESSAGE, MAX_AI_SELECTED_ELEMENTS } from '@/features/ai/context/limits';
+import { SupraMenuOption } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
 
 interface TransformOption {
   type: SmartElementType;
@@ -519,61 +520,39 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
                   <div className="text-[10px] text-muted-foreground px-2 py-1">
                     أوامر تنفيذية:
                   </div>
-                  <button
+                  <SupraMenuOption
                     onClick={() => void handleSuggestConversion('project')}
                     disabled={isLoading || isTransforming || !canUseAI}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50"
-                  >
-                    <FolderKanban size={16} className="text-[hsl(var(--accent-green))]" />
-                    <div className="flex-1">
-                      <div className="text-[12px] font-medium text-foreground">تحويل إلى مشروع</div>
-                      <div className="text-[10px] text-muted-foreground">إنشاء سجل مشروع وربطه بالعناصر المصدر</div>
-                    </div>
-                  </button>
-                  <button
+                    icon={<FolderKanban size={16} />}
+                    label="تحويل إلى مشروع"
+                    description="إنشاء سجل مشروع وربطه بالعناصر المصدر"
+                  />
+                  <SupraMenuOption
                     onClick={() => void handleSuggestConversion('task')}
                     disabled={isLoading || isTransforming || !canUseAI}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50"
-                  >
-                    <CheckSquare size={16} className="text-[hsl(var(--accent-green))]" />
-                    <div className="flex-1">
-                      <div className="text-[12px] font-medium text-foreground">تحويل إلى مهمة</div>
-                      <div className="text-[10px] text-muted-foreground">إنشاء مهمة تنفيذية مرتبطة بالتخطيط</div>
-                    </div>
-                  </button>
-                  <button
+                    icon={<CheckSquare size={16} />}
+                    label="تحويل إلى مهمة"
+                    description="إنشاء مهمة تنفيذية مرتبطة بالتخطيط"
+                  />
+                  <SupraMenuOption
                     onClick={() => handleGenerateSmartDoc('interactive_sheet')}
                     disabled={isLoading || isTransforming || !canUseAI}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50"
-                  >
-                    <Table2 size={16} className="text-[hsl(var(--accent-green))]" />
-                    <div className="flex-1">
-                      <div className="text-[12px] font-medium text-foreground">توليد جدول تفاعلي</div>
-                      <div className="text-[10px] text-muted-foreground">جدول محفوظ داخل اللوحة وقابل للربط</div>
-                    </div>
-                  </button>
+                    icon={<Table2 size={16} />}
+                    label="توليد جدول تفاعلي"
+                    description="جدول محفوظ داخل اللوحة وقابل للربط"
+                  />
                   <div className="text-[10px] text-muted-foreground px-2 pt-2 pb-1">
                     تنظيم بصري:
                   </div>
                   {TRANSFORM_OPTIONS.map((option) => (
-                    <button
+                    <SupraMenuOption
                       key={option.type}
                       onClick={() => handleTransform(option.type)}
                       disabled={isLoading || isTransforming || !canUseAI}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/80 transition-colors text-right disabled:opacity-50"
-                    >
-                      <span className="text-[hsl(var(--accent-green))]">
-                        {option.icon}
-                      </span>
-                      <div className="flex-1">
-                        <div className="text-[12px] font-medium text-foreground">
-                          {option.label}
-                        </div>
-                        <div className="text-[10px] text-muted-foreground">
-                          {option.description}
-                        </div>
-                      </div>
-                    </button>
+                      icon={option.icon}
+                      label={option.label}
+                      description={option.description}
+                    />
                   ))}
                 </div>
               </motion.div>
