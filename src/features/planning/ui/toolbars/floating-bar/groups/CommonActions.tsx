@@ -80,6 +80,7 @@ interface CommonActionsProps {
   onQuickGenerate: () => void;
   onTransform: (type: SmartElementType) => void;
   onCustomTransform: (prompt: string) => void;
+  boardId?: string | null;
 }
 
 export const CommonActions: React.FC<CommonActionsProps> = ({
@@ -107,6 +108,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
   onQuickGenerate,
   onTransform,
   onCustomTransform,
+  boardId,
 }) => {
   return (
     <>
@@ -134,6 +136,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
         onTransform={onTransform}
         onCustomTransform={onCustomTransform}
         selectedCount={selectedCount}
+        boardId={boardId}
       />
 
       <Separator orientation="vertical" className="h-6 mx-1" />

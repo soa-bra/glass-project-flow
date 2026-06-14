@@ -2,7 +2,7 @@ import React, { useMemo, useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
-import { useSmartElementAI } from "@/hooks/useSmartElementAI";
+import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
@@ -73,7 +73,11 @@ function getViewportCenterWorldPosition(
   };
 }
 
-export const FloatingBar: React.FC = () => {
+interface FloatingBarProps {
+  boardId?: string | null;
+}
+
+export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
   const {
     elements,
     selectedElementIds,
@@ -91,8 +95,8 @@ export const FloatingBar: React.FC = () => {
   } = useCanvasStore();
 
   const activeTextEditor = useActiveTextEditor();
-  const { analyzeSelection, transformElements, isLoading: isAILoading, approvalDialog } = useSmartElementAI();
-  const [isTransforming, setIsTransforming] = useState(false);
+  const smartActions = useContextSmartActions(boardId);
+  const { isLoading: isAILoading, isTransforming, approvalDialog } = smartActions;
   const selectionMeta = useSelectionMeta();
 
   const {
@@ -473,6 +477,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -514,6 +519,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -568,6 +574,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -618,6 +625,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -659,6 +667,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -702,6 +711,7 @@ export const FloatingBar: React.FC = () => {
             onQuickGenerate={handleQuickGenerate}
             onTransform={handleTransform}
             onCustomTransform={handleCustomTransform}
+            boardId={boardId}
           />
         </>
       );
@@ -733,6 +743,7 @@ export const FloatingBar: React.FC = () => {
         onQuickGenerate={handleQuickGenerate}
         onTransform={handleTransform}
         onCustomTransform={handleCustomTransform}
+        boardId={boardId}
       />
     );
   };
