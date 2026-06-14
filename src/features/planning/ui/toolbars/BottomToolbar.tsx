@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useCanvasStore, type ToolId } from '@/stores/canvasStore';
 import Dock from '@/components/ui/dock';
+import { getBottomToolbarLayoutStyle } from './bottomToolbarLayout';
 
 interface Tool {
   id: ToolId;
@@ -131,9 +132,12 @@ const BottomToolbar: React.FC<{ canEdit?: boolean }> = ({ canEdit = true }) => {
     };
   });
 
+  const toolbarLayoutStyle = getBottomToolbarLayoutStyle(dockItems.length);
+
   return (
-    <nav 
+    <nav
       className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50"
+      style={toolbarLayoutStyle}
       role="toolbar"
       aria-label="أدوات الرسم والتصميم"
       aria-orientation="horizontal"
