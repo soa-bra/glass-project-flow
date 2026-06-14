@@ -115,52 +115,88 @@ describe('usePlanningStoreSync layer membership', () => {
     ]);
     expect(state.layers.find((layer) => layer.id === 'layer-b')?.elements).toEqual([]);
   });
-  it('does not restore a locally deleted element when a stale realtime update arrives', async () => {
-    const deletedId = '44444444-4444-4444-8444-444444444444';
-    mocks.listPlanningElements.mockResolvedValueOnce([]);
+
+  it('preserves selected element ids that still exist after hydration and realtime updates', async () => {
+    const selectedId = '33333333-3333-4333-8333-333333333333';
+    mocks.listPlanningElements.mockResolvedValueOnce([
+      createPlanningElement({ id: selectedId, metadata: { layerId: 'layer-b' } }),
+    ]);
+
+    act(() => {
+      usePlanningStore.setState({ selectedElementIds: [selectedId, 'missing-element-id'] } as never);
+    });
 
     renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
 
     await waitFor(() => {
-      expect(mocks.realtimeOptions?.onElementUpdate).toBeTypeOf('function');
+      expect(usePlanningStore.getState().selectedElementIds).toEqual([selectedId]);
     });
-
-    act(() => {
-      usePlanningStore.getState().addElement({
-        id: deletedId,
-        type: 'text',
-        position: { x: 1, y: 2 },
-        size: { width: 100, height: 40 },
-        style: {},
-        content: 'Local element',
-        layerId: 'layer-a',
-      });
-    });
-
-    act(() => {
-      usePlanningStore.getState().deleteElements([deletedId]);
-    });
-
-    expect(usePlanningStore.getState().elements.some((element) => element.id === deletedId)).toBe(false);
-    expect(usePlanningStore.getState().pendingDeletedElementIds).toContain(deletedId);
 
     await act(async () => {
       mocks.realtimeOptions.onElementUpdate(
         createPlanningElement({
-          id: deletedId,
-          metadata: { layerId: 'layer-a' },
-          updated_at: '2026-01-01T00:00:00Z',
+          id: selectedId,
+          content: { label: 'Updated text' },
+          metadata: { layerId: 'layer-b' },
+          updated_at: '2026-01-03T00:00:00Z',
         }),
       );
     });
 
-    expect(usePlanningStore.getState().elements.some((element) => element.id === deletedId)).toBe(false);
+    expect(usePlanningStore.getState().selectedElementIds).toEqual([selectedId]);
 
     await act(async () => {
-      mocks.realtimeOptions.onElementDelete(deletedId);
+      mocks.realtimeOptions.onElementInsert(
+        createPlanningElement({
+          id: '44444444-4444-4444-8444-444444444444',
+          metadata: { layerId: 'layer-a' },
+          updated_at: '2026-01-04T00:00:00Z',
+        }),
+      );
     });
 
-    expect(usePlanningStore.getState().pendingDeletedElementIds).not.toContain(deletedId);
+    expect(usePlanningStore.getState().selectedElementIds).toEqual([selectedId]);
+  });
+
+  it('removes deleted elements and dependent connectors from selection on realtime delete', async () => {
+    const nodeId = '33333333-3333-4333-8333-333333333333';
+    const otherId = '44444444-4444-4444-8444-444444444444';
+    const connectorId = '55555555-5555-4555-8555-555555555555';
+    mocks.listPlanningElements.mockResolvedValueOnce([
+      createPlanningElement({ id: nodeId, metadata: { layerId: 'layer-b' } }),
+      createPlanningElement({
+        id: otherId,
+        metadata: { layerId: 'layer-b' },
+        updated_at: '2026-01-02T00:00:01Z',
+      }),
+      createPlanningElement({
+        id: connectorId,
+        element_type: 'root_connector',
+        content: {
+          smartType: 'root_connector',
+          startPoint: { elementId: nodeId },
+          endPoint: { elementId: otherId },
+        },
+        metadata: { layerId: 'layer-b' },
+        updated_at: '2026-01-02T00:00:02Z',
+      }),
+    ]);
+
+    act(() => {
+      usePlanningStore.setState({ selectedElementIds: [nodeId, connectorId, otherId] } as never);
+    });
+
+    renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+
+    await waitFor(() => {
+      expect(usePlanningStore.getState().elements).toHaveLength(3);
+    });
+
+    await act(async () => {
+      mocks.realtimeOptions.onElementDelete(nodeId);
+    });
+
+    expect(usePlanningStore.getState().selectedElementIds).toEqual([otherId]);
   });
 
 });
