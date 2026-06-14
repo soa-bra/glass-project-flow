@@ -28,6 +28,23 @@ interface ElementBounds extends ConnectorPolicyElement {
   type: 'component' | 'frame' | 'smart-element';
 }
 
+
+const resolveSubAnchor = (el: ElementBounds, x: number, y: number): string | null => {
+  const relX = Math.min(0.999, Math.max(0, (x - el.x) / Math.max(1, el.width)));
+  const relY = Math.min(0.999, Math.max(0, (y - el.y) / Math.max(1, el.height)));
+  const col = relX < 1 / 3 ? 'left' : relX < 2 / 3 ? 'center' : 'right';
+  const row = relY < 1 / 3 ? 'top' : relY < 2 / 3 ? 'middle' : 'bottom';
+  return `${row}-${col}`;
+};
+
+const subAnchorToPoint = (el: ElementBounds, subAnchor?: string | null) => {
+  if (!subAnchor) return null;
+  const [row, col] = subAnchor.split('-');
+  const xRatio = col === 'left' ? 1 / 6 : col === 'right' ? 5 / 6 : 1 / 2;
+  const yRatio = row === 'top' ? 1 / 6 : row === 'bottom' ? 5 / 6 : 1 / 2;
+  return { x: el.x + el.width * xRatio, y: el.y + el.height * yRatio };
+};
+
 interface SmartConnectorManagerProps {
   elements: ElementBounds[];
   boardId?: string | null;
@@ -128,8 +145,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       connectorMode: 'semantic',
       connectorPointType: 'anchor',
       branchMode: 'single',
-      sourceSubAnchor: startPoint.anchorPoint,
-      targetSubAnchor: endPoint.anchorPoint,
+      sourceSubAnchor: startPoint.subAnchor ?? startPoint.anchorPoint,
+      targetSubAnchor: endPoint.subAnchor ?? endPoint.anchorPoint,
       permissionScope: 'board',
       source: 'user',
       requiresReview: false,
@@ -139,10 +156,6 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
-      source: 'user',
-      status: 'approved',
-      requiresReview: false,
-      approvedByUser: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -429,6 +442,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
               x: edge.x,
               y: edge.y,
               anchorPoint: edge.anchor,
+              subAnchor: resolveSubAnchor(target, p.x, p.y),
             },
             UNIFIED_RELATIONSHIP_TYPES[0],
           );
@@ -497,6 +511,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         const resolvePoint = (p: ConnectorPoint): ConnectorPoint => {
           const el = elements.find(e => e.id === p.elementId);
           if (!el) return p;
+          const subAnchorPoint = subAnchorToPoint(el, p.subAnchor);
+          if (subAnchorPoint) return { ...p, ...subAnchorPoint };
           const anchorToXY = (a: typeof p.anchorPoint) => {
             switch (a) {
               case 'top': return { x: el.x + el.width / 2, y: el.y };

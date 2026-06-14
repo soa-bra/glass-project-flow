@@ -25,6 +25,15 @@ export interface ConnectorPoint {
   x: number;
   y: number;
   anchorPoint: AnchorPosition;
+  subAnchor?: string | null;
+}
+
+export interface ConnectorBranch {
+  id: string;
+  targetPoint: ConnectorPoint;
+  sourceSubAnchor?: string | null;
+  targetSubAnchor?: string | null;
+  label?: string;
 }
 
 export interface AISuggestion {
@@ -61,6 +70,8 @@ export interface UnifiedConnectorData {
   branchMode?: ConnectorBranchMode;
   sourceSubAnchor?: string | null;
   targetSubAnchor?: string | null;
+  targetPoints?: ConnectorPoint[];
+  branches?: ConnectorBranch[];
   permissionScope?: ConnectorPermissionScope;
   source?: ConnectorSource;
   reason?: string;
@@ -251,7 +262,7 @@ const getConnectorActionDisabledReason = (
   hasHandler: boolean,
 ) => {
   if (!hasHandler) return 'لا يوجد سياق تنفيذ متصل بهذه اللوحة.';
-  if (!data.startPoint?.elementId || !data.endPoint?.elementId) return 'لا يمكن الإنشاء قبل ربط طرفي العلاقة.';
+  if (!data.startPoint?.elementId || !(data.endPoint?.elementId || data.targetPoints?.length || data.branches?.length)) return 'لا يمكن الإنشاء قبل ربط طرفي العلاقة.';
   if (data.permissionScope === 'blocked') return 'الصلاحية محظورة لهذه العلاقة.';
   if (data.permissionScope === 'restricted') return 'الصلاحية مقيدة وتحتاج تفويضًا أعلى.';
   if (data.requiresReview) return 'العلاقة بانتظار الاعتماد قبل الإنشاء.';
@@ -814,60 +825,6 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
     }
   };
 
-  // Calculate connector path
-  const { startPoint, endPoint } = data;
-  const startX = startPoint.x;
-  const startY = startPoint.y;
-  const endX = endPoint.x;
-  const endY = endPoint.y;
-
-  // Calculate midpoint for info panel
-  const midX = (startX + endX) / 2;
-  const midY = (startY + endY) / 2;
-
-  // ===== Orthogonal routing with rounded corners (Qlik / n8n style) =====
-  // Build a polyline of waypoints based on each endpoint's anchor edge.
-  const STUB = 16; // initial perpendicular stub length
-  const CORNER_R = 4; // rounded corner radius
-
-  const stubFor = (p: ConnectorPoint): { x: number; y: number } => {
-    switch (p.anchorPoint) {
-      case 'right':  return { x: p.x + STUB, y: p.y };
-      case 'left':   return { x: p.x - STUB, y: p.y };
-      case 'top':    return { x: p.x, y: p.y - STUB };
-      case 'bottom': return { x: p.x, y: p.y + STUB };
-      default:       return { x: p.x, y: p.y };
-    }
-  };
-
-  const isHorizontal = (a?: AnchorPosition) => a === 'left' || a === 'right';
-
-  const s0 = { x: startX, y: startY };
-  const sStub = stubFor(startPoint);
-  const eStub = stubFor(endPoint);
-  const e0 = { x: endX, y: endY };
-
-  // Build intermediate waypoints between the two stubs so segments stay axis-aligned.
-  const points: Array<{ x: number; y: number }> = [s0, sStub];
-  const srcH = isHorizontal(startPoint.anchorPoint);
-  const tgtH = isHorizontal(endPoint.anchorPoint);
-
-  if (srcH && tgtH) {
-    const mx = (sStub.x + eStub.x) / 2;
-    points.push({ x: mx, y: sStub.y });
-    points.push({ x: mx, y: eStub.y });
-  } else if (!srcH && !tgtH) {
-    const my = (sStub.y + eStub.y) / 2;
-    points.push({ x: sStub.x, y: my });
-    points.push({ x: eStub.x, y: my });
-  } else if (srcH && !tgtH) {
-    points.push({ x: eStub.x, y: sStub.y });
-  } else {
-    points.push({ x: sStub.x, y: eStub.y });
-  }
-  points.push(eStub, e0);
-
-  // Build SVG path with rounded corners at each waypoint between two segments.
   const buildRoundedPath = (pts: Array<{ x: number; y: number }>) => {
     if (pts.length < 2) return '';
     let d = `M ${pts[0].x} ${pts[0].y}`;
@@ -879,25 +836,65 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
       const inDy = Math.sign(cur.y - prev.y);
       const outDx = Math.sign(next.x - cur.x);
       const outDy = Math.sign(next.y - cur.y);
-      const r = Math.min(
-        CORNER_R,
-        Math.hypot(cur.x - prev.x, cur.y - prev.y) / 2,
-        Math.hypot(next.x - cur.x, next.y - cur.y) / 2,
-      );
+      const r = Math.min(4, Math.hypot(cur.x - prev.x, cur.y - prev.y) / 2, Math.hypot(next.x - cur.x, next.y - cur.y) / 2);
       if (r > 0 && (inDx !== outDx || inDy !== outDy) && (inDx !== 0 || inDy !== 0) && (outDx !== 0 || outDy !== 0)) {
-        const p1 = { x: cur.x - inDx * r, y: cur.y - inDy * r };
-        const p2 = { x: cur.x + outDx * r, y: cur.y + outDy * r };
-        d += ` L ${p1.x} ${p1.y} Q ${cur.x} ${cur.y} ${p2.x} ${p2.y}`;
+        d += ` L ${cur.x - inDx * r} ${cur.y - inDy * r} Q ${cur.x} ${cur.y} ${cur.x + outDx * r} ${cur.y + outDy * r}`;
       } else {
         d += ` L ${cur.x} ${cur.y}`;
       }
     }
     const last = pts[pts.length - 1];
-    d += ` L ${last.x} ${last.y}`;
-    return d;
+    return `${d} L ${last.x} ${last.y}`;
   };
 
-  const pathD = buildRoundedPath(points);
+  const STUB = 16;
+  const stubFor = (p: ConnectorPoint): { x: number; y: number } => {
+    switch (p.anchorPoint) {
+      case 'right': return { x: p.x + STUB, y: p.y };
+      case 'left': return { x: p.x - STUB, y: p.y };
+      case 'top': return { x: p.x, y: p.y - STUB };
+      case 'bottom': return { x: p.x, y: p.y + STUB };
+      default: return { x: p.x, y: p.y };
+    }
+  };
+  const isHorizontal = (a?: AnchorPosition) => a === 'left' || a === 'right';
+  const buildDirectPoints = (start: ConnectorPoint, end: ConnectorPoint) => {
+    const sStub = stubFor(start);
+    const eStub = stubFor(end);
+    const pts: Array<{ x: number; y: number }> = [{ x: start.x, y: start.y }, sStub];
+    const srcH = isHorizontal(start.anchorPoint);
+    const tgtH = isHorizontal(end.anchorPoint);
+    if (srcH && tgtH) {
+      const mx = (sStub.x + eStub.x) / 2;
+      pts.push({ x: mx, y: sStub.y }, { x: mx, y: eStub.y });
+    } else if (!srcH && !tgtH) {
+      const my = (sStub.y + eStub.y) / 2;
+      pts.push({ x: sStub.x, y: my }, { x: eStub.x, y: my });
+    } else if (srcH && !tgtH) {
+      pts.push({ x: eStub.x, y: sStub.y });
+    } else {
+      pts.push({ x: sStub.x, y: eStub.y });
+    }
+    pts.push(eStub, { x: end.x, y: end.y });
+    return pts;
+  };
+
+  const branchTargets = (data.branches?.map((branch) => ({ ...branch.targetPoint, subAnchor: branch.targetSubAnchor ?? branch.targetPoint.subAnchor })) ?? data.targetPoints ?? [])
+    .filter((point) => point.elementId);
+  const renderTargets = branchTargets.length > 0 ? branchTargets : [data.endPoint];
+  const isBranched = renderTargets.length > 1;
+  const trunkEnd = isBranched
+    ? { x: data.startPoint.x + Math.max(48, Math.min(140, Math.abs(renderTargets[0].x - data.startPoint.x) / 2)), y: data.startPoint.y }
+    : null;
+  const connectorPaths = isBranched && trunkEnd
+    ? [
+        buildRoundedPath([{ x: data.startPoint.x, y: data.startPoint.y }, stubFor(data.startPoint), trunkEnd]),
+        ...renderTargets.map((target) => buildRoundedPath([trunkEnd, { x: trunkEnd.x, y: target.y }, stubFor(target), { x: target.x, y: target.y }])),
+      ]
+    : [buildRoundedPath(buildDirectPoints(data.startPoint, data.endPoint))];
+
+  const midX = isBranched && trunkEnd ? trunkEnd.x : (data.startPoint.x + data.endPoint.x) / 2;
+  const midY = isBranched && trunkEnd ? (data.startPoint.y + renderTargets.reduce((sum, target) => sum + target.y, 0) / renderTargets.length) / 2 : (data.startPoint.y + data.endPoint.y) / 2;
 
   // ===== Visual style — state-aware, with explicit suggested/confirmed/operational gating =====
   const connectorVisualState = getConnectorVisualState(data);
@@ -932,7 +929,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
     >
       {/* Invisible thicker hit area for easier selection */}
       <path
-        d={pathD}
+        d={connectorPaths.join(' ')}
         fill="none"
         stroke="transparent"
         strokeWidth={16}
@@ -940,33 +937,30 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         pointerEvents="stroke"
       />
 
-      {/* Main connector path — thin, orthogonal, neutral */}
-      <motion.path
-        d={pathD}
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        strokeDasharray={getStrokeDasharray()}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={false}
-        animate={{
-          strokeDashoffset: strokeStyle === 'animated' ? [0, -24] : 0,
-        }}
-        transition={{
-          strokeDashoffset: {
-            duration: 1,
-            repeat: Infinity,
-            ease: 'linear',
-          },
-        }}
-      />
+      {/* Main connector path — direct for one target, trunk + branches for multiple targets. */}
+      {connectorPaths.map((pathD, index) => (
+        <motion.path
+          key={`${data.id}-path-${index}`}
+          d={pathD}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth={strokeWidth}
+          strokeDasharray={getStrokeDasharray()}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={false}
+          animate={{ strokeDashoffset: strokeStyle === 'animated' ? [0, -24] : 0 }}
+          transition={{ strokeDashoffset: { duration: 1, repeat: Infinity, ease: 'linear' } }}
+        />
+      ))}
 
       {/* Endpoint dots — only visible when selected/hovered */}
       {(isSelected || isHovered) && (
         <>
-          <circle cx={startX} cy={startY} r={2.5} fill={strokeColor} pointerEvents="none" />
-          <circle cx={endX} cy={endY} r={2.5} fill={strokeColor} pointerEvents="none" />
+          <circle cx={data.startPoint.x} cy={data.startPoint.y} r={2.5} fill={strokeColor} pointerEvents="none" />
+          {renderTargets.map((target) => <circle key={`${data.id}-${target.elementId}-${target.subAnchor ?? target.anchorPoint}`} cx={target.x} cy={target.y} r={2.5} fill={strokeColor} pointerEvents="none" />)}
+          {(data.startPoint.subAnchor || data.sourceSubAnchor) && <circle cx={data.startPoint.x} cy={data.startPoint.y} r={5} fill="none" stroke={strokeColor} strokeWidth={1} pointerEvents="none" />}
+          {renderTargets.filter((target) => target.subAnchor).map((target) => <circle key={`${data.id}-${target.elementId}-${target.subAnchor}-sub`} cx={target.x} cy={target.y} r={5} fill="none" stroke={strokeColor} strokeWidth={1} pointerEvents="none" />)}
         </>
       )}
 
