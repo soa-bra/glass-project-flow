@@ -35,6 +35,7 @@ export const ExpandableExecutionCard: React.FC<ExpandableExecutionCardProps> = (
     <div className={className ?? 'relative h-full w-full'}>
       {children}
       <Button
+        data-interactive-control
         type="button"
         variant="secondary"
         size="icon"

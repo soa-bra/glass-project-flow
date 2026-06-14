@@ -42,7 +42,10 @@ export function useCanvasDropController({ containerRef, viewport }: UseCanvasDro
             return;
           }
 
-          useSmartElementsStore.getState().addSmartElement(smartType, canvasPoint, initialData);
+          useSmartElementsStore.getState().addSmartElement(smartType, canvasPoint, {
+            ...(typeof parsed.data === 'object' && parsed.data !== null ? parsed.data : {}),
+            title: smartName,
+          });
           toast.success(`تم إدراج ${smartName}`);
           return;
         } catch {

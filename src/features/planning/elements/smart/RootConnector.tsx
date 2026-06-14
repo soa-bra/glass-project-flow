@@ -25,6 +25,15 @@ export interface ConnectorPoint {
   x: number;
   y: number;
   anchorPoint: AnchorPosition;
+  subAnchor?: string | null;
+}
+
+export interface ConnectorBranch {
+  id: string;
+  targetPoint: ConnectorPoint;
+  sourceSubAnchor?: string | null;
+  targetSubAnchor?: string | null;
+  label?: string;
 }
 
 export interface AISuggestion {
@@ -36,12 +45,14 @@ export interface AISuggestion {
   data?: any;
 }
 
-export type ConnectorStatus = 'draft' | 'pending_review' | 'approved' | 'rejected' | 'active' | 'archived' | 'visual_only';
-export type ConnectorDirection = 'source_to_target' | 'target_to_source' | 'bidirectional' | 'undirected';
+export type ConnectorRelationshipStatus = 'draft' | 'suggested' | 'confirmed' | 'approved' | 'operational' | 'broken' | 'pending_review' | 'rejected' | 'active' | 'archived' | 'visual_only';
+export type ConnectorStatus = ConnectorRelationshipStatus;
+export type ConnectorDirection = 'source_to_target' | 'target_to_source' | 'forward' | 'reverse' | 'bidirectional' | 'undirected';
+export type ConnectorPurpose = 'visual-only' | 'semantic' | 'operational';
 export type ConnectorMode = 'visual' | 'semantic' | 'operational';
 export type ConnectorPointType = 'element' | 'anchor' | 'sub_anchor' | 'free_point';
 export type ConnectorBranchMode = 'single' | 'branch' | 'merge' | 'multi_target' | 'multi_source';
-export type ConnectorPermissionScope = 'owner' | 'team' | 'board' | 'workspace' | 'public';
+export type ConnectorPermissionScope = 'owner' | 'team' | 'board' | 'workspace' | 'public' | 'allowed' | 'restricted' | 'blocked';
 export type ConnectorSource = 'user' | 'ai' | 'system' | 'import';
 
 export interface SmartConnectorAction {
@@ -59,6 +70,8 @@ export interface UnifiedConnectorData {
   branchMode?: ConnectorBranchMode;
   sourceSubAnchor?: string | null;
   targetSubAnchor?: string | null;
+  targetPoints?: ConnectorPoint[];
+  branches?: ConnectorBranch[];
   permissionScope?: ConnectorPermissionScope;
   source?: ConnectorSource;
   reason?: string;
@@ -80,7 +93,8 @@ export interface RootConnectorData extends UnifiedConnectorData {
   style?: 'solid' | 'dashed' | 'dotted' | 'animated';
   connectionType?: UnifiedRelationshipType;
   relationshipType?: UnifiedRelationshipType;
-  status?: 'draft' | 'suggested' | 'approved';
+  status?: ConnectorRelationshipStatus;
+  purpose?: ConnectorPurpose;
   source?: 'user' | 'ai' | 'system';
   aiConfidence?: number;
   requiresReview?: boolean;
@@ -118,12 +132,12 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
 }) => {
   const HIT_RADIUS = 16;
   const ARROW_SIZE = 6;
-  const CONNECTOR_OFFSET = 16;
+  const ARROW_HOVER_SCALE = 1.35;
   const [isHovered, setIsHovered] = useState(false);
   const anchor = {
     anchorPoint: 'top' as const,
     x: bounds.x + bounds.width / 2,
-    y: bounds.y - CONNECTOR_OFFSET,
+    y: bounds.y,
   };
 
   const handlePointerDown = (
@@ -156,14 +170,14 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         onMouseDown={(event) => handlePointerDown(anchor, event)}
       />
       <path
-        d={`M ${anchor.x} ${anchor.y + ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y - ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y - ARROW_SIZE} Z`}
+        d={`M ${anchor.x} ${anchor.y - ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y + ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y + ARROW_SIZE} Z`}
         fill="#0B0F12"
         stroke="#FFFFFF"
         strokeWidth={1.5}
         className="connection-anchor-dot drop-shadow-sm"
         pointerEvents="none"
         style={{
-          transform: active ? 'scale(1.3)' : 'scale(1)',
+          transform: active ? `scale(${ARROW_HOVER_SCALE})` : 'scale(1)',
           transformBox: 'fill-box',
           transformOrigin: 'center',
           transition: 'transform 120ms ease',
@@ -191,6 +205,8 @@ interface FloatingPanelProps {
   isLoadingAI: boolean;
 }
 
+const DEFAULT_RELATIONSHIP_TYPE = UNIFIED_RELATIONSHIP_TYPES[0];
+
 const COLOR_SWATCHES = ['#9CA3AF', '#0B0F12', '#3DA8F5', '#3DBE8B', '#F6C445', '#E5564D'];
 const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; label: string }> = [
   { value: 'solid', label: 'متصل' },
@@ -198,7 +214,8 @@ const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; lab
   { value: 'dotted', label: 'منقّط' },
   { value: 'animated', label: 'متحرك' },
 ];
-const WIDTH_OPTIONS = [0.25, 0.5, 0.75, 1];
+const DEFAULT_CONNECTOR_STROKE_WIDTH = 1.5;
+const WIDTH_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
 const STATUS_OPTIONS: Array<{ value: ConnectorRelationshipStatus; label: string }> = [
   { value: 'suggested', label: 'مقترحة' },
   { value: 'confirmed', label: 'مؤكدة' },
@@ -221,13 +238,31 @@ const PERMISSION_OPTIONS: Array<{ value: ConnectorPermissionScope; label: string
   { value: 'blocked', label: 'محظور' },
 ];
 
+
+const getConnectorVisualState = (data: RootConnectorData) => {
+  const status = data.status || 'suggested';
+  if (status === 'broken' || status === 'rejected') {
+    return { label: 'مكسورة', tag: 'تحتاج إصلاح', color: '#E5564D', activeColor: '#DC2626', dasharray: '2,4', badgeClassName: 'border-red-200 bg-red-50 text-red-700' };
+  }
+  if (data.requiresReview || status === 'suggested' || status === 'pending_review') {
+    return { label: 'مقترحة', tag: 'قيد المراجعة', color: '#F6C445', activeColor: '#D97706', dasharray: '6,4', badgeClassName: 'border-amber-200 bg-amber-50 text-amber-700' };
+  }
+  if (status === 'operational' || data.connectorMode === 'operational' || data.purpose === 'operational') {
+    return { label: 'تشغيلية', tag: 'قابلة للتنفيذ', color: '#3DBE8B', activeColor: '#059669', dasharray: 'none', badgeClassName: 'border-emerald-200 bg-emerald-50 text-emerald-700' };
+  }
+  if (status === 'confirmed' || status === 'approved' || data.approvedByUser) {
+    return { label: 'مؤكدة', tag: 'دلالية', color: data.color || '#9CA3AF', activeColor: '#0B0F12', dasharray: 'none', badgeClassName: 'border-slate-200 bg-slate-50 text-slate-700' };
+  }
+  return { label: 'مسودة', tag: 'مرئية', color: data.color || '#9CA3AF', activeColor: '#0B0F12', dasharray: 'none', badgeClassName: 'border-border bg-muted/60 text-muted-foreground' };
+};
+
 const getConnectorActionDisabledReason = (
   data: RootConnectorData,
   action: 'workflow' | 'element',
   hasHandler: boolean,
 ) => {
   if (!hasHandler) return 'لا يوجد سياق تنفيذ متصل بهذه اللوحة.';
-  if (!data.startPoint?.elementId || !data.endPoint?.elementId) return 'لا يمكن الإنشاء قبل ربط طرفي العلاقة.';
+  if (!data.startPoint?.elementId || !(data.endPoint?.elementId || data.targetPoints?.length || data.branches?.length)) return 'لا يمكن الإنشاء قبل ربط طرفي العلاقة.';
   if (data.permissionScope === 'blocked') return 'الصلاحية محظورة لهذه العلاقة.';
   if (data.permissionScope === 'restricted') return 'الصلاحية مقيدة وتحتاج تفويضًا أعلى.';
   if (data.requiresReview) return 'العلاقة بانتظار الاعتماد قبل الإنشاء.';
@@ -247,7 +282,9 @@ interface ConnectorInspectorProps {
 }
 
 export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, onPatch }) => {
-  const relationshipType = data.relationshipType || data.connectionType || 'reference';
+  const relationshipType = data.relationshipType || data.connectionType || DEFAULT_RELATIONSHIP_TYPE;
+  const visualState = getConnectorVisualState(data);
+  const isSuggested = (data.status || 'suggested') === 'suggested';
 
   const handleRelationshipTypeChange = (value: UnifiedRelationshipType) => {
     onPatch({
@@ -338,7 +375,7 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
         </div>
         <div className="space-y-1">
           <span className="text-[10px] text-muted-foreground">السماكة</span>
-          <Select value={String(data.strokeWidth ?? 0.25)} onValueChange={(value) => onPatch({ strokeWidth: parseFloat(value) })}>
+          <Select value={String(data.strokeWidth ?? DEFAULT_CONNECTOR_STROKE_WIDTH)} onValueChange={(value) => onPatch({ strokeWidth: parseFloat(value) })}>
             <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               {WIDTH_OPTIONS.map((width) => (
@@ -412,6 +449,75 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
         عكس الاتجاه
       </Button>
     </div>
+  );
+};
+
+
+interface ConnectorQuickPanelProps {
+  x: number;
+  y: number;
+  data: RootConnectorData;
+  onPatch: (patch: Partial<RootConnectorData>) => void;
+  onCreateWorkflow?: () => void;
+  onCreateElement?: () => void;
+}
+
+const ConnectorQuickPanel: React.FC<ConnectorQuickPanelProps> = ({
+  x,
+  y,
+  data,
+  onPatch,
+  onCreateWorkflow,
+  onCreateElement,
+}) => {
+  const relationshipType = data.relationshipType || data.connectionType || DEFAULT_RELATIONSHIP_TYPE;
+  const workflowDisabledReason = getConnectorActionDisabledReason(data, 'workflow', Boolean(onCreateWorkflow));
+  const elementDisabledReason = getConnectorActionDisabledReason(data, 'element', Boolean(onCreateElement));
+
+  return (
+    <foreignObject x={x - 132} y={y - 130} width="264" height="148" className="overflow-visible" data-interactive-control>
+      <div
+        className="rounded-xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur-sm"
+        dir="rtl"
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <span className="text-[10px] text-muted-foreground">نوع العلاقة</span>
+            <Select value={relationshipType} onValueChange={(value) => onPatch({ connectionType: value as UnifiedRelationshipType, relationshipType: value as UnifiedRelationshipType })}>
+              <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {UNIFIED_RELATIONSHIP_TYPES.map((type) => (
+                  <SelectItem key={type} value={type} className="text-xs">{getRelationshipTypeLabel(type)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <span className="text-[10px] text-muted-foreground">حالة العلاقة</span>
+            <Select value={data.status || 'suggested'} onValueChange={(value) => onPatch({ status: value as ConnectorRelationshipStatus })}>
+              <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="text-xs">{option.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Button size="sm" onClick={onCreateWorkflow} disabled={Boolean(workflowDisabledReason)} className="h-8 text-xs gap-1.5" title={workflowDisabledReason ?? undefined}>
+            <Wand2 className="h-3.5 w-3.5" />
+            إنشاء Workflow
+          </Button>
+          <Button size="sm" variant="outline" onClick={onCreateElement} disabled={Boolean(elementDisabledReason)} className="h-8 text-xs gap-1.5" title={elementDisabledReason ?? undefined}>
+            <Plus className="h-3.5 w-3.5" />
+            إنشاء عنصر
+          </Button>
+        </div>
+      </div>
+    </foreignObject>
   );
 };
 
@@ -675,6 +781,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
+  const [isQuickPanelOpen, setIsQuickPanelOpen] = useState(false);
 
   const handleSave = (title: string, description: string) => {
     onUpdate?.({
@@ -718,60 +825,6 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
     }
   };
 
-  // Calculate connector path
-  const { startPoint, endPoint } = data;
-  const startX = startPoint.x;
-  const startY = startPoint.y;
-  const endX = endPoint.x;
-  const endY = endPoint.y;
-
-  // Calculate midpoint for info panel
-  const midX = (startX + endX) / 2;
-  const midY = (startY + endY) / 2;
-
-  // ===== Orthogonal routing with rounded corners (Qlik / n8n style) =====
-  // Build a polyline of waypoints based on each endpoint's anchor edge.
-  const STUB = 16; // initial perpendicular stub length
-  const CORNER_R = 4; // rounded corner radius
-
-  const stubFor = (p: ConnectorPoint): { x: number; y: number } => {
-    switch (p.anchorPoint) {
-      case 'right':  return { x: p.x + STUB, y: p.y };
-      case 'left':   return { x: p.x - STUB, y: p.y };
-      case 'top':    return { x: p.x, y: p.y - STUB };
-      case 'bottom': return { x: p.x, y: p.y + STUB };
-      default:       return { x: p.x, y: p.y };
-    }
-  };
-
-  const isHorizontal = (a?: AnchorPosition) => a === 'left' || a === 'right';
-
-  const s0 = { x: startX, y: startY };
-  const sStub = stubFor(startPoint);
-  const eStub = stubFor(endPoint);
-  const e0 = { x: endX, y: endY };
-
-  // Build intermediate waypoints between the two stubs so segments stay axis-aligned.
-  const points: Array<{ x: number; y: number }> = [s0, sStub];
-  const srcH = isHorizontal(startPoint.anchorPoint);
-  const tgtH = isHorizontal(endPoint.anchorPoint);
-
-  if (srcH && tgtH) {
-    const mx = (sStub.x + eStub.x) / 2;
-    points.push({ x: mx, y: sStub.y });
-    points.push({ x: mx, y: eStub.y });
-  } else if (!srcH && !tgtH) {
-    const my = (sStub.y + eStub.y) / 2;
-    points.push({ x: sStub.x, y: my });
-    points.push({ x: eStub.x, y: my });
-  } else if (srcH && !tgtH) {
-    points.push({ x: eStub.x, y: sStub.y });
-  } else {
-    points.push({ x: sStub.x, y: eStub.y });
-  }
-  points.push(eStub, e0);
-
-  // Build SVG path with rounded corners at each waypoint between two segments.
   const buildRoundedPath = (pts: Array<{ x: number; y: number }>) => {
     if (pts.length < 2) return '';
     let d = `M ${pts[0].x} ${pts[0].y}`;
@@ -783,35 +836,74 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
       const inDy = Math.sign(cur.y - prev.y);
       const outDx = Math.sign(next.x - cur.x);
       const outDy = Math.sign(next.y - cur.y);
-      const r = Math.min(
-        CORNER_R,
-        Math.hypot(cur.x - prev.x, cur.y - prev.y) / 2,
-        Math.hypot(next.x - cur.x, next.y - cur.y) / 2,
-      );
+      const r = Math.min(4, Math.hypot(cur.x - prev.x, cur.y - prev.y) / 2, Math.hypot(next.x - cur.x, next.y - cur.y) / 2);
       if (r > 0 && (inDx !== outDx || inDy !== outDy) && (inDx !== 0 || inDy !== 0) && (outDx !== 0 || outDy !== 0)) {
-        const p1 = { x: cur.x - inDx * r, y: cur.y - inDy * r };
-        const p2 = { x: cur.x + outDx * r, y: cur.y + outDy * r };
-        d += ` L ${p1.x} ${p1.y} Q ${cur.x} ${cur.y} ${p2.x} ${p2.y}`;
+        d += ` L ${cur.x - inDx * r} ${cur.y - inDy * r} Q ${cur.x} ${cur.y} ${cur.x + outDx * r} ${cur.y + outDy * r}`;
       } else {
         d += ` L ${cur.x} ${cur.y}`;
       }
     }
     const last = pts[pts.length - 1];
-    d += ` L ${last.x} ${last.y}`;
-    return d;
+    return `${d} L ${last.x} ${last.y}`;
   };
 
-  const pathD = buildRoundedPath(points);
+  const STUB = 16;
+  const stubFor = (p: ConnectorPoint): { x: number; y: number } => {
+    switch (p.anchorPoint) {
+      case 'right': return { x: p.x + STUB, y: p.y };
+      case 'left': return { x: p.x - STUB, y: p.y };
+      case 'top': return { x: p.x, y: p.y - STUB };
+      case 'bottom': return { x: p.x, y: p.y + STUB };
+      default: return { x: p.x, y: p.y };
+    }
+  };
+  const isHorizontal = (a?: AnchorPosition) => a === 'left' || a === 'right';
+  const buildDirectPoints = (start: ConnectorPoint, end: ConnectorPoint) => {
+    const sStub = stubFor(start);
+    const eStub = stubFor(end);
+    const pts: Array<{ x: number; y: number }> = [{ x: start.x, y: start.y }, sStub];
+    const srcH = isHorizontal(start.anchorPoint);
+    const tgtH = isHorizontal(end.anchorPoint);
+    if (srcH && tgtH) {
+      const mx = (sStub.x + eStub.x) / 2;
+      pts.push({ x: mx, y: sStub.y }, { x: mx, y: eStub.y });
+    } else if (!srcH && !tgtH) {
+      const my = (sStub.y + eStub.y) / 2;
+      pts.push({ x: sStub.x, y: my }, { x: eStub.x, y: my });
+    } else if (srcH && !tgtH) {
+      pts.push({ x: eStub.x, y: sStub.y });
+    } else {
+      pts.push({ x: sStub.x, y: eStub.y });
+    }
+    pts.push(eStub, { x: end.x, y: end.y });
+    return pts;
+  };
+
+  const branchTargets = (data.branches?.map((branch) => ({ ...branch.targetPoint, subAnchor: branch.targetSubAnchor ?? branch.targetPoint.subAnchor })) ?? data.targetPoints ?? [])
+    .filter((point) => point.elementId);
+  const renderTargets = branchTargets.length > 0 ? branchTargets : [data.endPoint];
+  const isBranched = renderTargets.length > 1;
+  const trunkEnd = isBranched
+    ? { x: data.startPoint.x + Math.max(48, Math.min(140, Math.abs(renderTargets[0].x - data.startPoint.x) / 2)), y: data.startPoint.y }
+    : null;
+  const connectorPaths = isBranched && trunkEnd
+    ? [
+        buildRoundedPath([{ x: data.startPoint.x, y: data.startPoint.y }, stubFor(data.startPoint), trunkEnd]),
+        ...renderTargets.map((target) => buildRoundedPath([trunkEnd, { x: trunkEnd.x, y: target.y }, stubFor(target), { x: target.x, y: target.y }])),
+      ]
+    : [buildRoundedPath(buildDirectPoints(data.startPoint, data.endPoint))];
+
+  const midX = isBranched && trunkEnd ? trunkEnd.x : (data.startPoint.x + data.endPoint.x) / 2;
+  const midY = isBranched && trunkEnd ? (data.startPoint.y + renderTargets.reduce((sum, target) => sum + target.y, 0) / renderTargets.length) / 2 : (data.startPoint.y + data.endPoint.y) / 2;
 
   // ===== Visual style — state-aware, with explicit suggested/confirmed/operational gating =====
   const connectorVisualState = getConnectorVisualState(data);
   const baseStroke = connectorVisualState.color;
   const activeStroke = connectorVisualState.activeColor;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  // Clamp legacy values: any stored width > 1 is treated as legacy and forced thin
-  const storedWidth = data.strokeWidth ?? 0.25;
-  const baseWidth = storedWidth > 1 ? 0.25 : storedWidth;
-  const strokeWidth = isSelected ? Math.max(0.5, baseWidth) : baseWidth;
+  // Apply the new visual default only when older connectors do not store a custom width.
+  const baseWidth = data.strokeWidth ?? DEFAULT_CONNECTOR_STROKE_WIDTH;
+  const strokeWidth = baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
@@ -837,7 +929,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
     >
       {/* Invisible thicker hit area for easier selection */}
       <path
-        d={pathD}
+        d={connectorPaths.join(' ')}
         fill="none"
         stroke="transparent"
         strokeWidth={16}
@@ -845,35 +937,70 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         pointerEvents="stroke"
       />
 
-      {/* Main connector path — thin, orthogonal, neutral */}
-      <motion.path
-        d={pathD}
-        fill="none"
-        stroke={strokeColor}
-        strokeWidth={strokeWidth}
-        strokeDasharray={getStrokeDasharray()}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={false}
-        animate={{
-          strokeDashoffset: strokeStyle === 'animated' ? [0, -24] : 0,
-        }}
-        transition={{
-          strokeDashoffset: {
-            duration: 1,
-            repeat: Infinity,
-            ease: 'linear',
-          },
-        }}
-      />
+      {/* Main connector path — direct for one target, trunk + branches for multiple targets. */}
+      {connectorPaths.map((pathD, index) => (
+        <motion.path
+          key={`${data.id}-path-${index}`}
+          d={pathD}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth={strokeWidth}
+          strokeDasharray={getStrokeDasharray()}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={false}
+          animate={{ strokeDashoffset: strokeStyle === 'animated' ? [0, -24] : 0 }}
+          transition={{ strokeDashoffset: { duration: 1, repeat: Infinity, ease: 'linear' } }}
+        />
+      ))}
 
       {/* Endpoint dots — only visible when selected/hovered */}
       {(isSelected || isHovered) && (
         <>
-          <circle cx={startX} cy={startY} r={2.5} fill={strokeColor} pointerEvents="none" />
-          <circle cx={endX} cy={endY} r={2.5} fill={strokeColor} pointerEvents="none" />
+          <circle cx={data.startPoint.x} cy={data.startPoint.y} r={2.5} fill={strokeColor} pointerEvents="none" />
+          {renderTargets.map((target) => <circle key={`${data.id}-${target.elementId}-${target.subAnchor ?? target.anchorPoint}`} cx={target.x} cy={target.y} r={2.5} fill={strokeColor} pointerEvents="none" />)}
+          {(data.startPoint.subAnchor || data.sourceSubAnchor) && <circle cx={data.startPoint.x} cy={data.startPoint.y} r={5} fill="none" stroke={strokeColor} strokeWidth={1} pointerEvents="none" />}
+          {renderTargets.filter((target) => target.subAnchor).map((target) => <circle key={`${data.id}-${target.elementId}-${target.subAnchor}-sub`} cx={target.x} cy={target.y} r={5} fill="none" stroke={strokeColor} strokeWidth={1} pointerEvents="none" />)}
         </>
       )}
+
+      {/* Midpoint quick action opens the compact relationship panel. */}
+      <foreignObject
+        x={midX - 12}
+        y={midY - 28}
+        width="24"
+        height="24"
+        className="overflow-visible"
+        data-interactive-control
+      >
+        <button
+          type="button"
+          className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="فتح لوحة العلاقة المختصرة"
+          data-interactive-control
+          onMouseDown={(event) => event.stopPropagation()}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect?.();
+            setIsQuickPanelOpen((open) => !open);
+          }}
+        >
+          <Settings2 className="h-3.5 w-3.5" />
+        </button>
+      </foreignObject>
+
+      <AnimatePresence>
+        {isQuickPanelOpen && (
+          <ConnectorQuickPanel
+            x={midX}
+            y={midY}
+            data={data}
+            onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
+            onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
+            onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Floating info panel — only when selected or editing */}
       <AnimatePresence>
@@ -916,7 +1043,7 @@ export const RootConnectorCreator: React.FC<RootConnectorCreatorProps> = ({
 }) => {
   const [startPoint, setStartPoint] = useState<ConnectorPoint | null>(null);
   const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
-  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>('reference');
+  const [connectionType, setConnectionType] = useState<RootConnectorData['connectionType']>(DEFAULT_RELATIONSHIP_TYPE);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {

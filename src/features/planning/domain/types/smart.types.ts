@@ -576,7 +576,7 @@ export const ProjectCardDataSchema = z.object({
     budgetWarning: z.number().default(80),
     budgetDanger: z.number().default(95),
   }).default({}),
-}).merge(DepartmentBoxLinkSchema);
+}).passthrough();
 
 export type ProjectCardFields = z.infer<typeof ProjectCardFieldsSchema>;
 export type ProjectCardData = z.infer<typeof ProjectCardDataSchema>;
@@ -600,7 +600,7 @@ export const TaskCardDataSchema = z.object({
     overdueHours: z.number().default(1),
     costWarning: z.number().default(80), // % of estimated
   }).default({}),
-}).merge(DepartmentBoxLinkSchema);
+}).passthrough();
 
 export type TaskCardFields = z.infer<typeof TaskCardFieldsSchema>;
 export type TaskCardData = z.infer<typeof TaskCardDataSchema>;
