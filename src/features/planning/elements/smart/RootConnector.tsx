@@ -118,12 +118,12 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
 }) => {
   const HIT_RADIUS = 16;
   const ARROW_SIZE = 6;
-  const CONNECTOR_OFFSET = 16;
+  const ARROW_HOVER_SCALE = 1.35;
   const [isHovered, setIsHovered] = useState(false);
   const anchor = {
     anchorPoint: 'top' as const,
     x: bounds.x + bounds.width / 2,
-    y: bounds.y - CONNECTOR_OFFSET,
+    y: bounds.y,
   };
 
   const handlePointerDown = (
@@ -156,14 +156,14 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         onMouseDown={(event) => handlePointerDown(anchor, event)}
       />
       <path
-        d={`M ${anchor.x} ${anchor.y + ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y - ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y - ARROW_SIZE} Z`}
+        d={`M ${anchor.x} ${anchor.y - ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y + ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y + ARROW_SIZE} Z`}
         fill="#0B0F12"
         stroke="#FFFFFF"
         strokeWidth={1.5}
         className="connection-anchor-dot drop-shadow-sm"
         pointerEvents="none"
         style={{
-          transform: active ? 'scale(1.3)' : 'scale(1)',
+          transform: active ? `scale(${ARROW_HOVER_SCALE})` : 'scale(1)',
           transformBox: 'fill-box',
           transformOrigin: 'center',
           transition: 'transform 120ms ease',
@@ -198,7 +198,8 @@ const STYLE_OPTIONS: Array<{ value: NonNullable<RootConnectorData['style']>; lab
   { value: 'dotted', label: 'منقّط' },
   { value: 'animated', label: 'متحرك' },
 ];
-const WIDTH_OPTIONS = [0.25, 0.5, 0.75, 1];
+const DEFAULT_CONNECTOR_STROKE_WIDTH = 1.5;
+const WIDTH_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
 const STATUS_OPTIONS: Array<{ value: ConnectorRelationshipStatus; label: string }> = [
   { value: 'suggested', label: 'مقترحة' },
   { value: 'confirmed', label: 'مؤكدة' },
@@ -338,7 +339,7 @@ export const ConnectorInspector: React.FC<ConnectorInspectorProps> = ({ data, on
         </div>
         <div className="space-y-1">
           <span className="text-[10px] text-muted-foreground">السماكة</span>
-          <Select value={String(data.strokeWidth ?? 0.25)} onValueChange={(value) => onPatch({ strokeWidth: parseFloat(value) })}>
+          <Select value={String(data.strokeWidth ?? DEFAULT_CONNECTOR_STROKE_WIDTH)} onValueChange={(value) => onPatch({ strokeWidth: parseFloat(value) })}>
             <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
             <SelectContent>
               {WIDTH_OPTIONS.map((width) => (
@@ -808,10 +809,9 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const baseStroke = connectorVisualState.color;
   const activeStroke = connectorVisualState.activeColor;
   const strokeColor = isSelected || isHovered ? activeStroke : baseStroke;
-  // Clamp legacy values: any stored width > 1 is treated as legacy and forced thin
-  const storedWidth = data.strokeWidth ?? 0.25;
-  const baseWidth = storedWidth > 1 ? 0.25 : storedWidth;
-  const strokeWidth = isSelected ? Math.max(0.5, baseWidth) : baseWidth;
+  // Apply the new visual default only when older connectors do not store a custom width.
+  const baseWidth = data.strokeWidth ?? DEFAULT_CONNECTOR_STROKE_WIDTH;
+  const strokeWidth = baseWidth;
   const strokeStyle = data.style || 'solid';
 
   const getStrokeDasharray = () => {
