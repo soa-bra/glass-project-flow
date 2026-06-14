@@ -21,6 +21,12 @@ import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 
+export const isInteractiveCanvasTarget = (target: HTMLElement): boolean => {
+  return Boolean(
+    target.closest('button, input, textarea, select, [contenteditable="true"], [data-interactive-control]'),
+  );
+};
+
 const isArrowShape = (shapeType: string | undefined): boolean => {
   if (!shapeType) return false;
   return shapeType.startsWith('arrow_');
@@ -290,6 +296,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     }
     const target = e.target as HTMLElement;
     if (target.classList.contains('resize-handle') || target.hasAttribute('data-resize-handle')) return;
+    if (isInteractiveCanvasTarget(target)) return;
     if (activeTool !== 'selection_tool') return;
     e.stopPropagation();
 
