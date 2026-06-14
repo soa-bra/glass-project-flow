@@ -109,11 +109,18 @@ export function usePlanningStoreSync(
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
-        const layers = ensureLayers(usePlanningStore.getState().layers);
-        const mapped = assignLayerIds(sortByZ(rows).map(planningElementToCanvas), layers);
-        usePlanningStore.setState({
-          elements: mapped,
-          layers: rebuildLayerMembership(layers, mapped),
+        usePlanningStore.setState((state) => {
+          const layers = ensureLayers(state.layers);
+          const mapped = assignLayerIds(sortByZ(rows).map(planningElementToCanvas), layers);
+          const mappedIds = new Set(mapped.map((element) => element.id));
+
+          return {
+            elements: mapped,
+            layers: rebuildLayerMembership(layers, mapped),
+            selectedElementIds: state.selectedElementIds.filter((id) =>
+              mappedIds.has(id),
+            ),
+          };
         });
       })
       .catch((err) => {
@@ -183,6 +190,9 @@ export function usePlanningStoreSync(
       return {
         elements,
         layers: rebuildLayerMembership(layers, elements),
+        selectedElementIds: state.selectedElementIds.filter((selectedId) =>
+          !idsToDelete.has(selectedId),
+        ),
       };
     });
   }, []);
