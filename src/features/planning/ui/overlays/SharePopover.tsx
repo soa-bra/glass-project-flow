@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { 
   Users, MessageSquare, Phone, UserPlus, Send, 
   Mic, MicOff, PhoneCall, PhoneOff, Volume2,
-  Check, Crown, Eye, Edit3, Loader2, Link2
+  Check, Crown, Eye, Edit3, Loader2
 } from 'lucide-react';
 import { useCollaborationStore, Participant } from '@/stores/collaborationStore';
 import { useCollaborationUser } from '@/hooks/useCollaborationUser';
 import { useWebRTCVoice } from '@/hooks/useWebRTCVoice';
 import { useBoardInvites } from '@/hooks/useBoardInvites';
 import { motion, AnimatePresence } from 'framer-motion';
-import { InviteLinkDialog } from './InviteLinkDialog';
+import { EmailInviteDialog } from './EmailInviteDialog';
 import { JoinRequestNotification } from './JoinRequestNotification';
 
 interface SharePopoverProps {
@@ -57,13 +57,12 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
 
   // Board Invites Hook
   const {
-    activeLink,
     pendingRequests,
     isLoading: isInviteLoading,
-    createInviteLink,
-    deactivateLink,
+    emailInviteError,
+    emailInviteSuccess,
+    sendEmailInvite,
     handleJoinRequest,
-    getInviteUrl,
   } = useBoardInvites({ boardId, isHost });
   
   if (!isOpen) return null;
@@ -506,14 +505,14 @@ export const SharePopover: React.FC<SharePopoverProps> = ({
         </div>
       </div>
       
-      {/* نافذة رابط الدعوة */}
-      <InviteLinkDialog
+      {/* نافذة دعوة البريد الإلكتروني */}
+      <EmailInviteDialog
         isOpen={showInviteDialog}
         onClose={() => setShowInviteDialog(false)}
-        inviteUrl={getInviteUrl()}
         isLoading={isInviteLoading}
-        onCreateLink={createInviteLink}
-        onDeactivateLink={deactivateLink}
+        error={emailInviteError}
+        success={emailInviteSuccess}
+        onSendInvite={sendEmailInvite}
       />
     </>
   );
