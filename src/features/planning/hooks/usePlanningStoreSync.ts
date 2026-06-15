@@ -74,11 +74,15 @@ function rebuildLayerMembership(layers: LayerInfo[] | undefined, elements: Canva
   }));
 }
 
+export type PlanningStoreHydrationStatus = "idle" | "loading" | "ready" | "error";
+
 export function usePlanningStoreSync(
   boardId: string | null,
   selfDisplayName?: string,
 ) {
-  const [hydrationStatus, setHydrationStatus] = useState<PlanningCanvasHydrationStatus>(boardId ? "loading" : "idle");
+  const [hydrationStatus, setHydrationStatus] = useState<PlanningStoreHydrationStatus>(
+    boardId ? "loading" : "idle",
+  );
   const storeElements = usePlanningStore((state) => state.elements);
 
   useAutoUnlockStaleLocks(
@@ -103,9 +107,9 @@ export function usePlanningStoreSync(
 
   // Initial hydration.
   useEffect(() => {
-    if (!boardId) {
-      setHydrationStatus("idle");
-      usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
+  if (!boardId) {
+  setHydrationStatus("idle");
+  usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
       return;
     }
     let cancelled = false;
@@ -129,8 +133,7 @@ export function usePlanningStoreSync(
         setHydrationStatus("ready");
       })
       .catch((err) => {
-        if (cancelled) return;
-        setHydrationStatus("error");
+        if (!cancelled) setHydrationStatus("error");
         console.error("[usePlanningStoreSync] fetch failed", err);
       });
     return () => {
@@ -220,7 +223,7 @@ export function usePlanningStoreSync(
   });
 
   return {
-    ...realtime,
-    hydrationStatus,
-  };
+  ...sync,
+  isHydrated: hydrationStatus === "ready" || hydrationStatus === "idle",
+};
 }
