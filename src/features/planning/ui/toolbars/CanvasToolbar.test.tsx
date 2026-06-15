@@ -22,7 +22,19 @@ vi.mock('@/stores/planningStore', () => ({
 }));
 
 vi.mock('../overlays/HistoryPopover', () => ({ HistoryPopover: () => <div data-testid="history-popover" /> }));
-vi.mock('../overlays/SharePopover', () => ({ SharePopover: () => <div data-testid="share-popover" /> }));
+vi.mock('../overlays/SharePopover', () => ({
+  SharePopover: ({ isOpen }: { isOpen: boolean }) => (
+    isOpen ? (
+      <div data-testid="share-popover">
+        <div>متصل</div>
+        <div>2 مشارك</div>
+        <button>دعوة</button>
+        <div role="tab">المشاركين</div>
+        <div>أحمد (أنت)</div>
+      </div>
+    ) : null
+  ),
+}));
 vi.mock('../overlays/CanvasPropertiesPopover', () => ({ CanvasPropertiesPopover: () => <div data-testid="properties-popover" /> }));
 vi.mock('../overlays/FileMenuPopover', () => ({ FileMenuPopover: () => <div data-testid="file-popover" /> }));
 vi.mock('../overlays/LayersMenuPopover', () => ({ LayersMenuPopover: () => <div data-testid="layers-popover" /> }));
@@ -91,15 +103,34 @@ describe('CanvasToolbar', () => {
   });
 
   it('routes undo and redo actions', () => {
-    const { container } = render(<CanvasToolbar board={board} onBack={onBack} />);
-    const buttons = container.querySelectorAll('button');
-    const undoButton = buttons[6];
-    const redoButton = buttons[7];
+    render(<CanvasToolbar board={board} onBack={onBack} />);
 
-    fireEvent.click(undoButton);
-    fireEvent.click(redoButton);
+    fireEvent.click(screen.getByRole('button', { name: 'تراجع' }));
+    fireEvent.click(screen.getByRole('button', { name: 'إعادة' }));
 
     expect(mockUndo).toHaveBeenCalled();
     expect(mockRedo).toHaveBeenCalled();
+  });
+
+  it('does not show collaboration status details directly in the toolbar', () => {
+    render(<CanvasToolbar board={board} onBack={onBack} />);
+
+    expect(screen.queryByText('متصل')).not.toBeInTheDocument();
+    expect(screen.queryByText('غير متصل')).not.toBeInTheDocument();
+    expect(screen.queryByText(/أنت:/)).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('المتعاونون النشِطون')).not.toBeInTheDocument();
+  });
+
+  it('opens SharePopover as the unified source for participants details', () => {
+    render(<CanvasToolbar board={board} onBack={onBack} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'المشاركين' }));
+
+    expect(screen.getByTestId('share-popover')).toBeInTheDocument();
+    expect(screen.getByText('متصل')).toBeInTheDocument();
+    expect(screen.getByText('2 مشارك')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'دعوة' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'المشاركين' })).toBeInTheDocument();
+    expect(screen.getByText('أحمد (أنت)')).toBeInTheDocument();
   });
 });
