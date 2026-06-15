@@ -10,6 +10,9 @@ const mockUpdateElement = vi.fn();
 const mockOpen = vi.fn();
 const mockClose = vi.fn();
 const mockCreateTypedSmartElement = vi.fn();
+let mockSyncHydrated = true;
+let mockRoleLoading = false;
+let mockAiLoading = false;
 
 vi.mock('@/stores/planningStore', () => ({
   usePlanningStore: vi.fn((selector: (state: { setCurrentBoard: typeof mockSetCurrentBoard }) => unknown) =>
@@ -56,16 +59,20 @@ vi.mock('@/features/planning/hooks/usePlanningCanvasPersistence', () => ({
     selfUserId: 'editor-user',
     broadcastCursor: vi.fn(),
     persistence: {},
+    isHydrated: mockSyncHydrated,
+    hydrationStatus: mockSyncHydrated ? 'hydrated' : 'loading',
+    hydrationError: null,
+    hydratedBoardId: mockSyncHydrated ? 'board-1' : null,
   }),
 }));
 
 vi.mock('@/features/planning/hooks/useCurrentBoardRole', () => ({
   canMutateCanvas: () => true,
-  useCurrentBoardRole: () => ({ role: 'editor', loading: false, userId: 'editor-user' }),
+  useCurrentBoardRole: () => ({ role: 'editor', loading: mockRoleLoading, userId: 'editor-user' }),
 }));
 
 vi.mock('@/features/planning/hooks/useCanvasAIPermissions', () => ({
-  useCanvasAIPermissions: () => ({ canUseAI: true, denialReason: null }),
+  useCanvasAIPermissions: () => ({ canUseAI: true, denialReason: null, loading: mockAiLoading }),
 }));
 
 vi.mock('@/features/planning/domain/commands', () => ({
@@ -150,6 +157,9 @@ describe('PlanningCanvas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateTypedSmartElement.mockReturnValue({ type: 'kanban', id: 'smart-1' });
+    mockSyncHydrated = true;
+    mockRoleLoading = false;
+    mockAiLoading = false;
 
     class ResizeObserverMock {
       callback: ResizeObserverCallback;
@@ -181,6 +191,25 @@ describe('PlanningCanvas', () => {
     await waitFor(() => {
       expect(mockSetViewportHostSize).toHaveBeenCalledWith(1440, 900);
     });
+  });
+
+
+
+  it('shows unified loading and hides canvas controls before ready state', () => {
+    mockSyncHydrated = false;
+
+    render(<PlanningCanvas board={board} />);
+
+    expect(screen.getByTestId('planning-canvas-loading')).toBeInTheDocument();
+    expect(screen.getByText('تحميل لوحة التخطيط')).toBeInTheDocument();
+    expect(screen.getByText('يتم تجهيز الصلاحيات والعناصر وأدوات الذكاء الاصطناعي')).toBeInTheDocument();
+    expect(screen.queryByTestId('infinite-canvas')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('tool-zone')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bottom-toolbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('ai-assistant-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('navigation-bar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('contextual-toolbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('smart-command-bar')).not.toBeInTheDocument();
   });
 
   it('routes toolbar back action to setCurrentBoard(null)', () => {
