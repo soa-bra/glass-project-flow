@@ -13,7 +13,7 @@
  *   const sync = usePlanningStoreSync(boardId);
  *   // sync.peers, sync.broadcastCursor, sync.isConnected available for UI
  */
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import { usePlanningStore } from "@/features/planning/state/store";
@@ -78,6 +78,17 @@ export function usePlanningStoreSync(
   selfDisplayName?: string,
 ) {
   const storeElements = usePlanningStore((state) => state.elements);
+  const [hydrationState, setHydrationState] = useState<{
+    isHydrated: boolean;
+    hydrationStatus: 'idle' | 'loading' | 'hydrated' | 'error';
+    hydrationError: unknown;
+    hydratedBoardId: string | null;
+  }>({
+    isHydrated: false,
+    hydrationStatus: 'idle',
+    hydrationError: null,
+    hydratedBoardId: null,
+  });
 
   useAutoUnlockStaleLocks(
     storeElements.map((element) => ({
@@ -103,9 +114,21 @@ export function usePlanningStoreSync(
   useEffect(() => {
     if (!boardId) {
       usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
+      setHydrationState({
+        isHydrated: true,
+        hydrationStatus: 'hydrated',
+        hydrationError: null,
+        hydratedBoardId: null,
+      });
       return;
     }
     let cancelled = false;
+    setHydrationState({
+      isHydrated: false,
+      hydrationStatus: 'loading',
+      hydrationError: null,
+      hydratedBoardId: null,
+    });
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
@@ -122,9 +145,22 @@ export function usePlanningStoreSync(
             ),
           };
         });
+        setHydrationState({
+          isHydrated: true,
+          hydrationStatus: 'hydrated',
+          hydrationError: null,
+          hydratedBoardId: boardId,
+        });
       })
       .catch((err) => {
+        if (cancelled) return;
         console.error("[usePlanningStoreSync] fetch failed", err);
+        setHydrationState({
+          isHydrated: false,
+          hydrationStatus: 'error',
+          hydrationError: err,
+          hydratedBoardId: null,
+        });
       });
     return () => {
       cancelled = true;
@@ -204,11 +240,16 @@ export function usePlanningStoreSync(
     });
   }, []);
 
-  return usePlanningRealtime({
+  const realtime = usePlanningRealtime({
     boardId,
     selfDisplayName,
     onElementInsert,
     onElementUpdate,
     onElementDelete,
   });
+
+  return {
+    ...realtime,
+    ...hydrationState,
+  };
 }
