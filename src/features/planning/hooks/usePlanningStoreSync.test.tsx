@@ -58,6 +58,7 @@ function resetStore(): void {
       { id: 'layer-b', name: 'Layer B', visible: true, locked: false, elements: [] },
     ],
     selectedElementIds: [],
+    pendingDeletedElementIds: [],
     activeLayerId: 'layer-a',
     history: { past: [], future: [] },
   } as never);

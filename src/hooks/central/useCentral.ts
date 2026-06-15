@@ -5,6 +5,7 @@
  */
 import {
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
   type UseQueryResult,
@@ -107,6 +108,19 @@ export function useProjectTasks(projectId: string | null): UseQueryResult<Task[]
     queryFn: () => (projectId ? TasksService.listTasksByProject(projectId) : Promise.resolve([])),
     enabled: !!projectId,
   });
+}
+
+
+export function useAllProjectTasks(projectIds: string[]): Task[] {
+  const queries = useQueries({
+    queries: projectIds.map((projectId) => ({
+      queryKey: centralKeys.tasks(projectId),
+      queryFn: () => TasksService.listTasksByProject(projectId),
+      enabled: !!projectId,
+    })),
+  });
+
+  return queries.flatMap((query) => query.data ?? []);
 }
 
 export function useCreateTask() {

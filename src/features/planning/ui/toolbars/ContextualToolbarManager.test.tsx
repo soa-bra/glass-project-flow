@@ -14,13 +14,7 @@ vi.mock('@/stores/canvasStore', () => ({
 }));
 
 vi.mock('./floating-bar', () => ({
-  default: () => <div data-testid="floating-bar" />,
-}));
-
-vi.mock('@/features/planning/elements/smart/ContextSmartMenu', () => ({
-  default: ({ boardId }: { boardId?: string | null }) => (
-    <div data-testid="context-smart-menu">{boardId ?? 'no-board'}</div>
-  ),
+  default: ({ boardId }: { boardId?: string | null }) => <div data-testid="floating-bar">{boardId ?? 'no-board'}</div>,
 }));
 
 describe('ContextualToolbarManager', () => {
@@ -30,22 +24,22 @@ describe('ContextualToolbarManager', () => {
     canvasState.selectedElementIds = [];
   });
 
-  it('mounts the contextual AI menu next to the floating toolbar when elements are selected', () => {
+  it('mounts one floating toolbar with board context when elements are selected', () => {
     canvasState.selectedElementIds = ['el-1'];
 
     render(<ContextualToolbarManager boardId="board-123" />);
 
-    expect(screen.getByTestId('floating-bar')).toBeInTheDocument();
-    expect(screen.getByTestId('context-smart-menu')).toHaveTextContent('board-123');
+    expect(screen.getByTestId('floating-bar')).toHaveTextContent('board-123');
+    expect(screen.queryByTestId('context-smart-menu')).not.toBeInTheDocument();
   });
 
-  it('mounts the contextual AI menu while text editing is active', () => {
+  it('mounts only the floating toolbar while text editing is active', () => {
     canvasState.editingTextId = 'text-1';
 
     render(<ContextualToolbarManager boardId="board-123" />);
 
     expect(screen.getByTestId('floating-bar')).toBeInTheDocument();
-    expect(screen.getByTestId('context-smart-menu')).toBeInTheDocument();
+    expect(screen.queryByTestId('context-smart-menu')).not.toBeInTheDocument();
   });
 
   it('does not mount contextual toolbar content when there is no contextual target', () => {

@@ -35,7 +35,7 @@ export const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
   return (
     <>
       <div 
-        className="w-full h-full flex flex-col overflow-hidden rounded-t-3xl mx-0"
+        className="flex h-full min-h-0 w-full flex-col rounded-t-3xl mx-0"
         style={{
           background: 'var(--sb-column-2-bg)'
         }}
@@ -52,7 +52,7 @@ export const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
         </div>
         
         {/* منطقة التمرير للمشاريع مع تأثير النافذة الدائرية */}
-        <div className="flex-1 overflow-hidden rounded-t-3xl">
+        <div className="min-h-0 flex-1 rounded-t-3xl">
           <ScrollArea className="h-full w-full">
             <div className="space-y-2 pb-4 px-0 rounded-full mx-[10px]">
               {projects.map(project => (

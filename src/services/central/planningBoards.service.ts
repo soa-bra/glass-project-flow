@@ -23,14 +23,13 @@ import {
 } from "@/features/planning/elements/smart-doc/contract";
 import {
   isOperationalRelationshipType,
-  planningElementToConnectorLogicalRecord,
+  planningElementToConnectorLogicalRecords,
 } from "@/features/planning/integration/connectors";
 import {
   archiveSmartConnectorForElementUnlink,
   deleteSmartConnectorByElementId,
   getSmartConnectorsForElement,
   unlinkDataLinksByElementId,
-  upsertSmartConnector,
   upsertSmartConnectors,
 } from "./smartConnectors.service";
 
@@ -252,8 +251,8 @@ export async function createPlanningElement(
     .select("*")
     .single();
   if (error) throw error;
-  const connectorRecord = planningElementToConnectorLogicalRecord(data);
-  if (connectorRecord) await upsertSmartConnector(connectorRecord);
+  const connectorRecords = planningElementToConnectorLogicalRecords(data);
+  await upsertSmartConnectors(connectorRecords);
   recordCanvasElementAudit("canvas.element.created", data);
   return data;
 }
@@ -286,8 +285,8 @@ export async function updatePlanningElement(
     .select("*")
     .single();
   if (error) throw error;
-  const connectorRecord = planningElementToConnectorLogicalRecord(data);
-  if (connectorRecord) await upsertSmartConnector(connectorRecord);
+  const connectorRecords = planningElementToConnectorLogicalRecords(data);
+  await upsertSmartConnectors(connectorRecords);
   recordCanvasElementAudit("canvas.element.updated", data);
   return data;
 }
@@ -360,9 +359,7 @@ export async function upsertPlanningElements(
     .select("*");
   if (error) throw error;
   const savedRows = data ?? [];
-  const connectorRecords = savedRows
-    .map((row) => planningElementToConnectorLogicalRecord(row))
-    .filter((record): record is NonNullable<typeof record> => Boolean(record));
+  const connectorRecords = savedRows.flatMap((row) => planningElementToConnectorLogicalRecords(row));
   await upsertSmartConnectors(connectorRecords);
   savedRows.forEach((row) => recordCanvasElementAudit("canvas.element.upserted", row, {
     batchSize: savedRows.length,

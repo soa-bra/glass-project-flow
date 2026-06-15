@@ -8,7 +8,6 @@ import { TemplatesTab } from '../DepartmentTabs/TemplatesTab';
 import { TrainingDashboard } from '../DepartmentTabs/Training/TrainingDashboard';
 import { KMPADashboard } from '../DepartmentTabs/KMPA';
 import { BrandDashboard } from '../DepartmentTabs/Brand';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface BaseDepartmentPanelProps {
   selectedDepartment: string;
@@ -77,7 +76,7 @@ export const BaseDepartmentPanel: React.FC<BaseDepartmentPanelProps> = ({
   const tabItems = content.tabs.map(tab => ({ value: tab, label: tab }));
 
   return (
-    <div className="h-full flex flex-col bg-transparent overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col bg-transparent">
       {/* Header with Title and Tabs — fixed */}
       <div className="flex items-center justify-between px-6 py-[24px] my-[24px] flex-shrink-0">
         <h2 className="font-medium text-black font-arabic text-3xl whitespace-nowrap px-[24px]">
@@ -93,7 +92,7 @@ export const BaseDepartmentPanel: React.FC<BaseDepartmentPanelProps> = ({
       </div>
 
       {/* Content — scrollable */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="min-h-0 flex-1">
         <ScrollArea className="h-full w-full">
           <div className="px-6 pb-6">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full" dir="rtl">

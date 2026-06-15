@@ -22,9 +22,9 @@ import MindMapConnectionLine from '@/features/planning/elements/mindmap/MindMapC
 import { SmartConnectorManager } from '@/features/planning/elements/smart/SmartConnectorManager';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
 import type { ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
-import { toPlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
+import { toPlanningConnectorLogicalRecords } from '@/features/planning/integration/connectors';
 import {
-  upsertSmartConnector,
+  upsertSmartConnectors,
   deleteSmartConnectorByElementId,
 } from '@/services/central/smartConnectors.service';
 import type { PresencePeer } from '@/features/planning/hooks/usePlanningRealtime';
@@ -340,7 +340,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         }
 
         // Logical persistence (best-effort; visual planning element remains the client source of truth).
-        const connectorRecord = toPlanningConnectorLogicalRecord({
+        const connectorRecords = toPlanningConnectorLogicalRecords({
           id: connector.id,
           type: 'smart',
           position,
@@ -349,8 +349,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           data,
           metadata,
         }, _boardId);
-        if (connectorRecord) {
-          void upsertSmartConnector(connectorRecord).catch((err) => console.warn('[smart_connectors] upsert failed', err));
+        if (connectorRecords.length > 0) {
+          void upsertSmartConnectors(connectorRecords).catch((err) => console.warn('[smart_connectors] upsert failed', err));
         }
       });
     },

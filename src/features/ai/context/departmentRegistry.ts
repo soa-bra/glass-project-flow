@@ -7,6 +7,20 @@ export interface AIDepartmentDefinition {
   sensitiveContextKeys: string[];
 }
 
+export interface DepartmentTabDefinition {
+  id: string;
+  label: string;
+  boxKeys: string[];
+}
+
+export interface DepartmentDefinition {
+  id: string;
+  label: string;
+  category: string;
+  defaultTab: string;
+  tabs: DepartmentTabDefinition[];
+}
+
 export const AI_DEPARTMENT_REGISTRY: Record<AIDepartmentId, AIDepartmentDefinition> = {
   planning: {
     id: 'planning',
@@ -49,4 +63,70 @@ export const AI_DEPARTMENT_REGISTRY: Record<AIDepartmentId, AIDepartmentDefiniti
 export const getAIDepartmentDefinition = (departmentId?: AIDepartmentId | null): AIDepartmentDefinition => {
   if (!departmentId) return AI_DEPARTMENT_REGISTRY.general;
   return AI_DEPARTMENT_REGISTRY[departmentId] ?? AI_DEPARTMENT_REGISTRY.general;
+};
+
+export const DEPARTMENT_REGISTRY: DepartmentDefinition[] = [
+  {
+    id: 'financial',
+    label: 'إدارة العمليات المالية',
+    category: 'financial',
+    defaultTab: 'overview',
+    tabs: [
+      { id: 'overview', label: 'نظرة عامة', boxKeys: ['financial-summary', 'budget-health', 'cash-flow'] },
+      { id: 'budgets', label: 'الميزانية', boxKeys: ['budgets', 'budget-requests', 'variance-analysis'] },
+      { id: 'transactions', label: 'المعاملات', boxKeys: ['transactions', 'pending-approvals', 'reconciliations'] },
+      { id: 'invoices', label: 'الفواتير والمدفوعات', boxKeys: ['invoices', 'payments', 'collections'] },
+      { id: 'analysis', label: 'مركز القرار المالي', boxKeys: ['analysis', 'forecast', 'risk-actions'] },
+      { id: 'templates', label: 'النماذج والقوالب', boxKeys: ['templates', 'approval-workflows'] },
+      { id: 'reports', label: 'التقارير', boxKeys: ['reports', 'audit-packages'] },
+    ],
+  },
+  {
+    id: 'legal',
+    label: 'الإدارة القانونية',
+    category: 'legal',
+    defaultTab: 'overview',
+    tabs: [
+      { id: 'overview', label: 'نظرة عامة', boxKeys: ['legal-summary', 'open-matters'] },
+      { id: 'contracts', label: 'العقود', boxKeys: ['contracts', 'contract-reviews', 'approval-actions'] },
+      { id: 'risks', label: 'المخاطر', boxKeys: ['risks', 'compliance-actions'] },
+      { id: 'reports', label: 'التقارير', boxKeys: ['reports'] },
+    ],
+  },
+  {
+    id: 'crm',
+    label: 'إدارة علاقات العملاء',
+    category: 'crm',
+    defaultTab: 'overview',
+    tabs: [
+      { id: 'overview', label: 'نظرة عامة', boxKeys: ['clients', 'leads', 'interactions'] },
+      { id: 'actions', label: 'إجراءات العملاء', boxKeys: ['follow-up-actions', 'retention-actions'] },
+    ],
+  },
+  {
+    id: 'csr',
+    label: 'المسؤولية الاجتماعية',
+    category: 'csr',
+    defaultTab: 'overview',
+    tabs: [
+      { id: 'overview', label: 'نظرة عامة', boxKeys: ['initiatives', 'impact', 'volunteering'] },
+      { id: 'actions', label: 'إجراءات المبادرات', boxKeys: ['community-actions', 'partner-actions'] },
+    ],
+  },
+];
+
+export const getAllDepartmentDefinitions = (): DepartmentDefinition[] => DEPARTMENT_REGISTRY;
+
+export const getDepartmentDefinition = (departmentId?: string | null): DepartmentDefinition | undefined => {
+  if (!departmentId) return undefined;
+  return DEPARTMENT_REGISTRY.find((department) => department.id === departmentId);
+};
+
+export const getDepartmentTabDefinition = (
+  departmentId?: string | null,
+  tabId?: string | null
+): DepartmentTabDefinition | undefined => {
+  const department = getDepartmentDefinition(departmentId);
+  if (!department || !tabId) return undefined;
+  return department.tabs.find((tab) => tab.id === tabId);
 };

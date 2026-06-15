@@ -11,6 +11,7 @@ import {
   FileSpreadsheet,
   Network,
   FolderKanban,
+  CheckSquare,
   DollarSign,
   Users,
   Building,
@@ -21,12 +22,15 @@ import {
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementAI } from '@/hooks/useSmartElementAI';
+import { useAllProjectTasks, useProjects } from '@/hooks/central/useCentral';
+import type { Project, Task } from '@/types/central';
 import type { SmartElementType } from '@/types/smart-elements';
 import type { MindMapNodeData } from '@/types/mindmap-canvas';
 import { NODE_COLORS } from '@/types/mindmap-canvas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { SupraMenuOption, supraMenuOptionClassName } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Smart Element Configuration
@@ -37,7 +41,7 @@ interface SmartElementConfig {
   name: string;
   nameAr: string;
   icon: React.ReactNode;
-  category: 'planning' | 'analysis' | 'collaboration' | 'cards';
+  category: 'planning' | 'analysis' | 'collaboration' | 'cards' | 'boxes';
   description: string;
   settings: SmartElementSetting[];
 }
@@ -189,6 +193,18 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
     ]
   },
   {
+    id: 'task_card',
+    name: 'Task Card',
+    nameAr: 'بطاقة مهمة',
+    icon: <CheckSquare size={20} />,
+    category: 'cards',
+    description: 'عرض المهام الفعلية من النظام بشكل تفاعلي',
+    settings: [
+      { key: 'showAlerts', label: 'عرض التنبيهات', type: 'checkbox', defaultValue: true },
+      { key: 'compactMode', label: 'وضع مضغوط', type: 'checkbox', defaultValue: false },
+    ]
+  },
+  {
     id: 'finance_card',
     name: 'Finance Card',
     nameAr: 'بطاقة مالية',
@@ -228,13 +244,78 @@ const SMART_ELEMENTS: SmartElementConfig[] = [
   },
 ];
 
+
+const normalizeCentralState = (state?: string | null) => {
+  if (state === 'archived' || state === 'failed') return 'cancelled';
+  return state ?? 'draft';
+};
+
+const mapProjectToCardData = (project: Project, tasks: Task[]) => {
+  const completedTasks = tasks.filter((task) => task.state === 'completed').length;
+
+  return {
+    projectId: project.id,
+    linkedEntityId: project.id,
+    executionEntityType: 'project',
+    sourceReference: {
+      source: 'central.projects',
+      type: 'project',
+      id: project.id,
+    },
+    title: project.name,
+    projectName: project.name,
+    status: normalizeCentralState(project.state),
+    priority: project.priority,
+    budget: project.budget ?? 0,
+    startDate: project.start_date ?? undefined,
+    endDate: project.due_date ?? undefined,
+    totalTasks: tasks.length,
+    completedTasks,
+    totalPhases: 0,
+    completedPhases: 0,
+    teamSize: 0,
+    estimatedHours: tasks.reduce((sum, task) => sum + (task.estimated_duration ?? 0), 0),
+    actualHours: 0,
+    description: project.description ?? undefined,
+  };
+};
+
+const mapTaskToCardData = (task: Task, project?: Project) => ({
+  taskId: task.id,
+  projectId: task.linked_project_id,
+  linkedEntityId: task.id,
+  executionEntityType: 'task',
+  sourceReference: {
+    source: 'central.tasks',
+    type: 'task',
+    id: task.id,
+    projectId: task.linked_project_id,
+  },
+  title: task.name,
+  taskName: task.name,
+  state: normalizeCentralState(task.state),
+  priority: task.priority ?? 'medium',
+  complexity: task.complexity ?? 'simple',
+  estimatedDuration: task.estimated_duration ?? 0,
+  estimatedCost: task.estimated_cost ?? 0,
+  requiredTeamSize: task.required_team_size ?? 1,
+  startDate: task.start_date ?? undefined,
+  dueDate: task.due_date ?? undefined,
+  actualDuration: 0,
+  actualCost: 0,
+  description: task.description ?? undefined,
+  projectName: project?.name,
+});
+
 const CATEGORIES = [
   { id: 'all', label: 'الكل' },
   { id: 'collaboration', label: 'تعاون' },
   { id: 'planning', label: 'تخطيط' },
   { id: 'analysis', label: 'تحليل' },
-  { id: 'cards', label: 'بطاقات' },
+  { id: 'boxes', label: 'صناديق' },
 ] as const;
+
+const normalizeCategoryId = (categoryId: string) => categoryId === 'cards' ? 'boxes' : categoryId;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Component
@@ -243,20 +324,58 @@ const CATEGORIES = [
 const SmartElementsPanel: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedElement, setSelectedElement] = useState<SmartElementConfig | null>(null);
+  const [selectedBoxSource, setSelectedBoxSource] = useState<DepartmentBoxSource | null>(null);
   const [elementTitle, setElementTitle] = useState('');
   const [settings, setSettings] = useState<Record<string, any>>({});
   const [aiPrompt, setAiPrompt] = useState('');
+  const [boxSearch, setBoxSearch] = useState('');
   
   const { addSmartElement } = useSmartElementsStore();
   const { viewport } = useCanvasStore();
+  const { data: projects = [] } = useProjects();
+  const tasks = useAllProjectTasks(projects.map((project) => project.id));
   const { generateElements, isLoading: aiLoading } = useSmartElementAI();
 
+  const tasksByProject = tasks.reduce<Record<string, Task[]>>((acc, task) => {
+    (acc[task.linked_project_id] ||= []).push(task);
+    return acc;
+  }, {});
+
+  const projectCards = projects.map((project) => ({
+    id: `project-${project.id}`,
+    type: 'project_card' as SmartElementType,
+    name: project.name,
+    nameAr: project.name,
+    icon: <FolderKanban size={20} />,
+    category: 'cards' as const,
+    description: project.description || 'بطاقة مشروع من بيانات النظام',
+    settings: SMART_ELEMENTS.find((element) => element.id === 'project_card')?.settings ?? [],
+    data: mapProjectToCardData(project, tasksByProject[project.id] ?? []),
+  }));
+
+  const taskCards = tasks.map((task) => {
+    const project = projects.find((item) => item.id === task.linked_project_id);
+    return {
+      id: `task-${task.id}`,
+      type: 'task_card' as SmartElementType,
+      name: task.name,
+      nameAr: task.name,
+      icon: <CheckSquare size={20} />,
+      category: 'cards' as const,
+      description: project ? `مهمة ضمن ${project.name}` : 'بطاقة مهمة من بيانات النظام',
+      settings: SMART_ELEMENTS.find((element) => element.id === 'task_card')?.settings ?? [],
+      data: mapTaskToCardData(task, project),
+    };
+  });
+
+  const availableElements = [...SMART_ELEMENTS, ...projectCards, ...taskCards];
+
   const filteredElements = selectedCategory === 'all' 
-    ? SMART_ELEMENTS 
-    : SMART_ELEMENTS.filter(el => el.category === selectedCategory);
+    ? availableElements 
+    : availableElements.filter(el => el.category === selectedCategory);
 
   // Initialize settings when element is selected
-  const handleSelectElement = (element: SmartElementConfig) => {
+  const handleSelectElement = (element: SmartElementConfig & { data?: Record<string, any>; type?: SmartElementType }) => {
     setSelectedElement(element);
     const initialSettings: Record<string, any> = {};
     element.settings.forEach(setting => {
@@ -265,8 +384,27 @@ const SmartElementsPanel: React.FC = () => {
     setSettings(initialSettings);
     setElementTitle('');
     setAiPrompt('');
+    setSelectedBoxSource(null);
     
     // ✅ إخبار canvasStore بالعنصر المختار وتفعيل الأداة
+    useCanvasStore.getState().setSelectedSmartElement(element.type ?? element.id);
+    useCanvasStore.getState().setActiveTool('smart_element_tool');
+  };
+
+  const handleSelectBoxSource = (source: DepartmentBoxSource) => {
+    const element = SMART_ELEMENTS.find(el => el.id === source.smartElementType);
+    if (!element) return;
+
+    const initialSettings: Record<string, any> = {};
+    element.settings.forEach(setting => {
+      initialSettings[setting.key] = setting.defaultValue;
+    });
+
+    setSelectedElement(element);
+    setSelectedBoxSource(source);
+    setSettings(initialSettings);
+    setElementTitle(source.title);
+    setAiPrompt('');
     useCanvasStore.getState().setSelectedSmartElement(element.id);
     useCanvasStore.getState().setActiveTool('smart_element_tool');
   };
@@ -305,9 +443,19 @@ const SmartElementsPanel: React.FC = () => {
     // ✅ المخطط البصري يُنشأ كعنصر ذكي عادي (يُعرض بـ SmartElementRenderer)
 
     const initialData: Record<string, any> = {
+      ...(selectedElement as any).data,
       title: elementTitle || selectedElement.nameAr,
       ...settings,
+      ...(selectedBoxSource ? createDepartmentBoxElementData(selectedBoxSource) : {}),
     };
+
+    if (selectedBoxSource && elementTitle.trim()) {
+      initialData.title = elementTitle.trim();
+      initialData.sourceSnapshot = {
+        ...initialData.sourceSnapshot,
+        title: elementTitle.trim(),
+      };
+    }
 
     // Add type-specific initial data
     if (selectedElement.id === 'kanban' && settings.columnNames) {
@@ -332,7 +480,7 @@ const SmartElementsPanel: React.FC = () => {
     }
 
     addSmartElement(
-      selectedElement.id,
+      ((selectedElement as any).type ?? selectedElement.id) as SmartElementType,
       { x: centerX, y: centerY },
       initialData
     );
@@ -381,20 +529,82 @@ const SmartElementsPanel: React.FC = () => {
         </h4>
         <div className="flex flex-wrap gap-2">
           {CATEGORIES.map(cat => (
-            <button
+            <SupraMenuOption
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-medium transition-colors ${
-                selectedCategory === cat.id
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
-              }`}
-            >
-              {cat.label}
-            </button>
+              selected={selectedCategory === cat.id}
+              className="w-auto px-3 py-1.5 text-[11px]"
+              label={cat.label}
+            />
           ))}
         </div>
       </div>
+
+      {/* Department Box Sources */}
+      {shouldShowBoxes && (
+        <div>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h4 className="text-[13px] font-semibold text-foreground">
+              صناديق الإدارات
+            </h4>
+            <span className="text-[10px] text-muted-foreground">
+              {filteredBoxSources.length} صندوق
+            </span>
+          </div>
+          {departmentBoxSources.length > 8 && (
+            <Input
+              value={boxSearch}
+              onChange={(e) => setBoxSearch(e.target.value)}
+              placeholder="بحث في الصناديق أو الإدارات..."
+              className="h-8 text-[12px] mb-3"
+            />
+          )}
+          <div className="space-y-3 max-h-[260px] overflow-y-auto pr-1">
+            {Object.entries(boxSourcesByDepartment).map(([departmentLabel, boxes]) => (
+              <div key={departmentLabel} className="space-y-2">
+                <h5 className="text-[11px] font-semibold text-muted-foreground">
+                  {departmentLabel}
+                </h5>
+                <div className="grid grid-cols-1 gap-2">
+                  {boxes.map((box) => (
+                    <button
+                      key={box.id}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('application/smart-element', JSON.stringify({
+                          type: box.smartElementType,
+                          name: box.title,
+                          data: createDepartmentBoxElementData(box),
+                        }));
+                        e.dataTransfer.effectAllowed = 'copy';
+                      }}
+                      onClick={() => handleSelectBoxSource(box)}
+                      className={`text-right rounded-xl border p-3 transition-all cursor-grab active:cursor-grabbing ${
+                        selectedBoxSource?.id === box.id
+                          ? 'border-[hsl(var(--accent-green))] bg-[hsl(var(--accent-green))]/10'
+                          : 'border-border bg-muted hover:bg-muted/80'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[12px] font-semibold text-foreground">{box.title}</span>
+                        <span className="rounded-full bg-background px-2 py-0.5 text-[10px] text-muted-foreground">
+                          {box.boxType === 'action' ? 'إجراء' : 'عملية'}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-[10px] text-muted-foreground">
+                        {box.tabLabel} · {box.status}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            {filteredBoxSources.length === 0 && (
+              <p className="text-[11px] text-muted-foreground">لا توجد صناديق مطابقة للبحث.</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Elements Grid */}
       <div>
@@ -408,19 +618,20 @@ const SmartElementsPanel: React.FC = () => {
               draggable
               onDragStart={(e) => {
                 e.dataTransfer.setData('application/smart-element', JSON.stringify({
-                  type: element.id,
+                  type: (element as any).type ?? element.id,
                   name: element.nameAr,
+                  data: (element as any).data,
                 }));
                 e.dataTransfer.effectAllowed = 'copy';
               }}
               onClick={() => handleSelectElement(element)}
-              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all cursor-grab active:cursor-grabbing ${
+              className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all cursor-grab active:cursor-grabbing ${supraMenuOptionClassName} ${
                 selectedElement?.id === element.id
-                  ? 'bg-[hsl(var(--accent-green))] text-white'
-                  : 'bg-muted text-foreground hover:bg-muted/80'
+                  ? 'bg-black font-bold text-white hover:bg-black'
+                  : 'bg-transparent'
               }`}
             >
-              <span className={selectedElement?.id === element.id ? 'text-white' : 'text-foreground'}>
+              <span className={selectedElement?.id === element.id ? 'text-white' : 'text-black'}>
                 {element.icon}
               </span>
               <span className="text-[10px] font-medium text-center">
@@ -484,7 +695,7 @@ const SmartElementsPanel: React.FC = () => {
                   <select
                     value={settings[setting.key] || ''}
                     onChange={(e) => updateSetting(setting.key, e.target.value)}
-                    className="w-full h-8 px-2 text-[12px] border border-border rounded-lg bg-background"
+                    className={`w-full h-8 px-2 text-[12px] border border-border bg-background ${supraMenuOptionClassName}`}
                   >
                     {setting.options?.map(opt => (
                       <option key={opt.value} value={opt.value}>

@@ -19,11 +19,11 @@ export const TabContentWrapper = ({
   loading: boolean;
 }) => {
   return <>
-      <TabsContent value="overview" className="overflow-auto p-0 m-0 px-0 my-0">
+      <TabsContent value="overview" className="m-0 min-h-0 flex-1 overflow-auto p-0 px-0 my-0">
         <OverviewTab data={tabData.overview || { stats: { expectedRevenue: 0, complaints: 0, delayedProjects: 0 } }} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="finance" className="overflow-auto p-0 m-0 px-0 my-0">
+      <TabsContent value="finance" className="m-0 min-h-0 flex-1 overflow-auto p-0 px-0 my-0">
         <FinanceTab data={tabData.finance || { 
           monthlyBudget: [], 
           cashFlow: [], 
@@ -34,7 +34,7 @@ export const TabContentWrapper = ({
         }} loading={loading} />
       </TabsContent>
 
-      <TabsContent value="projects" className="w-full h-full overflow-auto p-4 m-0">
+      <TabsContent value="projects" className="m-0 min-h-0 flex-1 overflow-auto p-4">
         <ProjectsTab data={tabData.projects || { 
           criticalProjects: [], 
           delayedMilestones: [], 
@@ -43,7 +43,7 @@ export const TabContentWrapper = ({
         }} loading={loading} />
       </TabsContent>
 
-      <TabsContent value="marketing" className="w-full h-full overflow-auto p-4 m-0">
+      <TabsContent value="marketing" className="m-0 min-h-0 flex-1 overflow-auto p-4">
         <MarketingTab data={tabData.marketing || { 
           roasData: [], 
           campaigns: [], 
@@ -55,7 +55,7 @@ export const TabContentWrapper = ({
         }} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="hr" className="w-full h-full overflow-auto p-4 m-0">
+      <TabsContent value="hr" className="m-0 min-h-0 flex-1 overflow-auto p-4">
         <HRTab data={tabData.hr || { 
           resourceUtilization: [], 
           skillGaps: [], 
@@ -74,7 +74,7 @@ export const TabContentWrapper = ({
         }} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="clients" className="w-full h-full overflow-auto p-4 m-0">
+      <TabsContent value="clients" className="m-0 min-h-0 flex-1 overflow-auto p-4">
         <ClientsTab data={tabData.clients || { 
           opportunityFunnel: [], 
           npsScores: [], 
@@ -83,7 +83,7 @@ export const TabContentWrapper = ({
         }} loading={loading} />
       </TabsContent>
       
-      <TabsContent value="reports" className="w-full h-full overflow-auto p-4 m-0">
+      <TabsContent value="reports" className="m-0 min-h-0 flex-1 overflow-auto p-4">
         <ReportsTab data={tabData.reports || { 
           templates: [], 
           statistics: { totalReports: 0, monthlyDownloads: 0, customReports: 0, scheduledReports: 0, popularCategories: [] }, 

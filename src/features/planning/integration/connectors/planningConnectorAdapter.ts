@@ -7,6 +7,13 @@ export type PlanningConnectorKind = 'visual_connector' | 'mindmap_connector' | '
 export interface PlanningConnectorEndpoint {
   elementId: string;
   anchor?: string | null;
+  subAnchor?: string | null;
+}
+
+export interface PlanningConnectorBranchEndpoint {
+  id?: string;
+  source?: PlanningConnectorEndpoint;
+  target: PlanningConnectorEndpoint;
 }
 
 export type PlanningConnectorDirection = 'source_to_target' | 'target_to_source' | 'bidirectional';
@@ -32,6 +39,8 @@ export interface PlanningConnectorLogicalRecord {
   isAIGenerated: boolean;
   approvedByUser: boolean;
   approvedBy?: string | null;
+  branchId?: string | null;
+  branchIndex?: number | null;
 }
 
 function isRecord(value: unknown): value is Record<string, any> {
@@ -157,11 +166,13 @@ function readConnectorEndpoints(element: Pick<CanvasElement, 'type' | 'data'>): 
     return {
       source: {
         elementId: data.startPoint.elementId,
-        anchor: data.startPoint.anchor ?? data.startPoint.anchorId ?? null,
+        anchor: data.startPoint.anchor ?? data.startPoint.anchorId ?? data.startPoint.anchorPoint ?? null,
+        subAnchor: data.startPoint.subAnchor ?? data.sourceSubAnchor ?? null,
       },
       target: {
         elementId: data.endPoint.elementId,
-        anchor: data.endPoint.anchor ?? data.endPoint.anchorId ?? null,
+        anchor: data.endPoint.anchor ?? data.endPoint.anchorId ?? data.endPoint.anchorPoint ?? null,
+        subAnchor: data.endPoint.subAnchor ?? data.targetSubAnchor ?? null,
       },
     };
   }
@@ -171,10 +182,12 @@ function readConnectorEndpoints(element: Pick<CanvasElement, 'type' | 'data'>): 
       source: {
         elementId: data.startNodeId,
         anchor: data.startAnchor?.anchor ?? null,
+        subAnchor: data.startAnchor?.subAnchor ?? data.sourceSubAnchor ?? null,
       },
       target: {
         elementId: data.endNodeId,
         anchor: data.endAnchor?.anchor ?? null,
+        subAnchor: data.endAnchor?.subAnchor ?? data.targetSubAnchor ?? null,
       },
     };
   }
@@ -206,13 +219,66 @@ function shouldPersistLogicalConnector(
   return connectorMode === 'semantic' || connectorMode === 'operational' || status === 'approved' || approvedByUser;
 }
 
-export function toPlanningConnectorLogicalRecord(
+
+
+function branchConnectorElementId(connectorElementId: string, branchIndex: number, branchCount: number): string {
+  if (branchCount <= 1) return connectorElementId;
+  const match = connectorElementId.match(/^([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-)[0-9a-f]{12}$/i);
+  if (!match) return connectorElementId;
+  return `${match[1]}${String(branchIndex + 1).padStart(12, '0')}`;
+}
+
+function readConnectorBranches(data: Record<string, any>, fallbackSource: PlanningConnectorEndpoint, fallbackTarget: PlanningConnectorEndpoint): PlanningConnectorBranchEndpoint[] {
+  if (Array.isArray(data.branches) && data.branches.length > 0) {
+    return data.branches
+      .map((branch: any, index: number) => {
+        const target = branch?.targetPoint ?? branch?.target ?? branch;
+        const elementId = readString(target?.elementId, target?.element_id, target?.id);
+        if (!elementId) return null;
+        return {
+          id: readString(branch?.id, branch?.branchId) ?? `branch-${index}`,
+          source: {
+            ...fallbackSource,
+            subAnchor: readString(branch?.sourceSubAnchor, branch?.source_sub_anchor, branch?.source?.subAnchor) ?? fallbackSource.subAnchor ?? null,
+          },
+          target: {
+            elementId,
+            anchor: readString(target?.anchor, target?.anchorId, target?.anchorPoint) ?? null,
+            subAnchor: readString(branch?.targetSubAnchor, branch?.target_sub_anchor, target?.subAnchor) ?? null,
+          },
+        };
+      })
+      .filter((branch): branch is PlanningConnectorBranchEndpoint => Boolean(branch));
+  }
+
+  if (Array.isArray(data.targetPoints) && data.targetPoints.length > 0) {
+    return data.targetPoints
+      .map((target: any, index: number) => {
+        const elementId = readString(target?.elementId, target?.element_id, target?.id);
+        if (!elementId) return null;
+        return {
+          id: readString(target?.id, target?.branchId) ?? `target-${index}`,
+          source: fallbackSource,
+          target: {
+            elementId,
+            anchor: readString(target?.anchor, target?.anchorId, target?.anchorPoint) ?? null,
+            subAnchor: readString(target?.subAnchor, target?.targetSubAnchor) ?? null,
+          },
+        };
+      })
+      .filter((branch): branch is PlanningConnectorBranchEndpoint => Boolean(branch));
+  }
+
+  return [{ source: fallbackSource, target: fallbackTarget }];
+}
+
+export function toPlanningConnectorLogicalRecords(
   element: CanvasElement,
   boardId: string,
-): PlanningConnectorLogicalRecord | null {
+): PlanningConnectorLogicalRecord[] {
   const kind = getConnectorKind(element.type) ?? (isPlanningConnectorElement(element) ? 'root_connector' : null);
   const endpoints = readConnectorEndpoints(element);
-  if (!kind || !endpoints) return null;
+  if (!kind || !endpoints) return [];
 
   const data = (element.data ?? {}) as Record<string, any>;
   const metadata = (element.metadata ?? {}) as Record<string, unknown>;
@@ -243,13 +309,15 @@ export function toPlanningConnectorLogicalRecord(
     data.isApproved,
   ) ?? Boolean(approvedBy);
 
-  if (!relationshipType || !shouldPersistLogicalConnector(data, metadata)) return null;
+  if (!relationshipType || !shouldPersistLogicalConnector(data, metadata)) return [];
 
-  return {
-    connector_element_id: element.id,
+  const branches = readConnectorBranches(data, endpoints.source, endpoints.target);
+
+  return branches.map((branch, branchIndex) => ({
+    connector_element_id: branchConnectorElementId(element.id, branchIndex, branches.length),
     board_id: boardId,
-    source_element_id: endpoints.source.elementId,
-    target_element_id: endpoints.target.elementId,
+    source_element_id: (branch.source ?? endpoints.source).elementId,
+    target_element_id: branch.target.elementId,
     relationship_type: relationshipType,
     connector_kind: kind,
     label: (data.label as string | undefined) ?? (data.title as string | undefined) ?? null,
@@ -259,8 +327,10 @@ export function toPlanningConnectorLogicalRecord(
       strokeWidth: data.strokeWidth,
       curveStyle: data.curveStyle,
       lineStyle: data.style,
-      startAnchor: endpoints.source.anchor,
-      endAnchor: endpoints.target.anchor,
+      startAnchor: (branch.source ?? endpoints.source).anchor,
+      endAnchor: branch.target.anchor,
+      sourceSubAnchor: (branch.source ?? endpoints.source).subAnchor,
+      targetSubAnchor: branch.target.subAnchor,
     },
     metadata: {
       ...metadata,
@@ -282,6 +352,11 @@ export function toPlanningConnectorLogicalRecord(
       targetEntityType: targetBinding.entityType,
       direction,
       confidence,
+      parentConnectorElementId: element.id,
+      branchId: branch.id ?? null,
+      branchIndex,
+      sourceSubAnchor: (branch.source ?? endpoints.source).subAnchor,
+      targetSubAnchor: branch.target.subAnchor,
       source,
       createdBy,
       isAIGenerated,
@@ -299,13 +374,22 @@ export function toPlanningConnectorLogicalRecord(
     isAIGenerated,
     approvedByUser,
     approvedBy,
-  };
+    branchId: branch.id ?? null,
+    branchIndex,
+  }));
 }
 
-export function planningElementToConnectorLogicalRecord(
-  row: PlanningElement | PlanningElementInsert,
+export function toPlanningConnectorLogicalRecord(
+  element: CanvasElement,
+  boardId: string,
 ): PlanningConnectorLogicalRecord | null {
-  return toPlanningConnectorLogicalRecord(
+  return toPlanningConnectorLogicalRecords(element, boardId)[0] ?? null;
+}
+
+export function planningElementToConnectorLogicalRecords(
+  row: PlanningElement | PlanningElementInsert,
+): PlanningConnectorLogicalRecord[] {
+  return toPlanningConnectorLogicalRecords(
     {
       id: row.id as string,
       type: row.element_type,
@@ -317,6 +401,12 @@ export function planningElementToConnectorLogicalRecord(
     } as CanvasElement,
     row.board_id,
   );
+}
+
+export function planningElementToConnectorLogicalRecord(
+  row: PlanningElement | PlanningElementInsert,
+): PlanningConnectorLogicalRecord | null {
+  return planningElementToConnectorLogicalRecords(row)[0] ?? null;
 }
 
 export function withConnectorRelationship<T extends { data?: Record<string, unknown>; metadata?: Record<string, unknown> }>(
