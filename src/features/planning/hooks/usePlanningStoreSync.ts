@@ -13,7 +13,7 @@
  *   const sync = usePlanningStoreSync(boardId);
  *   // sync.peers, sync.broadcastCursor, sync.isConnected available for UI
  */
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import { usePlanningStore } from "@/features/planning/state/store";
@@ -23,6 +23,7 @@ import { planningElementToCanvas } from "@/features/planning/state/planningEleme
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
+import type { PlanningCanvasHydrationStatus } from "./usePlanningCanvasReadyState";
 
 function sortByZ(rows: PlanningElement[]): PlanningElement[] {
   return [...rows].sort((a, b) => {
@@ -77,6 +78,7 @@ export function usePlanningStoreSync(
   boardId: string | null,
   selfDisplayName?: string,
 ) {
+  const [hydrationStatus, setHydrationStatus] = useState<PlanningCanvasHydrationStatus>(boardId ? "loading" : "idle");
   const storeElements = usePlanningStore((state) => state.elements);
 
   useAutoUnlockStaleLocks(
@@ -102,10 +104,12 @@ export function usePlanningStoreSync(
   // Initial hydration.
   useEffect(() => {
     if (!boardId) {
+      setHydrationStatus("idle");
       usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
       return;
     }
     let cancelled = false;
+    setHydrationStatus("loading");
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
@@ -122,8 +126,11 @@ export function usePlanningStoreSync(
             ),
           };
         });
+        setHydrationStatus("ready");
       })
       .catch((err) => {
+        if (cancelled) return;
+        setHydrationStatus("error");
         console.error("[usePlanningStoreSync] fetch failed", err);
       });
     return () => {
@@ -204,11 +211,16 @@ export function usePlanningStoreSync(
     });
   }, []);
 
-  return usePlanningRealtime({
+  const realtime = usePlanningRealtime({
     boardId,
     selfDisplayName,
     onElementInsert,
     onElementUpdate,
     onElementDelete,
   });
+
+  return {
+    ...realtime,
+    hydrationStatus,
+  };
 }

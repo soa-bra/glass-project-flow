@@ -17,10 +17,8 @@ import { SharePopover } from '../overlays/SharePopover';
 import { CanvasPropertiesPopover } from '../overlays/CanvasPropertiesPopover';
 import { FileMenuPopover } from '../overlays/FileMenuPopover';
 import { LayersMenuPopover } from '../overlays/LayersMenuPopover';
-import { PresenceAvatars } from '../collaboration/PresenceAvatars';
 import { RealtimeStatusBadge } from '../collaboration/RealtimeStatusBadge';
 import type { PresencePeer, RealtimeConnectionStatus } from '../../hooks/usePlanningRealtime';
-import { Users } from 'lucide-react';
 
 interface CanvasToolbarProps {
   board: CanvasBoard;
@@ -36,11 +34,8 @@ interface CanvasToolbarProps {
 const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   board,
   onBack,
-  peers = [],
-  selfName,
   realtimeStatus = 'idle',
   lastSyncAt = null,
-  canEdit: _canEdit = true,
 }) => {
   const { undo, redo, history } = useCanvasStore();
   const { renameBoard } = usePlanningStore();
@@ -112,23 +107,6 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 
       <div className="flex items-center gap-1.5">
         <RealtimeStatusBadge status={realtimeStatus} lastSyncAt={lastSyncAt} />
-
-        <div
-          className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-sb-panel-bg border border-sb-border"
-          aria-label="المتعاونون النشِطون"
-          dir="rtl"
-        >
-          <Users size={12} className="text-sb-ink/70" />
-          <span className="text-[11px] font-semibold text-sb-ink">
-            {peers.length + 1}
-          </span>
-          {selfName && (
-            <span className="text-[11px] text-sb-ink/70 max-w-[120px] truncate">
-              أنت: {selfName}
-            </span>
-          )}
-          <PresenceAvatars peers={peers} />
-        </div>
 
         <div className="h-5 w-px bg-sb-border" />
         <div className="relative">

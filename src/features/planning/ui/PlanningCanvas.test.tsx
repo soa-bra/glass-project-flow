@@ -51,6 +51,7 @@ vi.mock('@/features/planning/hooks/usePlanningCanvasPersistence', () => ({
   usePlanningCanvasPersistence: () => ({
     peers: [],
     connectionStatus: 'connected',
+    hydrationStatus: 'ready',
     lastSyncAt: null,
     isConnected: true,
     selfUserId: 'editor-user',
