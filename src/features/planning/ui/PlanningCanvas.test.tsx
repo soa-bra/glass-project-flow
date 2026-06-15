@@ -66,7 +66,7 @@ vi.mock('@/features/planning/hooks/useBoardCanvasLifecycle', () => ({
 }));
 
 vi.mock('@/features/planning/hooks/usePlanningCanvasPersistence', () => ({
-  usePlanningCanvasPersistence: () => stateMocks.syncResult,
+usePlanningCanvasPersistence: () => stateMocks.syncResult,
 }));
 
 vi.mock('@/features/planning/hooks/useCurrentBoardRole', () => ({

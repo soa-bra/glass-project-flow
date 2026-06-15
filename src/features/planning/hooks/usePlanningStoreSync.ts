@@ -23,6 +23,7 @@ import { planningElementToCanvas } from "@/features/planning/state/planningEleme
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
+import type { PlanningCanvasHydrationStatus } from "./usePlanningCanvasReadyState";
 
 function sortByZ(rows: PlanningElement[]): PlanningElement[] {
   return [...rows].sort((a, b) => {
@@ -222,8 +223,7 @@ export function usePlanningStoreSync(
   });
 
   return {
-    ...realtime,
-    hydrationStatus,
-    isHydrated: hydrationStatus === "ready" || hydrationStatus === "idle",
-  };
+  ...sync,
+  isHydrated: hydrationStatus === "ready" || hydrationStatus === "idle",
+};
 }

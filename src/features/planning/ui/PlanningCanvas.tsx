@@ -26,6 +26,7 @@ import { ExecutionPanelHost } from '@/features/planning/execution/ExecutionPanel
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import { usePlanningCanvasReadyState } from '@/features/planning/hooks/usePlanningCanvasReadyState';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -110,7 +111,14 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     selfDisplayName: selfName,
     canPersist: canEditBoard,
   });
-  const { peers, peersById, connectionStatus, lastSyncAt } = sync;
+  const { peers, peersById, connectionStatus, lastSyncAt, hydrationStatus } = sync;
+  const readyState = usePlanningCanvasReadyState({
+    boardId: board.id,
+    hydrationStatus,
+    realtimeStatus: connectionStatus,
+    persistenceStatus: sync.persistence.status,
+    canEdit: canEditBoard,
+  });
   const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
   const requestElementLock = useElementLockAcquire(elementLock.acquire, peersById);
 
@@ -281,7 +289,12 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   }
 
   return (
-    <div className="h-full flex flex-col bg-white" data-testid="planning-canvas-ready">
+<div
+  className="h-full flex flex-col bg-white"
+  data-testid="planning-canvas-ready"
+  data-canvas-ready={readyState.isReady}
+  data-canvas-ready-reason={readyState.reason}
+>
       <CanvasToolbar
         board={board}
         onBack={() => setCurrentBoard(null)}
