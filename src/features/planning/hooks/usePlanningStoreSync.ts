@@ -13,7 +13,7 @@
  *   const sync = usePlanningStoreSync(boardId);
  *   // sync.peers, sync.broadcastCursor, sync.isConnected available for UI
  */
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import { usePlanningStore } from "@/features/planning/state/store";
@@ -73,10 +73,15 @@ function rebuildLayerMembership(layers: LayerInfo[] | undefined, elements: Canva
   }));
 }
 
+export type PlanningStoreHydrationStatus = "idle" | "loading" | "ready" | "error";
+
 export function usePlanningStoreSync(
   boardId: string | null,
   selfDisplayName?: string,
 ) {
+  const [hydrationStatus, setHydrationStatus] = useState<PlanningStoreHydrationStatus>(
+    boardId ? "loading" : "idle",
+  );
   const storeElements = usePlanningStore((state) => state.elements);
 
   useAutoUnlockStaleLocks(
@@ -102,21 +107,32 @@ export function usePlanningStoreSync(
   // Initial hydration.
   useEffect(() => {
     if (!boardId) {
+      setHydrationStatus("idle");
       usePlanningStore.setState({ elements: [] });
       return;
     }
     let cancelled = false;
+    setHydrationStatus("loading");
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
-        const layers = ensureLayers(usePlanningStore.getState().layers);
-        const mapped = assignLayerIds(sortByZ(rows).map(planningElementToCanvas), layers);
-        usePlanningStore.setState({
-          elements: mapped,
-          layers: rebuildLayerMembership(layers, mapped),
+        usePlanningStore.setState((state) => {
+          const layers = ensureLayers(state.layers);
+          const mapped = assignLayerIds(sortByZ(rows).map(planningElementToCanvas), layers);
+          const mappedIds = new Set(mapped.map((element) => element.id));
+
+          return {
+            elements: mapped,
+            layers: rebuildLayerMembership(layers, mapped),
+            selectedElementIds: state.selectedElementIds.filter((id) =>
+              mappedIds.has(id),
+            ),
+          };
         });
+        setHydrationStatus("ready");
       })
       .catch((err) => {
+        if (!cancelled) setHydrationStatus("error");
         console.error("[usePlanningStoreSync] fetch failed", err);
       });
     return () => {
@@ -183,15 +199,24 @@ export function usePlanningStoreSync(
       return {
         elements,
         layers: rebuildLayerMembership(layers, elements),
+        selectedElementIds: state.selectedElementIds.filter((selectedId) =>
+          !idsToDelete.has(selectedId),
+        ),
       };
     });
   }, []);
 
-  return usePlanningRealtime({
+  const realtime = usePlanningRealtime({
     boardId,
     selfDisplayName,
     onElementInsert,
     onElementUpdate,
     onElementDelete,
   });
+
+  return {
+    ...realtime,
+    hydrationStatus,
+    isHydrated: hydrationStatus === "ready" || hydrationStatus === "idle",
+  };
 }
