@@ -143,6 +143,47 @@ export type Database = {
         }
         Relationships: []
       }
+      board_email_invites: {
+        Row: {
+          accepted_at: string | null
+          board_id: string
+          created_at: string
+          email: string
+          id: string
+          invited_by: string
+          role: string
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          board_id: string
+          created_at?: string
+          email: string
+          id?: string
+          invited_by: string
+          role: string
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          board_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string
+          role?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_email_invites_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "planning_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       board_invite_links: {
         Row: {
           board_id: string
