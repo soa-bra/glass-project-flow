@@ -116,7 +116,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const requestElementLock = useElementLockAcquire(elementLock.acquire, sync.peersById);
   const peers = sync.peers;
   const connectionStatus = sync.isConnected ? 'connected' : 'disconnected';
-  const lastSyncAt = (sync as { lastSyncAt?: string | null }).lastSyncAt ?? null;
+  const lastSyncAt = (sync as unknown as { lastSyncAt?: string | number | null }).lastSyncAt ?? null;
   const readyState = usePlanningCanvasReadyState({
     boardId: board.id,
     canEdit: canEditBoard,

@@ -10,7 +10,6 @@ type ProjectEventInsert = Record<string, unknown> & { project_id: string };
 type SyncQueueInsert = Record<string, unknown> & { board_id: string; entity_id: string };
 
 type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
-type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
 type DbInsertedIdResult = PromiseLike<{ data: { id: string } | null; error: unknown }>;
 
 function buildExecutableCardContent(
