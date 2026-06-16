@@ -113,13 +113,6 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     selfDisplayName: selfName,
     canPersist: canEditBoard,
   });
-    <div
-      className="h-full flex flex-col bg-white"
-      data-testid="planning-canvas-ready"
-      data-canvas-ready={readyState.isReady}
-      data-canvas-ready-reason={readyState.reason}
-    >
-  });
   const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
   const requestElementLock = useElementLockAcquire(elementLock.acquire, peersById);
 
