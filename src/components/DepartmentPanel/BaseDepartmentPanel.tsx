@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { AnimatedTabs } from '@/components/ui/AnimatedTabs';
 import { GeneralOverviewTab } from '../DepartmentTabs/GeneralOverviewTab';
 import { ReportsTab } from '../DepartmentTabs/ReportsTab';
