@@ -3,8 +3,22 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { WorkspaceErrorBoundary } from '@/components/shared/WorkspaceErrorBoundary';
 import { CrossWorkspaceSearch } from '@/features/cross-search';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search, FileSearch, BrainCircuit, Sparkles } from 'lucide-react';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import {
+  CommandDialog,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandSeparator,
+  CommandShortcut,
+} from '@/components/ui/command';
+import { useSmartAssistant } from '@/features/project-intelligence/hooks/useSmartAssistant';
+import type { SmartAssistantCommandId } from '@/features/project-intelligence/services/aiGateway.client';
+import { SoaBraAIAssistant } from '@/features/project-intelligence/components/SoaBraAIAssistant';
+import { SmartConfirmationDialog } from '@/features/project-intelligence/components/SmartConfirmationDialog';
 
 // Code-split heavy workspaces (P5 — performance)
 const ProjectWorkspace = lazy(() => import('./ProjectWorkspace'));

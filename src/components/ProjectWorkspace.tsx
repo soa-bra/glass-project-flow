@@ -19,6 +19,8 @@ import { centralToUiProject, uiCreateInputToCentral } from '@/adapters/projectAd
 import { AuditService, PermissionsService } from '@/services/central';
 import { toast } from 'sonner';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
 
 interface ProjectWorkspaceProps {
   isSidebarCollapsed: boolean;
