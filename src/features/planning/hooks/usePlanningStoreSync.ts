@@ -13,7 +13,7 @@
  *   const sync = usePlanningStoreSync(boardId);
  *   // sync.peers, sync.broadcastCursor, sync.isConnected available for UI
  */
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PlanningBoardsService } from "@/services/central";
 import type { PlanningElement } from "@/services/central/planningBoards.service";
 import { usePlanningStore } from "@/features/planning/state/store";
@@ -23,6 +23,7 @@ import { planningElementToCanvas } from "@/features/planning/state/planningEleme
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
+import type { PlanningCanvasHydrationStatus } from "./usePlanningCanvasReadyState";
 
 function sortByZ(rows: PlanningElement[]): PlanningElement[] {
   return [...rows].sort((a, b) => {
@@ -73,11 +74,27 @@ function rebuildLayerMembership(layers: LayerInfo[] | undefined, elements: Canva
   }));
 }
 
+export type PlanningStoreHydrationStatus = "idle" | "loading" | "ready" | "error";
+
 export function usePlanningStoreSync(
   boardId: string | null,
   selfDisplayName?: string,
 ) {
+  const [hydrationStatus, setHydrationStatus] = useState<PlanningStoreHydrationStatus>(
+    boardId ? "loading" : "idle",
+  );
   const storeElements = usePlanningStore((state) => state.elements);
+  const [hydrationState, setHydrationState] = useState<{
+    isHydrated: boolean;
+    hydrationStatus: 'idle' | 'loading' | 'hydrated' | 'error';
+    hydrationError: unknown;
+    hydratedBoardId: string | null;
+  }>({
+    isHydrated: false,
+    hydrationStatus: 'idle',
+    hydrationError: null,
+    hydratedBoardId: null,
+  });
 
   useAutoUnlockStaleLocks(
     storeElements.map((element) => ({
@@ -101,11 +118,11 @@ export function usePlanningStoreSync(
 
   // Initial hydration.
   useEffect(() => {
-    if (!boardId) {
-      usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
-      return;
-    }
-    let cancelled = false;
+if (!boardId) {
+  setHydrationStatus("idle");
+  usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
+  return;
+}
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
@@ -122,9 +139,17 @@ export function usePlanningStoreSync(
             ),
           };
         });
+        setHydrationStatus("ready");
       })
       .catch((err) => {
+        if (!cancelled) setHydrationStatus("error");
         console.error("[usePlanningStoreSync] fetch failed", err);
+        setHydrationState({
+          isHydrated: false,
+          hydrationStatus: 'error',
+          hydrationError: err,
+          hydratedBoardId: null,
+        });
       });
     return () => {
       cancelled = true;
@@ -204,11 +229,17 @@ export function usePlanningStoreSync(
     });
   }, []);
 
-  return usePlanningRealtime({
+  const realtime = usePlanningRealtime({
     boardId,
     selfDisplayName,
     onElementInsert,
     onElementUpdate,
     onElementDelete,
   });
+
+  return {
+    ...realtime,
+    hydrationStatus,
+    isHydrated: hydrationStatus === "ready" || hydrationStatus === "idle",
+  };
 }

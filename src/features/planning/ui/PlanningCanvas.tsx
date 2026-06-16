@@ -19,12 +19,15 @@ import { useElementLock } from '@/features/planning/hooks/useElementLock';
 import { useElementLockAcquire } from '@/features/planning/hooks/useElementLockAcquire';
 import { canMutateCanvas, useCurrentBoardRole } from '@/features/planning/hooks/useCurrentBoardRole';
 import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
+import { usePlanningCanvasReadyState } from '@/features/planning/hooks/usePlanningCanvasReadyState';
 import { SmartConversionReviewDialog } from '@/features/planning/ui/overlays/SmartConversionReviewDialog';
 import type { SmartConversionPayload, SmartConversionResult } from '@/features/planning/services/smartConversion.service';
 import { planningElementToCanvas } from '@/features/planning/state/planningElementMapper';
 import { ExecutionPanelHost } from '@/features/planning/execution/ExecutionPanelHost';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import { usePlanningCanvasReadyState } from '@/features/planning/hooks/usePlanningCanvasReadyState';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -47,6 +50,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const setCurrentUser = useCollaborationStore((state) => state.setCurrentUser);
   const setParticipants = useCollaborationStore((state) => state.setParticipants);
   const canvasHostRef = useRef<HTMLDivElement>(null);
+  const [viewportHostSize, setMeasuredViewportHostSize] = useState<{ width: number; height: number } | null>(null);
   const commandBar = useSmartCommandBar();
   const [conversionPayload, setConversionPayload] = useState<SmartConversionPayload | null>(null);
   const currentUserId = useCollaborationStore((state) => state.currentUserId) ?? 'anonymous-user';
@@ -109,7 +113,13 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     selfDisplayName: selfName,
     canPersist: canEditBoard,
   });
-  const { peers, peersById, connectionStatus, lastSyncAt } = sync;
+    <div
+      className="h-full flex flex-col bg-white"
+      data-testid="planning-canvas-ready"
+      data-canvas-ready={readyState.isReady}
+      data-canvas-ready-reason={readyState.reason}
+    >
+  });
   const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
   const requestElementLock = useElementLockAcquire(elementLock.acquire, peersById);
 
@@ -142,7 +152,9 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     if (!host) return;
 
     const syncSize = () => {
-      setViewportHostSize(host.clientWidth, host.clientHeight);
+      const nextSize = { width: host.clientWidth, height: host.clientHeight };
+      setViewportHostSize(nextSize.width, nextSize.height);
+      setMeasuredViewportHostSize(nextSize);
     };
 
     syncSize();
@@ -260,8 +272,32 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     ],
   );
 
+  const isCanvasBootstrapping =
+    boardRole.loading || aiPermissions.loading || sync.hydrationStatus === 'loading';
+
+  if (isCanvasBootstrapping) {
+    return (
+      <div className="h-full flex items-center justify-center bg-slate-50 text-slate-700" data-testid="planning-canvas-loading">
+        <div className="flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white px-8 py-7 text-center shadow-sm">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
+          <div className="space-y-1">
+            <p className="text-base font-semibold">جاري تجهيز لوحة التخطيط</p>
+            <p className="text-sm text-slate-500">
+              نحمّل العناصر والصلاحيات وأدوات الذكاء قبل إظهار اللوحة.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full flex flex-col bg-white">
+<div
+  className="h-full flex flex-col bg-white"
+  data-testid="planning-canvas-ready"
+  data-canvas-ready={readyState.isReady}
+  data-canvas-ready-reason={readyState.reason}
+>
       <CanvasToolbar
         board={board}
         onBack={() => setCurrentBoard(null)}
@@ -273,30 +309,56 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         elementPersistence={sync.persistence}
       />
       <div ref={canvasHostRef} className="flex-1 flex overflow-hidden relative">
-        <div data-board-frame="true" className="flex-1 relative overflow-hidden">
-          <InfiniteCanvas
-            boardId={board.id}
-            peers={peers}
-            broadcastCursor={sync.broadcastCursor}
-            requestElementLock={requestElementLock}
-            releaseElementLock={elementLock.release}
-            canEdit={canEditBoard}
-          />
-          <div id="planning-floating-overlay" data-floating-overlay="true" className="absolute inset-0 pointer-events-none" />
-        </div>
-        <ToolZone activeTool={activeTool} boardId={board.id} />
+        {readyState.isReady ? (
+          <>
+            <div data-board-frame="true" className="flex-1 relative overflow-hidden">
+              <InfiniteCanvas
+                boardId={board.id}
+                peers={peers}
+                broadcastCursor={sync.broadcastCursor}
+                requestElementLock={requestElementLock}
+                releaseElementLock={elementLock.release}
+                canEdit={canEditBoard}
+              />
+              <div id="planning-floating-overlay" data-floating-overlay="true" className="absolute inset-0 pointer-events-none" />
+            </div>
+            <ToolZone activeTool={activeTool} boardId={board.id} />
+          </>
+        ) : (
+          <div
+            className="flex-1 bg-slate-50 p-6"
+            data-testid="planning-canvas-loading"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="mb-6 max-w-xl">
+              <h2 className="text-lg font-semibold text-slate-900">تحميل لوحة التخطيط</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                يتم تجهيز الصلاحيات والعناصر وأدوات الذكاء الاصطناعي
+              </p>
+            </div>
+            <div className="relative h-full min-h-[420px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:32px_32px] opacity-60" />
+              <div className="absolute left-10 top-10 h-24 w-44 rounded-xl bg-slate-200/80" />
+              <div className="absolute left-72 top-28 h-28 w-56 rounded-xl bg-slate-200/70" />
+              <div className="absolute bottom-12 right-16 h-10 w-32 rounded-full bg-slate-200/80" />
+            </div>
+          </div>
+        )}
       </div>
-      <BottomToolbar canEdit={canEditBoard} />
-      {aiPermissions.canUseAI && <AIAssistantButton />}
-      <NavigationBar />
-      <ContextualToolbarManager boardId={board.id} />
-      <SmartCommandBar
-        isOpen={commandBar.isOpen}
-        onClose={commandBar.close}
-        boardId={board.id}
-        onElementsGenerated={handleElementsGenerated}
-        onSmartConversionSuggested={handleSmartConversionSuggested}
-      />
+      {readyState.isReady && <BottomToolbar canEdit={canEditBoard} />}
+      {readyState.isReady && aiPermissions.canUseAI && <AIAssistantButton />}
+      {readyState.isReady && <NavigationBar />}
+      {readyState.isReady && <ContextualToolbarManager boardId={board.id} />}
+      {readyState.isReady && (
+        <SmartCommandBar
+          isOpen={commandBar.isOpen}
+          onClose={commandBar.close}
+          boardId={board.id}
+          onElementsGenerated={handleElementsGenerated}
+          onSmartConversionSuggested={handleSmartConversionSuggested}
+        />
+      )}
       <SmartConversionReviewDialog
         open={Boolean(conversionPayload)}
         payload={conversionPayload}
