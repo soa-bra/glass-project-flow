@@ -18,7 +18,7 @@ import {
 import { useSmartAssistant } from '@/features/project-intelligence/hooks/useSmartAssistant';
 import type { SmartAssistantCommandId } from '@/features/project-intelligence/services/aiGateway.client';
 import { SoaBraAIAssistant } from '@/features/project-intelligence/components/SoaBraAIAssistant';
-import { SmartConfirmationDialog } from '@/features/project-intelligence/components/SmartConfirmationDialog';
+import { SmartConfirmationDialog } from '@/components/shared/SmartConfirmationDialog';
 
 // Code-split heavy workspaces (P5 — performance)
 const ProjectWorkspace = lazy(() => import('./ProjectWorkspace'));
@@ -181,8 +181,8 @@ const MainContent = () => {
       />
       <SmartConfirmationDialog
         open={smartAssistant.confirmationOpen}
-        command={smartAssistant.pendingCommand}
-        isLoading={smartAssistant.isLoading}
+        title={smartAssistant.pendingCommand?.title}
+        description={smartAssistant.pendingCommand?.description}
         onConfirm={smartAssistant.confirmPendingCommand}
         onCancel={smartAssistant.cancelPendingCommand}
       />
