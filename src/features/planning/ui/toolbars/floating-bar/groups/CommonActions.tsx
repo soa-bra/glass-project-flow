@@ -80,6 +80,7 @@ interface CommonActionsProps {
   onQuickGenerate: () => void;
   onTransform: (type: SmartElementType) => void;
   onCustomTransform: (prompt: string) => void;
+  onWorkflowTransform?: () => void;
   boardId?: string | null;
 }
 
@@ -108,6 +109,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
   onQuickGenerate,
   onTransform,
   onCustomTransform,
+  onWorkflowTransform,
   boardId,
 }) => {
   return (

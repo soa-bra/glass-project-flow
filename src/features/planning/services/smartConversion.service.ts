@@ -10,7 +10,40 @@ type ProjectEventInsert = Record<string, unknown> & { project_id: string };
 type SyncQueueInsert = Record<string, unknown> & { board_id: string; entity_id: string };
 
 type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
+type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
 type DbInsertedIdResult = PromiseLike<{ data: { id: string } | null; error: unknown }>;
+
+function buildExecutableCardContent(
+  payload: SmartConversionPayload,
+  entity: { id: string; name?: string | null; title?: string | null } & Record<string, unknown>,
+) {
+  const smartType =
+    payload.targetEntityType === 'project' ? 'project_card'
+    : payload.targetEntityType === 'task' ? 'task_card'
+    : payload.targetEntityType === 'financial_budget' ? 'finance_card'
+    : 'finance_card';
+  return {
+    smartType,
+    entityId: entity.id,
+    entityType: payload.targetEntityType,
+    title: (entity.name as string | undefined) ?? (entity.title as string | undefined) ?? '',
+  };
+}
+
+function getProjectIdForEvent(
+  payload: SmartConversionPayload,
+  entity: Record<string, unknown> & { id: string },
+): string | null {
+  if (payload.targetEntityType === 'project') return entity.id ?? null;
+  const suggested = payload.suggestedData as Record<string, unknown>;
+  const candidate =
+    (suggested.project_id as string | undefined) ??
+    (suggested.projectId as string | undefined) ??
+    (entity.project_id as string | undefined) ??
+    (entity.linked_project_id as string | undefined) ??
+    null;
+  return candidate ?? null;
+}
 
 export const smartConversionTargetEntityTypes = [
   'project',
@@ -452,22 +485,22 @@ async function recordTransformationLinksAndEvents(
   };
 
   const transformationIds = await requireInsertedIds(
-    supabase.from('element_transformations').insert(transformationRows).select('id'),
+    supabase.from('element_transformations').insert(transformationRows as never).select('id'),
     'تحولات عناصر التخطيط',
   );
   const dataLinkIds = await requireInsertedIds(
-    supabase.from('data_links').insert(linkRows).select('id'),
+    supabase.from('data_links').insert(linkRows as never).select('id'),
     'روابط البيانات الناتجة عن التحويل',
   );
   const syncQueueId = await requireInsertedId(
-    supabase.from('sync_queue').insert(syncQueueRow).select('id').single(),
+    supabase.from('sync_queue').insert(syncQueueRow as never).select('id').single(),
     'طلب مزامنة التحويل',
   );
 
   let projectEventId: string | undefined;
   if (eventRow) {
     projectEventId = await requireInsertedId(
-      supabase.from('project_events').insert(eventRow).select('id').single(),
+      supabase.from('project_events').insert(eventRow as never).select('id').single(),
       'حدث المشروع الناتج عن التحويل',
     );
   }

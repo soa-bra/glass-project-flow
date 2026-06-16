@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { 
+import React, { useMemo, useState } from 'react';
+import {
   Lightbulb, 
   LayoutGrid, 
   Vote, 
@@ -31,6 +31,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { SupraMenuOption, supraMenuOptionClassName } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
+import {
+  getDepartmentBoxSources,
+  createDepartmentBoxElementData,
+  type DepartmentBoxSource,
+} from '@/features/planning/adapters/departmentBoxesAdapter';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Smart Element Configuration

@@ -56,6 +56,4 @@ class ProjectEventBusService {
 }
 
 export const projectEventBus = new ProjectEventBusService();
-
-export const projectEventBus = new ProjectEventBusService();
 export default projectEventBus;
