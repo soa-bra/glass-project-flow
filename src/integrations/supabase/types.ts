@@ -143,47 +143,6 @@ export type Database = {
         }
         Relationships: []
       }
-      board_email_invites: {
-        Row: {
-          accepted_at: string | null
-          board_id: string
-          created_at: string
-          email: string
-          id: string
-          invited_by: string
-          role: string
-          status: string
-        }
-        Insert: {
-          accepted_at?: string | null
-          board_id: string
-          created_at?: string
-          email: string
-          id?: string
-          invited_by: string
-          role: string
-          status?: string
-        }
-        Update: {
-          accepted_at?: string | null
-          board_id?: string
-          created_at?: string
-          email?: string
-          id?: string
-          invited_by?: string
-          role?: string
-          status?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "board_email_invites_board_id_fkey"
-            columns: ["board_id"]
-            isOneToOne: false
-            referencedRelation: "planning_boards"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       board_invite_links: {
         Row: {
           board_id: string
@@ -780,64 +739,40 @@ export type Database = {
           board_id: string
           created_at: string
           created_by: string
-          fields_map: Json
           id: string
           label: string | null
           link_kind: string
           mapping: Json
           metadata: Json
-          status: string
           project_id: string | null
-          relation_type: string
           source_element_id: string | null
-          source_id: string | null
-          source_type: string | null
-          sync_type: string
           target_element_id: string | null
-          target_id: string | null
-          target_type: string | null
         }
         Insert: {
           board_id: string
           created_at?: string
           created_by: string
-          fields_map?: Json
           id?: string
           label?: string | null
-          link_kind?: string
+          link_kind: string
           mapping?: Json
           metadata?: Json
-          status?: string
           project_id?: string | null
-          relation_type?: string
           source_element_id?: string | null
-          source_id?: string | null
-          source_type?: string | null
-          sync_type?: string
           target_element_id?: string | null
-          target_id?: string | null
-          target_type?: string | null
         }
         Update: {
           board_id?: string
           created_at?: string
           created_by?: string
-          fields_map?: Json
           id?: string
           label?: string | null
           link_kind?: string
           mapping?: Json
           metadata?: Json
-          status?: string
           project_id?: string | null
-          relation_type?: string
           source_element_id?: string | null
-          source_id?: string | null
-          source_type?: string | null
-          sync_type?: string
           target_element_id?: string | null
-          target_id?: string | null
-          target_type?: string | null
         }
         Relationships: []
       }
@@ -963,45 +898,33 @@ export type Database = {
           board_id: string
           created_at: string
           created_by: string
-          extracted_data: Json
           id: string
           metadata: Json
           result: Json
           source_element_id: string
           status: string
-          suggested_type: string | null
-          target_entity_id: string | null
-          target_entity_type: string | null
           transformation_type: string
         }
         Insert: {
           board_id: string
           created_at?: string
           created_by: string
-          extracted_data?: Json
           id?: string
           metadata?: Json
           result?: Json
           source_element_id: string
           status?: string
-          suggested_type?: string | null
-          target_entity_id?: string | null
-          target_entity_type?: string | null
           transformation_type: string
         }
         Update: {
           board_id?: string
           created_at?: string
           created_by?: string
-          extracted_data?: Json
           id?: string
           metadata?: Json
           result?: Json
           source_element_id?: string
           status?: string
-          suggested_type?: string | null
-          target_entity_id?: string | null
-          target_entity_type?: string | null
           transformation_type?: string
         }
         Relationships: []
@@ -2331,12 +2254,7 @@ export type Database = {
           event_type: string
           id: string
           payload: Json
-          processed_at: string | null
           project_id: string
-          retry_count: number
-          source_id: string | null
-          source_type: string | null
-          status: string
         }
         Insert: {
           actor_id: string
@@ -2348,12 +2266,7 @@ export type Database = {
           event_type: string
           id?: string
           payload?: Json
-          processed_at?: string | null
           project_id: string
-          retry_count?: number
-          source_id?: string | null
-          source_type?: string | null
-          status?: string
         }
         Update: {
           actor_id?: string
@@ -2365,12 +2278,7 @@ export type Database = {
           event_type?: string
           id?: string
           payload?: Json
-          processed_at?: string | null
           project_id?: string
-          retry_count?: number
-          source_id?: string | null
-          source_type?: string | null
-          status?: string
         }
         Relationships: []
       }
@@ -2453,24 +2361,12 @@ export type Database = {
           created_at: string
           created_by: string
           id: string
-          approved_by: string | null
-          approved_by_user: boolean
-          confidence: number | null
-          direction: string
-          is_ai_generated: boolean
           label: string | null
-          logical_created_by: string | null
           metadata: Json
           relationship_type: string
-          source: string | null
           source_element_id: string
-          source_id: string | null
-          source_type: string | null
-          status: string
           style: Json
           target_element_id: string
-          target_id: string | null
-          target_type: string | null
           updated_at: string
         }
         Insert: {
@@ -2480,24 +2376,12 @@ export type Database = {
           created_at?: string
           created_by: string
           id?: string
-          approved_by?: string | null
-          approved_by_user?: boolean
-          confidence?: number | null
-          direction?: string
-          is_ai_generated?: boolean
           label?: string | null
-          logical_created_by?: string | null
           metadata?: Json
           relationship_type: string
-          source?: string | null
           source_element_id: string
-          source_id?: string | null
-          source_type?: string | null
-          status?: string
           style?: Json
           target_element_id: string
-          target_id?: string | null
-          target_type?: string | null
           updated_at?: string
         }
         Update: {
@@ -2507,24 +2391,12 @@ export type Database = {
           created_at?: string
           created_by?: string
           id?: string
-          approved_by?: string | null
-          approved_by_user?: boolean
-          confidence?: number | null
-          direction?: string
-          is_ai_generated?: boolean
           label?: string | null
-          logical_created_by?: string | null
           metadata?: Json
           relationship_type?: string
-          source?: string | null
           source_element_id?: string
-          source_id?: string | null
-          source_type?: string | null
-          status?: string
           style?: Json
           target_element_id?: string
-          target_id?: string | null
-          target_type?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -2538,7 +2410,6 @@ export type Database = {
           element_id: string
           id: string
           metadata: Json
-          source_element_ids: string[]
           status: string
           title: string
           updated_at: string
@@ -2551,7 +2422,6 @@ export type Database = {
           element_id: string
           id?: string
           metadata?: Json
-          source_element_ids?: string[]
           status?: string
           title: string
           updated_at?: string
@@ -2564,7 +2434,6 @@ export type Database = {
           element_id?: string
           id?: string
           metadata?: Json
-          source_element_ids?: string[]
           status?: string
           title?: string
           updated_at?: string
@@ -3177,10 +3046,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      approve_smart_conversion: {
-        Args: { p_payload: Json }
-        Returns: Json
-      }
       get_user_board_role: {
         Args: { board_id: string; user_id: string }
         Returns: Database["public"]["Enums"]["board_role"]
