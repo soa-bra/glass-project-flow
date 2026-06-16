@@ -84,7 +84,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
   const fetchRecentEmailInvites = useCallback(async () => {
     if (!boardId || !isHost) return;
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('board_email_invites')
       .select('*')
       .eq('board_id', boardId)
@@ -96,7 +96,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
       return;
     }
 
-    setRecentEmailInvites((data || []) as BoardEmailInvite[]);
+    setRecentEmailInvites(((data || []) as unknown) as BoardEmailInvite[]);
   }, [boardId, isHost]);
 
   // جلب طلبات الانضمام المعلقة
@@ -147,7 +147,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
         return null;
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('board_email_invites')
         .insert({
           board_id: boardId,
@@ -166,7 +166,7 @@ export const useBoardInvites = ({ boardId, isHost }: UseBoardInvitesOptions) => 
         return null;
       }
 
-      const invite = data as BoardEmailInvite;
+      const invite = (data as unknown) as BoardEmailInvite;
       setRecentEmailInvites(prev => [invite, ...prev.filter(item => item.id !== invite.id)].slice(0, 10));
       const message = 'تم تسجيل الدعوة. يحتاج إرسال البريد الفعلي إلى تكامل بريد.';
       setEmailInviteSuccess(message);

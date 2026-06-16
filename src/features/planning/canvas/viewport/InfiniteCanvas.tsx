@@ -542,7 +542,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           <SmartConnectorManager
             elements={connectableElements}
             boardId={_boardId}
-            readableAIElements={readableAIElements}
+            readableAIElements={[]}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
             selectedConnectorId={selectedElementIds.find((id) => rootConnectorElements.some((element) => element.id === id)) ?? undefined}

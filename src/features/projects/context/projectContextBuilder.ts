@@ -21,7 +21,9 @@ export function buildProjectContext(input: ProjectContextBuilderInput): UnifiedA
       id: link.id,
       label: link.label,
       type: link.link_kind,
-      ...link.metadata,
+      ...(link.metadata && typeof link.metadata === 'object' && !Array.isArray(link.metadata)
+        ? (link.metadata as Record<string, unknown>)
+        : {}),
     })),
     permissions: input.permissions ?? { role: 'editor' },
     extraContext: {

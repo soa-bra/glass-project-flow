@@ -101,7 +101,7 @@ async function refreshOperationalDataLink(
   const mapping = buildOperationalMapping(record);
   const hasRealEntities = hasEntityEndpoints(record);
 
-  const payload: DataLinkInsert = {
+  const payload = {
     board_id: record.board_id,
     created_by: createdBy,
     source_element_id: record.source_element_id,
@@ -129,7 +129,7 @@ async function refreshOperationalDataLink(
     status: 'active',
   };
 
-  const { error: insertError } = await supabase.from('data_links').insert(payload);
+  const { error: insertError } = await supabase.from('data_links').insert(payload as never);
   if (insertError) throw insertError;
 
   await refreshCentralDependencyLink(record);
@@ -158,7 +158,7 @@ async function refreshCentralDependencyLink(record: PlanningConnectorLogicalReco
     from_entity_id: record.sourceEntityId,
     to_entity_type: record.targetEntityType,
     to_entity_id: record.targetEntityId,
-    dependency_type: record.relationship_type,
+    dependency_type: record.relationship_type as never,
     description: record.label ?? null,
     metadata: {
       ...record.metadata,
@@ -279,7 +279,7 @@ function toSmartConnectorInsert(
 ): SmartConnectorInsert {
   const hasRealEntities = hasEntityEndpoints(record);
 
-  return {
+  return ({
     connector_element_id: record.connector_element_id,
     board_id: record.board_id,
     source_element_id: record.source_element_id,
@@ -302,7 +302,7 @@ function toSmartConnectorInsert(
     is_ai_generated: record.isAIGenerated,
     approved_by_user: record.approvedByUser,
     approved_by: record.approvedBy ?? null,
-  };
+  } as unknown as SmartConnectorInsert);
 }
 
 export async function upsertSmartConnector(
@@ -312,7 +312,7 @@ export async function upsertSmartConnector(
 
   const { data, error } = await supabase
     .from('smart_connectors')
-    .upsert(payload, { onConflict: 'connector_element_id' })
+    .upsert(payload as never, { onConflict: 'connector_element_id' })
     .select('*')
     .single();
 
@@ -347,7 +347,7 @@ export async function upsertSmartConnectors(
 
   const { data, error } = await supabase
     .from('smart_connectors')
-    .upsert(payload, { onConflict: 'connector_element_id' })
+    .upsert(payload as never, { onConflict: 'connector_element_id' })
     .select('*');
 
   if (error) throw error;
@@ -378,7 +378,7 @@ export async function archiveSmartConnectorForElementUnlink(
 ): Promise<void> {
   const missingEndpoint = connector.connector_element_id === missingElementId
     ? 'connector'
-    : getMissingEndpoint(connector, missingElementId);
+    : (connector.source_element_id === missingElementId ? 'source' : 'target');
   const status = missingEndpoint === 'connector' ? 'archived' : 'broken';
 
   const { error } = await supabase

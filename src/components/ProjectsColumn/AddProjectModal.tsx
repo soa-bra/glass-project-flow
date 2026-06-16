@@ -84,7 +84,7 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({
 
     try {
       const response = await aiGatewayClient.request<{ tasks?: TaskData[] }>({
-        action: 'project.tasks.generate',
+        action: 'convert_to_tasks',
         context: sanitizedContext,
         payload: { requestedOutput: 'tasks' },
       });

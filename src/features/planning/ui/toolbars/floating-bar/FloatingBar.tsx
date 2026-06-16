@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useCanvasStore } from "@/stores/canvasStore";
 import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
+import { useSmartElementAI } from "@/hooks/useSmartElementAI";
+import { usePlanningStore } from "@/stores/planningStore";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { useActiveTextEditor } from "@/features/planning/elements/text/TextEditorContext";
@@ -151,6 +153,9 @@ export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
   const activeTextEditor = useActiveTextEditor();
   const smartActions = useContextSmartActions(boardId);
   const { isLoading: isAILoading, isTransforming, approvalDialog } = smartActions;
+  const { analyzeSelection, transformElements } = useSmartElementAI(boardId);
+  const [, setIsTransforming] = useState(false);
+  const currentBoard = usePlanningStore((s) => s.currentBoard);
   const selectionMeta = useSelectionMeta();
 
   const {

@@ -72,7 +72,7 @@ export const RisksTab: React.FC = () => {
       aggregateType: 'legal_risk',
       aggregateId: newRisk.id,
       projectId: null,
-      payload: { title: newRisk.title, category: newRisk.category, severity: newRisk.severity },
+      payload: { title: newRisk.title, category: newRisk.category, riskLevel: newRisk.riskLevel },
     }).catch((error) => console.error('[RisksTab] emitProjectEvent(create) failed:', error));
   };
 

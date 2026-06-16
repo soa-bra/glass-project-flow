@@ -10,6 +10,7 @@ import { TemplatesTab } from './TemplatesTab';
 import { ReportsTab } from './ReportsTab';
 import { getDepartmentTabDefinition } from '@/features/ai/context/departmentRegistry';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
 
 export const FinancialDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');

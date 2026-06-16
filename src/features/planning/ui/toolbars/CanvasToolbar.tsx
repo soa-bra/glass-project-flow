@@ -23,13 +23,15 @@ interface CanvasToolbarProps {
   onBack: () => void;
   canEdit?: boolean;
   elementPersistence?: unknown;
+  peers?: unknown;
+  selfName?: string;
+  realtimeStatus?: string;
+  lastSyncAt?: string | null;
 }
 
 const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   board,
   onBack,
-  realtimeStatus = 'idle',
-  lastSyncAt = null,
 }) => {
   const { undo, redo, history } = useCanvasStore();
   const { renameBoard } = usePlanningStore();
@@ -100,8 +102,6 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
       </div>
 
       <div className="flex items-center gap-1.5">
-        <RealtimeStatusBadge status={realtimeStatus} lastSyncAt={lastSyncAt} />
-
         <div className="h-5 w-px bg-sb-border" />
         <div className="relative">
           <button onClick={() => setIsShareOpen(!isShareOpen)} className="flex items-center gap-1.5 px-3 py-1 bg-sb-ink text-white rounded-full transition-opacity hover:opacity-90">

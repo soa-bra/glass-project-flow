@@ -27,7 +27,6 @@ import { ExecutionPanelHost } from '@/features/planning/execution/ExecutionPanel
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
-import { usePlanningCanvasReadyState } from '@/features/planning/hooks/usePlanningCanvasReadyState';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -116,6 +115,15 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
   const requestElementLock = useElementLockAcquire(elementLock.acquire, sync.peersById);
   const peers = sync.peers;
+  const connectionStatus = sync.isConnected ? 'connected' : 'disconnected';
+  const lastSyncAt = (sync as unknown as { lastSyncAt?: string | number | null }).lastSyncAt ?? null;
+  const readyState = usePlanningCanvasReadyState({
+    boardId: board.id,
+    canEdit: canEditBoard,
+    hydrationStatus: sync.hydrationStatus as 'idle' | 'loading' | 'ready' | 'hydrated' | 'error',
+    persistenceStatus: (sync.persistence as { status?: string } | undefined)?.status ?? 'idle',
+    realtimeStatus: connectionStatus,
+  });
 
   useEffect(() => {
     setConnected(sync.isConnected);
@@ -298,7 +306,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         peers={peers}
         selfName={selfName}
         realtimeStatus={connectionStatus}
-        lastSyncAt={lastSyncAt}
+        lastSyncAt={lastSyncAt == null ? null : String(lastSyncAt)}
         canEdit={canEditBoard}
         elementPersistence={sync.persistence}
       />

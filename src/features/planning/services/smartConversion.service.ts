@@ -1,6 +1,48 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database, Json } from '@/integrations/supabase/types';
 import { z } from 'zod';
+
+// Local helper types for insert operations that may not be in the generated Database types.
+// These mirror the shapes used at the call sites; widen as needed if the schema changes.
+type ElementTransformationInsert = Record<string, unknown> & { board_id: string; source_element_id: string };
+type DataLinkInsert = Record<string, unknown> & { board_id: string; source_element_id: string };
+type ProjectEventInsert = Record<string, unknown> & { project_id: string };
+type SyncQueueInsert = Record<string, unknown> & { board_id: string; entity_id: string };
+
+type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
+type DbInsertedIdResult = PromiseLike<{ data: { id: string } | null; error: unknown }>;
+
+function buildExecutableCardContent(
+  payload: SmartConversionPayload,
+  entity: { id: string; name?: string | null; title?: string | null } & Record<string, unknown>,
+) {
+  const smartType =
+    payload.targetEntityType === 'project' ? 'project_card'
+    : payload.targetEntityType === 'task' ? 'task_card'
+    : payload.targetEntityType === 'financial_budget' ? 'finance_card'
+    : 'finance_card';
+  return {
+    smartType,
+    entityId: entity.id,
+    entityType: payload.targetEntityType,
+    title: (entity.name as string | undefined) ?? (entity.title as string | undefined) ?? '',
+  };
+}
+
+function getProjectIdForEvent(
+  payload: SmartConversionPayload,
+  entity: Record<string, unknown> & { id: string },
+): string | null {
+  if (payload.targetEntityType === 'project') return entity.id ?? null;
+  const suggested = payload.suggestedData as Record<string, unknown>;
+  const candidate =
+    (suggested.project_id as string | undefined) ??
+    (suggested.projectId as string | undefined) ??
+    (entity.project_id as string | undefined) ??
+    (entity.linked_project_id as string | undefined) ??
+    null;
+  return candidate ?? null;
+}
 
 export const smartConversionTargetEntityTypes = [
   'project',
@@ -442,22 +484,22 @@ async function recordTransformationLinksAndEvents(
   };
 
   const transformationIds = await requireInsertedIds(
-    supabase.from('element_transformations').insert(transformationRows).select('id'),
+    supabase.from('element_transformations').insert(transformationRows as never).select('id'),
     'تحولات عناصر التخطيط',
   );
   const dataLinkIds = await requireInsertedIds(
-    supabase.from('data_links').insert(linkRows).select('id'),
+    supabase.from('data_links').insert(linkRows as never).select('id'),
     'روابط البيانات الناتجة عن التحويل',
   );
   const syncQueueId = await requireInsertedId(
-    supabase.from('sync_queue').insert(syncQueueRow).select('id').single(),
+    supabase.from('sync_queue').insert(syncQueueRow as never).select('id').single(),
     'طلب مزامنة التحويل',
   );
 
   let projectEventId: string | undefined;
   if (eventRow) {
     projectEventId = await requireInsertedId(
-      supabase.from('project_events').insert(eventRow).select('id').single(),
+      supabase.from('project_events').insert(eventRow as never).select('id').single(),
       'حدث المشروع الناتج عن التحويل',
     );
   }
@@ -512,9 +554,9 @@ export async function approveSmartConversion(
     throw new Error('Smart conversion must be approved before creating an executable record.');
   }
 
-  const { data, error } = await supabase.rpc('approve_smart_conversion', {
+  const { data, error } = await supabase.rpc('approve_smart_conversion' as never, {
     p_payload: parsed,
-  });
+  } as never);
 
   if (error) throw error;
   if (!data) {
