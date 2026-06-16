@@ -4,19 +4,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, LayoutGrid, Network, Calendar, Table2, Zap, Loader2, X, ChevronDown, FileText, FolderKanban, CheckSquare, Search } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { supabase } from '@/integrations/supabase/client';
-import { isPlanningElementId } from '@/features/planning/state/createPlanningElementId';
-import { createSmartCanvasElement } from './factories/createTypedSmartElement';
-import { AI_SELECTED_ELEMENTS_LIMIT_MESSAGE, MAX_AI_SELECTED_ELEMENTS } from '@/features/ai/context/limits';
+import type { SmartElementType } from '@/types/smart-elements';
 import { SupraMenuOption } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
-
-interface TransformOption {
-  type: SmartElementType;
-  label: string;
-  icon: React.ReactNode;
-  description: string;
-}
+import {
+  useContextSmartActions,
+  areContextSmartMenuSelectionIdsPersisted,
+  CONTEXT_SMART_TRANSFORM_OPTIONS,
+} from './useContextSmartActions';
 
 export { areContextSmartMenuSelectionIdsPersisted };
 
@@ -82,7 +76,6 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
     isTransforming,
     approvalDialog,
     canUseAI,
-    denialReason,
     analyze,
     quickGenerate,
     transform,
@@ -162,22 +155,22 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
                     أوامر تنفيذية:
                   </div>
                   <SupraMenuOption
-                    onClick={() => void handleSuggestConversion('project')}
-                    disabled={isLoading || isTransforming || !canUseAI}
+                    onClick={closeAfter(() => suggestConversion('project'))}
+                    disabled={busy || !canUseAI}
                     icon={<FolderKanban size={16} />}
                     label="تحويل إلى مشروع"
                     description="إنشاء سجل مشروع وربطه بالعناصر المصدر"
                   />
                   <SupraMenuOption
-                    onClick={() => void handleSuggestConversion('task')}
-                    disabled={isLoading || isTransforming || !canUseAI}
+                    onClick={closeAfter(() => suggestConversion('task'))}
+                    disabled={busy || !canUseAI}
                     icon={<CheckSquare size={16} />}
                     label="تحويل إلى مهمة"
                     description="إنشاء مهمة تنفيذية مرتبطة بالتخطيط"
                   />
                   <SupraMenuOption
-                    onClick={() => handleGenerateSmartDoc('interactive_sheet')}
-                    disabled={isLoading || isTransforming || !canUseAI}
+                    onClick={closeAfter(() => generateSmartDoc('interactive_sheet'))}
+                    disabled={busy || !canUseAI}
                     icon={<Table2 size={16} />}
                     label="توليد جدول تفاعلي"
                     description="جدول محفوظ داخل اللوحة وقابل للربط"
@@ -185,12 +178,12 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
                   <div className="text-[10px] text-muted-foreground px-2 pt-2 pb-1">
                     تنظيم بصري:
                   </div>
-                  {TRANSFORM_OPTIONS.map((option) => (
+                  {CONTEXT_SMART_TRANSFORM_OPTIONS.map((option) => (
                     <SupraMenuOption
                       key={option.type}
-                      onClick={() => handleTransform(option.type)}
-                      disabled={isLoading || isTransforming || !canUseAI}
-                      icon={option.icon}
+                      onClick={closeAfter(() => transform(option.type))}
+                      disabled={busy || !canUseAI}
+                      icon={TRANSFORM_ICONS[option.type] ?? <Sparkles size={16} />}
                       label={option.label}
                       description={option.description}
                     />

@@ -1,6 +1,16 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database, Json } from '@/integrations/supabase/types';
 import { z } from 'zod';
+
+// Local helper types for insert operations that may not be in the generated Database types.
+// These mirror the shapes used at the call sites; widen as needed if the schema changes.
+type ElementTransformationInsert = Record<string, unknown> & { board_id: string; source_element_id: string };
+type DataLinkInsert = Record<string, unknown> & { board_id: string; source_element_id: string };
+type ProjectEventInsert = Record<string, unknown> & { project_id: string };
+type SyncQueueInsert = Record<string, unknown> & { board_id: string; entity_id: string };
+
+type DbInsertedIdsResult = PromiseLike<{ data: Array<{ id: string }> | null; error: unknown }>;
+type DbInsertedIdResult = PromiseLike<{ data: { id: string } | null; error: unknown }>;
 
 export const smartConversionTargetEntityTypes = [
   'project',
@@ -512,9 +522,9 @@ export async function approveSmartConversion(
     throw new Error('Smart conversion must be approved before creating an executable record.');
   }
 
-  const { data, error } = await supabase.rpc('approve_smart_conversion', {
+  const { data, error } = await supabase.rpc('approve_smart_conversion' as never, {
     p_payload: parsed,
-  });
+  } as never);
 
   if (error) throw error;
   if (!data) {
