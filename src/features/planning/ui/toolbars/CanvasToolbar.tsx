@@ -17,16 +17,10 @@ import { SharePopover } from '../overlays/SharePopover';
 import { CanvasPropertiesPopover } from '../overlays/CanvasPropertiesPopover';
 import { FileMenuPopover } from '../overlays/FileMenuPopover';
 import { LayersMenuPopover } from '../overlays/LayersMenuPopover';
-import { RealtimeStatusBadge } from '../collaboration/RealtimeStatusBadge';
-import type { PresencePeer, RealtimeConnectionStatus } from '../../hooks/usePlanningRealtime';
 
 interface CanvasToolbarProps {
   board: CanvasBoard;
   onBack: () => void;
-  peers?: PresencePeer[];
-  selfName?: string;
-  realtimeStatus?: RealtimeConnectionStatus;
-  lastSyncAt?: number | null;
   canEdit?: boolean;
   elementPersistence?: unknown;
 }
@@ -150,10 +144,10 @@ const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
 
         <div className="h-5 w-px bg-sb-border mx-1" />
 
-        <button onClick={undo} disabled={!canUndo} className={`p-1.5 rounded-lg transition-colors ${canUndo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
+        <button onClick={undo} disabled={!canUndo} aria-label="تراجع" className={`p-1.5 rounded-lg transition-colors ${canUndo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
           <RotateCcw size={14} />
         </button>
-        <button onClick={redo} disabled={!canRedo} className={`p-1.5 rounded-lg transition-colors ${canRedo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
+        <button onClick={redo} disabled={!canRedo} aria-label="إعادة" className={`p-1.5 rounded-lg transition-colors ${canRedo ? 'hover:bg-sb-panel-bg text-sb-ink' : 'text-sb-ink-20 cursor-not-allowed'}`}>
           <RotateCw size={14} />
         </button>
       </div>
