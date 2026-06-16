@@ -10,6 +10,9 @@ const mockUpdateElement = vi.fn();
 const mockOpen = vi.fn();
 const mockClose = vi.fn();
 const mockCreateTypedSmartElement = vi.fn();
+let mockSyncHydrated = true;
+let mockRoleLoading = false;
+let mockAiLoading = false;
 
 const stateMocks = vi.hoisted(() => ({
   boardRole: { role: 'editor', loading: false, userId: 'editor-user' },
@@ -66,16 +69,7 @@ vi.mock('@/features/planning/hooks/useBoardCanvasLifecycle', () => ({
 }));
 
 vi.mock('@/features/planning/hooks/usePlanningCanvasPersistence', () => ({
-usePlanningCanvasPersistence: () => stateMocks.syncResult,
-}));
-
-vi.mock('@/features/planning/hooks/useCurrentBoardRole', () => ({
-  canMutateCanvas: (role: string) => role === 'host' || role === 'editor',
-  useCurrentBoardRole: () => stateMocks.boardRole,
-}));
-
-vi.mock('@/features/planning/hooks/useCanvasAIPermissions', () => ({
-  useCanvasAIPermissions: () => stateMocks.aiPermissions,
+  usePlanningCanvasPersistence: () => stateMocks.syncResult,
 }));
 
 vi.mock('@/features/planning/domain/commands', () => ({
@@ -160,28 +154,9 @@ describe('PlanningCanvas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateTypedSmartElement.mockReturnValue({ type: 'kanban', id: 'smart-1' });
-    stateMocks.boardRole = { role: 'editor', loading: false, userId: 'editor-user' };
-    stateMocks.aiPermissions = {
-      role: 'editor',
-      userId: 'editor-user',
-      loading: false,
-      trustedSession: true,
-      canUseAI: true,
-      denialReason: null,
-    };
-    stateMocks.syncResult = {
-      peers: [],
-      peersById: {},
-      connectionStatus: 'connected',
-      lastSyncAt: null,
-      isConnected: true,
-      selfUserId: 'editor-user',
-      broadcastCursor: vi.fn(),
-      updateSelfPresence: vi.fn(),
-      hydrationStatus: 'ready',
-      isHydrated: true,
-      persistence: {},
-    };
+let mockSyncHydrated = true;
+let mockRoleLoading = false;
+let mockAiLoading = false;
 
     class ResizeObserverMock {
       callback: ResizeObserverCallback;
@@ -264,6 +239,25 @@ describe('PlanningCanvas', () => {
     await waitFor(() => {
       expect(mockSetViewportHostSize).toHaveBeenCalledWith(1440, 900);
     });
+  });
+
+
+
+  it('shows unified loading and hides canvas controls before ready state', () => {
+    mockSyncHydrated = false;
+
+    render(<PlanningCanvas board={board} />);
+
+    expect(screen.getByTestId('planning-canvas-loading')).toBeInTheDocument();
+    expect(screen.getByText('تحميل لوحة التخطيط')).toBeInTheDocument();
+    expect(screen.getByText('يتم تجهيز الصلاحيات والعناصر وأدوات الذكاء الاصطناعي')).toBeInTheDocument();
+    expect(screen.queryByTestId('infinite-canvas')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('tool-zone')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bottom-toolbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('ai-assistant-button')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('navigation-bar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('contextual-toolbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('smart-command-bar')).not.toBeInTheDocument();
   });
 
   it('routes toolbar back action to setCurrentBoard(null)', () => {
