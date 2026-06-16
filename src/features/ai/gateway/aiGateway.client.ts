@@ -170,7 +170,7 @@ export async function invokeAIAction<TResult = unknown>({
   });
 
   const errorPayload = fnError ? await readFunctionErrorPayload(fnError) : null;
-  const responsePayload = errorPayload || (data as AIGatewayErrorPayload | null);
+  const responsePayload = errorPayload || ((data as unknown) as AIGatewayErrorPayload | null);
 
   if (fnError) {
     throw createGatewayError(errorPayload, fnError.message || 'فشل استدعاء بوابة الذكاء الاصطناعي');

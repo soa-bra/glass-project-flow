@@ -248,7 +248,7 @@ function readConnectorBranches(data: Record<string, any>, fallbackSource: Planni
           },
         };
       })
-      .filter((branch): branch is PlanningConnectorBranchEndpoint => Boolean(branch));
+      .filter((branch): branch is NonNullable<typeof branch> => Boolean(branch)) as PlanningConnectorBranchEndpoint[];
   }
 
   if (Array.isArray(data.targetPoints) && data.targetPoints.length > 0) {
@@ -266,7 +266,7 @@ function readConnectorBranches(data: Record<string, any>, fallbackSource: Planni
           },
         };
       })
-      .filter((branch): branch is PlanningConnectorBranchEndpoint => Boolean(branch));
+      .filter((branch): branch is NonNullable<typeof branch> => Boolean(branch)) as PlanningConnectorBranchEndpoint[];
   }
 
   return [{ source: fallbackSource, target: fallbackTarget }];
@@ -357,10 +357,7 @@ export function toPlanningConnectorLogicalRecords(
       branchIndex,
       sourceSubAnchor: (branch.source ?? endpoints.source).subAnchor,
       targetSubAnchor: branch.target.subAnchor,
-      source,
       createdBy,
-      isAIGenerated,
-      approvedByUser,
       approvedBy,
     },
     sourceEntityId: sourceBinding.entityId,

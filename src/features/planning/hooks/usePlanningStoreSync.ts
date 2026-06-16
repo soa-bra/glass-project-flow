@@ -118,11 +118,12 @@ export function usePlanningStoreSync(
 
   // Initial hydration.
   useEffect(() => {
-if (!boardId) {
-  setHydrationStatus("idle");
-  usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
-  return;
-}
+    if (!boardId) {
+      setHydrationStatus("idle");
+      usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
+      return;
+    }
+    let cancelled = false;
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;

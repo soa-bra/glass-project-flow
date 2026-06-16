@@ -1,3 +1,25 @@
+import { useMemo } from 'react';
+
+export type PlanningCanvasReadyReason =
+  | 'missing-board'
+  | 'hydrating-elements'
+  | 'persistence-error'
+  | 'ready';
+
+export type PlanningCanvasHydrationStatus =
+  | 'idle'
+  | 'loading'
+  | 'ready'
+  | 'hydrated'
+  | 'error';
+
+export interface PlanningCanvasReadyInput {
+  boardId: string | null;
+  canEdit: boolean;
+  hydrationStatus: PlanningCanvasHydrationStatus | string;
+  persistenceStatus: 'idle' | 'saving' | 'saved' | 'error' | string;
+  realtimeStatus: 'connected' | 'disconnected' | 'connecting' | string;
+}
 
 export interface PlanningCanvasReadyState {
   isReady: boolean;
