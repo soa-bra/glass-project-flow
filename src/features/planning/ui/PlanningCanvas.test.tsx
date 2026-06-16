@@ -14,6 +14,24 @@ let mockSyncHydrated = true;
 let mockRoleLoading = false;
 let mockAiLoading = false;
 
+const stateMocks = vi.hoisted(() => ({
+  boardRole: { role: 'editor', loading: false, userId: 'editor-user' },
+  aiPermissions: { role: 'editor', userId: 'editor-user', loading: false, trustedSession: true, canUseAI: true, denialReason: null },
+  syncResult: {
+    peers: [],
+    peersById: {},
+    connectionStatus: 'connected',
+    lastSyncAt: null,
+    isConnected: true,
+    selfUserId: 'editor-user',
+    broadcastCursor: vi.fn(),
+    updateSelfPresence: vi.fn(),
+    hydrationStatus: 'ready',
+    isHydrated: true,
+    persistence: {},
+  },
+}));
+
 vi.mock('@/stores/planningStore', () => ({
   usePlanningStore: vi.fn((selector: (state: { setCurrentBoard: typeof mockSetCurrentBoard }) => unknown) =>
     selector({ setCurrentBoard: mockSetCurrentBoard }),
@@ -51,28 +69,7 @@ vi.mock('@/features/planning/hooks/useBoardCanvasLifecycle', () => ({
 }));
 
 vi.mock('@/features/planning/hooks/usePlanningCanvasPersistence', () => ({
-  usePlanningCanvasPersistence: () => ({
-    peers: [],
-    connectionStatus: 'connected',
-    lastSyncAt: null,
-    isConnected: true,
-    selfUserId: 'editor-user',
-    broadcastCursor: vi.fn(),
-    persistence: {},
-    isHydrated: mockSyncHydrated,
-    hydrationStatus: mockSyncHydrated ? 'hydrated' : 'loading',
-    hydrationError: null,
-    hydratedBoardId: mockSyncHydrated ? 'board-1' : null,
-  }),
-}));
-
-vi.mock('@/features/planning/hooks/useCurrentBoardRole', () => ({
-  canMutateCanvas: () => true,
-  useCurrentBoardRole: () => ({ role: 'editor', loading: mockRoleLoading, userId: 'editor-user' }),
-}));
-
-vi.mock('@/features/planning/hooks/useCanvasAIPermissions', () => ({
-  useCanvasAIPermissions: () => ({ canUseAI: true, denialReason: null, loading: mockAiLoading }),
+  usePlanningCanvasPersistence: () => stateMocks.syncResult,
 }));
 
 vi.mock('@/features/planning/domain/commands', () => ({
@@ -157,9 +154,9 @@ describe('PlanningCanvas', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockCreateTypedSmartElement.mockReturnValue({ type: 'kanban', id: 'smart-1' });
-    mockSyncHydrated = true;
-    mockRoleLoading = false;
-    mockAiLoading = false;
+let mockSyncHydrated = true;
+let mockRoleLoading = false;
+let mockAiLoading = false;
 
     class ResizeObserverMock {
       callback: ResizeObserverCallback;
@@ -175,6 +172,57 @@ describe('PlanningCanvas', () => {
     }
 
     vi.stubGlobal('ResizeObserver', ResizeObserverMock as any);
+  });
+
+  it('shows one professional loading state until role, AI permissions, and elements are ready', () => {
+    stateMocks.boardRole = { role: 'guest', loading: true, userId: null };
+    stateMocks.aiPermissions = {
+      role: 'guest',
+      userId: null,
+      loading: true,
+      trustedSession: false,
+      canUseAI: false,
+      denialReason: 'loading',
+    };
+    stateMocks.syncResult = {
+      ...stateMocks.syncResult,
+      hydrationStatus: 'loading',
+      isHydrated: false,
+    };
+
+    render(<PlanningCanvas board={board} />);
+
+    expect(screen.getByTestId('planning-canvas-loading')).toBeInTheDocument();
+    expect(screen.queryByTestId('canvas-toolbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('tool-zone')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('infinite-canvas')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('ai-assistant-button')).not.toBeInTheDocument();
+  });
+
+  it('renders the ready canvas with enabled tools and AI button in the first non-loading paint', () => {
+    stateMocks.boardRole = { role: 'editor', loading: false, userId: 'editor-user' };
+    stateMocks.aiPermissions = {
+      role: 'editor',
+      userId: 'editor-user',
+      loading: false,
+      trustedSession: true,
+      canUseAI: true,
+      denialReason: null,
+    };
+    stateMocks.syncResult = {
+      ...stateMocks.syncResult,
+      hydrationStatus: 'ready',
+      isHydrated: true,
+    };
+
+    render(<PlanningCanvas board={board} />);
+
+    expect(screen.queryByTestId('planning-canvas-loading')).not.toBeInTheDocument();
+    expect(screen.getByTestId('planning-canvas-ready')).toBeInTheDocument();
+    expect(screen.getByTestId('canvas-toolbar')).toBeInTheDocument();
+    expect(screen.getByTestId('tool-zone')).toHaveTextContent('selection_tool');
+    expect(screen.getByTestId('infinite-canvas')).toHaveTextContent('board-1');
+    expect(screen.getByTestId('ai-assistant-button')).toBeInTheDocument();
   });
 
   it('renders the main planning canvas shell and wires top-level children', async () => {

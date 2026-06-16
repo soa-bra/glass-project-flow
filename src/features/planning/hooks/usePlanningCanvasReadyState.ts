@@ -1,81 +1,50 @@
-import { useMemo, type RefObject } from 'react';
 
-type LoadingSource = {
-  loading?: boolean;
-};
-
-type HydrationSource = {
-  isHydrated?: boolean;
-  hydrationStatus?: 'idle' | 'loading' | 'hydrated' | 'error' | string;
-  hydrationError?: unknown;
-  hydratedBoardId?: string | null;
-};
-
-type ViewportHostSize = {
-  width?: number;
-  height?: number;
-} | null | undefined;
-
-type UsePlanningCanvasReadyStateOptions = {
-  boardId: string;
-  boardRole: LoadingSource;
-  sync: HydrationSource;
-  aiPermissions: LoadingSource;
-  viewportHostSize?: ViewportHostSize;
-  canvasHostRef?: RefObject<HTMLElement | null>;
-};
-
-function hasUsableSize(size: ViewportHostSize): boolean {
-  return Boolean(size && Number(size.width) > 0 && Number(size.height) > 0);
+export interface PlanningCanvasReadyState {
+  isReady: boolean;
+  reason: PlanningCanvasReadyReason;
+  requiresManualRefreshVerification: true;
+  manualRefreshVerification: string;
 }
 
-function hasMeasuredHost(ref?: RefObject<HTMLElement | null>): boolean {
-  const host = ref?.current;
-  if (!host) return false;
-  return host.clientWidth > 0 && host.clientHeight > 0;
-}
-
-export function usePlanningCanvasReadyState({
-  boardId,
-  boardRole,
-  sync,
-  aiPermissions,
-  viewportHostSize,
-  canvasHostRef,
-}: UsePlanningCanvasReadyStateOptions) {
-  return useMemo(() => {
-    const isRoleReady = !boardRole.loading;
-    const isHydrated = sync.isHydrated === true || sync.hydrationStatus === 'hydrated';
-    const isHydratedForBoard = !sync.hydratedBoardId || sync.hydratedBoardId === boardId;
-    const isHydrationReady = isHydrated && isHydratedForBoard && !sync.hydrationError;
-    const areAIPermissionsReady = !aiPermissions.loading;
-    const isViewportReady = hasUsableSize(viewportHostSize) || hasMeasuredHost(canvasHostRef);
-    const pendingReasons = [
-      !isRoleReady ? 'board-role' : null,
-      !isHydrationReady ? 'hydration' : null,
-      !areAIPermissionsReady ? 'ai-permissions' : null,
-      !isViewportReady ? 'viewport' : null,
-    ].filter((reason): reason is string => Boolean(reason));
-
+export function resolvePlanningCanvasReadyState(input: PlanningCanvasReadyInput): PlanningCanvasReadyState {
+  if (!input.boardId) {
     return {
-      isReady: pendingReasons.length === 0,
-      isRoleReady,
-      isHydrationReady,
-      areAIPermissionsReady,
-      isViewportReady,
-      pendingReasons,
+      isReady: false,
+      reason: 'missing-board',
+      requiresManualRefreshVerification: true,
+      manualRefreshVerification: 'افتح رابط اللوحة مباشرة بعد refresh كامل وتأكد أن إطار الكانفس يظهر بدون لوحة مختارة مسبقاً.',
     };
-  }, [
-    aiPermissions.loading,
-    boardId,
-    boardRole.loading,
-    canvasHostRef,
-    sync.hydratedBoardId,
-    sync.hydrationError,
-    sync.hydrationStatus,
-    sync.isHydrated,
-    viewportHostSize,
-  ]);
+  }
+
+  if (input.hydrationStatus === 'idle' || input.hydrationStatus === 'loading') {
+    return {
+      isReady: false,
+      reason: 'hydrating-elements',
+      requiresManualRefreshVerification: true,
+      manualRefreshVerification: 'من refresh جديد للمتصفح، افتح اللوحة وانتظر تحميل عناصر planning_elements قبل اعتماد التذكرة.',
+    };
+  }
+
+  if (input.canEdit && input.persistenceStatus === 'error') {
+    return {
+      isReady: false,
+      reason: 'persistence-error',
+      requiresManualRefreshVerification: true,
+      manualRefreshVerification: 'بعد refresh جديد، عدّل عنصراً على الكانفس وتأكد أن خطأ الحفظ ظاهر وقابل للمراجعة.',
+    };
+  }
+
+  return {
+    isReady: true,
+    reason: 'ready',
+    requiresManualRefreshVerification: true,
+    manualRefreshVerification: 'من نافذة جديدة أو refresh كامل، افتح اللوحة وتأكد أن الكانفس، الأدوات، والعناصر المحمّلة تظهر قبل الاكتفاء بأي typecheck.',
+  };
 }
 
-export default usePlanningCanvasReadyState;
+export function usePlanningCanvasReadyState(input: PlanningCanvasReadyInput): PlanningCanvasReadyState {
+  return useMemo(
+    () => resolvePlanningCanvasReadyState(input),
+    [input.boardId, input.canEdit, input.hydrationStatus, input.persistenceStatus, input.realtimeStatus],
+  );
+}

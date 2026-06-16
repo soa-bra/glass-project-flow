@@ -90,11 +90,26 @@ describe('CanvasToolbar', () => {
     expect(mockRenameBoard).not.toHaveBeenCalled();
   });
 
+  it('does not render collaboration participant details in the toolbar', () => {
+    render(
+      <CanvasToolbar
+        board={board}
+        onBack={onBack}
+        peers={[{ user_id: 'peer-1', display_name: 'مراجع خارجي', color: '#123456' } as any]}
+        selfName="محرر داخلي"
+      />,
+    );
+
+    expect(screen.queryByLabelText('المتعاونون النشِطون')).not.toBeInTheDocument();
+    expect(screen.queryByText('أنت: محرر داخلي')).not.toBeInTheDocument();
+    expect(screen.queryByText('مراجع خارجي')).not.toBeInTheDocument();
+  });
+
   it('routes undo and redo actions', () => {
     const { container } = render(<CanvasToolbar board={board} onBack={onBack} />);
     const buttons = container.querySelectorAll('button');
-    const undoButton = buttons[6];
-    const redoButton = buttons[7];
+    const undoButton = buttons[buttons.length - 2];
+    const redoButton = buttons[buttons.length - 1];
 
     fireEvent.click(undoButton);
     fireEvent.click(redoButton);

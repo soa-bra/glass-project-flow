@@ -23,6 +23,7 @@ import { planningElementToCanvas } from "@/features/planning/state/planningEleme
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
+import type { PlanningCanvasHydrationStatus } from "./usePlanningCanvasReadyState";
 
 function sortByZ(rows: PlanningElement[]): PlanningElement[] {
   return [...rows].sort((a, b) => {
@@ -73,10 +74,15 @@ function rebuildLayerMembership(layers: LayerInfo[] | undefined, elements: Canva
   }));
 }
 
+export type PlanningStoreHydrationStatus = "idle" | "loading" | "ready" | "error";
+
 export function usePlanningStoreSync(
   boardId: string | null,
   selfDisplayName?: string,
 ) {
+  const [hydrationStatus, setHydrationStatus] = useState<PlanningStoreHydrationStatus>(
+    boardId ? "loading" : "idle",
+  );
   const storeElements = usePlanningStore((state) => state.elements);
   const [hydrationState, setHydrationState] = useState<{
     isHydrated: boolean;
@@ -112,23 +118,11 @@ export function usePlanningStoreSync(
 
   // Initial hydration.
   useEffect(() => {
-    if (!boardId) {
-      usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
-      setHydrationState({
-        isHydrated: true,
-        hydrationStatus: 'hydrated',
-        hydrationError: null,
-        hydratedBoardId: null,
-      });
-      return;
-    }
-    let cancelled = false;
-    setHydrationState({
-      isHydrated: false,
-      hydrationStatus: 'loading',
-      hydrationError: null,
-      hydratedBoardId: null,
-    });
+if (!boardId) {
+  setHydrationStatus("idle");
+  usePlanningStore.setState({ elements: [], pendingDeletedElementIds: [] });
+  return;
+}
     void PlanningBoardsService.listPlanningElements(boardId)
       .then((rows) => {
         if (cancelled) return;
@@ -145,15 +139,10 @@ export function usePlanningStoreSync(
             ),
           };
         });
-        setHydrationState({
-          isHydrated: true,
-          hydrationStatus: 'hydrated',
-          hydrationError: null,
-          hydratedBoardId: boardId,
-        });
+        setHydrationStatus("ready");
       })
       .catch((err) => {
-        if (cancelled) return;
+        if (!cancelled) setHydrationStatus("error");
         console.error("[usePlanningStoreSync] fetch failed", err);
         setHydrationState({
           isHydrated: false,
@@ -250,6 +239,7 @@ export function usePlanningStoreSync(
 
   return {
     ...realtime,
-    ...hydrationState,
+    hydrationStatus,
+    isHydrated: hydrationStatus === "ready" || hydrationStatus === "idle",
   };
 }

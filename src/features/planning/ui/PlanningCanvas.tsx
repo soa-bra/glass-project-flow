@@ -25,7 +25,9 @@ import type { SmartConversionPayload, SmartConversionResult } from '@/features/p
 import { planningElementToCanvas } from '@/features/planning/state/planningElementMapper';
 import { ExecutionPanelHost } from '@/features/planning/execution/ExecutionPanelHost';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import { usePlanningCanvasReadyState } from '@/features/planning/hooks/usePlanningCanvasReadyState';
 
 interface PlanningCanvasProps {
   board: CanvasBoard;
@@ -111,14 +113,12 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     selfDisplayName: selfName,
     canPersist: canEditBoard,
   });
-  const { peers, peersById, connectionStatus, lastSyncAt } = sync;
-  const readyState = usePlanningCanvasReadyState({
-    boardId: board.id,
-    boardRole,
-    sync,
-    aiPermissions,
-    viewportHostSize,
-    canvasHostRef,
+    <div
+      className="h-full flex flex-col bg-white"
+      data-testid="planning-canvas-ready"
+      data-canvas-ready={readyState.isReady}
+      data-canvas-ready-reason={readyState.reason}
+    >
   });
   const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
   const requestElementLock = useElementLockAcquire(elementLock.acquire, peersById);
@@ -272,8 +272,32 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     ],
   );
 
+  const isCanvasBootstrapping =
+    boardRole.loading || aiPermissions.loading || sync.hydrationStatus === 'loading';
+
+  if (isCanvasBootstrapping) {
+    return (
+      <div className="h-full flex items-center justify-center bg-slate-50 text-slate-700" data-testid="planning-canvas-loading">
+        <div className="flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white px-8 py-7 text-center shadow-sm">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
+          <div className="space-y-1">
+            <p className="text-base font-semibold">جاري تجهيز لوحة التخطيط</p>
+            <p className="text-sm text-slate-500">
+              نحمّل العناصر والصلاحيات وأدوات الذكاء قبل إظهار اللوحة.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-full flex flex-col bg-white">
+<div
+  className="h-full flex flex-col bg-white"
+  data-testid="planning-canvas-ready"
+  data-canvas-ready={readyState.isReady}
+  data-canvas-ready-reason={readyState.reason}
+>
       <CanvasToolbar
         board={board}
         onBack={() => setCurrentBoard(null)}
