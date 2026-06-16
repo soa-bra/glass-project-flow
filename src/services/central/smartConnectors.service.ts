@@ -101,7 +101,7 @@ async function refreshOperationalDataLink(
   const mapping = buildOperationalMapping(record);
   const hasRealEntities = hasEntityEndpoints(record);
 
-  const payload: DataLinkInsert = {
+  const payload = {
     board_id: record.board_id,
     created_by: createdBy,
     source_element_id: record.source_element_id,
@@ -279,7 +279,7 @@ function toSmartConnectorInsert(
 ): SmartConnectorInsert {
   const hasRealEntities = hasEntityEndpoints(record);
 
-  return {
+  return ({
     connector_element_id: record.connector_element_id,
     board_id: record.board_id,
     source_element_id: record.source_element_id,
@@ -302,7 +302,7 @@ function toSmartConnectorInsert(
     is_ai_generated: record.isAIGenerated,
     approved_by_user: record.approvedByUser,
     approved_by: record.approvedBy ?? null,
-  };
+  } as unknown as SmartConnectorInsert);
 }
 
 export async function upsertSmartConnector(

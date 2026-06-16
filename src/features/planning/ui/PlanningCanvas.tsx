@@ -306,7 +306,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         peers={peers}
         selfName={selfName}
         realtimeStatus={connectionStatus}
-        lastSyncAt={lastSyncAt}
+        lastSyncAt={lastSyncAt == null ? null : String(lastSyncAt)}
         canEdit={canEditBoard}
         elementPersistence={sync.persistence}
       />
