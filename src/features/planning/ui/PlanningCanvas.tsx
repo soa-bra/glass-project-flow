@@ -114,7 +114,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     canPersist: canEditBoard,
   });
   const elementLock = useElementLock(canEditBoard ? board.id : null, sync.updateSelfPresence);
-  const requestElementLock = useElementLockAcquire(elementLock.acquire, peersById);
+  const requestElementLock = useElementLockAcquire(elementLock.acquire, sync.peersById);
+  const peers = sync.peers;
 
   useEffect(() => {
     setConnected(sync.isConnected);
