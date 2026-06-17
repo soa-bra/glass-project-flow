@@ -69,7 +69,7 @@ jobs:
           src/features/planning/state/planningElementMapper.test.ts
           src/features/planning/state/slices/planningElementIds.test.ts
           src/features/planning/state/slices/selectionSlice.test.ts
-          src/features/planning/ui/toolbars/CanvasToolbar.test.ts
+          src/features/planning/ui/toolbars/CanvasToolbar.test.tsx
           src/features/planning/ui/toolbars/ContextualToolbarManager.test.tsx
           src/hooks/useCollaboration.test.ts
 
