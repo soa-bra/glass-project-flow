@@ -31,6 +31,8 @@ const stateMocks = vi.hoisted(() => ({
     broadcastCursor: vi.fn(),
     updateSelfPresence: vi.fn(),
     hydrationStatus: 'ready',
+    hydrationError: null,
+    hydratedBoardId: 'board-1',
     isHydrated: true,
     persistence: { status: 'saved' },
   } as any,
@@ -56,6 +58,8 @@ function resetPlanningCanvasMocks() {
     broadcastCursor: vi.fn(),
     updateSelfPresence: vi.fn(),
     hydrationStatus: 'ready',
+    hydrationError: null,
+    hydratedBoardId: 'board-1',
     isHydrated: true,
     persistence: { status: 'saved' },
   };
@@ -208,6 +212,12 @@ describe('PlanningCanvas', () => {
     vi.stubGlobal('ResizeObserver', ResizeObserverMock as any);
   });
 
+  async function waitForReadyCanvas() {
+    await waitFor(() => {
+      expect(screen.getByTestId('planning-canvas-ready')).toHaveAttribute('data-canvas-ready', 'true');
+    });
+  }
+
   it('shows one professional loading state until role, AI permissions, and elements are ready', () => {
     stateMocks.boardRole = { role: 'guest', loading: true, userId: null };
     stateMocks.aiPermissions = {
@@ -233,11 +243,15 @@ describe('PlanningCanvas', () => {
     expect(screen.queryByTestId('ai-assistant-button')).not.toBeInTheDocument();
   });
 
-  it('renders the ready canvas with enabled tools and AI button in the first non-loading paint', () => {
+  it('waits for viewport measurement before rendering the ready canvas chrome', async () => {
     render(<PlanningCanvas board={board} />);
 
+    expect(screen.getByTestId('planning-canvas-loading')).toHaveAttribute('data-canvas-ready-reason', 'viewport-not-ready');
+    expect(screen.queryByTestId('canvas-toolbar')).not.toBeInTheDocument();
+
+    await waitForReadyCanvas();
+
     expect(screen.queryByTestId('planning-canvas-loading')).not.toBeInTheDocument();
-    expect(screen.getByTestId('planning-canvas-ready')).toBeInTheDocument();
     expect(screen.getByTestId('canvas-toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('tool-zone')).toHaveTextContent('selection_tool');
     expect(screen.getByTestId('infinite-canvas')).toHaveTextContent('board-1');
@@ -247,6 +261,8 @@ describe('PlanningCanvas', () => {
   it('renders the main planning canvas shell and wires top-level children', async () => {
     render(<PlanningCanvas board={board} />);
 
+    await waitForReadyCanvas();
+
     expect(screen.getByTestId('canvas-toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('infinite-canvas')).toHaveTextContent('board-1');
     expect(screen.getByTestId('tool-zone')).toHaveTextContent('selection_tool');
@@ -255,9 +271,7 @@ describe('PlanningCanvas', () => {
     expect(screen.getByTestId('contextual-toolbar')).toBeInTheDocument();
     expect(screen.getByTestId('smart-command-bar')).toHaveAttribute('data-open', 'true');
 
-    await waitFor(() => {
-      expect(mockSetViewportHostSize).toHaveBeenCalledWith(1440, 900);
-    });
+    expect(mockSetViewportHostSize).toHaveBeenCalledWith(1440, 900);
   });
 
   it('shows unified loading and hides canvas controls before element hydration is ready', () => {
@@ -280,16 +294,36 @@ describe('PlanningCanvas', () => {
     expect(screen.queryByTestId('smart-command-bar')).not.toBeInTheDocument();
   });
 
-  it('routes toolbar back action to setCurrentBoard(null)', () => {
+  it('shows hydration errors without rendering the canvas body', async () => {
+    stateMocks.syncResult = {
+      ...stateMocks.syncResult,
+      hydrationStatus: 'error',
+      hydrationError: new Error('load failed'),
+      isHydrated: false,
+    };
+
     render(<PlanningCanvas board={board} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('planning-canvas-ready')).toHaveAttribute('data-canvas-ready-reason', 'hydration-error');
+    });
+    expect(screen.getByText('تعذر تحميل لوحة التخطيط')).toBeInTheDocument();
+    expect(screen.queryByTestId('infinite-canvas')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bottom-toolbar')).not.toBeInTheDocument();
+  });
+
+  it('routes toolbar back action to setCurrentBoard(null)', async () => {
+    render(<PlanningCanvas board={board} />);
+    await waitForReadyCanvas();
 
     fireEvent.click(screen.getByText('toolbar-back'));
 
     expect(mockSetCurrentBoard).toHaveBeenCalledWith(null);
   });
 
-  it('opens the unified command palette with Cmd/Ctrl + K without rendering a second palette', () => {
+  it('opens the unified command palette with Cmd/Ctrl + K without rendering a second palette', async () => {
     render(<PlanningCanvas board={board} />);
+    await waitForReadyCanvas();
 
     fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
     fireEvent.keyDown(window, { key: 'K', metaKey: true });
@@ -298,8 +332,9 @@ describe('PlanningCanvas', () => {
     expect(screen.getAllByTestId('smart-command-bar')).toHaveLength(1);
   });
 
-  it('creates typed smart elements and adds them to canvas when smart command bar generates elements', () => {
+  it('creates typed smart elements and adds them to canvas when smart command bar generates elements', async () => {
     render(<PlanningCanvas board={board} />);
+    await waitForReadyCanvas();
 
     fireEvent.click(screen.getByText('generate-elements'));
 
@@ -311,8 +346,9 @@ describe('PlanningCanvas', () => {
     expect(mockAddElement).toHaveBeenCalledWith({ type: 'kanban', id: 'smart-1' });
   });
 
-  it('routes smart command bar close handler', () => {
+  it('routes smart command bar close handler', async () => {
     render(<PlanningCanvas board={board} />);
+    await waitForReadyCanvas();
 
     fireEvent.click(screen.getByText('close-smart-bar'));
 
