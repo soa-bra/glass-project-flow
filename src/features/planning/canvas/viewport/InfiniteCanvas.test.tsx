@@ -24,13 +24,16 @@ const mockUpdateConnectionPosition = vi.fn();
 const mockHandleStartConnection = vi.fn();
 const mockPresenceCursors = vi.fn();
 const mockBroadcastCursor = vi.fn();
+const mockSmartConnectorManager = vi.fn();
 const boxSelectSelector = vi.hoisted(() => Symbol('box-select-selector'));
 
+const defaultElements = [
+  { id: 'el-1', type: 'shape', position: { x: 10, y: 20 }, size: { width: 100, height: 60 } },
+  { id: 'el-2', type: 'text', position: { x: 200, y: 120 }, size: { width: 120, height: 40 } },
+];
+
 const canvasState: any = {
-  elements: [
-    { id: 'el-1', type: 'shape', position: { x: 10, y: 20 }, size: { width: 100, height: 60 } },
-    { id: 'el-2', type: 'text', position: { x: 200, y: 120 }, size: { width: 120, height: 40 } },
-  ],
+  elements: [...defaultElements],
   viewport: { zoom: 1.5, pan: { x: 20, y: 30 } },
   settings: { background: '#ffffff', snapToGrid: true },
   selectedElementIds: ['el-1'],
@@ -188,6 +191,12 @@ vi.mock('@/features/planning/ui/collaboration', () => ({
   },
 }));
 vi.mock('@/features/planning/elements/mindmap/MindMapConnectionLine', () => ({ default: () => <div data-testid="mindmap-connection-line" /> }));
+vi.mock('@/features/planning/elements/smart/SmartConnectorManager', () => ({
+  SmartConnectorManager: (props: any) => {
+    mockSmartConnectorManager(props);
+    return <g data-testid="smart-connector-manager" />;
+  },
+}));
 
 describe('InfiniteCanvas', () => {
   beforeEach(() => {
@@ -195,6 +204,8 @@ describe('InfiniteCanvas', () => {
     interactionState.mode = { kind: 'idle' };
     connectionRef.current.isConnecting = false;
     connectionRef.current.nearestAnchor = null;
+    canvasState.elements = [...defaultElements];
+    canvasState.selectedElementIds = ['el-1'];
     canvasState.activeTool = 'selection_tool';
     mockUpdatePointerFromClient.mockReturnValue({ x: 88, y: 144 });
   });
@@ -211,6 +222,65 @@ describe('InfiniteCanvas', () => {
     expect(mockPresenceCursors).toHaveBeenCalledWith(
       expect.objectContaining({ peers: [remotePeer] }),
     );
+  });
+
+  it('passes readable non-root visible canvas elements into smart connector AI context', () => {
+    canvasState.elements = [
+      {
+        id: 'visible-smart',
+        type: 'smart',
+        position: { x: 24, y: 32 },
+        size: { width: 180, height: 90 },
+        data: { smartType: 'task_card', title: 'Task card', description: 'Ready for AI' },
+      },
+      {
+        id: 'visible-text',
+        type: 'text',
+        position: { x: 260, y: 40 },
+        size: { width: 140, height: 50 },
+        content: 'Brief text block',
+      },
+      {
+        id: 'hidden-shape',
+        type: 'shape',
+        position: { x: 420, y: 40 },
+        size: { width: 100, height: 80 },
+        visible: false,
+        data: { title: 'Hidden element' },
+      },
+      {
+        id: 'root-connector',
+        type: 'smart',
+        position: { x: 80, y: 180 },
+        size: { width: 200, height: 20 },
+        data: { smartType: 'root_connector', title: 'Connector visual' },
+      },
+    ];
+
+    render(<InfiniteCanvas boardId="board-123" />);
+
+    expect(mockSmartConnectorManager).toHaveBeenCalled();
+    const props = mockSmartConnectorManager.mock.calls.at(-1)?.[0];
+    expect(props.readableAIElements.map((element: any) => element.id)).toEqual([
+      'visible-smart',
+      'visible-text',
+    ]);
+    expect(props.readableAIElements).toEqual([
+      expect.objectContaining({
+        id: 'visible-smart',
+        type: 'smart',
+        smartType: 'task_card',
+        title: 'Task card',
+        description: 'Ready for AI',
+      }),
+      expect.objectContaining({
+        id: 'visible-text',
+        type: 'text',
+        smartType: null,
+        title: 'Brief text block',
+        description: null,
+      }),
+    ]);
   });
 
   it('broadcasts pointer movement through the official planning realtime cursor path', () => {
