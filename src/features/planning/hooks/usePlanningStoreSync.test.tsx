@@ -139,6 +139,7 @@ describe('usePlanningStoreSync hydration lifecycle', () => {
 
   it('resets hydration metadata when switching to another board', async () => {
     let resolveFirstHydration: (rows: PlanningElement[]) => void = () => undefined;
+    let resolveSecondHydration: (rows: PlanningElement[]) => void = () => undefined;
     mocks.listPlanningElements.mockImplementationOnce(
       () => new Promise<PlanningElement[]>((resolve) => {
         resolveFirstHydration = resolve;
@@ -160,14 +161,24 @@ describe('usePlanningStoreSync hydration lifecycle', () => {
       expect(result.current.hydratedBoardId).toBe('11111111-1111-4111-8111-111111111111');
     });
 
-    mocks.listPlanningElements.mockResolvedValueOnce([]);
+    mocks.listPlanningElements.mockImplementationOnce(
+      () => new Promise<PlanningElement[]>((resolve) => {
+        resolveSecondHydration = resolve;
+      }),
+    );
     rerender({ boardId: '99999999-9999-4999-8999-999999999999' });
 
-    expect(result.current).toMatchObject({
-      hydrationStatus: 'loading',
-      isHydrated: false,
-      hydrationError: null,
-      hydratedBoardId: null,
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        hydrationStatus: 'loading',
+        isHydrated: false,
+        hydrationError: null,
+        hydratedBoardId: null,
+      });
+    });
+
+    await act(async () => {
+      resolveSecondHydration([]);
     });
 
     await waitFor(() => {
