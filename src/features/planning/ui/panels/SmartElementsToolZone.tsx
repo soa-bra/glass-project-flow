@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { 
+import React, { useMemo, useState } from 'react';
+import {
   Lightbulb, 
   LayoutGrid, 
   Vote, 
@@ -31,6 +31,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { SupraMenuOption, supraMenuOptionClassName } from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
+import {
+  getDepartmentBoxSources,
+  createDepartmentBoxElementData,
+  type DepartmentBoxSource,
+} from '@/features/planning/adapters/departmentBoxesAdapter';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Smart Element Configuration
@@ -374,6 +379,22 @@ const SmartElementsPanel: React.FC = () => {
     ? availableElements 
     : availableElements.filter(el => el.category === selectedCategory);
 
+  const departmentBoxSources = useMemo<DepartmentBoxSource[]>(() => getDepartmentBoxSources(), []);
+  const shouldShowBoxes = selectedCategory === 'all' || selectedCategory === 'boxes';
+  const filteredBoxSources = useMemo<DepartmentBoxSource[]>(() => {
+    const q = boxSearch.trim().toLowerCase();
+    if (!q) return departmentBoxSources;
+    return departmentBoxSources.filter(b =>
+      b.title.toLowerCase().includes(q) || b.departmentLabel.toLowerCase().includes(q),
+    );
+  }, [boxSearch, departmentBoxSources]);
+  const boxSourcesByDepartment = useMemo<Record<string, DepartmentBoxSource[]>>(() => {
+    return filteredBoxSources.reduce<Record<string, DepartmentBoxSource[]>>((acc, b) => {
+      (acc[b.departmentLabel] ||= []).push(b);
+      return acc;
+    }, {});
+  }, [filteredBoxSources]);
+
   // Initialize settings when element is selected
   const handleSelectElement = (element: SmartElementConfig & { data?: Record<string, any>; type?: SmartElementType }) => {
     setSelectedElement(element);
@@ -624,7 +645,7 @@ const SmartElementsPanel: React.FC = () => {
                 }));
                 e.dataTransfer.effectAllowed = 'copy';
               }}
-              onClick={() => handleSelectElement(element)}
+              onClick={() => handleSelectElement(element as unknown as SmartElementConfig & { data?: Record<string, any>; type?: SmartElementType })}
               className={`group flex flex-col items-center gap-2 p-3 rounded-xl transition-all cursor-grab active:cursor-grabbing ${supraMenuOptionClassName} ${
                 selectedElement?.id === element.id
                   ? 'bg-black font-bold text-white hover:bg-black'

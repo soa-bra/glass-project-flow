@@ -170,7 +170,7 @@ export async function invokeAIAction<TResult = unknown>({
   });
 
   const errorPayload = fnError ? await readFunctionErrorPayload(fnError) : null;
-  const responsePayload = errorPayload || (data as AIGatewayErrorPayload | null);
+  const responsePayload = errorPayload || ((data as unknown) as AIGatewayErrorPayload | null);
 
   if (fnError) {
     throw createGatewayError(errorPayload, fnError.message || 'فشل استدعاء بوابة الذكاء الاصطناعي');
@@ -182,3 +182,23 @@ export async function invokeAIAction<TResult = unknown>({
 
   return data.result;
 }
+
+export const aiGatewayClient = {
+  async request<TResult = unknown>(input: {
+    action: AIGatewayInvokeInput['action'];
+    prompt?: string;
+    context?: Record<string, unknown>;
+    payload?: Record<string, unknown>;
+    selectedElements?: AIGatewayInvokeInput['selectedElements'];
+    departmentId?: AIGatewayInvokeInput['departmentId'];
+  }): Promise<{ result: TResult }> {
+    const result = await invokeAIAction<TResult>({
+      action: input.action,
+      prompt: input.prompt,
+      selectedElements: input.selectedElements,
+      departmentId: input.departmentId,
+      context: { ...(input.context ?? {}), payload: input.payload },
+    });
+    return { result };
+  },
+};

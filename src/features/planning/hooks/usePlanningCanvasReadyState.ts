@@ -1,16 +1,24 @@
 import { useMemo } from 'react';
-import type { RealtimeConnectionStatus } from './usePlanningRealtime';
-import type { PlanningElementPersistenceState } from './usePlanningElementPersistence';
 
-export type PlanningCanvasHydrationStatus = 'idle' | 'loading' | 'ready' | 'error';
-export type PlanningCanvasReadyReason = 'missing-board' | 'hydrating-elements' | 'persistence-error' | 'ready';
+export type PlanningCanvasReadyReason =
+  | 'missing-board'
+  | 'hydrating-elements'
+  | 'persistence-error'
+  | 'ready';
+
+export type PlanningCanvasHydrationStatus =
+  | 'idle'
+  | 'loading'
+  | 'ready'
+  | 'hydrated'
+  | 'error';
 
 export interface PlanningCanvasReadyInput {
   boardId: string | null;
-  hydrationStatus: PlanningCanvasHydrationStatus;
-  realtimeStatus: RealtimeConnectionStatus;
-  persistenceStatus: PlanningElementPersistenceState['status'];
   canEdit: boolean;
+  hydrationStatus: PlanningCanvasHydrationStatus | string;
+  persistenceStatus: 'idle' | 'saving' | 'saved' | 'error' | string;
+  realtimeStatus: 'connected' | 'disconnected' | 'connecting' | string;
 }
 
 export interface PlanningCanvasReadyState {

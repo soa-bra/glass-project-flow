@@ -65,7 +65,7 @@ export const LicensesTab: React.FC = () => {
       aggregateType: 'license',
       aggregateId: newLicense.id,
       projectId: null,
-      payload: { name: newLicense.name, authority: newLicense.authority },
+      payload: { name: newLicense.name, issuer: newLicense.issuer },
     }).catch((error) => console.error('[LicensesTab] emitProjectEvent(create) failed:', error));
   };
 

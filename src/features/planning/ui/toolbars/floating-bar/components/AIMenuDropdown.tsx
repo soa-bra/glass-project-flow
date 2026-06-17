@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Loader2, LayoutGrid, Network, Calendar, Table2, Zap, FileText, FolderKanban, CheckSquare, Search } from "lucide-react";
 import type { SmartElementType } from "@/types/smart-elements";
 import { useCanvasAIPermissions } from "@/features/planning/hooks/useCanvasAIPermissions";
+import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
 import { SupraMenuOption } from "./SupraMenuOption";
 
 // خيارات التحويل للعناصر الذكية

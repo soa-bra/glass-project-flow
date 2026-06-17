@@ -15,6 +15,8 @@ import { downloadAsCSV } from '../shared/downloadUtils';
 import { toast } from 'sonner';
 import { useInvoices, useCreateInvoice, useUpdateInvoice } from '@/hooks/useInvoices';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
+import { LinkIndicator } from '@/components/shared/LinkIndicator';
+import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
 export const InvoicesTab: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<any>(null);

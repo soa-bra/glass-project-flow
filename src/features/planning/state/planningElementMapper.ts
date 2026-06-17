@@ -181,8 +181,8 @@ export function canvasToPlanningInsert(
       withSmartType(el.metadata, smartType),
       layerId,
     ) as PlanningElementInsert["metadata"],
-    schema_version: typeof (el as { schemaVersion?: unknown }).schemaVersion === "number"
-      ? (el as { schemaVersion: number }).schemaVersion
+    schema_version: typeof ((el as unknown) as { schemaVersion?: unknown }).schemaVersion === "number"
+      ? (((el as unknown) as { schemaVersion: number }).schemaVersion)
       : 1,
   };
 }
