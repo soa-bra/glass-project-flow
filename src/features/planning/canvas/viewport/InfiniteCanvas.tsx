@@ -76,6 +76,15 @@ function isReadonlyEditingShortcut(e: KeyboardEvent, hasSelection: boolean): boo
   return MUTATING_MODIFIER_SHORTCUTS.has(key);
 }
 
+function readCanvasText(...values: unknown[]): string | null {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+  return null;
+}
+
 const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   boardId: _boardId,
   peers = [],
@@ -253,6 +262,21 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     [visibleElements],
   );
 
+  const readableAIElements = useMemo<ReadableConnectorElementForAI[]>(
+    () =>
+      visibleElements
+        .filter((element) => element.visible !== false && element.data?.smartType !== 'root_connector')
+        .map((element) => ({
+          id: element.id,
+          type: element.type,
+          smartType: typeof element.data?.smartType === 'string' ? element.data.smartType : null,
+          title: readCanvasText(element.title, element.data?.title, element.metadata?.title, element.content),
+          description: readCanvasText(element.description, element.data?.description, element.metadata?.description),
+          position: element.position,
+          size: element.size,
+        })),
+    [visibleElements],
+  );
 
   const findHoveredConnectableElement = useCallback((x: number, y: number) => {
     const connectorHoverMargin = 28;
@@ -542,7 +566,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           <SmartConnectorManager
             elements={connectableElements}
             boardId={_boardId}
-            readableAIElements={[]}
+            readableAIElements={readableAIElements}
             connectors={rootConnectors}
             onConnectorsChange={syncRootConnectors}
             selectedConnectorId={selectedElementIds.find((id) => rootConnectorElements.some((element) => element.id === id)) ?? undefined}
