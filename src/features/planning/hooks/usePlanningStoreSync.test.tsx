@@ -21,9 +21,13 @@ vi.mock('./usePlanningRealtime', () => ({
     mocks.realtimeOptions = options;
     return mocks.usePlanningRealtime(options) ?? {
       peers: [],
+      peersById: {},
       connectionStatus: 'connected',
       lastSyncAt: null,
+      isConnected: true,
+      selfUserId: 'editor-user',
       broadcastCursor: vi.fn(),
+      updateSelfPresence: vi.fn(),
     };
   },
 }));
@@ -63,6 +67,129 @@ function resetStore(): void {
     history: { past: [], future: [] },
   } as never);
 }
+
+describe('usePlanningStoreSync hydration lifecycle', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.realtimeOptions = undefined;
+    resetStore();
+  });
+
+  it('starts loading for a board and marks the matching board ready after hydration', async () => {
+    mocks.listPlanningElements.mockResolvedValueOnce([]);
+
+    const { result } = renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+
+    expect(result.current.hydrationStatus).toBe('loading');
+    expect(result.current.isHydrated).toBe(false);
+    expect(result.current.hydrationError).toBeNull();
+    expect(result.current.hydratedBoardId).toBeNull();
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        hydrationStatus: 'ready',
+        isHydrated: true,
+        hydrationError: null,
+        hydratedBoardId: '11111111-1111-4111-8111-111111111111',
+      });
+    });
+  });
+
+  it('marks hydration as error and keeps the board unhydrated when initial fetch fails', async () => {
+    const error = new Error('network unavailable');
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    mocks.listPlanningElements.mockRejectedValueOnce(error);
+
+    const { result } = renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        hydrationStatus: 'error',
+        isHydrated: false,
+        hydrationError: error,
+        hydratedBoardId: null,
+      });
+    });
+    expect(consoleError).toHaveBeenCalledWith('[usePlanningStoreSync] fetch failed', error);
+    consoleError.mockRestore();
+  });
+
+  it('resets to idle and clears element state when no board is selected', async () => {
+    act(() => {
+      usePlanningStore.setState({
+        elements: [createPlanningElement() as never],
+        pendingDeletedElementIds: ['deleted-element-id'],
+      } as never);
+    });
+
+    const { result } = renderHook(() => usePlanningStoreSync(null));
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        hydrationStatus: 'idle',
+        isHydrated: true,
+        hydrationError: null,
+        hydratedBoardId: null,
+      });
+      expect(usePlanningStore.getState().elements).toEqual([]);
+      expect(usePlanningStore.getState().pendingDeletedElementIds).toEqual([]);
+    });
+    expect(mocks.listPlanningElements).not.toHaveBeenCalled();
+  });
+
+  it('resets hydration metadata when switching to another board', async () => {
+    let resolveFirstHydration: (rows: PlanningElement[]) => void = () => undefined;
+    let resolveSecondHydration: (rows: PlanningElement[]) => void = () => undefined;
+    mocks.listPlanningElements.mockImplementationOnce(
+      () => new Promise<PlanningElement[]>((resolve) => {
+        resolveFirstHydration = resolve;
+      }),
+    );
+
+    const { result, rerender } = renderHook(
+      ({ boardId }) => usePlanningStoreSync(boardId),
+      { initialProps: { boardId: '11111111-1111-4111-8111-111111111111' } },
+    );
+
+    expect(result.current.hydrationStatus).toBe('loading');
+
+    await act(async () => {
+      resolveFirstHydration([]);
+    });
+
+    await waitFor(() => {
+      expect(result.current.hydratedBoardId).toBe('11111111-1111-4111-8111-111111111111');
+    });
+
+    mocks.listPlanningElements.mockImplementationOnce(
+      () => new Promise<PlanningElement[]>((resolve) => {
+        resolveSecondHydration = resolve;
+      }),
+    );
+    rerender({ boardId: '99999999-9999-4999-8999-999999999999' });
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        hydrationStatus: 'loading',
+        isHydrated: false,
+        hydrationError: null,
+        hydratedBoardId: null,
+      });
+    });
+
+    await act(async () => {
+      resolveSecondHydration([]);
+    });
+
+    await waitFor(() => {
+      expect(result.current).toMatchObject({
+        hydrationStatus: 'ready',
+        isHydrated: true,
+        hydratedBoardId: '99999999-9999-4999-8999-999999999999',
+      });
+    });
+  });
+});
 
 describe('usePlanningStoreSync layer membership', () => {
   beforeEach(() => {
@@ -198,5 +325,4 @@ describe('usePlanningStoreSync layer membership', () => {
 
     expect(usePlanningStore.getState().selectedElementIds).toEqual([otherId]);
   });
-
 });

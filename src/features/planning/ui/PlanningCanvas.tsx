@@ -20,6 +20,7 @@ import { useElementLockAcquire } from '@/features/planning/hooks/useElementLockA
 import { canMutateCanvas, useCurrentBoardRole } from '@/features/planning/hooks/useCurrentBoardRole';
 import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
 import { usePlanningCanvasReadyState } from '@/features/planning/hooks/usePlanningCanvasReadyState';
+import type { PlanningCanvasReadyReason } from '@/features/planning/hooks/usePlanningCanvasReadyState';
 import { SmartConversionReviewDialog } from '@/features/planning/ui/overlays/SmartConversionReviewDialog';
 import type { SmartConversionPayload, SmartConversionResult } from '@/features/planning/services/smartConversion.service';
 import { planningElementToCanvas } from '@/features/planning/state/planningElementMapper';
@@ -36,6 +37,40 @@ type SmartConversionSuggestion = Pick<SmartConversionPayload, 'targetEntityType'
   sourceBoardId?: string | null;
   sourceElementIds?: string[];
 };
+
+const BLOCKING_READY_REASONS = new Set<PlanningCanvasReadyReason>([
+  'missing-board',
+  'board-role-loading',
+  'ai-permissions-loading',
+  'hydrating-elements',
+  'viewport-not-ready',
+]);
+
+function getReadinessCopy(reason: PlanningCanvasReadyReason): { title: string; description: string } {
+  switch (reason) {
+    case 'hydration-error':
+      return {
+        title: 'تعذر تحميل لوحة التخطيط',
+        description: 'فشل تحميل عناصر اللوحة. أعد التحديث أو راجع اتصال البيانات قبل اعتماد التذكرة.',
+      };
+    case 'persistence-error':
+      return {
+        title: 'تعذر حفظ تغييرات اللوحة',
+        description: 'يوجد خطأ حفظ يجب أن يبقى واضحاً قبل متابعة العمل على الكانفس.',
+      };
+    case 'viewport-not-ready':
+      return {
+        title: 'جاري تجهيز مساحة اللوحة',
+        description: 'نقيس مساحة الكانفس قبل إظهار الأدوات والعناصر.',
+      };
+    default:
+      return {
+        title: 'جاري تجهيز لوحة التخطيط',
+        description: 'نحمّل العناصر والصلاحيات وأدوات الذكاء قبل إظهار اللوحة.',
+      };
+  }
+}
+
 const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const setCurrentBoard = usePlanningStore((state) => state.setCurrentBoard);
   const activeTool = useCanvasStore((state) => state.activeTool);
@@ -120,7 +155,11 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   const readyState = usePlanningCanvasReadyState({
     boardId: board.id,
     canEdit: canEditBoard,
+    boardRoleLoading: boardRole.loading,
+    aiPermissionsLoading: aiPermissions.loading,
+    viewportHostSize,
     hydrationStatus: sync.hydrationStatus as 'idle' | 'loading' | 'ready' | 'hydrated' | 'error',
+    hydrationError: sync.hydrationError,
     persistenceStatus: (sync.persistence as { status?: string } | undefined)?.status ?? 'idle',
     realtimeStatus: connectionStatus,
   });
@@ -169,7 +208,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
     observer.observe(host);
     return () => observer.disconnect();
-  }, [setViewportHostSize]);
+  }, [setViewportHostSize, readyState.reason]);
 
   const handleSmartConversionSuggested = useCallback(
     (suggestion: SmartConversionSuggestion) => {
@@ -274,19 +313,22 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
     ],
   );
 
-  const isCanvasBootstrapping =
-    boardRole.loading || aiPermissions.loading || sync.hydrationStatus === 'loading';
+  const readinessCopy = getReadinessCopy(readyState.reason);
 
-  if (isCanvasBootstrapping) {
+  if (BLOCKING_READY_REASONS.has(readyState.reason)) {
     return (
-      <div className="h-full flex items-center justify-center bg-slate-50 text-slate-700" data-testid="planning-canvas-loading">
+      <div
+        ref={canvasHostRef}
+        className="h-full flex items-center justify-center bg-slate-50 text-slate-700"
+        data-testid="planning-canvas-loading"
+        data-canvas-ready={readyState.isReady}
+        data-canvas-ready-reason={readyState.reason}
+      >
         <div className="flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white px-8 py-7 text-center shadow-sm">
           <Loader2 className="h-8 w-8 animate-spin text-blue-600" aria-hidden="true" />
           <div className="space-y-1">
-            <p className="text-base font-semibold">جاري تجهيز لوحة التخطيط</p>
-            <p className="text-sm text-slate-500">
-              نحمّل العناصر والصلاحيات وأدوات الذكاء قبل إظهار اللوحة.
-            </p>
+            <p className="text-base font-semibold">{readinessCopy.title}</p>
+            <p className="text-sm text-slate-500">{readinessCopy.description}</p>
           </div>
         </div>
       </div>
@@ -294,12 +336,12 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
   }
 
   return (
-<div
-  className="h-full flex flex-col bg-white"
-  data-testid="planning-canvas-ready"
-  data-canvas-ready={readyState.isReady}
-  data-canvas-ready-reason={readyState.reason}
->
+    <div
+      className="h-full flex flex-col bg-white"
+      data-testid="planning-canvas-ready"
+      data-canvas-ready={readyState.isReady}
+      data-canvas-ready-reason={readyState.reason}
+    >
       <CanvasToolbar
         board={board}
         onBack={() => setCurrentBoard(null)}
@@ -334,10 +376,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
             aria-live="polite"
           >
             <div className="mb-6 max-w-xl">
-              <h2 className="text-lg font-semibold text-slate-900">تحميل لوحة التخطيط</h2>
-              <p className="mt-2 text-sm text-slate-600">
-                يتم تجهيز الصلاحيات والعناصر وأدوات الذكاء الاصطناعي
-              </p>
+              <h2 className="text-lg font-semibold text-slate-900">{readinessCopy.title}</h2>
+              <p className="mt-2 text-sm text-slate-600">{readinessCopy.description}</p>
             </div>
             <div className="relative h-full min-h-[420px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:32px_32px] opacity-60" />
