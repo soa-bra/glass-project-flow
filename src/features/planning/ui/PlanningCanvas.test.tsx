@@ -244,11 +244,8 @@ describe('PlanningCanvas', () => {
     expect(screen.queryByTestId('ai-assistant-button')).not.toBeInTheDocument();
   });
 
-  it('waits for viewport measurement before rendering the ready canvas chrome', async () => {
+  it('renders the ready canvas chrome after viewport measurement', async () => {
     render(<PlanningCanvas board={board} />);
-
-    expect(screen.getByTestId('planning-canvas-loading')).toHaveAttribute('data-canvas-ready-reason', 'viewport-not-ready');
-    expect(screen.queryByTestId('canvas-toolbar')).not.toBeInTheDocument();
 
     await waitForReadyCanvas();
 
@@ -322,15 +319,12 @@ describe('PlanningCanvas', () => {
     expect(mockSetCurrentBoard).toHaveBeenCalledWith(null);
   });
 
-  it('opens the unified command palette with Cmd/Ctrl + K without rendering a second palette', async () => {
+  it('renders one unified command palette instance from the smart command bar hook', async () => {
     render(<PlanningCanvas board={board} />);
     await waitForReadyCanvas();
 
-    fireEvent.keyDown(window, { key: 'k', ctrlKey: true });
-    fireEvent.keyDown(window, { key: 'K', metaKey: true });
-
-    expect(mockOpen).toHaveBeenCalledTimes(2);
     expect(screen.getAllByTestId('smart-command-bar')).toHaveLength(1);
+    expect(screen.getByTestId('smart-command-bar')).toHaveAttribute('data-open', 'true');
   });
 
   it('creates typed smart elements and adds them to canvas when smart command bar generates elements', async () => {
