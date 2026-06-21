@@ -97,5 +97,6 @@ export default function SpecPreviewPage() {
         <p className="text-sm text-muted-foreground">اختر تبويباً من القائمة الجانبية.</p>
       )}
     </WorkspaceShell>
+    </>
   );
 }
