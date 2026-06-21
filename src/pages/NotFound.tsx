@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { PageMeta } from "@/components/seo/PageMeta";
 
 const NotFound = () => {
   return (
@@ -7,6 +8,10 @@ const NotFound = () => {
       style={{ background: '#dfecf2' }}
       dir="rtl"
     >
+      <PageMeta
+        title="الصفحة غير موجودة (404) — سـوبــرا"
+        description="عذرًا، الصفحة المطلوبة غير موجودة في منصة سـوبــرا. عد إلى الصفحة الرئيسية لمتابعة عملك."
+      />
       <div className="text-center">
         <h1 className="text-6xl font-bold mb-6 text-gray-800">404</h1>
         <p className="text-xl text-gray-600 mb-8">عذراً، الصفحة غير موجودة</p>

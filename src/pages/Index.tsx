@@ -1,6 +1,7 @@
 
 import HeaderBar from '@/components/HeaderBar';
 import MainContent from '@/components/MainContent';
+import { PageMeta } from '@/components/seo/PageMeta';
 
 const Index = () => {
   return (
@@ -9,6 +10,11 @@ const Index = () => {
       className="relative min-h-screen w-full font-arabic overflow-hidden"
       style={{ background: '#dfecf2' }}
     >
+      <PageMeta
+        title="لوحة العمليات — منصة سـوبــرا"
+        description="لوحة العمليات الرئيسية في منصة سـوبــرا لإدارة المشاريع والأقسام والتخطيط والأرشيف في مكان واحد متكامل."
+        path="/"
+      />
       {/*
         ملاحظة مهمة: لا نضع z-index على هذه الحاوية حتى لا تُنشئ stacking context
         يحصر القوائم المنسدلة للهيدر (popover) داخل طبقة الأب، مما يجعلها تظهر
