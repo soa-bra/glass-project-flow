@@ -3079,8 +3079,6 @@ export type Database = {
         Returns: boolean
       }
       is_owner: { Args: { _user_id: string }; Returns: boolean }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
       user_has_board_role: {
         Args: {
           board_id: string
