@@ -11,6 +11,8 @@ interface PageMetaProps {
   path?: string;
 }
 
+const OG_IMAGE = "https://glass-project-flow.lovable.app/og-image.jpg";
+
 export function PageMeta({ title, description, path }: PageMetaProps) {
   const url = path ? `https://glass-project-flow.lovable.app${path}` : undefined;
   return (
@@ -19,6 +21,10 @@ export function PageMeta({ title, description, path }: PageMetaProps) {
       <meta name="description" content={description} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
+      <meta property="og:image" content={OG_IMAGE} />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={OG_IMAGE} />
       {url && <meta property="og:url" content={url} />}
       {url && <link rel="canonical" href={url} />}
     </Helmet>
