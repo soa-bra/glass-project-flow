@@ -12,3 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://glass-project-flow.lovable.app/sitemap.xml
+
