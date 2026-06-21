@@ -601,24 +601,25 @@
     transition: all var(--animation-duration-main) var(--animation-easing);
   }
 
-  /* Custom Scrollbar */
+  /* Hide scrollbars globally while preserving scroll functionality */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 0;
+    height: 0;
+    display: none;
   }
-  
-  ::-webkit-scrollbar-track {
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar-corner {
     background: transparent;
+    display: none;
   }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.4);
-  }
+
 }
 
 /* Cleaned up unused animation frames */
