@@ -13,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { isAuthBypassEnabled } from "@/lib/authBypass";
+import { PageMeta } from "@/components/seo/PageMeta";
+
 
 export default function AuthPage() {
   if (isAuthBypassEnabled()) {
@@ -55,6 +57,11 @@ export default function AuthPage() {
 
   return (
     <div dir="rtl" className="flex min-h-screen items-center justify-center bg-background px-4">
+      <PageMeta
+        title="تسجيل الدخول — منصة سـوبــرا"
+        description="سجّل الدخول إلى منصة سـوبــرا للوصول إلى لوحات إدارة المشاريع والعمليات والأقسام والتخطيط والأرشيف."
+        path="/auth"
+      />
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">سـوبــرا</CardTitle>

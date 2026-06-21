@@ -10,6 +10,7 @@ import { useParams, Link } from 'react-router-dom';
 import { APP_SPEC } from '@/config/app-spec';
 import { TabRenderer } from '@/components/box-kit';
 import { WorkspaceShell } from '@/components/shared/WorkspaceShell';
+import { PageMeta } from '@/components/seo/PageMeta';
 
 export default function SpecPreviewPage() {
   const { dashboardKey, tabCode } = useParams<{ dashboardKey?: string; tabCode?: string }>();
@@ -25,6 +26,11 @@ export default function SpecPreviewPage() {
   if (!dashboardKey) {
     return (
       <WorkspaceShell title="معاينة المواصفة" subtitle="اختر لوحة لاستعراض تبويباتها">
+        <PageMeta
+          title="معاينة المواصفة — منصة سـوبــرا"
+          description="معاينة مواصفات اللوحات والتبويبات في منصة سـوبــرا للتحقق البصري السريع من تصميم الواجهات."
+          path="/spec-preview"
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {allDashboards.map((d) => (
             <Link
@@ -51,6 +57,12 @@ export default function SpecPreviewPage() {
   }
 
   return (
+    <>
+    <PageMeta
+      title={`${dashboard.title}${tab ? ` — ${tab.name}` : ''} — معاينة سـوبــرا`}
+      description={`معاينة مواصفة ${dashboard.title}${tab ? ` (${tab.name})` : ''} في منصة سـوبــرا للجودة البصرية للتبويبات والعناصر.`}
+      path={`/spec-preview/${dashboard.key}${tab ? `/${tab.code}` : ''}`}
+    />
     <WorkspaceShell
       title={dashboard.title}
       subtitle={tab ? tab.name : `${dashboard.tabs.length} تبويب`}
@@ -85,5 +97,6 @@ export default function SpecPreviewPage() {
         <p className="text-sm text-muted-foreground">اختر تبويباً من القائمة الجانبية.</p>
       )}
     </WorkspaceShell>
+    </>
   );
 }

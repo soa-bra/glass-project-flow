@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { nanoid } from 'nanoid';
 import { Loader2, Link2, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageMeta } from '@/components/seo/PageMeta';
 
 interface InviteLink {
   id: string;
