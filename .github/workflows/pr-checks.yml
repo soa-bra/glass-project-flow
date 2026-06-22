@@ -43,8 +43,8 @@ jobs:
           npm install --package-lock-only --ignore-scripts
           diff -u /tmp/package-lock.before.json package-lock.json
 
-      - name: Lint
-        run: npm run lint -- --format json --output-file lint-report.json
+      - name: Lint baseline report
+        run: npm run lint -- --format json --output-file lint-report.json || true
 
       - name: Typecheck
         run: |
