@@ -218,6 +218,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     updateBoxSelect,
     resetToIdle,
     finishSelection,
+    clearSelection,
     updatePointerFromClient,
   });
 
@@ -399,9 +400,6 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
 
       if (e.button === 0 && activeTool === 'selection_tool' && target.type === 'canvas') {
-        if (!e.shiftKey) {
-          clearSelection();
-        }
         beginBoxSelection(e.clientX, e.clientY, e.shiftKey);
         return;
       }
