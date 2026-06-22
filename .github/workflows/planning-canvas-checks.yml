@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'src/features/planning/**'
+      - 'src/components/PlanningWorkspace.tsx'
+      - 'src/components/PlanningWorkspace.test.tsx'
       - 'src/hooks/useCollaboration.ts'
       - 'src/hooks/useCollaboration.test.ts'
       - '.github/workflows/planning-canvas-checks.yml'
@@ -18,6 +20,8 @@ on:
       - main
     paths:
       - 'src/features/planning/**'
+      - 'src/components/PlanningWorkspace.tsx'
+      - 'src/components/PlanningWorkspace.test.tsx'
       - 'src/hooks/useCollaboration.ts'
       - 'src/hooks/useCollaboration.test.ts'
       - '.github/workflows/planning-canvas-checks.yml'
@@ -56,6 +60,7 @@ jobs:
       - name: Run planning canvas regression tests
         run: >-
           npm test -- --run
+          src/components/PlanningWorkspace.test.tsx
           src/features/planning/canvas/layers/elementLockState.test.ts
           src/features/planning/canvas/viewport/InfiniteCanvas.test.tsx
           src/features/planning/elements/smart/ContextSmartMenu.test.ts

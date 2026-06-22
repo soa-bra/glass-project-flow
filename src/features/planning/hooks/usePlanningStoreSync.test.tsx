@@ -215,6 +215,30 @@ describe('usePlanningStoreSync layer membership', () => {
     });
   });
 
+  it('does not resurrect a locally deleted element when hydration still receives its row', async () => {
+    const deletedId = '33333333-3333-4333-8333-333333333333';
+    mocks.listPlanningElements.mockResolvedValueOnce([
+      createPlanningElement({ id: deletedId, metadata: { layerId: 'layer-b' } }),
+    ]);
+
+    act(() => {
+      usePlanningStore.setState({
+        pendingDeletedElementIds: [deletedId],
+        selectedElementIds: [deletedId],
+      } as never);
+    });
+
+    renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+
+    await waitFor(() => {
+      const state = usePlanningStore.getState();
+      expect(state.elements).toEqual([]);
+      expect(state.selectedElementIds).toEqual([]);
+      expect(state.pendingDeletedElementIds).toEqual([deletedId]);
+      expect(state.layers.find((layer) => layer.id === 'layer-b')?.elements).toEqual([]);
+    });
+  });
+
   it('moves layer membership when realtime updates change layerId', async () => {
     mocks.listPlanningElements.mockResolvedValueOnce([
       createPlanningElement({ metadata: { layerId: 'layer-b' } }),
