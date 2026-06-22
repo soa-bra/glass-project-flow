@@ -34,6 +34,7 @@ describe('useCanvasSelectionController', () => {
   const updateBoxSelect = vi.fn();
   const resetToIdle = vi.fn();
   const finishSelection = vi.fn();
+  const clearSelection = vi.fn();
   const updatePointerFromClient = vi.fn();
 
   beforeEach(() => {
@@ -56,6 +57,7 @@ describe('useCanvasSelectionController', () => {
         updateBoxSelect,
         resetToIdle,
         finishSelection,
+        clearSelection,
         updatePointerFromClient,
       }),
     );
@@ -80,6 +82,7 @@ describe('useCanvasSelectionController', () => {
         updateBoxSelect,
         resetToIdle,
         finishSelection,
+        clearSelection,
         updatePointerFromClient,
       }),
     );
@@ -105,6 +108,7 @@ describe('useCanvasSelectionController', () => {
         updateBoxSelect,
         resetToIdle,
         finishSelection,
+        clearSelection,
         updatePointerFromClient,
       }),
     );
@@ -130,6 +134,7 @@ describe('useCanvasSelectionController', () => {
         updateBoxSelect,
         resetToIdle,
         finishSelection,
+        clearSelection,
         updatePointerFromClient,
       }),
     );
@@ -158,6 +163,7 @@ describe('useCanvasSelectionController', () => {
         updateBoxSelect,
         resetToIdle,
         finishSelection,
+        clearSelection,
         updatePointerFromClient,
       }),
     );
@@ -167,6 +173,43 @@ describe('useCanvasSelectionController', () => {
     });
 
     expect(finishSelection).toHaveBeenCalledWith(90, 100, 210, 240, true);
+    expect(clearSelection).not.toHaveBeenCalled();
+    expect(resetToIdle).toHaveBeenCalled();
+  });
+
+  it('clears selection only after a non-additive canvas click is confirmed as not a marquee drag', () => {
+    vi.mocked(canvasKernel.worldToScreen).mockReset();
+    vi.mocked(canvasKernel.worldToScreen)
+      .mockReturnValueOnce({ x: 100, y: 120 })
+      .mockReturnValueOnce({ x: 103, y: 123 });
+
+    const boxSelectData = {
+      startWorld: { x: 10, y: 20 },
+      currentWorld: { x: 11, y: 21 },
+      additive: false,
+    };
+
+    const { result } = renderHook(() =>
+      useCanvasSelectionController({
+        containerRef,
+        viewport,
+        boxSelectData,
+        startPanning,
+        startBoxSelect,
+        updateBoxSelect,
+        resetToIdle,
+        finishSelection,
+        clearSelection,
+        updatePointerFromClient,
+      }),
+    );
+
+    act(() => {
+      result.current.completeBoxSelection();
+    });
+
+    expect(finishSelection).not.toHaveBeenCalled();
+    expect(clearSelection).toHaveBeenCalledTimes(1);
     expect(resetToIdle).toHaveBeenCalled();
   });
 
@@ -187,6 +230,7 @@ describe('useCanvasSelectionController', () => {
         updateBoxSelect,
         resetToIdle,
         finishSelection,
+        clearSelection,
         updatePointerFromClient,
       }),
     );
