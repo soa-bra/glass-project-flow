@@ -1,7 +1,38 @@
 import {
   calculateCenterZoom,
   calculateZoomAtPoint,
+  createViewportSlice,
 } from './viewportSlice';
+import { DEFAULT_CANVAS_SETTINGS } from '../types';
+
+type ViewportSliceState = ReturnType<typeof createViewportSlice>;
+
+function createViewportSliceState(): ViewportSliceState {
+  let state: Record<string, unknown> = {};
+  const setState = (updater: Record<string, unknown> | ((current: Record<string, unknown>) => Record<string, unknown>)) => {
+    const patch = typeof updater === 'function' ? updater(state) : updater;
+    state = { ...state, ...patch };
+  };
+  const getState = () => state;
+  const slice = createViewportSlice(setState as never, getState as never, {} as never);
+  state = { ...state, ...slice };
+  return slice;
+}
+
+describe('viewportSlice default settings', () => {
+  it('uses a 32px dot grid by default for new planning canvases', () => {
+    const slice = createViewportSliceState();
+
+    expect(slice.settings.gridEnabled).toBe(true);
+    expect(slice.settings.gridSize).toBe(32);
+    expect(slice.settings.gridType).toBe('dots');
+  });
+
+  it('keeps the exported default canvas settings aligned with the store defaults', () => {
+    expect(DEFAULT_CANVAS_SETTINGS.gridSize).toBe(32);
+    expect(DEFAULT_CANVAS_SETTINGS.gridType).toBe('dots');
+  });
+});
 
 describe('viewportSlice math helpers', () => {
   it('keeps the same world point under the cursor after zooming in', () => {
