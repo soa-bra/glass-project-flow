@@ -28,10 +28,10 @@ export const AIAssistantButton: React.FC = () => {
 
   return (
     <div
-      className="fixed bottom-3 z-50 -translate-x-1/2"
+      className="fixed bottom-3 z-50 flex h-12 items-center justify-center -translate-x-1/2"
       style={{
         ...getBottomToolbarLayoutStyle(FALLBACK_BOTTOM_TOOLBAR_ITEM_COUNT),
-        // محاذاة عمودية مع البار السفلي ووضعه ملاصقًا ليسار الـDock باستخدام نفس قياسات التول بار.
+        // يطابق ارتفاع حاوية الـDock حتى لا يهبط زر AI عن محور شريط الأدوات.
         left: `calc(50% - (var(--planning-bottom-toolbar-width, ${getBottomToolbarWidthPx(FALLBACK_BOTTOM_TOOLBAR_ITEM_COUNT)}px) / 2) - var(--planning-bottom-toolbar-adjacent-gap, ${BOTTOM_TOOLBAR_GAP_PX}px) - (var(--planning-bottom-toolbar-button-size, ${BOTTOM_TOOLBAR_BUTTON_SIZE_PX}px) / 2))`,
       }}
     >
@@ -40,6 +40,7 @@ export const AIAssistantButton: React.FC = () => {
           <AIAssistantPopover isOpen={isOpen} onOpenChange={setIsOpen}>
             <TooltipTrigger asChild>
               <button
+                type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="مساعد الذكاء الصناعي"
                 aria-keyshortcuts="Meta+K Control+K"
