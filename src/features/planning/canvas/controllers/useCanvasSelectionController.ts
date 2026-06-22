@@ -17,6 +17,7 @@ interface UseCanvasSelectionControllerOptions {
   updateBoxSelect: (point: { x: number; y: number }) => void;
   resetToIdle: () => void;
   finishSelection: (startX: number, startY: number, endX: number, endY: number, additive?: boolean) => void;
+  clearSelection: () => void;
   updatePointerFromClient: (clientX: number, clientY: number) => { x: number; y: number } | null;
 }
 
@@ -29,6 +30,7 @@ export function useCanvasSelectionController({
   updateBoxSelect,
   resetToIdle,
   finishSelection,
+  clearSelection,
   updatePointerFromClient,
 }: UseCanvasSelectionControllerOptions) {
   const lastPanPositionRef = useRef({ x: 0, y: 0 });
@@ -85,13 +87,16 @@ export function useCanvasSelectionController({
     const endY = endScreen.y - containerRect.top;
     const boxWidth = Math.abs(endX - startX);
     const boxHeight = Math.abs(endY - startY);
+    const hasMarqueeDrag = boxWidth >= 5 || boxHeight >= 5;
 
-    if (boxWidth >= 5 || boxHeight >= 5) {
+    if (hasMarqueeDrag) {
       finishSelection(startX, startY, endX, endY, boxSelectData.additive);
+    } else if (!boxSelectData.additive) {
+      clearSelection();
     }
 
     resetToIdle();
-  }, [boxSelectData, containerRef, finishSelection, resetToIdle, viewport]);
+  }, [boxSelectData, clearSelection, containerRef, finishSelection, resetToIdle, viewport]);
 
   const selectionBoxData = useMemo(() => {
     if (!boxSelectData) return null;
