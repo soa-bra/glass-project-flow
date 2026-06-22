@@ -313,6 +313,16 @@ describe('InfiniteCanvas', () => {
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(70, 90, true);
   });
 
+  it('preserves the current selection while a non-additive selection marquee is starting', () => {
+    render(<InfiniteCanvas boardId="board-123" />);
+    const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
+
+    fireEvent.mouseDown(container, { button: 0, clientX: 72, clientY: 94, shiftKey: false });
+
+    expect(mockClearSelection).not.toHaveBeenCalled();
+    expect(mockBeginBoxSelection).toHaveBeenCalledWith(72, 94, false);
+  });
+
   it('updates panning on mouse move when interaction mode is panning', () => {
     interactionState.mode = { kind: 'panning' };
     render(<InfiniteCanvas boardId="board-123" />);
