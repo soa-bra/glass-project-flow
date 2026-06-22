@@ -168,7 +168,13 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   const isLockedByOther = hasActiveRemoteLock && activeRemoteLockedBy !== currentUserId;
   const isLockedBySelf = hasActiveRemoteLock && activeRemoteLockedBy === currentUserId;
   const isLayerLocked = !!elementLayer?.locked;
-  const isLocked = isLayerLocked || isLockedByOther;
+  const isElementLocked = Boolean(
+    element.locked ||
+    element.data?.locked ||
+    element.data?.isLocked ||
+    element.metadata?.locked,
+  );
+  const isLocked = isElementLocked || isLayerLocked || isLockedByOther;
   const lockHolder = useMemo(() => {
     if (!activeRemoteLockedBy) return null;
     return participants.find((p) => p.id === activeRemoteLockedBy) ?? null;

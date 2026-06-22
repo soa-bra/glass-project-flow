@@ -223,6 +223,30 @@ describe('ElementsSlice', () => {
       const { elements } = useCanvasStore.getState();
       expect(elements.find(e => e.id === 'el-1')?.position).toEqual({ x: 100, y: 100 });
     });
+
+    it('should respect metadata and data lock markers', () => {
+      const { updateElement, moveElements } = useCanvasStore.getState();
+
+      updateElement('el-1', { metadata: { locked: true } });
+      updateElement('el-2', { data: { isLocked: true } });
+      moveElements(['el-1', 'el-2'], 100, 100);
+
+      const { elements } = useCanvasStore.getState();
+      expect(elements.find(e => e.id === 'el-1')?.position).toEqual({ x: 100, y: 100 });
+      expect(elements.find(e => e.id === 'el-2')?.position).toEqual({ x: 200, y: 200 });
+    });
+
+    it('should not move locked members when moving an expanded group selection', () => {
+      const { updateElement, groupElements, moveElements } = useCanvasStore.getState();
+
+      groupElements(['el-1', 'el-2']);
+      updateElement('el-2', { metadata: { locked: true, groupId: 'mock-id-1' } });
+      moveElements(['el-1'], 25, 25);
+
+      const { elements } = useCanvasStore.getState();
+      expect(elements.find(e => e.id === 'el-1')?.position).toEqual({ x: 125, y: 125 });
+      expect(elements.find(e => e.id === 'el-2')?.position).toEqual({ x: 200, y: 200 });
+    });
   });
 
   describe('alignElements', () => {

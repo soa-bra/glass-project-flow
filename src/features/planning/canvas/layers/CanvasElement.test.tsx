@@ -119,4 +119,28 @@ describe('CanvasElement interactive targets', () => {
     expect(mockMoveElements).not.toHaveBeenCalled();
     expect(mockMoveFrame).not.toHaveBeenCalled();
   });
+
+  it('does not select or drag locally locked elements', () => {
+    const onSelect = vi.fn();
+    const lockedElement = { ...smartTaskElement, id: 'locked-smart-task', locked: true };
+
+    render(
+      <CanvasElement
+        element={lockedElement}
+        isSelected={false}
+        onSelect={onSelect}
+        activeTool="selection_tool"
+        releaseElementLock={mockReleaseElementLock}
+      />,
+    );
+
+    const element = document.querySelector('[data-element-id="locked-smart-task"]') as HTMLElement;
+    fireEvent.mouseDown(element, { button: 0, clientX: 64, clientY: 96 });
+    fireEvent.mouseMove(window, { clientX: 164, clientY: 196 });
+
+    expect(onSelect).not.toHaveBeenCalled();
+    expect(mockUpdateElement).not.toHaveBeenCalled();
+    expect(mockMoveElements).not.toHaveBeenCalled();
+    expect(mockMoveFrame).not.toHaveBeenCalled();
+  });
 });
