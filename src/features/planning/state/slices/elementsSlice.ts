@@ -49,6 +49,15 @@ type CanvasStoreState = ElementsSlice & {
   };
 };
 
+function isCanvasElementLocked(element: CanvasElement): boolean {
+  return Boolean(
+    element.locked ||
+    element.data?.locked ||
+    element.data?.isLocked ||
+    element.metadata?.locked,
+  );
+}
+
 const getGroupElementIds = (elementIds: string[], elements: CanvasElement[]): string[] => {
   const result = new Set<string>(elementIds);
 
@@ -267,9 +276,11 @@ export const createElementsSlice: StateCreator<
 
     uniqueIds.forEach((id) => {
       const element = state.elements.find((entry: CanvasElement) => entry.id === id);
-      if (element?.type === 'frame') {
+      if (!element || isCanvasElementLocked(element)) return;
+
+      if (element.type === 'frame') {
         frameIds.push(id);
-      } else if (element && !element.locked) {
+      } else {
         nonFrameIds.push(id);
       }
     });
@@ -315,7 +326,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (currentState: any) => {
       let updatedElements = currentState.elements.map((el: CanvasElement) => {
-        if (!expandedIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || isCanvasElementLocked(el)) return el;
 
         const relX = el.position.x - origin.x;
         const relY = el.position.y - origin.y;
@@ -343,7 +354,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (currentState: any) => {
       let updatedElements = currentState.elements.map((el: CanvasElement) => {
-        if (!expandedIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || isCanvasElementLocked(el)) return el;
 
         const relX = el.position.x - origin.x;
         const relY = el.position.y - origin.y;
@@ -376,7 +387,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (currentState: any) => {
       let updatedElements = currentState.elements.map((el: CanvasElement) => {
-        if (!expandedIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || isCanvasElementLocked(el)) return el;
         const distFromCenter = el.position.x + el.size.width / 2 - centerX;
         return {
           ...el,
@@ -403,7 +414,7 @@ export const createElementsSlice: StateCreator<
 
     runCanvasTransaction(set, (currentState: any) => {
       let updatedElements = currentState.elements.map((el: CanvasElement) => {
-        if (!expandedIds.includes(el.id) || el.locked) return el;
+        if (!expandedIds.includes(el.id) || isCanvasElementLocked(el)) return el;
         const distFromCenter = el.position.y + el.size.height / 2 - centerY;
         return {
           ...el,
@@ -450,7 +461,7 @@ export const createElementsSlice: StateCreator<
 
       const bounds = calculateElementsBounds(selectedElements);
       let updatedElements = state.elements.map((el: CanvasElement) => {
-        if (!elementIds.includes(el.id) || el.locked) return el;
+        if (!elementIds.includes(el.id) || isCanvasElementLocked(el)) return el;
 
         let newPosition = { ...el.position };
 
