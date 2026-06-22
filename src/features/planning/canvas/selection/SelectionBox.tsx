@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useCallback } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { canvasKernel, type Bounds } from '@/engine/canvas/kernel/canvasKernel';
 import { selectLayerVisibilityMap } from '@/features/planning/state/selectors';
+import type { CanvasElement } from '@/types/canvas';
 
 interface SelectionBoxProps {
   /** إحداثي X لنقطة البداية (Screen Space نسبي للحاوية) */
@@ -19,6 +20,19 @@ interface SelectionBoxProps {
  */
 type SelectionMode = 'containment' | 'intersection';
 
+function isCanvasElementLocked(element: CanvasElement): boolean {
+  return Boolean(
+    element.locked ||
+    element.data?.locked ||
+    element.data?.isLocked ||
+    element.metadata?.locked,
+  );
+}
+
+function isSelectableElement(element: CanvasElement): boolean {
+  return element.visible !== false && !isCanvasElementLocked(element);
+}
+
 /**
  * التحقق مما إذا كان العنصر محتوى بالكامل داخل الصندوق
  */
@@ -29,6 +43,33 @@ function boundsContains(container: Bounds, element: Bounds): boolean {
     element.x + element.width <= container.x + container.width &&
     element.y + element.height <= container.y + container.height
   );
+}
+
+function getMatchingElementIds(
+  elements: CanvasElement[],
+  layerVisibilityMap: Map<string, boolean>,
+  selectionBounds: Bounds,
+  selectionMode: SelectionMode,
+): string[] {
+  return elements
+    .filter((el) => {
+      const layerVisible = layerVisibilityMap.get(el.layerId) ?? true;
+      if (!layerVisible || !isSelectableElement(el)) return false;
+
+      const elementBounds: Bounds = {
+        x: el.position.x,
+        y: el.position.y,
+        width: el.size.width,
+        height: el.size.height,
+      };
+
+      if (selectionMode === 'containment') {
+        return boundsContains(selectionBounds, elementBounds);
+      }
+
+      return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
+    })
+    .map((el) => el.id);
 }
 
 /**
@@ -44,6 +85,7 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
   // ✅ تحديد وضع التحديد بناءً على اتجاه السحب
   const selectionMode: SelectionMode = currentX < startX ? 'intersection' : 'containment';
   const isInverseSelection = selectionMode === 'intersection';
+  const modeLabel = isInverseSelection ? 'تحديد بالتقاطع' : 'تحديد بالاحتواء';
   
   // ✅ استخدام Layer Visibility Map للأداء O(1)
   const layerVisibilityMap = useMemo(() => {
@@ -56,7 +98,7 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
       activeTool: 'select',
       activeLayerId: null
     });
-  }, [layers]);
+  }, [elements, layers, viewport]);
   
   // حساب أبعاد الصندوق في Screen Space (للعرض)
   const screenBounds = useMemo(() => {
@@ -92,67 +134,49 @@ export default function SelectionBox({ startX, startY, currentX, currentY }: Sel
 
   // ✅ حساب العناصر المتقاطعة مع صندوق التحديد (محسّن + دعم التحديد العكسي)
   const intersectingElementIds = useMemo(() => {
-    const selectionBounds = worldBounds;
-    
-    // ✅ تحسين: استخدام Map بدلاً من find (O(1) vs O(n))
-    return elements
-      .filter(el => {
-        // ✅ O(1) lookup بدلاً من O(n) find
-        const layerVisible = layerVisibilityMap.get(el.layerId) ?? true;
-        if (!layerVisible || !el.visible) return false;
-        
-        // حساب حدود العنصر في World Space
-        const elementBounds: Bounds = {
-          x: el.position.x,
-          y: el.position.y,
-          width: el.size.width,
-          height: el.size.height
-        };
-
-        // ✅ اختيار طريقة التحقق بناءً على وضع التحديد
-        if (selectionMode === 'containment') {
-          // السحب من اليسار لليمين: العنصر يجب أن يكون داخل الصندوق بالكامل
-          return boundsContains(selectionBounds, elementBounds);
-        } else {
-          // السحب من اليمين لليسار: العنصر يجب أن يتقاطع مع الصندوق
-          return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
-        }
-      })
-      .map(el => el.id);
+    return getMatchingElementIds(elements, layerVisibilityMap, worldBounds, selectionMode);
   }, [worldBounds, elements, layerVisibilityMap, selectionMode]);
+
+  const selectionTone = isInverseSelection
+    ? {
+        borderColor: 'hsl(var(--accent-green))',
+        backgroundColor: 'hsl(var(--accent-green) / 0.08)',
+        boxShadow: '0 0 0 1px hsl(var(--accent-green) / 0.18), 0 10px 28px hsl(var(--accent-green) / 0.12)',
+      }
+    : {
+        borderColor: 'hsl(var(--accent-blue))',
+        backgroundColor: 'hsl(var(--accent-blue) / 0.08)',
+        boxShadow: '0 0 0 1px hsl(var(--accent-blue) / 0.18), 0 10px 28px hsl(var(--accent-blue) / 0.12)',
+      };
 
   return (
     <>
       {/* صندوق التحديد المرئي (Screen Space) */}
       <div
-        className={`absolute pointer-events-none border-2 rounded transition-colors duration-100 ${
-          isInverseSelection 
-            ? 'border-dashed border-[hsl(var(--accent-green)/0.7)] bg-[hsl(var(--accent-green)/0.06)]' 
-            : 'border-solid border-[hsl(var(--accent-blue)/0.6)] bg-[hsl(var(--accent-blue)/0.08)]'
-        }`}
+        className="absolute pointer-events-none rounded-md border-2 transition-[background-color,border-color,box-shadow] duration-100"
         style={{
           left: `${screenBounds.x}px`,
           top: `${screenBounds.y}px`,
           width: `${screenBounds.width}px`,
           height: `${screenBounds.height}px`,
           zIndex: 9999,
-          backdropFilter: 'blur(1px)'
+          borderStyle: isInverseSelection ? 'dashed' : 'solid',
+          borderColor: selectionTone.borderColor,
+          backgroundColor: selectionTone.backgroundColor,
+          boxShadow: selectionTone.boxShadow,
         }}
       >
-        {/* عداد العناصر المحددة */}
-        {intersectingElementIds.length > 0 && (
-          <div 
-            className={`absolute -top-7 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold rounded-full text-white shadow-md ${
-              isInverseSelection 
-                ? 'bg-[hsl(var(--accent-green))]' 
-                : 'bg-[hsl(var(--accent-blue))]'
-            }`}
-            style={{ direction: 'rtl' }}
-          >
-            {intersectingElementIds.length} عنصر
-            {isInverseSelection && <span className="mr-1 opacity-80">⚡</span>}
-          </div>
-        )}
+        <div
+          className="absolute -top-8 left-1/2 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-md border border-black/10 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow-sm"
+          style={{ direction: 'rtl' }}
+        >
+          <span>{modeLabel}</span>
+          {intersectingElementIds.length > 0 && (
+            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] text-slate-700">
+              {intersectingElementIds.length} عنصر
+            </span>
+          )}
+        </div>
       </div>
     </>
   );
@@ -207,29 +231,7 @@ export function useSelectionBox() {
 
     // ✅ استخدام الـ cached map
     const visibilityMap = layerVisibilityMapRef.current;
-
-    // العثور على العناصر المتقاطعة
-    const intersectingIds = elements
-      .filter(el => {
-        // ✅ O(1) lookup
-        const layerVisible = visibilityMap.get(el.layerId) ?? true;
-        if (!layerVisible || !el.visible) return false;
-
-        const elementBounds: Bounds = {
-          x: el.position.x,
-          y: el.position.y,
-          width: el.size.width,
-          height: el.size.height
-        };
-
-        // ✅ اختيار طريقة التحقق بناءً على وضع التحديد
-        if (selectionMode === 'containment') {
-          return boundsContains(selectionBounds, elementBounds);
-        } else {
-          return canvasKernel.boundsIntersect(selectionBounds, elementBounds);
-        }
-      })
-      .map(el => el.id);
+    const intersectingIds = getMatchingElementIds(elements, visibilityMap, selectionBounds, selectionMode);
 
     // تحديد العناصر
     if (addToSelection) {
