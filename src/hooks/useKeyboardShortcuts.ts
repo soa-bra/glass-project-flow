@@ -86,6 +86,8 @@ export const useKeyboardShortcuts = () => {
       // ✅ من هنا وما بعد: المستخدم ليس في وضع الكتابة - اختصارات الأدوات تعمل
       // ═══════════════════════════════════════════════════════════════
 
+      const key = e.key.toLowerCase();
+
       // ✅ التبديل المؤقت لأداة التحديد عند الضغط على Command/Ctrl
       if ((e.key === 'Meta' || e.key === 'Control') && !isHoldingModifierRef.current) {
         const currentTool = useCanvasStore.getState().activeTool;
@@ -112,31 +114,31 @@ export const useKeyboardShortcuts = () => {
       }
 
       // Undo/Redo
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+      if ((e.ctrlKey || e.metaKey) && key === 'z' && !e.shiftKey) {
         e.preventDefault();
         undo();
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && key === 'z') {
         e.preventDefault();
         redo();
       }
 
       // Copy/Paste/Cut
-      if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && key === 'c' && selectedElementIds.length > 0) {
         e.preventDefault();
         copyElements(selectedElementIds);
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
+      if ((e.ctrlKey || e.metaKey) && key === 'v') {
         e.preventDefault();
         pasteElements();
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === 'x' && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && key === 'x' && selectedElementIds.length > 0) {
         e.preventDefault();
         cutElements(selectedElementIds);
       }
 
       // Duplicate (Ctrl+D)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd' && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && key === 'd' && selectedElementIds.length > 0) {
         e.preventDefault();
         selectedElementIds.forEach(id => duplicateElement(id));
       }
@@ -148,14 +150,14 @@ export const useKeyboardShortcuts = () => {
       }
 
       // Select All (Ctrl+A)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+      if ((e.ctrlKey || e.metaKey) && key === 'a') {
         e.preventDefault();
         const allElementIds = useCanvasStore.getState().elements.map(el => el.id);
         useCanvasStore.getState().selectElements(allElementIds);
       }
 
       // Grid toggle (G without modifiers)
-      if (e.key === 'g' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      if (key === 'g' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
         e.preventDefault();
         toggleGrid();
       }
@@ -164,46 +166,46 @@ export const useKeyboardShortcuts = () => {
       // ✅ Tool shortcuts - تعمل فقط خارج وضع الكتابة
       // ═══════════════════════════════════════════════════════════════
       
-      if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
+      if (key === 'v' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('selection_tool');
       }
-      if (e.key === 't' && !e.ctrlKey && !e.metaKey) {
+      if (key === 't' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('text_tool');
       }
-      if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
+      if (key === 'r' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('shapes_tool');
       }
-      if (e.key === 'p' && !e.ctrlKey && !e.metaKey) {
+      if (key === 'p' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_pen');
       }
-      if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
+      if (key === 'f' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('frame_tool');
       }
-      if (e.key === 'u' && !e.ctrlKey && !e.metaKey) {
+      if (key === 'u' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('file_uploader');
       }
-      if (e.key === 's' && !e.ctrlKey && !e.metaKey) {
+      if (key === 's' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_element_tool');
       }
-      if (e.key === 'd' && !e.ctrlKey && !e.metaKey) {
+      if (key === 'd' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setActiveTool('smart_doc_tool');
       }
 
       // Group/Ungroup (Ctrl+G / Ctrl+Shift+G)
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'g' && !e.shiftKey && selectedElementIds.length > 1) {
+      if ((e.ctrlKey || e.metaKey) && key === 'g' && !e.shiftKey && selectedElementIds.length > 1) {
         e.preventDefault();
         groupElements(selectedElementIds);
         toast.success('تم تجميع العناصر');
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'g' && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && key === 'g' && selectedElementIds.length > 0) {
         e.preventDefault();
         const groupId = useCanvasStore.getState().elements.find(el => 
           selectedElementIds.includes(el.id)
@@ -235,11 +237,11 @@ export const useKeyboardShortcuts = () => {
       }
 
       // Lock/Unlock (Ctrl+L / Ctrl+Shift+L)
-      if ((e.ctrlKey || e.metaKey) && e.key === 'l' && !e.shiftKey && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && key === 'l' && !e.shiftKey && selectedElementIds.length > 0) {
         e.preventDefault();
         lockElements(selectedElementIds);
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'l' && selectedElementIds.length > 0) {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && key === 'l' && selectedElementIds.length > 0) {
         e.preventDefault();
         unlockElements(selectedElementIds);
       }
