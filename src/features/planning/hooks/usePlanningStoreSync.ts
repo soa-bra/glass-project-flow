@@ -126,7 +126,13 @@ export function usePlanningStoreSync(
         if (cancelled) return;
         usePlanningStore.setState((state) => {
           const layers = ensureLayers(state.layers);
-          const mapped = assignLayerIds(sortByZ(rows).map(planningElementToCanvas), layers);
+          const pendingDeletedIds = new Set(state.pendingDeletedElementIds || []);
+          const mapped = assignLayerIds(
+            sortByZ(rows)
+              .filter((row) => !pendingDeletedIds.has(row.id))
+              .map(planningElementToCanvas),
+            layers,
+          );
           const mappedIds = new Set(mapped.map((element) => element.id));
 
           return {
