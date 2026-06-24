@@ -1,10 +1,12 @@
 import {
   Bell,
+  Check,
   LogOut,
   MessageCircle,
   Moon,
   RefreshCcw,
   Search,
+  Send,
   Settings,
   Sun,
   User,
@@ -18,6 +20,7 @@ import { useNavigation } from '@/contexts/NavigationContext';
 
 type HeaderOverlay = 'search' | 'notifications' | 'messages' | 'user' | null;
 type NotificationType = 'app' | 'message' | 'task' | 'alert';
+type ChatSender = 'me' | 'team';
 
 interface SearchItem {
   id: string;
@@ -34,13 +37,22 @@ interface NotificationItem {
   text: string;
   type: NotificationType;
   isNew: boolean;
+  createdAt: string;
+}
+
+interface ChatMessage {
+  id: string;
+  text: string;
+  sender: ChatSender;
+  sentAt: string;
 }
 
 interface ChatItem {
   id: string;
   name: string;
   preview: string;
-  messages: string[];
+  unread: boolean;
+  messages: ChatMessage[];
 }
 
 const iconButtonClass =
@@ -60,7 +72,19 @@ const glassStyle = {
 const notificationMenuWidth = 320;
 const searchMenuWidth = 270;
 const userMenuWidth = 224;
-const notificationViewportGap = 12;
+const viewportGap = 12;
+const notificationsStorageKey = 'soabra:header-notifications';
+const chatsStorageKey = 'soabra:header-chats';
+
+const createId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+const nowIso = () => new Date().toISOString();
+
+const formatTime = (value: string) =>
+  new Intl.DateTimeFormat('ar-SA', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(value));
 
 const getAnchoredMenuPosition = (
   anchor: HTMLElement | null,
@@ -70,9 +94,9 @@ const getAnchoredMenuPosition = (
   if (!anchor || typeof window === 'undefined') return { top: 0, left: 0 };
 
   const rect = anchor.getBoundingClientRect();
-  const maxLeft = Math.max(notificationViewportGap, window.innerWidth - width - notificationViewportGap);
+  const maxLeft = Math.max(viewportGap, window.innerWidth - width - viewportGap);
   const preferredLeft = align === 'start' ? rect.left : rect.right - width;
-  const left = Math.min(Math.max(preferredLeft, notificationViewportGap), maxLeft);
+  const left = Math.min(Math.max(preferredLeft, viewportGap), maxLeft);
 
   return {
     top: rect.bottom + 8,
@@ -146,28 +170,12 @@ const searchItems: SearchItem[] = [
     requiredPermissions: ['projects:view'],
   },
   {
-    id: 'customers-box',
-    label: 'صندوق العملاء',
-    description: 'بطاقات العملاء وبياناتهم المرتبطة بالمشاريع',
-    section: 'home',
-    keywords: ['صندوق العملاء', 'بطاقات العملاء', 'بيانات العميل', 'عميل'],
-    requiredPermissions: ['projects:view'],
-  },
-  {
     id: 'add-project-modal',
     label: 'نافذة إضافة مشروع جديد',
     description: 'نافذة إنشاء مشروع والتبويبات الخاصة بها',
     section: 'home',
     keywords: ['إضافة مشروع', 'اضافة مشروع', 'مشروع جديد', 'نافذة مشروع', 'حفظ المشروع'],
     requiredPermissions: ['projects:view'],
-  },
-  {
-    id: 'add-task-modal',
-    label: 'نافذة إضافة مهمة',
-    description: 'نافذة إنشاء مهمة جديدة داخل المشروع',
-    section: 'planning',
-    keywords: ['إضافة مهمة', 'اضافة مهمة', 'مهمة جديدة', 'نافذة مهمة'],
-    requiredPermissions: ['planning:view'],
   },
   {
     id: 'task-box',
@@ -178,20 +186,20 @@ const searchItems: SearchItem[] = [
     requiredPermissions: ['planning:view'],
   },
   {
-    id: 'departments',
-    label: 'الإدارات',
-    description: 'أقسام وإدارات التطبيق',
-    section: 'departments',
-    keywords: ['الإدارات', 'الأقسام', 'departments'],
-    requiredPermissions: ['departments:view'],
-  },
-  {
     id: 'planning',
     label: 'التخطيط التضامني',
     description: 'لوحات التخطيط والمهام المشتركة',
     section: 'planning',
     keywords: ['تخطيط', 'التخطيط التضامني', 'مهام', 'planning'],
     requiredPermissions: ['planning:view'],
+  },
+  {
+    id: 'departments',
+    label: 'الإدارات',
+    description: 'أقسام وإدارات التطبيق',
+    section: 'departments',
+    keywords: ['الإدارات', 'الأقسام', 'departments'],
+    requiredPermissions: ['departments:view'],
   },
   {
     id: 'archive',
@@ -217,46 +225,6 @@ const searchItems: SearchItem[] = [
     keywords: ['حسابي', 'الحساب الشخصي', 'profile'],
     requiredPermissions: ['settings:profile'],
   },
-  {
-    id: 'project-basic-info',
-    label: 'تبويب المعلومات الأساسية',
-    description: 'تبويب داخل نافذة إضافة أو تعديل مشروع',
-    section: 'home',
-    keywords: ['المعلومات الأساسية', 'اسم المشروع', 'وصف المشروع', 'مدير المشروع'],
-    requiredPermissions: ['projects:view'],
-  },
-  {
-    id: 'project-customer-info',
-    label: 'تبويب بيانات العميل',
-    description: 'بيانات العميل داخل نافذة المشروع',
-    section: 'home',
-    keywords: ['بيانات العميل', 'العميل', 'customer'],
-    requiredPermissions: ['projects:view'],
-  },
-  {
-    id: 'project-tasks-tab',
-    label: 'تبويب المهام',
-    description: 'مهام المشروع داخل نافذة المشروع',
-    section: 'home',
-    keywords: ['المهام', 'مهام المشروع', 'tasks'],
-    requiredPermissions: ['projects:view'],
-  },
-  {
-    id: 'project-partnerships-tab',
-    label: 'تبويب الشراكات',
-    description: 'شراكات المشروع داخل نافذة المشروع',
-    section: 'home',
-    keywords: ['الشراكات', 'شركاء', 'partnerships'],
-    requiredPermissions: ['projects:view'],
-  },
-  {
-    id: 'project-contract-tab',
-    label: 'تبويب العقد',
-    description: 'تفاصيل العقد داخل نافذة المشروع',
-    section: 'home',
-    keywords: ['العقد', 'قيمة العقد', 'contract'],
-    requiredPermissions: ['projects:view'],
-  },
 ];
 
 const notificationColors: Record<NotificationType, string> = {
@@ -267,32 +235,42 @@ const notificationColors: Record<NotificationType, string> = {
 };
 
 const initialNotifications: NotificationItem[] = [
-  { id: 'n1', text: 'تم تحديث حالة مشروع جديد', type: 'app', isNew: true },
-  { id: 'n2', text: 'وصلت رسالة من فريق التنفيذ', type: 'message', isNew: true },
-  { id: 'n3', text: 'مهمة بانتظار المراجعة', type: 'task', isNew: false },
-  { id: 'n4', text: 'تنبيه: موعد تسليم قريب', type: 'alert', isNew: false },
-  { id: 'n5', text: 'تمت أرشفة عنصر من لوحة المشروع', type: 'app', isNew: false },
-  { id: 'n6', text: 'تحديث جديد في صندوق المهام', type: 'task', isNew: false },
+  { id: 'n1', text: 'تم تحديث حالة مشروع جديد', type: 'app', isNew: true, createdAt: nowIso() },
+  { id: 'n2', text: 'وصلت رسالة من فريق التنفيذ', type: 'message', isNew: true, createdAt: nowIso() },
+  { id: 'n3', text: 'مهمة بانتظار المراجعة', type: 'task', isNew: false, createdAt: nowIso() },
+  { id: 'n4', text: 'تنبيه: موعد تسليم قريب', type: 'alert', isNew: false, createdAt: nowIso() },
 ];
 
-const chats: ChatItem[] = [
+const initialChats: ChatItem[] = [
   {
     id: 'c1',
     name: 'فريق إدارة المشروع',
     preview: 'هل تم اعتماد التحديث الأخير؟',
-    messages: ['هل تم اعتماد التحديث الأخير؟', 'نراجع التفاصيل الآن.'],
+    unread: true,
+    messages: [
+      { id: 'c1-m1', text: 'هل تم اعتماد التحديث الأخير؟', sender: 'team', sentAt: nowIso() },
+      { id: 'c1-m2', text: 'نراجع التفاصيل الآن.', sender: 'me', sentAt: nowIso() },
+    ],
   },
   {
     id: 'c2',
     name: 'الدعم الداخلي',
     preview: 'تم فتح طلبك بنجاح.',
-    messages: ['تم فتح طلبك بنجاح.', 'سنشاركك النتيجة فور الانتهاء.'],
+    unread: false,
+    messages: [
+      { id: 'c2-m1', text: 'تم فتح طلبك بنجاح.', sender: 'team', sentAt: nowIso() },
+      { id: 'c2-m2', text: 'سنشاركك النتيجة فور الانتهاء.', sender: 'team', sentAt: nowIso() },
+    ],
   },
   {
     id: 'c3',
     name: 'فريق المهام',
     preview: 'هناك مهمة جديدة في الانتظار.',
-    messages: ['هناك مهمة جديدة في الانتظار.', 'يرجى مراجعتها قبل نهاية اليوم.'],
+    unread: true,
+    messages: [
+      { id: 'c3-m1', text: 'هناك مهمة جديدة في الانتظار.', sender: 'team', sentAt: nowIso() },
+      { id: 'c3-m2', text: 'يرجى مراجعتها قبل نهاية اليوم.', sender: 'team', sentAt: nowIso() },
+    ],
   },
 ];
 
@@ -311,6 +289,22 @@ const readStoredPermissions = () => {
   } catch {
     return [];
   }
+};
+
+const readStoredArray = <T,>(key: string, fallback: T[]): T[] => {
+  if (typeof window === 'undefined') return fallback;
+
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(key) || 'null');
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const persistArray = <T,>(key: string, value: T[]) => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(key, JSON.stringify(value));
 };
 
 const normalizeArabicSearch = (value: string) => {
@@ -371,16 +365,9 @@ const defaultSearchPriority = [
   'hr-board',
   'customers-board',
   'add-project-modal',
-  'project-basic-info',
-  'project-customer-info',
-  'project-tasks-tab',
-  'project-partnerships-tab',
-  'project-contract-tab',
   'task-box',
-  'customers-box',
-  'add-task-modal',
-  'departments',
   'planning',
+  'departments',
   'archive',
   'settings',
   'profile',
@@ -443,11 +430,12 @@ const HeaderBar = () => {
   const [openOverlay, setOpenOverlay] = useState<HeaderOverlay>(null);
   const [searchValue, setSearchValue] = useState('');
   const [notifications, setNotifications] = useState(initialNotifications);
-  const [selectedChatId, setSelectedChatId] = useState(chats[0].id);
+  const [chatThreads, setChatThreads] = useState(initialChats);
+  const [selectedChatId, setSelectedChatId] = useState(initialChats[0].id);
   const [showChatList, setShowChatList] = useState(true);
   const [messageText, setMessageText] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [hasOpenedNotifications, setHasOpenedNotifications] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
   const [visibleSearchItems, setVisibleSearchItems] = useState<SearchItem[]>([]);
   const [pendingSearchItem, setPendingSearchItem] = useState<SearchItem | null>(null);
@@ -464,8 +452,9 @@ const HeaderBar = () => {
   const userPopoverRef = useRef<HTMLDivElement | null>(null);
   const messagesPopoverRef = useRef<HTMLDivElement | null>(null);
 
-  const hasNewNotifications = !hasOpenedNotifications && notifications.some((notification) => notification.isNew);
-  const selectedChat = chats.find((chat) => chat.id === selectedChatId) || chats[0];
+  const hasNewNotifications = notifications.some((notification) => notification.isNew);
+  const hasUnreadMessages = chatThreads.some((chat) => chat.unread);
+  const selectedChat = chatThreads.find((chat) => chat.id === selectedChatId) || chatThreads[0];
   const canUsePortal = typeof document !== 'undefined';
 
   const availableSearchItems = useMemo(
@@ -487,6 +476,22 @@ const HeaderBar = () => {
       .sort((a, b) => getSearchScore(a, query) - getSearchScore(b, query))
       .slice(0, 12);
   }, [availableSearchItems, searchValue]);
+
+  const updateNotifications = (updater: (items: NotificationItem[]) => NotificationItem[]) => {
+    setNotifications((items) => {
+      const nextItems = updater(items);
+      persistArray(notificationsStorageKey, nextItems);
+      return nextItems;
+    });
+  };
+
+  const updateChatThreads = (updater: (items: ChatItem[]) => ChatItem[]) => {
+    setChatThreads((items) => {
+      const nextItems = updater(items);
+      persistArray(chatsStorageKey, nextItems);
+      return nextItems;
+    });
+  };
 
   const findSearchTarget = (item: SearchItem) => {
     if (item.selector) {
@@ -544,6 +549,8 @@ const HeaderBar = () => {
 
   useEffect(() => {
     setUserPermissions(readStoredPermissions());
+    setNotifications(readStoredArray(notificationsStorageKey, initialNotifications));
+    setChatThreads(readStoredArray(chatsStorageKey, initialChats));
     setIsDarkMode(document.documentElement.classList.contains('dark'));
   }, []);
 
@@ -572,10 +579,6 @@ const HeaderBar = () => {
     if (openOverlay === 'search') {
       setVisibleSearchItems(getVisibleSearchItems(userPermissions));
       window.setTimeout(() => searchInputRef.current?.focus(), 120);
-    }
-
-    if (openOverlay === 'notifications') {
-      setHasOpenedNotifications(true);
     }
   }, [openOverlay, userPermissions]);
 
@@ -616,18 +619,9 @@ const HeaderBar = () => {
     };
   }, [openOverlay]);
 
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  const handleImageLoad = () => {
-    setImageLoaded(true);
-  };
-
   const openOnly = (overlay: HeaderOverlay) => {
     if (overlay === 'search') {
       setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
-      // إعادة قياس الموضع بعد انتهاء انيميشن توسيع كبسولة البحث (duration-300)
       window.setTimeout(() => {
         setSearchMenuPosition(getAnchoredMenuPosition(searchButtonRef.current, searchMenuWidth, 'end'));
       }, 320);
@@ -635,6 +629,11 @@ const HeaderBar = () => {
 
     if (overlay === 'notifications') {
       setNotificationMenuPosition(getAnchoredMenuPosition(notificationButtonRef.current, notificationMenuWidth, 'end'));
+      updateNotifications((items) => items.map((item) => ({ ...item, isNew: false })));
+    }
+
+    if (overlay === 'messages') {
+      updateChatThreads((items) => items.map((chat) => (chat.id === selectedChatId ? { ...chat, unread: false } : chat)));
     }
 
     if (overlay === 'user') {
@@ -645,7 +644,10 @@ const HeaderBar = () => {
   };
 
   const handleRefresh = () => {
+    const refreshedAt = nowIso();
     setOpenOverlay(null);
+    setIsRefreshing(true);
+    setVisibleSearchItems(getVisibleSearchItems(userPermissions));
     window.dispatchEvent(
       new CustomEvent('soabra:refresh-current-section', {
         detail: {
@@ -656,6 +658,17 @@ const HeaderBar = () => {
     );
     window.dispatchEvent(new Event('focus'));
     setActiveSection(navigationState.activeSection);
+    updateNotifications((items) => [
+      {
+        id: createId('refresh'),
+        text: `تم تحديث قسم ${navigationState.activeSection}`,
+        type: 'app',
+        isNew: true,
+        createdAt: refreshedAt,
+      },
+      ...items,
+    ].slice(0, 12));
+    window.setTimeout(() => setIsRefreshing(false), 650);
   };
 
   const handleSearchSelect = (item: SearchItem) => {
@@ -666,7 +679,11 @@ const HeaderBar = () => {
   };
 
   const handleDeleteNotification = (id: string) => {
-    setNotifications((items) => items.filter((item) => item.id !== id));
+    updateNotifications((items) => items.filter((item) => item.id !== id));
+  };
+
+  const handleClearNotifications = () => {
+    updateNotifications(() => []);
   };
 
   const handleThemeToggle = () => {
@@ -689,32 +706,64 @@ const HeaderBar = () => {
   const handleChatSelect = (chatId: string) => {
     setSelectedChatId(chatId);
     setShowChatList(false);
+    updateChatThreads((items) => items.map((chat) => (chat.id === chatId ? { ...chat, unread: false } : chat)));
   };
 
   const handleSendMessage = () => {
-    if (!messageText.trim()) return;
+    const trimmedMessage = messageText.trim();
+    if (!trimmedMessage) return;
+
+    const sentAt = nowIso();
+    updateChatThreads((items) =>
+      items.map((chat) => {
+        if (chat.id !== selectedChatId) return chat;
+
+        return {
+          ...chat,
+          preview: trimmedMessage,
+          messages: [
+            ...chat.messages,
+            {
+              id: createId('message'),
+              text: trimmedMessage,
+              sender: 'me',
+              sentAt,
+            },
+          ],
+        };
+      }),
+    );
+    updateNotifications((items) => [
+      {
+        id: createId('message-sent'),
+        text: `تم إرسال رسالة إلى ${selectedChat.name}`,
+        type: 'message',
+        isNew: true,
+        createdAt: sentAt,
+      },
+      ...items,
+    ].slice(0, 12));
     setMessageText('');
   };
 
   return (
     <header data-testid="app-header" className="fixed top-0 right-0 left-0 h-[60px] my-0 py-[65px] px-[5px] bg-slate-100" style={{ zIndex: 'var(--z-header)' }}>
       <div className="flex items-center justify-between h-full px-0">
-        {/* Logo/Brand - Left Side aligned with sidebar menu */}
         <div className="text-right ml-4 mx-[5px] flex items-center">
           {!imageError ? (
             <img
               src="/lovable-uploads/9a8b8ed4-b3d6-4ecf-b62c-e6c1eba8c3d4.png"
               alt="SoaBra Logo"
               className="h-12 w-auto object-contain transition-opacity duration-300"
-              onError={handleImageError}
-              onLoad={handleImageLoad}
+              onError={() => setImageError(true)}
+              onLoad={() => setImageLoaded(true)}
               style={{
                 opacity: imageLoaded ? 1 : 0.7,
                 border: '1px solid rgba(255,255,255,0.2)',
               }}
             />
           ) : (
-            <div className="">
+            <div>
               <span className="text-soabra-text-primary font-bold text-lg font-arabic">
                 SoaBra
               </span>
@@ -722,10 +771,8 @@ const HeaderBar = () => {
           )}
         </div>
 
-        {/* Center - Empty for balance */}
         <div className="flex-1" />
 
-        {/* Action Icons - Right Side: بحث ← تحديث ← تنبيهات ← رسائل ← مستخدم */}
         <div ref={headerActionsRef} className="relative flex items-center gap-0 px-0 mx-0">
           <div ref={searchButtonRef} className="relative p-2">
             <motion.div
@@ -781,6 +828,7 @@ const HeaderBar = () => {
                         {filteredSearchItems.map((item) => (
                           <button
                             key={item.id}
+                            type="button"
                             onMouseDown={(event) => event.preventDefault()}
                             onClick={() => handleSearchSelect(item)}
                             className="rounded-3xl px-3 py-2 text-right transition hover:bg-white/70 active:scale-[0.98]"
@@ -799,7 +847,7 @@ const HeaderBar = () => {
 
           <button type="button" className={iconButtonClass} onClick={handleRefresh} aria-label="تحديث">
             <div className={iconCircleClass}>
-              <RefreshCcw className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+              <RefreshCcw className={`w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300 ${isRefreshing ? 'animate-spin' : ''}`} />
             </div>
           </button>
 
@@ -839,6 +887,18 @@ const HeaderBar = () => {
                         zIndex: 'var(--z-popover)',
                       }}
                     >
+                      <div className="mb-2 flex items-center justify-between px-2">
+                        <span className="text-sm font-medium text-black">الإشعارات</span>
+                        {notifications.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearNotifications}
+                            className="rounded-full px-2 py-1 text-xs text-[#3e494c] transition hover:bg-white/70"
+                          >
+                            مسح الكل
+                          </button>
+                        )}
+                      </div>
                       <div className="max-h-[300px] overflow-y-auto pl-1">
                         {notifications.length === 0 ? (
                           <div className="px-3 py-4 text-center text-sm text-black">لا توجد إشعارات</div>
@@ -848,7 +908,7 @@ const HeaderBar = () => {
                               <div
                                 key={notification.id}
                                 dir="rtl"
-                                className="flex min-h-[52px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
+                                className="flex min-h-[58px] items-center gap-2 rounded-3xl bg-white/55 px-3 py-2 transition hover:bg-white/75"
                               >
                                 <button
                                   type="button"
@@ -858,15 +918,15 @@ const HeaderBar = () => {
                                 >
                                   <X className="h-3 w-3" />
                                 </button>
-                                <span dir="rtl" className="flex-1 text-right text-sm text-black">
-                                  {notification.text}
-                                </span>
+                                <div className="min-w-0 flex-1 text-right">
+                                  <span dir="rtl" className="block text-sm text-black">
+                                    {notification.text}
+                                  </span>
+                                  <span className="block text-xs text-[#3e494c]/60">{formatTime(notification.createdAt)}</span>
+                                </div>
                                 <span
                                   className={`h-2 w-2 flex-shrink-0 rounded-full ${notificationColors[notification.type]}`}
                                 />
-                                {notification.isNew && (
-                                  <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500" />
-                                )}
                               </div>
                             ))}
                           </div>
@@ -881,8 +941,11 @@ const HeaderBar = () => {
 
           <div className="relative">
             <button type="button" className={iconButtonClass} onClick={() => openOnly('messages')} aria-label="الرسائل">
-              <div className={iconCircleClass}>
+              <div className={`${iconCircleClass} relative`}>
                 <MessageCircle className="w-[20px] h-[20px] text-[#3e494c] group-hover:scale-110 transition-transform duration-300" />
+                {hasUnreadMessages && (
+                  <span className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-red-500" />
+                )}
               </div>
             </button>
           </div>
@@ -971,6 +1034,7 @@ const HeaderBar = () => {
           </div>
         </div>
       </div>
+
       {canUsePortal &&
         createPortal(
           <AnimatePresence>
@@ -1010,7 +1074,7 @@ const HeaderBar = () => {
                   <div className="grid h-[min(520px,70vh)] grid-cols-1 overflow-hidden rounded-[24px] bg-white/25 md:grid-cols-[260px_1fr]">
                     <div className={`${showChatList ? 'block' : 'hidden'} border-black/10 md:block md:border-l`}>
                       <div className="flex h-full flex-col gap-2 overflow-y-auto p-3">
-                        {chats.map((chat) => (
+                        {chatThreads.map((chat) => (
                           <button
                             key={chat.id}
                             type="button"
@@ -1019,7 +1083,10 @@ const HeaderBar = () => {
                               selectedChatId === chat.id ? 'bg-white/80' : 'bg-white/40'
                             }`}
                           >
-                            <span className="block text-sm font-medium text-black">{chat.name}</span>
+                            <span className="flex items-center justify-between gap-2 text-sm font-medium text-black">
+                              {chat.unread ? <span className="h-1.5 w-1.5 rounded-full bg-red-500" /> : <span />}
+                              <span className="truncate">{chat.name}</span>
+                            </span>
                             <span className="block truncate text-xs text-[#3e494c]/70">{chat.preview}</span>
                           </button>
                         ))}
@@ -1038,14 +1105,15 @@ const HeaderBar = () => {
                         <span className="font-medium text-black">{selectedChat.name}</span>
                       </div>
                       <div className="flex-1 space-y-2 overflow-y-auto p-4">
-                        {selectedChat.messages.map((message, index) => (
+                        {selectedChat.messages.map((message) => (
                           <div
-                            key={`${selectedChat.id}-${index}`}
+                            key={message.id}
                             className={`w-fit max-w-[82%] rounded-3xl px-4 py-2 text-sm text-black ${
-                              index % 2 === 0 ? 'mr-auto bg-white/80' : 'bg-[#dfeaf0]'
+                              message.sender === 'me' ? 'mr-auto bg-white/80' : 'bg-[#dfeaf0]'
                             }`}
                           >
-                            {message}
+                            <span className="block">{message.text}</span>
+                            <span className="mt-1 block text-[10px] text-[#3e494c]/60">{formatTime(message.sentAt)}</span>
                           </div>
                         ))}
                       </div>
@@ -1053,14 +1121,19 @@ const HeaderBar = () => {
                         <input
                           value={messageText}
                           onChange={(event) => setMessageText(event.target.value)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter') handleSendMessage();
+                          }}
                           placeholder="اكتب رسالة"
                           className="min-w-0 flex-1 rounded-full border border-black/10 bg-white/70 px-4 py-2 text-right text-sm text-black outline-none"
                         />
                         <button
                           type="button"
                           onClick={handleSendMessage}
-                          className="rounded-full bg-black px-4 py-2 text-sm text-white transition hover:bg-black/80 active:scale-95"
+                          disabled={!messageText.trim()}
+                          className="flex items-center gap-2 rounded-full bg-black px-4 py-2 text-sm text-white transition hover:bg-black/80 active:scale-95 disabled:cursor-not-allowed disabled:bg-black/40"
                         >
+                          <Send className="h-4 w-4" />
                           إرسال
                         </button>
                       </div>
