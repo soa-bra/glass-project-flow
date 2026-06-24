@@ -44,6 +44,26 @@ function mapBoardType(value: unknown): CanvasBoard['type'] {
   return 'blank';
 }
 
+function buildBoardMetadata(type: CanvasBoard['type'], data?: any): Record<string, unknown> {
+  const metadata: Record<string, unknown> = { source_type: type };
+
+  if (type === 'template' && data?.templateId) {
+    metadata.template_id = data.templateId;
+    metadata.template_name = data.name;
+  }
+
+  if (type === 'from_file' && data?.sourceFile) {
+    metadata.source_file = {
+      name: data.sourceFile.name,
+      type: data.sourceFile.type,
+      size: data.sourceFile.size,
+      lastModified: data.sourceFile.lastModified ?? null,
+    };
+  }
+
+  return metadata;
+}
+
 function mapBoardRowToCanvasBoard(
   row: CentralPlanningBoard,
   existing?: CanvasBoard,
@@ -109,7 +129,7 @@ export const usePlanningStore = create<PlanningState>()((set, get) => ({
       name: data?.name || `لوحة جديدة ${get().boards.length + 1}`,
       description: data?.description,
       state: 'draft',
-      metadata: { source_type: type },
+      metadata: buildBoardMetadata(type, data),
     });
 
     const newBoard: CanvasBoard = {
