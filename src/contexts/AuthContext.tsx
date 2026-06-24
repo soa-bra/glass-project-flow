@@ -18,6 +18,13 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+const clearSessionScopedUiState = () => {
+  if (typeof window === "undefined") return;
+
+  window.localStorage.removeItem("soabra:header-notifications");
+  window.localStorage.removeItem("soabra:header-chats");
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -58,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut: AuthContextValue["signOut"] = async () => {
+    clearSessionScopedUiState();
     await supabase.auth.signOut();
   };
 
