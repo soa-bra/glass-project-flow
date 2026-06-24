@@ -7,8 +7,7 @@ import { PLANNING_FILE_UPLOAD_POLICY, validateUploadFiles } from '@/shared/fileU
 
 const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
   const [dragActive, setDragActive] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<{ name: string; type: string; size: number } | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<{ name: string; type: string; size: number; lastModified: number } | null>(null);
   const { createBoard } = usePlanningStore();
   const { toast } = useToast();
 
@@ -38,7 +37,7 @@ const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
-  const handleFile = async (file: File) => {
+  const handleFile = (file: File) => {
     const validationError = validateUploadFiles([file], PLANNING_FILE_UPLOAD_POLICY);
 
     if (validationError) {
@@ -52,22 +51,17 @@ const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
       return;
     }
 
-    setUploading(true);
-
-    // محاكاة رفع الملف وتحليله
-    setTimeout(() => {
-      setUploadedFile({
-        name: file.name,
-        type: file.type,
-        size: file.size,
-      });
-      setUploading(false);
-      
-      toast({
-        title: 'تم رفع الملف بنجاح',
-        description: 'جاري تحليل محتوى الملف...',
-      });
-    }, 2000);
+    setUploadedFile({
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      lastModified: file.lastModified,
+    });
+    
+    toast({
+      title: 'تم تجهيز الملف',
+      description: 'يمكنك الآن إنشاء لوحة مرتبطة بهذا الملف.',
+    });
   };
 
   const handleCreateFromFile = () => {
@@ -108,6 +102,7 @@ const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
               رفع ملف
             </h2>
             <button
+              type="button"
               onClick={onClose}
               className="p-2 hover:bg-[hsl(var(--panel))] rounded-full transition-colors"
             >
@@ -154,15 +149,6 @@ const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
                     </p>
                   </div>
                 </label>
-
-                {uploading && (
-                  <div className="absolute inset-0 bg-white/90 rounded-[18px] flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-12 h-12 border-4 border-[hsl(var(--accent-green))] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                      <p className="text-[14px] text-[hsl(var(--ink))]">جاري الرفع...</p>
-                    </div>
-                  </div>
-                )}
               </div>
             ) : (
               <div className="space-y-4">
@@ -181,17 +167,19 @@ const FileUploadModal = ({ onClose }: { onClose: () => void }) => {
                 </div>
 
                 <p className="text-[13px] text-[hsl(var(--ink-60))] text-center">
-                  سيقوم النظام بتحليل محتوى الملف وإنشاء لوحة تحتوي على المكونات الأنسب
+                  سيقوم النظام بإنشاء لوحة مرتبطة ببيانات هذا الملف كمصدر للوحة.
                 </p>
 
                 <div className="flex gap-3">
                   <button
+                    type="button"
                     onClick={() => setUploadedFile(null)}
                     className="flex-1 px-4 py-3 rounded-[18px] bg-[hsl(var(--panel))] text-[hsl(var(--ink))] font-medium hover:bg-[hsl(var(--ink-30))] transition-colors"
                   >
                     رفع ملف آخر
                   </button>
                   <button
+                    type="button"
                     onClick={handleCreateFromFile}
                     className="flex-1 px-4 py-3 rounded-[18px] bg-[hsl(var(--accent-green))] text-white font-medium hover:opacity-90 transition-opacity"
                   >
