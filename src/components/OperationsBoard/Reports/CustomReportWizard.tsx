@@ -27,13 +27,13 @@ export const CustomReportWizard: React.FC = () => {
   const [description, setDescription] = useState('');
 
   return (
-    <AppCardSurface density="standard">
-      <div className="flex items-center gap-2 mb-4">
+    <AppCardSurface density="standard" className="flex h-full min-h-0 flex-col">
+      <div className="flex items-center gap-2 mb-4 flex-shrink-0">
         <FileSpreadsheet className="w-5 h-5" />
         <h3 className="text-lg font-semibold text-right font-arabic">إنشاء تقرير مخصص</h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1 text-right">اسم التقرير</label>
           <Input value={reportName} onChange={e => setReportName(e.target.value)} placeholder="أدخل اسم التقرير" className="text-right" />
