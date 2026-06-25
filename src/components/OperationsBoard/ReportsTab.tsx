@@ -77,19 +77,24 @@ export const ReportsTab: React.FC<ReportsTabProps> = ({ data, loading }) => {
       error={!data && !loading ? "لا توجد بيانات تقارير متاحة" : undefined}
     >
       {data && (
-        <div className="space-y-6">
-          <AppDashboardGrid columns={12} density="spacious">
-            <AppGridItem colSpan={6} tabletSpan={6}>
-              <ReportLibrary templates={data.templates} />
-            </AppGridItem>
-            <AppGridItem colSpan={6} tabletSpan={6}>
-              <CustomReportWizard />
-            </AppGridItem>
-          </AppDashboardGrid>
+        <AppDashboardGrid
+          columns={12}
+          density="default"
+          minRowHeight="160px"
+          className="items-stretch"
+        >
+          <AppGridItem colSpan={7} tabletSpan={6} rowSpan={3} minHeight="420px">
+            <ReportLibrary templates={data.templates} />
+          </AppGridItem>
 
-          {/* مولد التقارير الذكي */}
-          <AIReportGenerator suggestions={data.aiSuggestions} />
-        </div>
+          <AppGridItem colSpan={5} tabletSpan={6} rowSpan={3} minHeight="420px">
+            <CustomReportWizard />
+          </AppGridItem>
+
+          <AppGridItem colSpan={12} tabletSpan={6} minHeight="280px">
+            <AIReportGenerator suggestions={data.aiSuggestions} />
+          </AppGridItem>
+        </AppDashboardGrid>
       )}
     </BaseOperationsTabLayout>
   );
