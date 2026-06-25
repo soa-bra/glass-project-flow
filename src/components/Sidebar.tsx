@@ -1,5 +1,4 @@
 import { Home, Building, Users, Archive, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState, useEffect } from 'react';
 
 interface SidebarProps {
   onToggle?: (collapsed: boolean) => void;
@@ -16,8 +15,7 @@ const Sidebar = ({
   forceCollapsed = false,
   collapsed = false,
 }: SidebarProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(collapsed);
-  const effectiveCollapsed = forceCollapsed || isCollapsed;
+  const effectiveCollapsed = forceCollapsed || collapsed;
   const menuItems = [
     { icon: Home, label: 'الرئيسية', key: 'home' },
     { icon: Building, label: 'الإدارات', key: 'departments' },
@@ -28,22 +26,12 @@ const Sidebar = ({
 
   const toggleSidebar = () => {
     if (forceCollapsed) return;
-    setIsCollapsed((current) => !current);
+    onToggle?.(!collapsed);
   };
 
   const handleSectionClick = (sectionKey: string) => {
     onSectionChange?.(sectionKey);
   };
-
-  useEffect(() => {
-    if (!forceCollapsed && isCollapsed !== collapsed) {
-      setIsCollapsed(collapsed);
-    }
-  }, [collapsed, forceCollapsed, isCollapsed]);
-
-  useEffect(() => {
-    onToggle?.(effectiveCollapsed);
-  }, [effectiveCollapsed, onToggle]);
 
   return (
     <aside
