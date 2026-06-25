@@ -25,7 +25,6 @@ export const OverviewGrid: React.FC = () => {
       <AppDashboardGrid
         columns={12}
         density="default"
-        autoFlow="dense"
         minRowHeight="120px"
         className="items-stretch"
       >
