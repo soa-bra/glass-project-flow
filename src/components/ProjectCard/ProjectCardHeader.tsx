@@ -7,6 +7,7 @@ interface ProjectCardHeaderProps {
   title: string;
   description: string;
   projectId: string;
+  tasksCount?: number;
   status: 'success' | 'warning' | 'error' | 'info';
 }
 
@@ -15,6 +16,7 @@ const ProjectCardHeader = ({
   title,
   description,
   projectId,
+  tasksCount = 0,
   status
 }: ProjectCardHeaderProps) => {
   return (
@@ -27,7 +29,7 @@ const ProjectCardHeader = ({
       </div>
       <ProjectCardTitle title={title} description={description} />
       <div className="shrink-0 self-start">
-        <ProjectCardTasksCircle projectId={projectId} />
+        <ProjectCardTasksCircle projectId={projectId} fallbackTasksCount={tasksCount} />
       </div>
     </div>
   );
