@@ -1,15 +1,17 @@
-
-import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
+import { useProjectMetrics } from '@/hooks/useProjectMetrics';
 
 interface ProjectCardTasksCircleProps {
   projectId: string;
+  fallbackTasksCount?: number;
 }
 
 const ProjectCardTasksCircle = ({
-  projectId
+  projectId,
+  fallbackTasksCount = 0,
 }: ProjectCardTasksCircleProps) => {
-  const unifiedTasks = useUnifiedTasks(projectId);
-  const tasksCount = unifiedTasks.tasks.length;
+  const { taskStats, loading } = useProjectMetrics(projectId);
+  const tasksCount = !loading && taskStats.total > 0 ? taskStats.total : fallbackTasksCount;
+
   return (
     <div 
       className="w-[64px] h-[64px] sm:w-[75px] sm:h-[75px] rounded-full flex flex-col items-center justify-center px-0 py-0 my-0"
