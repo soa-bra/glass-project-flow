@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UnifiedTask, TaskFilters } from '@/types/task';
+import { UnifiedTask, TaskFilters, isTaskOverdue } from '@/types/task';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { COLORS } from '@/components/shared/design-system/constants';
@@ -27,6 +27,7 @@ export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
     if (filters.assignee && !task.assignee.toLowerCase().includes(filters.assignee.toLowerCase())) return false;
     if (filters.priority && task.priority !== filters.priority) return false;
     if (filters.status && task.status !== filters.status) return false;
+    if (filters.isOverdue && !isTaskOverdue(task)) return false;
     if (filters.search && !task.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
     return true;
   });
