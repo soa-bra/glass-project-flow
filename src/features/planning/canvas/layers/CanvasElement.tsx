@@ -15,10 +15,13 @@ import { ArrowLabels } from '@/features/planning/elements/diagram/ArrowLabels';
 import { FrameDropZone } from '@/features/planning/canvas/gestures/FrameDropZone';
 import MindMapNode from '@/features/planning/elements/mindmap/MindMapNode';
 import MindMapConnector from '@/features/planning/elements/mindmap/MindMapConnector';
+import VisualNode from '@/features/planning/elements/diagram/VisualNode';
+import VisualConnector from '@/features/planning/elements/diagram/VisualConnector';
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
+import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
 
 export const isInteractiveCanvasTarget = (target: HTMLElement): boolean => {
   return Boolean(
@@ -51,24 +54,31 @@ interface CanvasElementProps {
   nearestAnchor?: { nodeId: string; anchor: string; position: { x: number; y: number } } | null;
 }
 
-const CanvasElementInner: React.FC<CanvasElementProps> = ({
-  element,
-  isSelected,
-  onSelect,
-  snapToGrid,
-  activeTool,
-  requestElementLock,
-  releaseElementLock,
-  onStartConnection,
-  onEndConnection,
-  isConnecting = false,
-  nearestAnchor = null,
-}) => {
+interface StandardCanvasElementProps extends CanvasElementProps {
+  elements: CanvasElementType[];
+}
+
+const CanvasElementInner: React.FC<CanvasElementProps> = (props) => {
+  const {
+    element,
+    isSelected,
+    onSelect,
+    activeTool,
+    onStartConnection,
+    onEndConnection,
+    isConnecting = false,
+    nearestAnchor = null,
+  } = props;
   const elements = useCanvasStore((state) => state.elements);
 
   const isHiddenByCollapse = useMemo(() => {
     if (element.type !== 'mindmap_node') return false;
     return isAncestorCollapsed(element.id, elements);
+  }, [element.type, element.id, elements]);
+
+  const isHiddenVisualNode = useMemo(() => {
+    if (element.type !== 'visual_node') return false;
+    return isVisualAncestorCollapsed(element.id, elements);
   }, [element.type, element.id, elements]);
 
   if (element.type === 'mindmap_node') {
@@ -91,9 +101,7 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   }
 
   if (element.type === 'visual_node') {
-    const { isVisualAncestorCollapsed } = require('@/utils/visual-diagram-layout');
-    if (isVisualAncestorCollapsed(element.id, elements)) return null;
-    const VisualNode = require('@/features/planning/elements/diagram/VisualNode').default;
+    if (isHiddenVisualNode) return null;
     return (
       <VisualNode
         element={element}
@@ -109,10 +117,22 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   }
 
   if (element.type === 'visual_connector') {
-    const VisualConnector = require('@/features/planning/elements/diagram/VisualConnector').default;
     return <VisualConnector element={element} isSelected={isSelected} onSelect={onSelect} />;
   }
 
+  return <StandardCanvasElement {...props} elements={elements} />;
+};
+
+const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
+  element,
+  isSelected,
+  onSelect,
+  snapToGrid,
+  activeTool,
+  requestElementLock,
+  releaseElementLock,
+  elements,
+}) => {
   const {
     updateElement,
     viewport,
@@ -195,8 +215,6 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
     if (!groupId) return [element.id];
     return elements.filter((entry) => entry.metadata?.groupId === groupId).map((entry) => entry.id);
   }, [element.id, element.metadata?.groupId, elements]);
-
-  if (!isVisible) return null;
 
   const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
   const handleMouseUpRef = useRef<() => void>();
@@ -400,6 +418,8 @@ const CanvasElementInner: React.FC<CanvasElementProps> = ({
   }, [stableMouseMove, stableMouseUp]);
 
   const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
+
+  if (!isVisible) return null;
 
   return (
     <div
