@@ -1,101 +1,160 @@
 import React from 'react';
-import { Building2, DollarSign, Scale, TrendingUp, Users, Heart, GraduationCap, BookOpen, Award, ChevronLeft, ChevronRight, UserCheck, Handshake, Globe, Lightbulb } from 'lucide-react';
+import {
+  Award,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  DollarSign,
+  Globe,
+  GraduationCap,
+  Handshake,
+  Heart,
+  Lightbulb,
+  Scale,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from 'lucide-react';
+
 interface DepartmentsSidebarProps {
   selectedDepartment: string | null;
   onDepartmentSelect: (department: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: (collapsed: boolean) => void;
 }
+
+const departments = [
+  { key: 'financial', label: 'إدارة العمليات المالية', icon: DollarSign },
+  { key: 'legal', label: 'إدارة الأحوال القانونية', icon: Scale },
+  { key: 'marketing', label: 'إدارة الأنشطة التسويقية', icon: TrendingUp },
+  { key: 'hr', label: 'إدارة الطاقات البشرية', icon: Users },
+  { key: 'crm', label: 'إدارة علاقات العملاء', icon: UserCheck },
+  { key: 'csr', label: 'إدارة المسؤولية الاجتماعية', icon: Heart },
+  { key: 'bcm', label: 'إدارة مجتمع العلامة', icon: Globe },
+  { key: 'training', label: 'إدارة التدريب والتطوير', icon: GraduationCap },
+  { key: 'partnerships', label: 'إدارة الشراكات', icon: Handshake },
+  { key: 'kmpa', label: 'إدارة المعرفة والنشر والبحث العلمي', icon: BookOpen },
+  { key: 'knowledge', label: 'إدارة المعرفة المؤسسية', icon: Lightbulb },
+  { key: 'brand', label: 'إدارة العلامة التجارية', icon: Award },
+];
+
 const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
   selectedDepartment,
   onDepartmentSelect,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
 }) => {
-  const departments = [
-    { key: 'financial',    label: 'إدارة العمليات المالية',           icon: DollarSign },
-    { key: 'legal',        label: 'إدارة الأحوال القانونية',           icon: Scale },
-    { key: 'marketing',    label: 'إدارة الأنشطة التسويقية',           icon: TrendingUp },
-    { key: 'hr',           label: 'إدارة الطاقات البشرية',             icon: Users },
-    { key: 'crm',          label: 'إدارة علاقات العملاء',              icon: UserCheck },
-    { key: 'csr',          label: 'إدارة المسؤولية الاجتماعية',         icon: Heart },
-    { key: 'bcm',          label: 'إدارة مجتمع العلامة',                icon: Globe },
-    { key: 'training',     label: 'إدارة التدريب والتطوير',             icon: GraduationCap },
-    { key: 'partnerships', label: 'إدارة الشراكات',                     icon: Handshake },
-    { key: 'kmpa',         label: 'إدارة المعرفة والنشر والبحث العلمي', icon: BookOpen },
-    { key: 'knowledge',    label: 'إدارة المعرفة المؤسسية',             icon: Lightbulb },
-    { key: 'brand',        label: 'إدارة العلامة التجارية',             icon: Award },
-  ];
   const toggleSidebar = () => {
     onToggleCollapse(!isCollapsed);
   };
-  return <aside style={{
-    width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
-    transition: 'all var(--animation-duration-main) var(--animation-easing)',
-    background: 'var(--backgrounds-project-column-bg)'
-  }} className="h-full backdrop-blur-xl rounded-3xl overflow-hidden">
-      <nav className="flex flex-col gap-2 h-full py-0 mx-0 px-0" style={{ backgroundColor: 'var(--sb-column-2-bg)' }}>
-        {/* Header with Toggle */}
-        <div className={`text-center mb-2 rounded-full mx-0 px-0 py-[24px] my-[24px] sync-transition ${isCollapsed ? 'flex justify-center' : ''}`}>
-          <div className={`flex items-center rounded-lg sync-transition ${isCollapsed ? 'justify-center px-0 mx-0' : 'justify-between px-[3px] mx-[20px]'}`}>
-            <div className="flex-1 overflow-hidden" style={{
-            transition: 'all var(--animation-duration-main) var(--animation-easing)',
-            opacity: isCollapsed ? 0 : 1,
-            transform: isCollapsed ? 'translateX(24px) scale(0.9)' : 'translateX(0) scale(1)',
-            width: isCollapsed ? '0' : 'auto',
-            transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.4)'
-          }}>
-              <h2 className="text-soabra-text-primary text-right font-medium text-3xl px-0 mx-[18px] whitespace-nowrap">
-                الإدارات
-              </h2>
-            </div>
-            
-            <button onClick={toggleSidebar} className="group w-[60px] h-[60px] rounded-full flex items-center justify-center border-2 border-[#3e494c]/30 hover:border-[#3e494c]/60 hover:bg-white/20 hover:shadow-lg flex-shrink-0 sync-transition-fast">
-              <div className="sync-transition-fast">
-                {isCollapsed ? <ChevronRight className="w-5 h-5 text-[#3e494c] sync-transition-fast group-hover:scale-110" /> : <ChevronLeft className="w-5 h-5 text-[#3e494c] sync-transition-fast group-hover:scale-110" />}
-              </div>
-            </button>
+
+  return (
+    <aside
+      className="h-full overflow-hidden rounded-3xl border border-white/25 bg-[var(--backgrounds-project-column-bg)] shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-xl"
+      style={{
+        width: isCollapsed ? 'var(--departments-sidebar-width-collapsed)' : 'var(--departments-sidebar-width-expanded)',
+        transition: 'all var(--animation-duration-main) var(--animation-easing)',
+      }}
+    >
+      <nav
+        aria-label="قائمة الإدارات"
+        className="flex h-full flex-col bg-[var(--sb-column-2-bg)] px-3 py-5"
+        dir="rtl"
+      >
+        <div className="mb-4 flex items-center justify-between gap-3 px-1">
+          <div
+            className="min-w-0 flex-1 overflow-hidden sync-transition"
+            style={{
+              opacity: isCollapsed ? 0 : 1,
+              transform: isCollapsed ? 'translateX(18px) scale(0.96)' : 'translateX(0) scale(1)',
+              width: isCollapsed ? '0' : 'auto',
+              transitionDelay: isCollapsed ? '0ms' : 'calc(var(--animation-duration-main) * 0.25)',
+            }}
+          >
+            <p className="text-right text-xs font-medium tracking-[0.24em] text-soabra-text-secondary/70">
+              SOABRA
+            </p>
+            <h2 className="mt-1 whitespace-nowrap text-right text-3xl font-medium text-soabra-text-primary">
+              الإدارات
+            </h2>
           </div>
+
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            aria-label={isCollapsed ? 'توسيع قائمة الإدارات' : 'طي قائمة الإدارات'}
+            aria-expanded={!isCollapsed}
+            className="group flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-[#3e494c]/25 bg-white/20 text-[#3e494c] shadow-sm sync-transition-fast hover:border-[#3e494c]/45 hover:bg-white/35 hover:shadow-md active:scale-95"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-5 w-5 sync-transition-fast group-hover:scale-110" />
+            ) : (
+              <ChevronLeft className="h-5 w-5 sync-transition-fast group-hover:scale-110" />
+            )}
+          </button>
         </div>
 
-        {/* Departments List */}
-        <div className="flex flex-col gap-2 flex-1 overflow-y-auto my-[96px] px-[10px]">
-          {departments.map((department, index) => {
-          const IconComponent = department.icon;
-          const isActive = selectedDepartment === department.key;
-          return <button key={department.key} onClick={() => onDepartmentSelect(department.key)} className={`
-                  flex items-center gap-3 text-right group relative overflow-hidden sync-transition
-                  ${isActive ? 'bg-white/25 text-[#3e494c] font-medium rounded-full shadow-lg border border-white/50 scale-[1.02]' : 'text-soabra-text-secondary hover:bg-white/15 hover:text-[#3e494c] font-light rounded-full hover:shadow-md border border-transparent hover:border-white/30 hover:scale-[1.02] active:scale-95'}
-                  ${isCollapsed ? 'justify-center px-[12px] py-3' : 'px-2 py-3'}
-                `} style={{
-            transition: `all var(--animation-duration-main) var(--animation-easing)`,
-            transitionDelay: isCollapsed ? '0ms' : `calc(var(--stagger-delay) * ${index})`
-          }}>
-                <div className={`
-                    w-[50px] h-[50px] flex items-center justify-center flex-shrink-0 border-2 rounded-full sync-transition-fast
-                    ${isActive ? 'bg-white/30 border-[#3e494c]/60 shadow-lg scale-105' : 'border-[#3e494c]/30 group-hover:border-[#3e494c]/60 group-hover:bg-white/20 group-hover:shadow-md group-hover:scale-110 group-active:scale-95'}
-                  `}>
-                   <IconComponent className={`
-                      w-[20px] h-[20px] sync-transition-fast
-                      ${isActive ? 'text-[#3e494c] scale-110' : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'}
-                    `} />
-                </div>
-                
-                <div className="flex-1 flex items-center overflow-hidden" style={{
-              opacity: isCollapsed ? 0 : 1,
-              transform: isCollapsed ? 'translateX(32px) scale(0.9)' : 'translateX(0) scale(1)',
-              width: isCollapsed ? '0' : 'auto',
-              transition: 'all var(--animation-duration-main) var(--animation-easing)',
-              transitionDelay: isCollapsed ? '0ms' : `calc(var(--base-delay) + var(--stagger-delay) * ${index})`
-            }}>
-                  <span className={`tracking-wide text-sm whitespace-nowrap sync-transition-fast ${isActive ? 'font-semibold' : 'group-hover:font-medium'}`}>
-                    {department.label}
+        <div className="min-h-0 flex-1 overflow-y-auto rounded-[28px] bg-white/10 px-2 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex flex-col gap-2">
+            {departments.map((department, index) => {
+              const IconComponent = department.icon;
+              const isActive = selectedDepartment === department.key;
+
+              return (
+                <button
+                  key={department.key}
+                  type="button"
+                  onClick={() => onDepartmentSelect(department.key)}
+                  title={isCollapsed ? department.label : undefined}
+                  aria-current={isActive ? 'page' : undefined}
+                  className={`group relative flex min-h-[58px] items-center gap-3 overflow-hidden rounded-full border text-right sync-transition active:scale-[0.98] ${
+                    isActive
+                      ? 'border-white/55 bg-white/35 text-[#3e494c] shadow-[0_12px_28px_rgba(62,73,76,0.14)]'
+                      : 'border-transparent text-soabra-text-secondary hover:border-white/35 hover:bg-white/20 hover:text-[#3e494c] hover:shadow-sm'
+                  } ${isCollapsed ? 'justify-center px-1' : 'px-2.5'}`}
+                  style={{
+                    transition: 'all var(--animation-duration-main) var(--animation-easing)',
+                    transitionDelay: isCollapsed ? '0ms' : `calc(var(--stagger-delay) * ${index})`,
+                  }}
+                >
+                  <span
+                    className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border sync-transition-fast ${
+                      isActive
+                        ? 'border-[#3e494c]/50 bg-white/45 shadow-sm'
+                        : 'border-[#3e494c]/20 bg-white/10 group-hover:border-[#3e494c]/45 group-hover:bg-white/35'
+                    }`}
+                  >
+                    <IconComponent
+                      className={`h-5 w-5 sync-transition-fast ${
+                        isActive
+                          ? 'text-[#3e494c]'
+                          : 'text-soabra-text-secondary group-hover:text-[#3e494c] group-hover:scale-110'
+                      }`}
+                    />
                   </span>
-                </div>
-              </button>;
-        })}
+
+                  <span
+                    className="min-w-0 flex-1 overflow-hidden sync-transition"
+                    style={{
+                      opacity: isCollapsed ? 0 : 1,
+                      transform: isCollapsed ? 'translateX(24px) scale(0.96)' : 'translateX(0) scale(1)',
+                      width: isCollapsed ? '0' : 'auto',
+                      transition: 'all var(--animation-duration-main) var(--animation-easing)',
+                      transitionDelay: isCollapsed ? '0ms' : `calc(var(--base-delay) + var(--stagger-delay) * ${index})`,
+                    }}
+                  >
+                    <span className={`block truncate text-sm tracking-wide ${isActive ? 'font-semibold' : 'font-medium'}`}>
+                      {department.label}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </nav>
-    </aside>;
+    </aside>
+  );
 };
+
 export default DepartmentsSidebar;
