@@ -38,6 +38,8 @@ const taskTypes: { id: TaskTypeId; label: string }[] = [
   { id: 'design', label: 'تصميم' },
 ];
 
+const defaultTaskTypes: TaskTypeId[] = ['planning', 'development', 'testing', 'review'];
+
 const typeLabels = taskTypes.reduce<Record<TaskTypeId, string>>((labels, type) => {
   labels[type.id] = type.label;
   return labels;
@@ -174,7 +176,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
     setError('');
 
     try {
-      const selectedTaskTypes = formData.selectedTypes.length > 0 ? formData.selectedTypes : ['planning', 'development', 'testing', 'review'];
+      const selectedTaskTypes = formData.selectedTypes.length > 0 ? formData.selectedTypes : defaultTaskTypes;
       const requestedCount = formData.taskCount ? parseInt(formData.taskCount, 10) : undefined;
       const taskCount = requestedCount || Math.min(12, Math.max(5, selectedTaskTypes.length * 2, Math.ceil((project.tasksCount || 0) / 2)));
       const safeTaskCount = Math.min(20, Math.max(1, taskCount));
