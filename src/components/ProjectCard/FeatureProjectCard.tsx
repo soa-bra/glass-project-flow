@@ -1,4 +1,3 @@
-
 import ProjectCardLayout from './ProjectCardLayout';
 import ProjectCardHeader from './ProjectCardHeader';
 import ProjectCardFooter from './ProjectCardFooter';
@@ -38,6 +37,7 @@ const FeatureProjectCard = ({
         title={name}
         description={description}
         projectId={id.toString()}
+        tasksCount={tasksCount}
         status={status}
       />
       
