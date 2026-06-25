@@ -1,5 +1,5 @@
 
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 import { Project } from '@/types/project';
 import { TaskListContainer } from './TaskListContainer';
 import { TaskListHeader } from './TaskListHeader';
@@ -37,6 +37,7 @@ export const TaskListCard: React.FC<TaskListCardProps> = ({ project }) => {
   return (
     <TaskListContainer>
       <TaskListHeader 
+        project={project}
         onTaskAdded={handleTaskAdded} 
         onTasksGenerated={handleTasksGenerated}
         onFilterChange={handleFilterChange}
