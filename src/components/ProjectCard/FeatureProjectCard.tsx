@@ -8,6 +8,7 @@ interface ProjectCardInteractiveProps extends ProjectCardProps {
   isOtherSelected?: boolean;
   onProjectSelect?: (projectId: string) => void;
   teamMembersCount?: number;
+  sourceProjectId?: string;
 }
 
 const FeatureProjectCard = ({
@@ -23,8 +24,11 @@ const FeatureProjectCard = ({
   teamMembersCount = 3,
   isSelected = false,
   isOtherSelected = false,
-  onProjectSelect
+  onProjectSelect,
+  sourceProjectId,
 }: ProjectCardInteractiveProps) => {
+  const projectId = sourceProjectId ?? id.toString();
+
   return (
     <ProjectCardLayout
       id={id.toString()}
@@ -36,7 +40,7 @@ const FeatureProjectCard = ({
         daysLeft={daysLeft}
         title={name}
         description={description}
-        projectId={id.toString()}
+        projectId={projectId}
         tasksCount={tasksCount}
         status={status}
       />
