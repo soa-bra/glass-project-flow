@@ -11,16 +11,19 @@ import TaskCardFooterSimple from '@/components/TaskCard/TaskCardFooterSimple';
 interface TaskDetailsProps {
   projectId: string;
   filters: TaskFilters;
+  tasks?: UnifiedTask[];
 }
 
 export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
   projectId,
-  filters
+  filters,
+  tasks
 }) => {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const { tasks } = useUnifiedTasks(projectId);
+  const taskStore = useUnifiedTasks(projectId);
+  const taskSource = tasks ?? taskStore.tasks;
 
-  const filteredTasks = tasks.filter(task => {
+  const filteredTasks = taskSource.filter(task => {
     if (filters.assignee && !task.assignee.toLowerCase().includes(filters.assignee.toLowerCase())) return false;
     if (filters.priority && task.priority !== filters.priority) return false;
     if (filters.status && task.status !== filters.status) return false;
@@ -28,7 +31,7 @@ export const TaskDetailsBox: React.FC<TaskDetailsProps> = ({
     return true;
   });
 
-  const selectedTask = selectedTaskId ? tasks.find(task => task.id === selectedTaskId) || null : null;
+  const selectedTask = selectedTaskId ? taskSource.find(task => task.id === selectedTaskId) || null : null;
   
   const handleTaskSelect = (taskId: string) => {
     setSelectedTaskId(taskId === selectedTaskId ? null : taskId);
