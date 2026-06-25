@@ -24,15 +24,15 @@ export const AIReportGenerator: React.FC<AIReportGeneratorProps> = ({ suggestion
   };
 
   return (
-    <AppCardSurface density="standard">
-      <div className="flex items-center gap-2 mb-4">
+    <AppCardSurface density="standard" className="flex h-full min-h-0 flex-col">
+      <div className="flex items-center gap-2 mb-4 flex-shrink-0">
         <Bot className="w-5 h-5" />
         <h3 className="text-lg font-semibold text-right font-arabic">مولد التقارير الذكي</h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="grid min-h-0 flex-1 gap-4 overflow-y-auto lg:grid-cols-2">
         {suggestions.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 font-arabic">لا توجد اقتراحات ذكية حالياً</div>
+          <div className="text-center py-8 text-gray-500 font-arabic lg:col-span-2">لا توجد اقتراحات ذكية حالياً</div>
         ) : (
           suggestions.map(suggestion => (
             <div key={suggestion.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
@@ -58,7 +58,7 @@ export const AIReportGenerator: React.FC<AIReportGeneratorProps> = ({ suggestion
                     ))}
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-xs text-gray-500">
                     <Clock className="w-3 h-3" />
                     <span>الوقت المتوقع: {suggestion.estimatedTime}</span>
@@ -77,7 +77,7 @@ export const AIReportGenerator: React.FC<AIReportGeneratorProps> = ({ suggestion
         )}
       </div>
 
-      <div className="border-t mt-6 pt-4">
+      <div className="border-t mt-6 pt-4 flex-shrink-0">
         <div className="text-center">
           <Button variant="outline" className="gap-2 rounded-full bg-black text-base text-slate-50">
             <Bot className="w-4 h-4" />
