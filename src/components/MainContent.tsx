@@ -20,7 +20,6 @@ import type { SmartAssistantCommandId } from '@/features/project-intelligence/se
 import { SoaBraAIAssistant } from '@/features/project-intelligence/components/SoaBraAIAssistant';
 import { SmartConfirmationDialog } from '@/components/shared/SmartConfirmationDialog';
 
-// Code-split heavy workspaces (P5 — performance)
 const ProjectWorkspace = lazy(() => import('./ProjectWorkspace'));
 const DepartmentsWorkspace = lazy(() => import('./DepartmentsWorkspace'));
 const ArchiveWorkspace = lazy(() => import('./ArchiveWorkspace'));
@@ -40,8 +39,9 @@ const MainContent = () => {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const smartAssistant = useSmartAssistant({ activeSection: navigationState.activeSection });
+  const forceCollapsed = navigationState.activeSection === 'planning';
+  const effectiveCollapsed = forceCollapsed || isSidebarCollapsed;
 
-  // Update local state when navigation state changes
   useEffect(() => {
     if (navigationState.activeSection !== 'planning') {
       setIsSidebarCollapsed(previousSidebarState);
@@ -61,7 +61,6 @@ const MainContent = () => {
     });
   }, [navigationState.activeSection]);
 
-  // Cmd/Ctrl + K toggles cross-workspace search (P5)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -73,12 +72,22 @@ const MainContent = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  const handleSidebarToggle = (collapsed: boolean) => {
+    setIsSidebarCollapsed(collapsed);
+    if (navigationState.activeSection !== 'planning') {
+      setPreviousSidebarState(collapsed);
+    }
+  };
+
   const handleSectionChange = (section: string) => {
     if (section === 'planning' && navigationState.activeSection !== 'planning') {
       setPreviousSidebarState(isSidebarCollapsed);
-    } else if (navigationState.activeSection === 'planning' && section !== 'planning') {
+    }
+
+    if (navigationState.activeSection === 'planning' && section !== 'planning') {
       setIsSidebarCollapsed(previousSidebarState);
     }
+
     setActiveSection(section);
   };
 
@@ -92,8 +101,6 @@ const MainContent = () => {
     smartAssistant.requestCommand(commandId);
   };
 
-  const forceCollapsed = navigationState.activeSection === 'planning';
-  const effectiveCollapsed = forceCollapsed || isSidebarCollapsed;
   const renderWorkspace = () => {
     switch (navigationState.activeSection) {
       case 'departments':
@@ -108,6 +115,7 @@ const MainContent = () => {
         return <ProjectWorkspace isSidebarCollapsed={effectiveCollapsed} />;
     }
   };
+
   return (
     <div className="flex h-screen pt-[var(--header-height)] overflow-hidden px-0 mx-0 bg-slate-100">
       <div
@@ -115,10 +123,11 @@ const MainContent = () => {
         className="fixed top-[var(--sidebar-top-offset)] h-[calc(100vh-var(--sidebar-top-offset))] z-sidebar sidebar-layout bg-slate-100"
       >
         <Sidebar
-          onToggle={setIsSidebarCollapsed}
+          onToggle={handleSidebarToggle}
           activeSection={navigationState.activeSection}
           onSectionChange={handleSectionChange}
           forceCollapsed={forceCollapsed}
+          collapsed={isSidebarCollapsed}
         />
       </div>
 
@@ -189,4 +198,5 @@ const MainContent = () => {
     </div>
   );
 };
+
 export default MainContent;
