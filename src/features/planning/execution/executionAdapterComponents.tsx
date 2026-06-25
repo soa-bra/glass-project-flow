@@ -228,143 +228,129 @@ export const TaskExecutionPanel: React.FC<ExecutionAdapterContext> = ({ target, 
     };
   }, [target.entityId]);
 
-  const updateTaskDraft = useCallback(<K extends keyof TaskExecutionDraft>(key: K, value: TaskExecutionDraft[K]) => {
-    setTaskDraft(prev => prev ? { ...prev, [key]: value } : prev);
-  }, []);
-
-  const handleSaveExecution = async () => {
+  const handleSaveTaskExecution = useCallback(async () => {
     if (!executionTask || !taskDraft) return;
 
-    const actualDuration = normalizeNumberInput(taskDraft.actualDuration);
-    const actualCost = normalizeNumberInput(taskDraft.actualCost);
+    const actualDurationInput = normalizeNumberInput(taskDraft.actualDuration);
+    const actualCostInput = normalizeNumberInput(taskDraft.actualCost);
 
-    if (actualDuration.invalid || actualCost.invalid) {
-      toast.error('المدة والتكلفة يجب أن تكون أرقامًا صحيحة');
+    if (actualDurationInput.invalid || actualCostInput.invalid) {
+      toast.error('أدخل المدة الفعلية والتكلفة الفعلية كأرقام فقط قبل الحفظ');
       return;
     }
 
-    setTaskSaving(true);
-    const metadata = asRecord(executionTask.metadata);
-    const update: TaskUpdate = {
+    const nextMetadata = {
+      ...asRecord(executionTask.metadata),
+      executionProgress: taskDraft.progress,
+      executionNotes: taskDraft.executionNotes.trim() || null,
+      planningCanvasLastEditedAt: new Date().toISOString(),
+      planningCanvasLastEditedBy: currentUserId,
+    } as TaskUpdate['metadata'];
+
+    const updates: TaskUpdate = {
       state: taskDraft.state,
       priority: taskDraft.priority,
-      actual_duration: actualDuration.value,
-      actual_cost: actualCost.value,
-      metadata: {
-        ...metadata,
-        executionProgress: taskDraft.progress,
-        executionNotes: taskDraft.executionNotes,
-      },
+      actual_duration: actualDurationInput.value,
+      actual_cost: actualCostInput.value,
+      metadata: nextMetadata,
+      updated_at: new Date().toISOString(),
     };
 
+    setTaskSaving(true);
     const { data, error } = await supabase
       .from('tasks')
-      .update(update)
+      .update(updates)
       .eq('id', executionTask.id)
       .select('*')
       .maybeSingle();
 
     setTaskSaving(false);
-
     if (error || !data) {
-      toast.error('تعذر حفظ تحديث التنفيذ');
+      toast.error('تعذر حفظ تحديثات المهمة التنفيذية');
       return;
     }
 
     setExecutionTask(data);
     setTaskDraft(mapTaskDraft(data));
-    toast.success('تم حفظ تحديث التنفيذ');
-  };
+    toast.success('تم حفظ تحديثات المهمة التنفيذية');
+  }, [currentUserId, executionTask, taskDraft]);
 
-  if (loading) return <LoadingPanel label="جاري تحميل تفاصيل المهمة..." />;
-  if (!executionTask || !taskDraft) return <LoadingPanel label="لا توجد مهمة مرتبطة بهذا العنصر" />;
+  if (loading || !executionTask || !taskDraft) {
+    return <LoadingPanel label="جاري تحميل بيانات المهمة..." />;
+  }
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-auto p-6" dir="rtl">
-      <div>
-        <h3 className="text-lg font-semibold text-foreground">{executionTask.name}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">{executionTask.description || 'لا يوجد وصف للمهمة'}</p>
-      </div>
+    <div className="flex h-full flex-col" dir="rtl">
+      <div className="flex-1 overflow-y-auto px-5 py-4">
+        <div className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
+          <div className="rounded-md border border-border p-3"><p className="text-muted-foreground">المدة المقدرة</p><p className="font-semibold">{executionTask.estimated_duration} ساعة</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-muted-foreground">التكلفة المقدرة</p><p className="font-semibold">{executionTask.estimated_cost.toLocaleString('ar-SA')} ريال</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-muted-foreground">الفريق المطلوب</p><p className="font-semibold">{executionTask.required_team_size} أعضاء</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-muted-foreground">تاريخ البداية</p><p className="font-semibold">{executionTask.start_date ?? '-'}</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-muted-foreground">تاريخ التسليم</p><p className="font-semibold">{executionTask.due_date ?? '-'}</p></div>
+          <div className="rounded-md border border-border p-3"><p className="text-muted-foreground">آخر تحديث</p><p className="font-semibold">{new Date(executionTask.updated_at).toLocaleDateString('ar-SA')}</p></div>
+        </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2 text-sm">
-          <span className="font-medium">حالة التنفيذ</span>
-          <select
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            value={taskDraft.state}
-            onChange={(event) => updateTaskDraft('state', event.target.value as TaskState)}
-          >
-            {TASK_STATE_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-foreground">حالة التنفيذ</span>
+            <select className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm" value={taskDraft.state} onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, state: event.target.value as TaskState } : draft)}>
+              {TASK_STATE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-foreground">الأولوية</span>
+            <select className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm" value={taskDraft.priority} onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, priority: event.target.value as TaskPriority } : draft)}>
+              {TASK_PRIORITY_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
+
+          <label className="space-y-2"><span className="text-sm font-medium text-foreground">المدة الفعلية بالساعات</span><input className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm" inputMode="decimal" value={taskDraft.actualDuration} onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, actualDuration: event.target.value } : draft)} placeholder="0" /></label>
+          <label className="space-y-2"><span className="text-sm font-medium text-foreground">التكلفة الفعلية</span><input className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm" inputMode="decimal" value={taskDraft.actualCost} onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, actualCost: event.target.value } : draft)} placeholder="0" /></label>
+        </div>
+
+        <label className="mt-4 block space-y-2">
+          <span className="flex items-center justify-between text-sm font-medium text-foreground"><span>نسبة التقدم</span><span>{taskDraft.progress}%</span></span>
+          <input className="w-full accent-primary" type="range" min={0} max={100} step={5} value={taskDraft.progress} onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, progress: Number(event.target.value) } : draft)} />
         </label>
 
-        <label className="space-y-2 text-sm">
-          <span className="font-medium">الأولوية</span>
-          <select
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            value={taskDraft.priority}
-            onChange={(event) => updateTaskDraft('priority', event.target.value as TaskPriority)}
-          >
-            {TASK_PRIORITY_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
-        </label>
-
-        <label className="space-y-2 text-sm">
-          <span className="font-medium">المدة الفعلية</span>
-          <input
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            value={taskDraft.actualDuration}
-            onChange={(event) => updateTaskDraft('actualDuration', event.target.value)}
-            placeholder="مثال: 12"
-            inputMode="decimal"
-          />
-        </label>
-
-        <label className="space-y-2 text-sm">
-          <span className="font-medium">التكلفة الفعلية</span>
-          <input
-            className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            value={taskDraft.actualCost}
-            onChange={(event) => updateTaskDraft('actualCost', event.target.value)}
-            placeholder="مثال: 5000"
-            inputMode="decimal"
-          />
-        </label>
-
-        <label className="space-y-2 text-sm md:col-span-2">
-          <span className="font-medium">نسبة الإنجاز</span>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={taskDraft.progress}
-            onChange={(event) => updateTaskDraft('progress', Number(event.target.value))}
-            className="w-full"
-          />
-          <span className="text-xs text-muted-foreground">{taskDraft.progress}%</span>
-        </label>
-
-        <label className="space-y-2 text-sm md:col-span-2">
-          <span className="font-medium">ملاحظات التنفيذ</span>
-          <textarea
-            className="min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            value={taskDraft.executionNotes}
-            onChange={(event) => updateTaskDraft('executionNotes', event.target.value)}
-            placeholder="اكتب ملخص التنفيذ أو العوائق..."
-          />
+        <label className="mt-4 block space-y-2">
+          <span className="text-sm font-medium text-foreground">ملاحظات التنفيذ</span>
+          <textarea className="min-h-[120px] w-full rounded-md border border-border bg-background px-3 py-2 text-sm" value={taskDraft.executionNotes} onChange={(event) => setTaskDraft((draft) => draft ? { ...draft, executionNotes: event.target.value } : draft)} placeholder="أضف آخر تقدم، عائق، أو قرار متعلق بهذه المهمة..." />
         </label>
       </div>
 
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={handleSaveExecution}
-          disabled={taskSaving}
-          className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
-        >
-          {taskSaving ? 'جاري الحفظ...' : 'حفظ تحديث التنفيذ'}
+      <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-4">
+        <p className="text-xs text-muted-foreground">يتم حفظ تحديثات التنفيذ على سجل المهمة المرتبط بهذه البطاقة.</p>
+        <button type="button" className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60" disabled={taskSaving} onClick={() => void handleSaveTaskExecution()}>
+          {taskSaving ? 'جاري الحفظ...' : 'حفظ التحديثات'}
         </button>
       </div>
     </div>
+  );
+};
+
+export const HostedTab: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="h-full overflow-y-auto bg-background p-4" dir="rtl">{children}</div>
+);
+
+export const InvoicesAdapter: React.FC = () => <HostedTab><InvoicesTab /></HostedTab>;
+export const BudgetsAdapter: React.FC = () => <HostedTab><BudgetsTab /></HostedTab>;
+export const TransactionsAdapter: React.FC = () => <HostedTab><TransactionsTab /></HostedTab>;
+export const LegalDashboardAdapter: React.FC = () => <HostedTab><LegalDashboard /></HostedTab>;
+export const RiskPanelAdapter: React.FC = () => <HostedTab><RisksTab /></HostedTab>;
+
+export const SmartDocAdapter: React.FC<ExecutionAdapterContext> = ({ target }) => {
+  if (!target.element) return <LoadingPanel label="لا يوجد مستند ذكي مرتبط بهذا العنصر." />;
+  return <SmartDocRenderer element={target.element} onUpdate={target.onUpdate} />;
+};
+
+export const SheetAdapter: React.FC<ExecutionAdapterContext> = ({ target }) => {
+  const sheetData = target.element?.data ?? target.data ?? {};
+  return (
+    <HostedTab>
+      <InteractiveSheet data={sheetData as any} onUpdate={(nextData) => target.onUpdate?.({ ...sheetData, ...nextData })} />
+    </HostedTab>
   );
 };
