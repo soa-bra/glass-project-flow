@@ -7,6 +7,7 @@ export interface OverviewData {
     expectedRevenue: number;
     complaints: number;
     delayedProjects: number;
+    totalCustomers?: number;
   };
 }
 
@@ -15,6 +16,7 @@ export const mockOverviewData: OverviewData = {
   stats: {
     expectedRevenue: 150,
     complaints: 5,
-    delayedProjects: 3
+    delayedProjects: 3,
+    totalCustomers: 0
   }
 };
