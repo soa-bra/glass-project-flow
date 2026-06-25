@@ -59,6 +59,7 @@ export const ProjectsColumn: React.FC<ProjectsColumnProps> = ({
                 <ProjectCard
                   key={project.id}
                   id={Number(project.id)}
+                  sourceProjectId={project.id}
                   name={project.title}
                   description={project.description}
                   owner={project.owner}
