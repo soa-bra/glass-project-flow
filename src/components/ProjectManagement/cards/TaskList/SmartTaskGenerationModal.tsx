@@ -53,7 +53,8 @@ const typePriorities: Record<TaskTypeId, TaskData['priority']> = {
   design: 'urgent-not-important',
 };
 
-const parseProjectDeadline = (date: string) => {
+const parseProjectDeadline = (date: string | null | undefined) => {
+  if (!date) return null;
   const parsed = new Date(date);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
@@ -122,7 +123,7 @@ const buildTaskTitle = (type: TaskTypeId, projectTitle: string, index: number) =
 const buildTaskDescription = (type: TaskTypeId, project: Project, projectNeedSummary: string) => {
   const owner = project.owner || 'مالك المشروع';
   const teamNames = project.team?.map(member => member.name).filter(Boolean).join('، ') || 'فريق المشروع';
-  const deadlineText = project.date ? `الموعد المرجعي: ${project.date}.` : 'لا يوجد موعد مرجعي محدد.';
+  const deadlineText = project.dueDate || project.date ? `الموعد المرجعي: ${project.date || project.dueDate}.` : 'لا يوجد موعد مرجعي محدد.';
 
   const descriptions: Record<TaskTypeId, string> = {
     planning: `تحويل احتياج المشروع إلى نطاق عمل واضح. الاحتياج: ${projectNeedSummary}. المسؤول المرجعي: ${owner}. ${deadlineText}`,
@@ -180,7 +181,7 @@ export const SmartTaskGenerationModal: React.FC<SmartTaskGenerationModalProps> =
       const requestedCount = formData.taskCount ? parseInt(formData.taskCount, 10) : undefined;
       const taskCount = requestedCount || Math.min(12, Math.max(5, selectedTaskTypes.length * 2, Math.ceil((project.tasksCount || 0) / 2)));
       const safeTaskCount = Math.min(20, Math.max(1, taskCount));
-      const deadline = parseProjectDeadline(project.date);
+      const deadline = parseProjectDeadline(project.dueDate);
       const projectTitle = project.title?.trim() || 'المشروع';
       const generatedTasks: TaskData[] = [];
 
