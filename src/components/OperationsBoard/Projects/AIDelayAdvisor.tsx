@@ -44,17 +44,17 @@ export const AIDelayAdvisor: React.FC<AIDelayAdvisorProps> = ({ aiAdvice }) => {
   };
 
   return (
-    <AppCardSurface density="standard">
-      <div className="flex items-center justify-between mb-5">
+    <AppCardSurface density="standard" className="flex h-full min-h-0 flex-col">
+      <div className="flex items-center justify-between mb-5 flex-shrink-0">
         <h3 className="text-[11px] font-medium text-[rgba(11,15,18,0.6)] uppercase tracking-wide">مستشار التأخير بالذكاء الاصطناعي</h3>
         <div className="w-8 h-8 rounded-full ring-1 ring-[rgba(11,15,18,0.15)] flex items-center justify-center">
           <Bot className="h-4 w-4 text-[#3DA8F5]" />
         </div>
       </div>
 
-      <div className="space-y-3 max-h-[400px] overflow-y-auto">
+      <div className="grid min-h-0 flex-1 gap-3 overflow-y-auto lg:grid-cols-3">
         {aiAdvice.length === 0 ? (
-          <div className="text-center py-10 text-[rgba(11,15,18,0.4)] text-sm">لا توجد توصيات حالياً</div>
+          <div className="text-center py-10 text-[rgba(11,15,18,0.4)] text-sm lg:col-span-3">لا توجد توصيات حالياً</div>
         ) : (
           aiAdvice.map(advice => (
             <div
