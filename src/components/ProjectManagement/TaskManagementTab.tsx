@@ -5,7 +5,7 @@ import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
 import { Project } from '@/types/project';
 import type { TaskData } from '@/types';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
-import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
+import { TaskFilters as UnifiedTaskFilters, UnifiedTask } from '@/types/task';
 import { MetricHeroCard } from '@/components/shared/visual-data';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -13,6 +13,9 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 interface TaskManagementTabProps {
   project: Project;
+  tasks?: UnifiedTask[];
+  onUpdateTaskStatus?: (taskId: string, status: UnifiedTask['status']) => void;
+  onMergeTasks?: (tasks: TaskData[]) => void;
 }
 
 const emptyTaskFilters: UnifiedTaskFilters = {
@@ -24,14 +27,24 @@ const emptyTaskFilters: UnifiedTaskFilters = {
 };
 
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
-  project
+  project,
+  tasks: boardTasks,
+  onUpdateTaskStatus,
+  onMergeTasks,
 }) => {
   const [viewMode, setViewMode] = useState<'kanban' | 'details'>('kanban');
   const [filters, setFilters] = useState<UnifiedTaskFilters>(emptyTaskFilters);
-  const { tasks, updateTaskStatus, mergeTasks } = useUnifiedTasks(project.id);
+  const taskStore = useUnifiedTasks(project.id);
+  const tasks = boardTasks ?? taskStore.tasks;
+  const updateTaskStatus = onUpdateTaskStatus ?? taskStore.updateTaskStatus;
 
   const handleTasksGenerated = (generatedTasks: TaskData[]) => {
-    mergeTasks(generatedTasks.map(task => ({ ...task, projectId: project.id })));
+    const generatedProjectTasks = generatedTasks.map(task => ({ ...task, projectId: project.id }));
+    if (onMergeTasks) {
+      onMergeTasks(generatedProjectTasks);
+    } else {
+      taskStore.mergeTasks(generatedProjectTasks);
+    }
   };
 
   const handleAssistantFocus = (nextFilters: UnifiedTaskFilters, nextViewMode: 'kanban' | 'details') => {
