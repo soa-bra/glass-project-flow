@@ -16,17 +16,16 @@ interface ArchivedTaskRow {
   created_at: string;
 }
 
-const ARCHIVED_TASK_STATES = ['archived', 'completed', 'done', 'stopped', 'cancelled'];
+const ARCHIVED_TASK_STATES = ['archived', 'completed', 'cancelled', 'failed'];
 
 const getTaskStateLabel = (state: string | null) => {
   switch (state) {
     case 'completed':
-    case 'done':
       return 'مكتملة';
-    case 'stopped':
-      return 'متوقفة';
     case 'cancelled':
       return 'ملغاة';
+    case 'failed':
+      return 'متعذرة';
     case 'archived':
       return 'مؤرشفة';
     default:
