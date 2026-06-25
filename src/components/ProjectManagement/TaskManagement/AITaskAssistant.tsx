@@ -15,7 +15,7 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { useToast } from '@/hooks/use-toast';
 import type { TaskData } from '@/types';
 import type { Project } from '@/types/project';
-import type { TaskFilters, UnifiedTask } from '@/types/task';
+import { isTaskOverdue, type TaskFilters, type UnifiedTask } from '@/types/task';
 
 interface AITaskAssistantProps {
   project: Project;
@@ -47,12 +47,6 @@ type AssistantSuggestion = {
   onApply: () => void;
 };
 
-const isPastDue = (task: UnifiedTask) => {
-  const dueDate = new Date(task.dueDate);
-  if (Number.isNaN(dueDate.getTime())) return false;
-  return dueDate.getTime() < Date.now() && task.status !== 'completed';
-};
-
 export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({
   project,
   projectId,
@@ -65,7 +59,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({
   const [showSmartGenerationModal, setShowSmartGenerationModal] = useState(false);
 
   const taskSignals = useMemo(() => {
-    const overdue = tasks.filter(task => task.status === 'late' || isPastDue(task));
+    const overdue = tasks.filter(isTaskOverdue);
     const stopped = tasks.filter(task => task.status === 'stopped');
     const unassigned = tasks.filter(task => !task.assignee?.trim());
     const urgent = tasks.filter(task => task.priority === 'urgent');
@@ -114,7 +108,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({
       metric: `${taskSignals.overdue.length} متأخرة`,
       status: taskSignals.overdue.length > 0 ? 'warning' : 'active',
       Icon: CalendarDays,
-      onApply: () => focusTasks({ status: 'late' }, 'kanban', 'تم عرض المهام المتأخرة'),
+      onApply: () => focusTasks({ isOverdue: true }, 'kanban', 'تم عرض المهام المتأخرة'),
     },
     {
       id: 'docs',
@@ -141,7 +135,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({
       metric: `${taskSignals.stopped.length + taskSignals.overdue.length} تحتاج متابعة`,
       status: taskSignals.stopped.length + taskSignals.overdue.length > 0 ? 'warning' : 'active',
       Icon: RefreshCw,
-      onApply: () => focusTasks({ status: taskSignals.stopped.length > 0 ? 'stopped' : 'late' }, 'kanban', 'تم عرض المهام التي تحتاج إعادة جدولة'),
+      onApply: () => focusTasks(taskSignals.stopped.length > 0 ? { status: 'stopped' } : { isOverdue: true }, 'kanban', 'تم عرض المهام التي تحتاج إعادة جدولة'),
     },
     {
       id: 'assign',
@@ -159,7 +153,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({
       metric: `${taskSignals.riskCount} إشارة`,
       status: taskSignals.riskCount > 0 ? 'warning' : 'active',
       Icon: AlertTriangle,
-      onApply: () => focusTasks({ status: taskSignals.overdue.length > 0 ? 'late' : 'stopped' }, 'details', 'تم عرض إشارات الخطر'),
+      onApply: () => focusTasks(taskSignals.overdue.length > 0 ? { isOverdue: true } : { status: 'stopped' }, 'details', 'تم عرض إشارات الخطر'),
     },
   ];
 
@@ -186,7 +180,7 @@ export const AITaskAssistant: React.FC<AITaskAssistantProps> = ({
         description: `${taskSignals.overdue.length} مهمة متأخرة أو تجاوزت موعدها داخل هذا المشروع.`,
         action: 'عرض المتأخرة',
         priority: 'urgent',
-        onApply: () => focusTasks({ status: 'late' }, 'kanban', 'تم عرض المهام المتأخرة'),
+        onApply: () => focusTasks({ isOverdue: true }, 'kanban', 'تم عرض المهام المتأخرة'),
       });
     }
 
