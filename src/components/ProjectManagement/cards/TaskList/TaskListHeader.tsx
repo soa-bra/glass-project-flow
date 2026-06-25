@@ -5,13 +5,16 @@ import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 import { TasksSortDialog } from './TasksSortDialog';
 import { TasksFilterDialog, TaskFilterOptions } from './TasksFilterDialog';
 import type { TaskData } from '@/types';
+import type { Project } from '@/types/project';
 interface TaskListHeaderProps {
+  project: Project;
   onTaskAdded: (task: TaskData) => void;
   onTasksGenerated: (tasks: TaskData[]) => void;
   onFilterChange?: (filters: TaskFilterOptions) => void;
   onSortChange?: (field: string, direction: 'asc' | 'desc') => void;
 }
 export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
+  project,
   onTaskAdded,
   onTasksGenerated,
   onFilterChange,
@@ -70,7 +73,7 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
 
       <AddTaskModal isOpen={showAddTaskModal} onClose={() => setShowAddTaskModal(false)} onTaskAdded={handleTaskAdded} />
 
-      <SmartTaskGenerationModal isOpen={showSmartGenerationModal} onClose={() => setShowSmartGenerationModal(false)} onTasksGenerated={handleTasksGenerated} />
+      <SmartTaskGenerationModal isOpen={showSmartGenerationModal} onClose={() => setShowSmartGenerationModal(false)} onTasksGenerated={handleTasksGenerated} project={project} />
       
       <TasksSortDialog isOpen={showSortDialog} onClose={() => setShowSortDialog(false)} onSort={handleSort} />
       
