@@ -10,7 +10,7 @@ const ProjectCardTasksCircle = ({
   fallbackTasksCount = 0,
 }: ProjectCardTasksCircleProps) => {
   const { taskStats, loading } = useProjectMetrics(projectId);
-  const tasksCount = !loading && taskStats.total > 0 ? taskStats.total : fallbackTasksCount;
+  const tasksCount = loading ? fallbackTasksCount : taskStats.total;
 
   return (
     <div 
