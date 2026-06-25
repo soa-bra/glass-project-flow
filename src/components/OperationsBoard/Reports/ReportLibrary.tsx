@@ -33,48 +33,50 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({ templates }) => {
   };
 
   return (
-    <AppCardSurface density="standard" className="flex h-full min-h-0 flex-col">
-      <h3 className="text-right font-arabic flex items-center gap-2 text-lg font-semibold mb-4 flex-shrink-0">
-        <FileText className="w-5 h-5" />
-        مكتبة التقارير
-      </h3>
-      <div className="flex gap-2 mb-4 flex-shrink-0">
-        <div className="flex-1">
-          <Input placeholder="ابحث في التقارير..." className="text-right" />
-        </div>
-        <Button variant="outline" size="icon" className="w-[37px] h-[37px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#000000]/50 bg-transparent">
-          <Search className="w-4 h-4" />
-        </Button>
-        <Button variant="outline" size="icon" className="w-[37px] h-[37px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#000000]/50 bg-transparent">
-          <Filter className="w-4 h-4" />
-        </Button>
-      </div>
-
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
-        {templates.map(template => (
-          <div key={template.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
-            <div className="flex items-start justify-between mb-2">
-              <div className="text-right flex-1">
-                <h4 className="font-medium text-sm">{template.name}</h4>
-                <p className="text-xs text-gray-600 mt-1">{template.description}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <BaseBadge variant="secondary" className={getFormatColor(template.format)}>{template.format}</BaseBadge>
-                <Button size="sm" variant="ghost"><Download className="w-4 h-4" /></Button>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-1 mb-3">
-              {template.tags.slice(0, 3).map((tag, idx) => (
-                <BaseBadge key={idx} variant="outline" className="text-xs">{tag}</BaseBadge>
-              ))}
-              {template.tags.length > 3 && <BaseBadge variant="outline" className="text-xs">+{template.tags.length - 3}</BaseBadge>}
-            </div>
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>آخر تحديث: {template.lastUpdated}</span>
-              <span>{template.downloadCount} تحميل</span>
-            </div>
+    <AppCardSurface density="standard" className="h-full min-h-0">
+      <div className="flex h-full min-h-0 flex-col">
+        <h3 className="text-right font-arabic flex items-center gap-2 text-lg font-semibold mb-4 flex-shrink-0">
+          <FileText className="w-5 h-5" />
+          مكتبة التقارير
+        </h3>
+        <div className="flex gap-2 mb-4 flex-shrink-0">
+          <div className="flex-1">
+            <Input placeholder="ابحث في التقارير..." className="text-right" />
           </div>
-        ))}
+          <Button variant="outline" size="icon" className="w-[37px] h-[37px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#000000]/50 bg-transparent">
+            <Search className="w-4 h-4" />
+          </Button>
+          <Button variant="outline" size="icon" className="w-[37px] h-[37px] rounded-full flex items-center justify-center transition-all duration-300 flex-shrink-0 border-2 border-[#000000]/50 bg-transparent">
+            <Filter className="w-4 h-4" />
+          </Button>
+        </div>
+
+        <div className="min-h-0 max-h-[300px] flex-1 space-y-4 overflow-y-auto pr-1 md:max-h-[320px]">
+          {templates.map(template => (
+            <div key={template.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
+              <div className="flex items-start justify-between mb-2">
+                <div className="text-right flex-1">
+                  <h4 className="font-medium text-sm">{template.name}</h4>
+                  <p className="text-xs text-gray-600 mt-1">{template.description}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BaseBadge variant="secondary" className={getFormatColor(template.format)}>{template.format}</BaseBadge>
+                  <Button size="sm" variant="ghost"><Download className="w-4 h-4" /></Button>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1 mb-3">
+                {template.tags.slice(0, 3).map((tag, idx) => (
+                  <BaseBadge key={idx} variant="outline" className="text-xs">{tag}</BaseBadge>
+                ))}
+                {template.tags.length > 3 && <BaseBadge variant="outline" className="text-xs">+{template.tags.length - 3}</BaseBadge>}
+              </div>
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>آخر تحديث: {template.lastUpdated}</span>
+                <span>{template.downloadCount} تحميل</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </AppCardSurface>
   );
