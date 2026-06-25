@@ -28,6 +28,7 @@ export const MiniGanttChart: React.FC<MiniGanttChartProps> = ({ criticalProjects
       color="#0B0F12"
       orientation="horizontal"
       showValues
+      className="h-full min-h-0"
     />
   );
 };
