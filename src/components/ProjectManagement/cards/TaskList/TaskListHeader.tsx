@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Filter, Sparkles, RefreshCw, ArrowUpDown } from 'lucide-react';
+import { Plus, Filter, Sparkles, ArrowUpDown } from 'lucide-react';
 import { AddTaskModal } from '@/components/ProjectsColumn/AddTaskModal';
 import { SmartTaskGenerationModal } from './SmartTaskGenerationModal';
 import { TasksSortDialog } from './TasksSortDialog';
@@ -29,10 +29,6 @@ export const TaskListHeader: React.FC<TaskListHeaderProps> = ({
   };
   const handleTasksGenerated = (tasks: TaskData[]) => {
     onTasksGenerated(tasks);
-  };
-  const handleUpdateTasks = () => {
-    // Refresh tasks functionality
-    // يمكن إضافة منطق تحديث المهام هنا
   };
   const handleFilterTasks = () => {
     setShowFilterDialog(true);
