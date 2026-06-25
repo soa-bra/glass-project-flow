@@ -33,12 +33,12 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({ templates }) => {
   };
 
   return (
-    <AppCardSurface density="standard">
-      <h3 className="text-right font-arabic flex items-center gap-2 text-lg font-semibold mb-4">
+    <AppCardSurface density="standard" className="flex h-full min-h-0 flex-col">
+      <h3 className="text-right font-arabic flex items-center gap-2 text-lg font-semibold mb-4 flex-shrink-0">
         <FileText className="w-5 h-5" />
         مكتبة التقارير
       </h3>
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-4 flex-shrink-0">
         <div className="flex-1">
           <Input placeholder="ابحث في التقارير..." className="text-right" />
         </div>
@@ -50,7 +50,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({ templates }) => {
         </Button>
       </div>
 
-      <div className="space-y-4 max-h-[400px] overflow-y-auto">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto">
         {templates.map(template => (
           <div key={template.id} className="bg-gray-50 border border-[#DADCE0] rounded-2xl p-4 hover:bg-gray-100 transition-colors">
             <div className="flex items-start justify-between mb-2">

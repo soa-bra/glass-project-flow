@@ -87,18 +87,24 @@ export const ProjectsTab: React.FC<ProjectsTabProps> = ({ data, loading }) => {
       error={!data && !loading ? "لا توجد بيانات مشاريع متاحة" : undefined}
     >
       {data && (
-        <div className="space-y-6">
-          <AppDashboardGrid columns={12} density="spacious">
-            <AppGridItem colSpan={7} tabletSpan={6}>
-              <MiniGanttChart criticalProjects={data.criticalProjects} />
-            </AppGridItem>
-            <AppGridItem colSpan={5} tabletSpan={6}>
-              <DelayedMilestones delayedMilestones={data.delayedMilestones} />
-            </AppGridItem>
-          </AppDashboardGrid>
+        <AppDashboardGrid
+          columns={12}
+          density="default"
+          minRowHeight="160px"
+          className="items-stretch"
+        >
+          <AppGridItem colSpan={7} tabletSpan={6} rowSpan={2} minHeight="320px">
+            <MiniGanttChart criticalProjects={data.criticalProjects} />
+          </AppGridItem>
 
-          <AIDelayAdvisor aiAdvice={data.aiAdvice} />
-        </div>
+          <AppGridItem colSpan={5} tabletSpan={6} rowSpan={2} minHeight="320px">
+            <DelayedMilestones delayedMilestones={data.delayedMilestones} />
+          </AppGridItem>
+
+          <AppGridItem colSpan={12} tabletSpan={6} minHeight="260px">
+            <AIDelayAdvisor aiAdvice={data.aiAdvice} />
+          </AppGridItem>
+        </AppDashboardGrid>
       )}
     </BaseOperationsTabLayout>
   );
