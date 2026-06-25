@@ -115,18 +115,21 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     teamMembers: metrics.teamStats.activeMembers,
     completionRate: metrics.taskStats.completionRate,
   };
+  const persistedTaskStats = {
+    total: metrics.taskStats.total,
+    completed: Math.round((metrics.taskStats.completionRate / 100) * metrics.taskStats.total),
+  };
   const boardTaskStats = {
     total: boardTaskStore.tasks.length,
     completed: getCompletedTaskCount(boardTaskStore.tasks),
   };
-  const localTaskCompletionRate = boardTaskStats.total > 0
-    ? Math.round((boardTaskStats.completed / boardTaskStats.total) * 100)
-    : 0;
-  const taskDrivenPhaseProgress = boardTaskStats.total > 0
-    ? localTaskCompletionRate
-    : metrics.taskStats.total > 0
-      ? metrics.taskStats.completionRate
-      : project.progress || 0;
+  const combinedTaskStats = {
+    total: persistedTaskStats.total + boardTaskStats.total,
+    completed: persistedTaskStats.completed + boardTaskStats.completed,
+  };
+  const taskDrivenPhaseProgress = combinedTaskStats.total > 0
+    ? Math.round((combinedTaskStats.completed / combinedTaskStats.total) * 100)
+    : project.progress || 0;
   const phaseProgress = Math.max(0, Math.min(100, Math.round(taskDrivenPhaseProgress)));
 
 
