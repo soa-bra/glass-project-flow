@@ -1,7 +1,7 @@
-
 export type ArchiveCategoryType = 
   | 'documents'
   | 'projects'
+  | 'tasks'
   | 'hr'
   | 'financial'
   | 'legal'
