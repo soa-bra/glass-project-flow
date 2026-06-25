@@ -33,7 +33,7 @@ export const ReportLibrary: React.FC<ReportLibraryProps> = ({ templates }) => {
   };
 
   return (
-    <AppCardSurface density="standard" className="h-full min-h-0">
+    <AppCardSurface density="standard" className="flex h-full min-h-0 flex-col">
       <div className="flex h-full min-h-0 flex-col">
         <h3 className="text-right font-arabic flex items-center gap-2 text-lg font-semibold mb-4 flex-shrink-0">
           <FileText className="w-5 h-5" />
