@@ -21,7 +21,18 @@ export interface TaskFilters {
   priority?: string;
   status?: string;
   search?: string;
+  isOverdue?: boolean;
 }
+
+export const isTaskOverdue = (task: Pick<UnifiedTask, 'dueDate' | 'status'>) => {
+  if (task.status === 'late') return true;
+  if (task.status === 'completed') return false;
+
+  const dueDate = new Date(task.dueDate);
+  if (Number.isNaN(dueDate.getTime())) return false;
+
+  return dueDate.getTime() < Date.now();
+};
 
 // Mapping functions
 export const mapToTaskCardProps = (task: UnifiedTask) => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UnifiedTask, TaskFilters, mapFromTaskData } from '@/types/task';
+import { UnifiedTask, TaskFilters, isTaskOverdue, mapFromTaskData } from '@/types/task';
 
 // تم إفراغ البيانات الوهمية — تأتي المهام من الباك إند فقط (Supabase / ProjectTasksContext)
 const generateMockTasks = (_projectId: string): UnifiedTask[] => [];
@@ -103,6 +103,9 @@ export const useUnifiedTasks = (projectId: string) => {
           if (task.status !== mappedStatus) {
             return false;
           }
+        }
+        if (filters.isOverdue && !isTaskOverdue(task)) {
+          return false;
         }
         if (filters.search && !task.title.toLowerCase().includes(filters.search.toLowerCase())) {
           return false;
