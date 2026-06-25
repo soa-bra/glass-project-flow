@@ -3,6 +3,7 @@ import { KanbanBox } from './TaskManagement/KanbanBox';
 import { TaskDetailsBox } from './TaskManagement/TaskDetailsBox';
 import { AITaskAssistant } from './TaskManagement/AITaskAssistant';
 import { Project } from '@/types/project';
+import type { TaskData } from '@/types';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { TaskFilters as UnifiedTaskFilters } from '@/types/task';
 import { MetricHeroCard } from '@/components/shared/visual-data';
@@ -24,7 +25,16 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
     status: '',
     search: ''
   });
-  const { tasks } = useUnifiedTasks(project.id);
+  const { tasks, updateTaskStatus, mergeTasks } = useUnifiedTasks(project.id);
+
+  const handleTasksGenerated = (generatedTasks: TaskData[]) => {
+    mergeTasks(generatedTasks.map(task => ({ ...task, projectId: project.id })));
+  };
+
+  const handleAssistantFocus = (nextFilters: UnifiedTaskFilters, nextViewMode: 'kanban' | 'details') => {
+    setFilters(prev => ({ ...prev, ...nextFilters }));
+    setViewMode(nextViewMode);
+  };
 
   const completed = tasks.filter(t => t.status === 'completed').length;
   const late = tasks.filter(t => t.status === 'late').length;
@@ -105,14 +115,25 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
       {/* Main Content Area */}
       <div className="flex-1 min-h-0">
         {viewMode === 'kanban' ? (
-          <KanbanBox projectId={project.id} filters={filters} />
+          <KanbanBox
+            projectId={project.id}
+            filters={filters}
+            tasks={tasks}
+            onUpdateTaskStatus={updateTaskStatus}
+          />
         ) : (
-          <TaskDetailsBox projectId={project.id} filters={filters} />
+          <TaskDetailsBox projectId={project.id} filters={filters} tasks={tasks} />
         )}
       </div>
 
       {/* AI Assistant Panel */}
-      <AITaskAssistant projectId={project.id} />
+      <AITaskAssistant
+        project={project}
+        projectId={project.id}
+        tasks={tasks}
+        onTasksGenerated={handleTasksGenerated}
+        onFocusTasks={handleAssistantFocus}
+      />
     </div>
   );
 };
