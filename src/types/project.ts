@@ -7,6 +7,7 @@ export type Project = {
   tasksCount: number;
   status: 'info' | 'success' | 'warning' | 'error';
   date: string;
+  dueDate?: string | null;
   owner: string;
   value: string;
   isOverBudget: boolean;

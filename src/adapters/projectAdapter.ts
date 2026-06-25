@@ -41,6 +41,7 @@ export function centralToUiProject(p: CentralProject): UiProject {
     tasksCount: typeof meta.tasksCount === "number" ? meta.tasksCount : 0,
     status: STATE_TO_STATUS[p.state] ?? "info",
     date: formatShortDate(p.due_date),
+    dueDate: p.due_date,
     owner: typeof meta.ownerName === "string" ? meta.ownerName : "—",
     value: p.budget != null ? `${p.budget}` : "0",
     isOverBudget: typeof meta.isOverBudget === "boolean" ? meta.isOverBudget : false,
