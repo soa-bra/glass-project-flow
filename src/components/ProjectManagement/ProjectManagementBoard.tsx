@@ -13,7 +13,9 @@ import { Project } from '@/types/project';
 import { ProjectData } from '@/types';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { useProjectMetrics } from '@/hooks/useProjectMetrics';
+import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
 import { cn } from '@/lib/utils';
+import type { UnifiedTask } from '@/types/task';
 interface ProjectManagementBoardProps {
   project: Project;
   isVisible: boolean;
@@ -24,6 +26,9 @@ interface ProjectManagementBoardProps {
   onProjectArchived?: (projectId: string) => void;
   presentation?: 'default' | 'planning-canvas';
 }
+
+const getCompletedTaskCount = (tasks: UnifiedTask[]) => tasks.filter(task => task.status === 'completed').length;
+
 export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   project,
   isVisible,
@@ -40,6 +45,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   // إحصائيات المشروع الحيّة — من Supabase (يجب استدعاؤها قبل أي return مبكر لاحترام Rules of Hooks)
   const metrics = useProjectMetrics(project.id);
+  const boardTaskStore = useUnifiedTasks(project.id);
   if (!isVisible) return null;
   const handleDeleteProject = () => {
     setShowDeleteDialog(false);
@@ -109,7 +115,18 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     teamMembers: metrics.teamStats.activeMembers,
     completionRate: metrics.taskStats.completionRate,
   };
-  const taskDrivenPhaseProgress = metrics.taskStats.total > 0 ? metrics.taskStats.completionRate : project.progress || 0;
+  const boardTaskStats = {
+    total: boardTaskStore.tasks.length,
+    completed: getCompletedTaskCount(boardTaskStore.tasks),
+  };
+  const localTaskCompletionRate = boardTaskStats.total > 0
+    ? Math.round((boardTaskStats.completed / boardTaskStats.total) * 100)
+    : 0;
+  const taskDrivenPhaseProgress = boardTaskStats.total > 0
+    ? localTaskCompletionRate
+    : metrics.taskStats.total > 0
+      ? metrics.taskStats.completionRate
+      : project.progress || 0;
   const phaseProgress = Math.max(0, Math.min(100, Math.round(taskDrivenPhaseProgress)));
 
 
@@ -227,7 +244,14 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             </Reveal>
           </>;
       case 'tasks':
-        return <Reveal delay={0.2}><TaskManagementTab project={project} /></Reveal>;
+        return <Reveal delay={0.2}>
+            <TaskManagementTab
+              project={project}
+              tasks={boardTaskStore.tasks}
+              onUpdateTaskStatus={boardTaskStore.updateTaskStatus}
+              onMergeTasks={boardTaskStore.mergeTasks}
+            />
+          </Reveal>;
       case 'finance':
         return <div className="flex-1 overflow-auto">
             <Reveal delay={0.2}><FinancialTab data={project} /></Reveal>
