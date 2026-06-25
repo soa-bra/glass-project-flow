@@ -110,8 +110,7 @@ export const TimelineBox: React.FC = () => {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,0.2)',
-        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)',
-        zIndex: '9999'
+        boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.1)'
       }}>
           <DialogHeader className="flex items-center justify-between p-6 border-b border-[hsl(var(--ink))]/10">
             <div className="flex items-center gap-4">
