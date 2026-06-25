@@ -15,16 +15,19 @@ interface TaskManagementTabProps {
   project: Project;
 }
 
+const emptyTaskFilters: UnifiedTaskFilters = {
+  assignee: '',
+  priority: '',
+  status: '',
+  search: '',
+  isOverdue: false,
+};
+
 export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   project
 }) => {
   const [viewMode, setViewMode] = useState<'kanban' | 'details'>('kanban');
-  const [filters, setFilters] = useState<UnifiedTaskFilters>({
-    assignee: '',
-    priority: '',
-    status: '',
-    search: ''
-  });
+  const [filters, setFilters] = useState<UnifiedTaskFilters>(emptyTaskFilters);
   const { tasks, updateTaskStatus, mergeTasks } = useUnifiedTasks(project.id);
 
   const handleTasksGenerated = (generatedTasks: TaskData[]) => {
@@ -32,7 +35,7 @@ export const TaskManagementTab: React.FC<TaskManagementTabProps> = ({
   };
 
   const handleAssistantFocus = (nextFilters: UnifiedTaskFilters, nextViewMode: 'kanban' | 'details') => {
-    setFilters(prev => ({ ...prev, ...nextFilters }));
+    setFilters({ ...emptyTaskFilters, ...nextFilters });
     setViewMode(nextViewMode);
   };
 
