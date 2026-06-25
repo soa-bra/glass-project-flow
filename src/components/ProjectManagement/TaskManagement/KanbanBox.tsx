@@ -3,7 +3,7 @@ import TaskCard from '@/components/TaskCard';
 import { AddTaskButton } from './AddTaskButton';
 import { BulkActionsBar } from './BulkActionsBar';
 import { useUnifiedTasks } from '@/hooks/useUnifiedTasks';
-import { UnifiedTask, TaskFilters, mapToTaskCardProps } from '@/types/task';
+import { UnifiedTask, TaskFilters, isTaskOverdue, mapToTaskCardProps } from '@/types/task';
 import { COLORS } from '@/components/shared/design-system/constants';
 
 interface KanbanColumn {
@@ -45,6 +45,7 @@ const matchesFilters = (task: UnifiedTask, filters?: TaskFilters) => {
     const mappedStatus = statusMap[filters.status] || filters.status;
     if (task.status !== mappedStatus) return false;
   }
+  if (filters.isOverdue && !isTaskOverdue(task)) return false;
   if (filters.search && !task.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
   return true;
 };
