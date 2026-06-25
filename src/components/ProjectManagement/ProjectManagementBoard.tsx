@@ -109,6 +109,8 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
     teamMembers: metrics.teamStats.activeMembers,
     completionRate: metrics.taskStats.completionRate,
   };
+  const taskDrivenPhaseProgress = metrics.taskStats.total > 0 ? metrics.taskStats.completionRate : project.progress || 0;
+  const phaseProgress = Math.max(0, Math.min(100, Math.round(taskDrivenPhaseProgress)));
 
 
   // محتوى التبويبات المختلفة
@@ -201,7 +203,7 @@ export const ProjectManagementBoard: React.FC<ProjectManagementBoardProps> = ({
             {/* شريط تقدم المراحل */}
             <Reveal delay={0.3}>
               <div className="flex-shrink-0 my-0 px-0 mx-[0px]">
-                <ProjectProgressBar progress={project.progress || 0} stages={[{
+                <ProjectProgressBar progress={phaseProgress} stages={[{
                 label: 'التحضير'
               }, {
                 label: 'التنفيذ المبدئي'
