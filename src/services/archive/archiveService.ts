@@ -1,9 +1,8 @@
 /**
  * Archive Service — central CRUD for `public.archive_documents`.
- * Powers all 9 Archive categories (documents, projects, hr, financial,
- * legal, organizational, knowledge, templates, policies).
+ * Powers Archive workspace categories.
  *
- * @specRef Section 7 (Archive Workspace) — 9 categories
+ * @specRef Section 7 (Archive Workspace)
  */
 import { supabase } from '@/integrations/supabase/client';
 import { audit } from '@/services/audit';
@@ -12,6 +11,7 @@ import { z } from 'zod';
 export const archiveCategorySchema = z.enum([
   'documents',
   'projects',
+  'tasks',
   'hr',
   'financial',
   'legal',

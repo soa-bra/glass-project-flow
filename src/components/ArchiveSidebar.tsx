@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Archive, FileText, Users, Building2, DollarSign, Scale, Briefcase, BookOpen, Settings, ChevronLeft, ChevronRight, Database } from 'lucide-react';
+import { Archive, FileText, Users, Building2, DollarSign, Scale, Briefcase, BookOpen, Settings, ChevronLeft, ChevronRight, Database, CheckSquare } from 'lucide-react';
 
 interface ArchiveSidebarProps {
   selectedCategory: string | null;
@@ -25,6 +24,11 @@ const ArchiveSidebar: React.FC<ArchiveSidebarProps> = ({
       key: 'projects',
       label: 'المشاريع المكتملة',
       icon: Briefcase
+    },
+    {
+      key: 'tasks',
+      label: 'أرشيف المهام',
+      icon: CheckSquare
     },
     {
       key: 'hr',

@@ -2,16 +2,17 @@
  * CategoryPanelFactory — selects an archive category renderer.
  *
  * Routing policy (mirrors FeatureDepartmentPanel):
- *  - Default: legacy specialized panel for each of the 9 spec categories.
+ *  - Default: legacy specialized panel for each spec archive category.
  *  - `?spec=1` query param forces rendering through SpecDrivenDashboard
- *    (entire ArchiveWorkspace spec, 9 tabs) for QA.
+ *    (entire ArchiveWorkspace spec) for QA.
  *
- * @specRef Section 7 (Archive Workspace) — 9 categories
+ * @specRef Section 7 (Archive Workspace)
  */
 import React from 'react';
 import {
   DocumentsArchivePanel,
   ProjectsArchivePanel,
+  TasksArchivePanel,
   HRArchivePanel,
   FinancialArchivePanel,
   LegalArchivePanel,
@@ -31,6 +32,7 @@ interface CategoryPanelFactoryProps {
 const SPECIALIZED: Record<ArchiveCategoryType, React.ComponentType> = {
   documents: DocumentsArchivePanel,
   projects: ProjectsArchivePanel,
+  tasks: TasksArchivePanel,
   hr: HRArchivePanel,
   financial: FinancialArchivePanel,
   legal: LegalArchivePanel,
