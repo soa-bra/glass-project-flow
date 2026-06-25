@@ -16,6 +16,8 @@ interface KanbanColumn {
 interface KanbanBoardProps {
   projectId: string;
   filters: TaskFilters;
+  tasks?: UnifiedTask[];
+  onUpdateTaskStatus?: (taskId: string, status: UnifiedTask['status']) => void;
 }
 
 const columns: KanbanColumn[] = [
@@ -27,8 +29,30 @@ const columns: KanbanColumn[] = [
   { name: "Done", color: COLORS.TASK_STATUS_COMPLETED, description: "المهام المكتملة", status: "completed" }
 ];
 
-export const KanbanBox: React.FC<KanbanBoardProps> = ({ projectId, filters }) => {
-  const { getTasksByStatus, updateTaskStatus } = useUnifiedTasks(projectId);
+const matchesFilters = (task: UnifiedTask, filters?: TaskFilters) => {
+  if (!filters) return true;
+  if (filters.assignee && !task.assignee.toLowerCase().includes(filters.assignee.toLowerCase())) return false;
+  if (filters.priority && task.priority !== filters.priority) return false;
+  if (filters.status) {
+    const statusMap: Record<string, UnifiedTask['status']> = {
+      'To-Do': 'todo',
+      'In Progress': 'in-progress',
+      Treating: 'treating',
+      Late: 'late',
+      Stopped: 'stopped',
+      Done: 'completed',
+    };
+    const mappedStatus = statusMap[filters.status] || filters.status;
+    if (task.status !== mappedStatus) return false;
+  }
+  if (filters.search && !task.title.toLowerCase().includes(filters.search.toLowerCase())) return false;
+  return true;
+};
+
+export const KanbanBox: React.FC<KanbanBoardProps> = ({ projectId, filters, tasks, onUpdateTaskStatus }) => {
+  const taskStore = useUnifiedTasks(projectId);
+  const taskSource = tasks ?? taskStore.tasks;
+  const updateStatus = onUpdateTaskStatus ?? taskStore.updateTaskStatus;
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [draggedTask, setDraggedTask] = useState<UnifiedTask | null>(null);
   const [draggedFromStatus, setDraggedFromStatus] = useState<UnifiedTask['status'] | "">("");
@@ -45,7 +69,7 @@ export const KanbanBox: React.FC<KanbanBoardProps> = ({ projectId, filters }) =>
   const handleDrop = (e: React.DragEvent, toStatus: UnifiedTask['status']) => {
     e.preventDefault();
     if (draggedTask && draggedFromStatus !== toStatus) {
-      updateTaskStatus(draggedTask.id, toStatus);
+      updateStatus(draggedTask.id, toStatus);
     }
     setDraggedTask(null);
     setDraggedFromStatus("");
@@ -72,7 +96,7 @@ export const KanbanBox: React.FC<KanbanBoardProps> = ({ projectId, filters }) =>
       {/* Kanban Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-6 gap-4 min-h-[600px]">
         {columns.map(column => {
-          const columnTasks = getTasksByStatus(column.status, filters);
+          const columnTasks = taskSource.filter(task => task.status === column.status && matchesFilters(task, filters));
           
           return (
             <div
