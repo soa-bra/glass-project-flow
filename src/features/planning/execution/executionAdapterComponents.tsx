@@ -89,7 +89,7 @@ const mapProjectRow = (row: ProjectRow): Project => ({
   tasksCount: 0,
   status: mapProjectStatus(row.state),
   date: row.due_date ?? row.start_date ?? '',
-  dueDate: row.due_date ?? row.start_date ?? null,
+  dueDate: row.due_date ?? null,
   owner: row.owner_id,
   value: row.budget ? String(row.budget) : '0',
   isOverBudget: false,
