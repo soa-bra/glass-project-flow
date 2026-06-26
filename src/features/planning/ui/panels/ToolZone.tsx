@@ -154,7 +154,36 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
 
     const isUnapprovedSuggestion = connector.status === 'suggested' || connector.requiresReview || connector.approvedByUser === false;
     if (isUnapprovedSuggestion) {
-      void deleteSmartConnectorByElementId(connector.id).catch((err) =>
+      const persistableElement = {
+        ...nextElement,
+        data: {
+          ...connector,
+          smartType: 'root_connector',
+          connectorMode: connector.connectorMode ?? 'semantic',
+          status: 'approved',
+          requiresReview: false,
+          approvedByUser: true,
+        },
+        metadata: {
+          ...nextElement.metadata,
+          connectorMode: connector.connectorMode ?? 'semantic',
+          status: 'approved',
+          requiresReview: false,
+          approvedByUser: true,
+        },
+      };
+      const relatedConnectorElementIds = new Set([
+        connector.id,
+        ...toPlanningConnectorLogicalRecords(persistableElement, boardId).map(
+          (record) => record.connector_element_id,
+        ),
+      ]);
+
+      void Promise.all(
+        [...relatedConnectorElementIds].map((connectorElementId) =>
+          deleteSmartConnectorByElementId(connectorElementId),
+        ),
+      ).catch((err) =>
         console.warn('[smart_connectors] suggested connector cleanup failed', err),
       );
       return;
