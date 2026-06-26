@@ -95,6 +95,11 @@ const getConnectorBranchesWithPrimaryTarget = (connector: RootConnectorData): Co
   return [createBranch(connector, connector.endPoint, connector.targetSubAnchor ?? getPointSubAnchor(connector.endPoint))];
 };
 
+const getConnectorMutationFlags = (connector: RootConnectorData) => ({
+  archived: Boolean((connector as RootConnectorData & { archived?: boolean })?.archived),
+  locked: Boolean((connector as RootConnectorData & { locked?: boolean })?.locked),
+});
+
 interface SmartConnectorManagerProps {
   elements: ElementBounds[];
   boardId?: string | null;
@@ -185,30 +190,53 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
 
     setPolicyMessage(null);
     const now = new Date().toISOString();
-    const existingConnector = connectors.find((connector) => isSameConnectorSource(connector, startPoint, connectionType));
+    const matchingSourceConnectors = connectors.filter((connector) => isSameConnectorSource(connector, startPoint, connectionType));
+    const duplicateConnector = matchingSourceConnectors.find((connector) => (
+      getConnectorTargets(connector).some((targetPoint) => isSameConnectorTarget(targetPoint, endPoint))
+    ));
 
-    if (existingConnector) {
-      const existingTargets = getConnectorTargets(existingConnector);
-      if (existingTargets.some((targetPoint) => isSameConnectorTarget(targetPoint, endPoint))) {
-        selectConnector(existingConnector.id);
-        toast.info('العلاقة موجودة بالفعل', { description: 'تم تحديد الموصل الحالي بدل إنشاء نسخة مكررة.' });
-        return;
-      }
+    if (duplicateConnector) {
+      selectConnector(duplicateConnector.id);
+      toast.info('العلاقة موجودة بالفعل', { description: 'تم تحديد الموصل الحالي بدل إنشاء نسخة مكررة.' });
+      return;
+    }
 
+    const appendableConnector = matchingSourceConnectors.find((connector) => {
+      const flags = getConnectorMutationFlags(connector);
+      if (flags.archived || flags.locked) return false;
+
+      return [...getConnectorTargets(connector), endPoint].every((targetPoint) => {
+        const branchTarget = targetPoint.elementId === endPoint.elementId && getPointSubAnchor(targetPoint) === getPointSubAnchor(endPoint)
+          ? target
+          : elements.find((element) => element.id === targetPoint.elementId);
+        if (!branchTarget) return false;
+
+        const updateDecision = canUpdateConnector({
+          board: { canEditBoard, canCreateOperationalRelationship },
+          source,
+          target: branchTarget,
+          relationshipType: connectionType,
+          connectorArchived: flags.archived,
+          connectorLocked: flags.locked,
+        });
+        return updateDecision.allowed;
+      });
+    });
+
+    if (appendableConnector) {
       const updatedConnector: RootConnectorData = {
-        ...existingConnector,
+        ...appendableConnector,
         branches: [
-          ...getConnectorBranchesWithPrimaryTarget(existingConnector),
-          createBranch(existingConnector, endPoint, endPoint.subAnchor ?? endPoint.anchorPoint),
+          ...getConnectorBranchesWithPrimaryTarget(appendableConnector),
+          createBranch(appendableConnector, endPoint, endPoint.subAnchor ?? endPoint.anchorPoint),
         ],
-        targetPoints: undefined,
         branchMode: 'branch',
         connectorPointType: startPoint.subAnchor || endPoint.subAnchor ? 'sub_anchor' : 'anchor',
         updatedAt: now,
       };
 
-      onConnectorsChange(connectors.map((connector) => connector.id === existingConnector.id ? updatedConnector : connector));
-      selectConnector(existingConnector.id);
+      onConnectorsChange(connectors.map((connector) => connector.id === appendableConnector.id ? updatedConnector : connector));
+      selectConnector(appendableConnector.id);
       return;
     }
 
@@ -251,8 +279,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     }
 
     const relationshipType = data.relationshipType ?? data.connectionType;
-    const connectorArchived = Boolean((existingConnector as RootConnectorData & { archived?: boolean })?.archived);
-    const connectorLocked = Boolean((existingConnector as RootConnectorData & { locked?: boolean })?.locked);
+    const flags = existingConnector ? getConnectorMutationFlags(existingConnector) : { archived: false, locked: false };
 
     for (const targetPoint of getConnectorTargets(data)) {
       const target = elements.find((element) => element.id === targetPoint.elementId);
@@ -266,8 +293,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
         source,
         target,
         relationshipType,
-        connectorArchived,
-        connectorLocked,
+        connectorArchived: flags.archived,
+        connectorLocked: flags.locked,
       });
 
       if (!policyDecision.allowed) {
