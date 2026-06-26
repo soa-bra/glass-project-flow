@@ -128,7 +128,7 @@ const DepartmentsSidebar: React.FC<DepartmentsSidebarProps> = ({
                         : 'border-[#DADCE0] bg-white/55 text-[rgba(11,15,18,0.58)] group-hover:border-[#0B0F12]/12 group-hover:text-[#0B0F12]'
                     }`}
                   >
-                    <IconComponent className="h-4.5 w-4.5 sync-transition-fast group-hover:scale-105" />
+                    <IconComponent className="h-[18px] w-[18px] sync-transition-fast group-hover:scale-105" />
                   </span>
 
                   <span
