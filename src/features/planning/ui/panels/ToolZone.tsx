@@ -4,7 +4,11 @@ import type { ToolId } from '@/types/canvas';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
 import { ConnectorInspector } from '@/features/planning/elements/smart/RootConnector';
-import { deleteSmartConnectorByElementId } from '@/services/central/smartConnectors.service';
+import { toPlanningConnectorLogicalRecords } from '@/features/planning/integration/connectors';
+import {
+  deleteSmartConnectorByElementId,
+  upsertSmartConnectors,
+} from '@/services/central/smartConnectors.service';
 import { Button } from '@/components/ui/button';
 import FileUploadPanel from './FileUploadToolZone';
 import ShapesPanel from './ShapesToolZone';
@@ -119,6 +123,51 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
     }
   }, [activeTool, editingTextId, selectedRootConnector]);
 
+  const syncSelectedRootConnector = (connector: RootConnectorData & { smartType: 'root_connector' }) => {
+    if (!selectedRootConnectorElement || !boardId) return;
+
+    const nextElement = {
+      ...selectedRootConnectorElement,
+      data: connector,
+      metadata: {
+        ...selectedRootConnectorElement.metadata,
+        smartType: 'root_connector',
+        relationshipType: connector.relationshipType ?? connector.connectionType,
+        connectorMode: connector.connectorMode ?? 'semantic',
+        status: connector.status ?? 'approved',
+        direction: connector.direction ?? 'source_to_target',
+        connectorPointType: connector.connectorPointType ?? 'anchor',
+        branchMode: connector.branchMode ?? 'single',
+        sourceSubAnchor: connector.sourceSubAnchor ?? connector.startPoint.anchorPoint,
+        targetSubAnchor: connector.targetSubAnchor ?? connector.endPoint.anchorPoint,
+        permissionScope: connector.permissionScope ?? 'board',
+        source: connector.source ?? 'user',
+        aiConfidence: connector.aiConfidence,
+        requiresReview: connector.requiresReview ?? false,
+        isAIGenerated: connector.isAIGenerated ?? false,
+        approvedByUser: connector.approvedByUser ?? true,
+        smartActions: connector.smartActions ?? [],
+        sourceElementId: connector.startPoint.elementId,
+        targetElementId: connector.endPoint.elementId,
+      },
+    };
+
+    const isUnapprovedSuggestion = connector.status === 'suggested' || connector.requiresReview || connector.approvedByUser === false;
+    if (isUnapprovedSuggestion) {
+      void deleteSmartConnectorByElementId(connector.id).catch((err) =>
+        console.warn('[smart_connectors] suggested connector cleanup failed', err),
+      );
+      return;
+    }
+
+    const connectorRecords = toPlanningConnectorLogicalRecords(nextElement, boardId);
+    if (connectorRecords.length > 0) {
+      void upsertSmartConnectors(connectorRecords).catch((err) =>
+        console.warn('[smart_connectors] upsert failed', err),
+      );
+    }
+  };
+
   const patchSelectedRootConnector = (patch: Partial<RootConnectorData>) => {
     if (!selectedRootConnectorElement || !selectedRootConnector) return;
 
@@ -132,30 +181,33 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
       updatedAt,
     };
 
+    const nextMetadata = {
+      ...selectedRootConnectorElement.metadata,
+      smartType: 'root_connector',
+      relationshipType: nextConnector.relationshipType ?? nextConnector.connectionType,
+      connectorMode: nextConnector.connectorMode ?? 'semantic',
+      status: nextConnector.status ?? 'approved',
+      direction: nextConnector.direction ?? 'source_to_target',
+      connectorPointType: nextConnector.connectorPointType ?? 'anchor',
+      branchMode: nextConnector.branchMode ?? 'single',
+      sourceSubAnchor: nextConnector.sourceSubAnchor ?? nextConnector.startPoint.anchorPoint,
+      targetSubAnchor: nextConnector.targetSubAnchor ?? nextConnector.endPoint.anchorPoint,
+      permissionScope: nextConnector.permissionScope ?? 'board',
+      source: nextConnector.source ?? 'user',
+      aiConfidence: nextConnector.aiConfidence,
+      requiresReview: nextConnector.requiresReview ?? false,
+      isAIGenerated: nextConnector.isAIGenerated ?? false,
+      approvedByUser: nextConnector.approvedByUser ?? true,
+      smartActions: nextConnector.smartActions ?? [],
+      sourceElementId: nextConnector.startPoint.elementId,
+      targetElementId: nextConnector.endPoint.elementId,
+    };
+
     updateElement(selectedRootConnectorElement.id, {
       data: nextConnector,
-      metadata: {
-        ...selectedRootConnectorElement.metadata,
-        smartType: 'root_connector',
-        relationshipType: nextConnector.relationshipType ?? nextConnector.connectionType,
-        connectorMode: nextConnector.connectorMode ?? 'semantic',
-        status: nextConnector.status ?? 'approved',
-        direction: nextConnector.direction ?? 'source_to_target',
-        connectorPointType: nextConnector.connectorPointType ?? 'anchor',
-        branchMode: nextConnector.branchMode ?? 'single',
-        sourceSubAnchor: nextConnector.sourceSubAnchor ?? nextConnector.startPoint.anchorPoint,
-        targetSubAnchor: nextConnector.targetSubAnchor ?? nextConnector.endPoint.anchorPoint,
-        permissionScope: nextConnector.permissionScope ?? 'board',
-        source: nextConnector.source ?? 'user',
-        aiConfidence: nextConnector.aiConfidence,
-        requiresReview: nextConnector.requiresReview ?? false,
-        isAIGenerated: nextConnector.isAIGenerated ?? false,
-        approvedByUser: nextConnector.approvedByUser ?? true,
-        smartActions: nextConnector.smartActions ?? [],
-        sourceElementId: nextConnector.startPoint.elementId,
-        targetElementId: nextConnector.endPoint.elementId,
-      },
+      metadata: nextMetadata,
     });
+    syncSelectedRootConnector(nextConnector);
   };
 
   const deleteSelectedRootConnector = () => {
