@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Upload, X, Image, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { createRenderableFileCanvasElement } from '@/features/planning/utils/fileCanvasElements';
 
 interface UploadedFile {
   id: string;
@@ -70,37 +71,19 @@ export default function FileUploadPanel() {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const insertFile = (fileId: string) => {
+  const insertFile = async (fileId: string) => {
     const file = files.find(f => f.id === fileId);
     if (!file) return;
 
-    if (file.type.startsWith('image/')) {
-      // إدراج كصورة
-      const imageUrl = URL.createObjectURL(file.file);
-      addElement({
-        type: 'image',
-        position: { x: 100, y: 100 },
-        size: { width: 300, height: 200 },
-        src: imageUrl,
-        alt: file.name
-      });
-      toast.success(`تم إدراج الصورة: ${file.name}`);
-    } else {
-      // إدراج كملف
-      addElement({
-        type: 'file',
-        position: { x: 100, y: 100 },
-        size: { width: 250, height: 120 },
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size,
-        fileUrl: URL.createObjectURL(file.file)
-      });
+    try {
+      const element = await createRenderableFileCanvasElement(file.file, { x: 100, y: 100 });
+      addElement(element);
       toast.success(`تم إدراج الملف: ${file.name}`);
+      removeFile(fileId);
+    } catch (error) {
+      console.warn('[file_uploader] insert failed', error);
+      toast.error(`تعذر إدراج الملف: ${file.name}`);
     }
-
-    // إزالة الملف بعد الإدراج
-    removeFile(fileId);
   };
 
   const handleActivateUploader = () => {
@@ -201,7 +184,7 @@ export default function FileUploadPanel() {
 
                     {/* Insert Button */}
                     <button
-                      onClick={() => insertFile(file.id)}
+                      onClick={() => void insertFile(file.id)}
                       className="flex-shrink-0 px-2 py-1 bg-[hsl(var(--accent-green))] text-white text-[10px] font-medium rounded hover:bg-[hsl(var(--accent-green))]/90 transition-colors"
                     >
                       إدراج
