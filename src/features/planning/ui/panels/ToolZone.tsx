@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, Link2, Trash2 } from 'lucide-react';
 import type { ToolId } from '@/types/canvas';
 import { useCanvasStore } from '@/stores/canvasStore';
+import type { RootConnectorData } from '@/features/planning/elements/smart/RootConnector';
+import { ConnectorInspector } from '@/features/planning/elements/smart/RootConnector';
+import { deleteSmartConnectorByElementId } from '@/services/central/smartConnectors.service';
+import { Button } from '@/components/ui/button';
 import FileUploadPanel from './FileUploadToolZone';
 import ShapesPanel from './ShapesToolZone';
 import SmartElementsPanel from './SmartElementsToolZone';
@@ -13,6 +17,51 @@ interface ToolZoneProps {
   onClose?: () => void;
   boardId?: string;
 }
+
+interface RootConnectorToolPanelProps {
+  connector: RootConnectorData;
+  onPatch: (patch: Partial<RootConnectorData>) => void;
+  onDelete: () => void;
+}
+
+const RootConnectorToolPanel: React.FC<RootConnectorToolPanelProps> = ({
+  connector,
+  onPatch,
+  onDelete,
+}) => {
+  return (
+    <div className="space-y-4" dir="rtl">
+      <div className="rounded-xl border border-border/70 bg-muted/30 p-3">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Link2 className="h-4 w-4" />
+          </div>
+          <div className="min-w-0">
+            <h4 className="truncate text-sm font-semibold text-foreground">
+              {connector.title || 'رابط ذكي'}
+            </h4>
+            <p className="text-[11px] text-muted-foreground">
+              حرر خصائص الموصل من لوحة الأدوات بدل محرر عائم فوق الكانفس.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ConnectorInspector data={connector} onPatch={onPatch} />
+
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        onClick={onDelete}
+        className="h-8 w-full gap-2 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+        حذف الموصل
+      </Button>
+    </div>
+  );
+};
 
 const panelTitles: Record<ToolId, string> = {
   selection_tool: 'أدوات التحديد',
@@ -43,10 +92,24 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
   
   // الحصول على حالة التحرير
   const editingTextId = useCanvasStore(state => state.editingTextId);
+  const elements = useCanvasStore(state => state.elements);
+  const selectedElementIds = useCanvasStore(state => state.selectedElementIds);
+  const updateElement = useCanvasStore(state => state.updateElement);
+  const deleteElements = useCanvasStore(state => state.deleteElements);
+
+  const selectedRootConnectorElement = elements.find((element) => (
+    selectedElementIds.includes(element.id) && element.data?.smartType === 'root_connector'
+  ));
+
+  const selectedRootConnector = selectedRootConnectorElement
+    ? ({ ...(selectedRootConnectorElement.data as RootConnectorData), id: selectedRootConnectorElement.id })
+    : null;
   
   // طي تلقائي للأدوات بدون panel
   useEffect(() => {
-    if (toolsWithoutPanel.includes(activeTool) && !editingTextId) {
+    if (selectedRootConnector) {
+      setIsCollapsed(false);
+    } else if (toolsWithoutPanel.includes(activeTool) && !editingTextId) {
       setIsCollapsed(true);
     } else if (toolsWithoutPanel.includes(activeTool) && editingTextId) {
       // عند تحرير نص، أيضاً نطوي لأن FloatingBar يتولى المهمة
@@ -54,9 +117,66 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
     } else {
       setIsCollapsed(false);
     }
-  }, [activeTool, editingTextId]);
+  }, [activeTool, editingTextId, selectedRootConnector]);
+
+  const patchSelectedRootConnector = (patch: Partial<RootConnectorData>) => {
+    if (!selectedRootConnectorElement || !selectedRootConnector) return;
+
+    const updatedAt = new Date().toISOString();
+    const nextConnector: RootConnectorData & { smartType: 'root_connector' } = {
+      ...selectedRootConnector,
+      ...patch,
+      connectionType: patch.connectionType ?? patch.relationshipType ?? selectedRootConnector.connectionType ?? selectedRootConnector.relationshipType,
+      relationshipType: patch.relationshipType ?? patch.connectionType ?? selectedRootConnector.relationshipType ?? selectedRootConnector.connectionType,
+      smartType: 'root_connector',
+      updatedAt,
+    };
+
+    updateElement(selectedRootConnectorElement.id, {
+      data: nextConnector,
+      metadata: {
+        ...selectedRootConnectorElement.metadata,
+        smartType: 'root_connector',
+        relationshipType: nextConnector.relationshipType ?? nextConnector.connectionType,
+        connectorMode: nextConnector.connectorMode ?? 'semantic',
+        status: nextConnector.status ?? 'approved',
+        direction: nextConnector.direction ?? 'source_to_target',
+        connectorPointType: nextConnector.connectorPointType ?? 'anchor',
+        branchMode: nextConnector.branchMode ?? 'single',
+        sourceSubAnchor: nextConnector.sourceSubAnchor ?? nextConnector.startPoint.anchorPoint,
+        targetSubAnchor: nextConnector.targetSubAnchor ?? nextConnector.endPoint.anchorPoint,
+        permissionScope: nextConnector.permissionScope ?? 'board',
+        source: nextConnector.source ?? 'user',
+        aiConfidence: nextConnector.aiConfidence,
+        requiresReview: nextConnector.requiresReview ?? false,
+        isAIGenerated: nextConnector.isAIGenerated ?? false,
+        approvedByUser: nextConnector.approvedByUser ?? true,
+        smartActions: nextConnector.smartActions ?? [],
+        sourceElementId: nextConnector.startPoint.elementId,
+        targetElementId: nextConnector.endPoint.elementId,
+      },
+    });
+  };
+
+  const deleteSelectedRootConnector = () => {
+    if (!selectedRootConnectorElement) return;
+    deleteElements([selectedRootConnectorElement.id]);
+    void deleteSmartConnectorByElementId(selectedRootConnectorElement.id).catch((err) =>
+      console.warn('[smart_connectors] delete failed', err),
+    );
+  };
   
   const renderPanel = () => {
+    if (selectedRootConnector) {
+      return (
+        <RootConnectorToolPanel
+          connector={selectedRootConnector}
+          onPatch={patchSelectedRootConnector}
+          onDelete={deleteSelectedRootConnector}
+        />
+      );
+    }
+
     // لم يعد هناك حاجة لـ TextPanel - يتم التحكم في النص عبر FloatingBar
     switch (activeTool) {
       case 'file_uploader':
@@ -88,7 +208,7 @@ const ToolZone: React.FC<ToolZoneProps> = ({ activeTool, onClose, boardId }) => 
   };
   
   // تحديث العنوان ديناميكياً
-  const panelTitle = panelTitles[activeTool];
+  const panelTitle = selectedRootConnector ? 'محرر الموصل الذكي' : panelTitles[activeTool];
 
   // إذا كان مطوياً بالكامل، عرض شريط صغير فقط
   if (isCollapsed) {
