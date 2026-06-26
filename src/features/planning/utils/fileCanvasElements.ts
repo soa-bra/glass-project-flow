@@ -26,20 +26,11 @@ const isTextLikeFile = (file: File) => {
   );
 };
 
-const escapeHtml = (value: string) => value
-  .replace(/&/g, '&amp;')
-  .replace(/</g, '&lt;')
-  .replace(/>/g, '&gt;')
-  .replace(/"/g, '&quot;')
-  .replace(/'/g, '&#39;');
-
 const readTextPreview = async (file: File) => {
   const preview = await file.slice(0, TEXT_PREVIEW_LIMIT).text();
-  const text = file.size <= TEXT_PREVIEW_LIMIT
+  return file.size <= TEXT_PREVIEW_LIMIT
     ? preview
     : `${preview}\n\n... تم اختصار المعاينة لأن الملف طويل.`;
-
-  return escapeHtml(text);
 };
 
 export const createRenderableFileCanvasElement = async (
