@@ -1,4 +1,4 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePlanningStore } from '@/features/planning/state/store';
 import type { CanvasElement } from '@/types/canvas';
@@ -65,6 +65,11 @@ async function flushPersistenceTimer(): Promise<void> {
   await Promise.resolve();
 }
 
+async function flushMicrotasks(): Promise<void> {
+  await Promise.resolve();
+  await Promise.resolve();
+}
+
 describe('usePlanningElementPersistence', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -123,14 +128,13 @@ describe('usePlanningElementPersistence', () => {
     expect(usePlanningStore.getState().pendingDeletedElementIds).toContain(elementId);
     expect(mocks.deletePlanningElement).not.toHaveBeenCalled();
 
-    unmount();
+    await act(async () => {
+      unmount();
+      await flushMicrotasks();
+    });
 
-    await waitFor(() => {
-      expect(mocks.deletePlanningElement).toHaveBeenCalledWith(elementId);
-    });
-    await waitFor(() => {
-      expect(usePlanningStore.getState().pendingDeletedElementIds).not.toContain(elementId);
-    });
+    expect(mocks.deletePlanningElement).toHaveBeenCalledWith(elementId);
+    expect(usePlanningStore.getState().pendingDeletedElementIds).not.toContain(elementId);
     expect(mocks.upsertPlanningElements).not.toHaveBeenCalled();
   });
 
