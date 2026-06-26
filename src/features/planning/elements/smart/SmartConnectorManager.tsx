@@ -6,6 +6,7 @@ import {
   ConnectorPoint, 
   AISuggestion,
   ConnectionAnchors,
+  ConnectorBranch,
 } from './RootConnector';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { toast } from 'sonner';
@@ -43,6 +44,55 @@ const subAnchorToPoint = (el: ElementBounds, subAnchor?: string | null) => {
   const xRatio = col === 'left' ? 1 / 6 : col === 'right' ? 5 / 6 : 1 / 2;
   const yRatio = row === 'top' ? 1 / 6 : row === 'bottom' ? 5 / 6 : 1 / 2;
   return { x: el.x + el.width * xRatio, y: el.y + el.height * yRatio };
+};
+
+const getPointSubAnchor = (point: ConnectorPoint): string => point.subAnchor ?? point.anchorPoint;
+
+const getConnectorRelationshipType = (connector: RootConnectorData) => (
+  connector.relationshipType ?? connector.connectionType ?? UNIFIED_RELATIONSHIP_TYPES[0]
+);
+
+const getConnectorTargets = (connector: RootConnectorData): ConnectorPoint[] => {
+  if (connector.branches?.length) return connector.branches.map((branch) => branch.targetPoint);
+  if (connector.targetPoints?.length) return connector.targetPoints;
+  return [connector.endPoint];
+};
+
+const getConnectorSourceSubAnchor = (connector: RootConnectorData): string => (
+  connector.sourceSubAnchor ?? getPointSubAnchor(connector.startPoint)
+);
+
+const isSameConnectorSource = (
+  connector: RootConnectorData,
+  startPoint: ConnectorPoint,
+  connectionType: RootConnectorData['connectionType'],
+): boolean => (
+  connector.startPoint.elementId === startPoint.elementId &&
+  getConnectorSourceSubAnchor(connector) === getPointSubAnchor(startPoint) &&
+  getConnectorRelationshipType(connector) === connectionType
+);
+
+const isSameConnectorTarget = (target: ConnectorPoint, point: ConnectorPoint): boolean => (
+  target.elementId === point.elementId && getPointSubAnchor(target) === getPointSubAnchor(point)
+);
+
+const createBranch = (
+  connector: RootConnectorData,
+  targetPoint: ConnectorPoint,
+  targetSubAnchor = getPointSubAnchor(targetPoint),
+): ConnectorBranch => ({
+  id: crypto.randomUUID(),
+  targetPoint,
+  sourceSubAnchor: getConnectorSourceSubAnchor(connector),
+  targetSubAnchor,
+});
+
+const getConnectorBranchesWithPrimaryTarget = (connector: RootConnectorData): ConnectorBranch[] => {
+  if (connector.branches?.length) return connector.branches;
+  if (connector.targetPoints?.length) {
+    return connector.targetPoints.map((targetPoint) => createBranch(connector, targetPoint));
+  }
+  return [createBranch(connector, connector.endPoint, connector.targetSubAnchor ?? getPointSubAnchor(connector.endPoint))];
 };
 
 interface SmartConnectorManagerProps {
@@ -134,6 +184,34 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     }
 
     setPolicyMessage(null);
+    const now = new Date().toISOString();
+    const existingConnector = connectors.find((connector) => isSameConnectorSource(connector, startPoint, connectionType));
+
+    if (existingConnector) {
+      const existingTargets = getConnectorTargets(existingConnector);
+      if (existingTargets.some((targetPoint) => isSameConnectorTarget(targetPoint, endPoint))) {
+        selectConnector(existingConnector.id);
+        toast.info('العلاقة موجودة بالفعل', { description: 'تم تحديد الموصل الحالي بدل إنشاء نسخة مكررة.' });
+        return;
+      }
+
+      const updatedConnector: RootConnectorData = {
+        ...existingConnector,
+        branches: [
+          ...getConnectorBranchesWithPrimaryTarget(existingConnector),
+          createBranch(existingConnector, endPoint, endPoint.subAnchor ?? endPoint.anchorPoint),
+        ],
+        targetPoints: undefined,
+        branchMode: 'branch',
+        connectorPointType: startPoint.subAnchor || endPoint.subAnchor ? 'sub_anchor' : 'anchor',
+        updatedAt: now,
+      };
+
+      onConnectorsChange(connectors.map((connector) => connector.id === existingConnector.id ? updatedConnector : connector));
+      selectConnector(existingConnector.id);
+      return;
+    }
+
     const newConnector: RootConnectorData = {
       id: crypto.randomUUID(),
       startPoint,
@@ -143,7 +221,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       status: 'approved',
       direction: 'source_to_target',
       connectorMode: 'semantic',
-      connectorPointType: 'anchor',
+      connectorPointType: startPoint.subAnchor || endPoint.subAnchor ? 'sub_anchor' : 'anchor',
       branchMode: 'single',
       sourceSubAnchor: startPoint.subAnchor ?? startPoint.anchorPoint,
       targetSubAnchor: endPoint.subAnchor ?? endPoint.anchorPoint,
@@ -156,8 +234,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
       color: '#9CA3AF',
       strokeWidth: 0.25,
       style: 'solid',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: now,
+      updatedAt: now,
     };
     onConnectorsChange([...connectors, newConnector]);
     selectConnector(newConnector.id);
@@ -165,26 +243,37 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
 
   const handleUpdateConnector = useCallback((id: string, data: RootConnectorData) => {
     const source = elements.find((element) => element.id === data.startPoint.elementId);
-    const target = elements.find((element) => element.id === data.endPoint.elementId);
     const existingConnector = connectors.find((connector) => connector.id === id);
 
-    if (!source || !target) {
-      showPolicyRejection('تعذر العثور على أحد طرفي العلاقة داخل اللوحة.', data.endPoint);
+    if (!source) {
+      showPolicyRejection('تعذر العثور على مصدر العلاقة داخل اللوحة.', data.startPoint);
       return;
     }
 
-    const policyDecision = canUpdateConnector({
-      board: { canEditBoard, canCreateOperationalRelationship },
-      source,
-      target,
-      relationshipType: data.relationshipType ?? data.connectionType,
-      connectorArchived: Boolean((existingConnector as RootConnectorData & { archived?: boolean })?.archived),
-      connectorLocked: Boolean((existingConnector as RootConnectorData & { locked?: boolean })?.locked),
-    });
+    const relationshipType = data.relationshipType ?? data.connectionType;
+    const connectorArchived = Boolean((existingConnector as RootConnectorData & { archived?: boolean })?.archived);
+    const connectorLocked = Boolean((existingConnector as RootConnectorData & { locked?: boolean })?.locked);
 
-    if (!policyDecision.allowed) {
-      showPolicyRejection(policyDecision.reason, data.endPoint);
-      return;
+    for (const targetPoint of getConnectorTargets(data)) {
+      const target = elements.find((element) => element.id === targetPoint.elementId);
+      if (!target) {
+        showPolicyRejection('تعذر العثور على أحد أهداف العلاقة داخل اللوحة.', targetPoint);
+        return;
+      }
+
+      const policyDecision = canUpdateConnector({
+        board: { canEditBoard, canCreateOperationalRelationship },
+        source,
+        target,
+        relationshipType,
+        connectorArchived,
+        connectorLocked,
+      });
+
+      if (!policyDecision.allowed) {
+        showPolicyRejection(policyDecision.reason, targetPoint);
+        return;
+      }
     }
 
     setPolicyMessage(null);
@@ -381,7 +470,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     setIsCreatingConnector(true);
   }, []);
 
-  // Global mousemove/mouseup while dragging from anchor → drop on any element body
+  // Global mousemove/mouseup while dragging from anchor -> drop on any element body
   useEffect(() => {
     if (!isCreatingConnector || !dragStartPoint) return;
 
@@ -473,6 +562,29 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     };
   }, [isCreatingConnector, dragStartPoint, elements, viewport.zoom, handleCreateConnector]);
 
+  const resolvePoint = useCallback((p: ConnectorPoint): ConnectorPoint => {
+    const el = elements.find(e => e.id === p.elementId);
+    if (!el) return p;
+    const subAnchorPoint = subAnchorToPoint(el, p.subAnchor);
+    if (subAnchorPoint) return { ...p, ...subAnchorPoint };
+    const anchorToXY = (a: typeof p.anchorPoint) => {
+      switch (a) {
+        case 'top': return { x: el.x + el.width / 2, y: el.y };
+        case 'bottom': return { x: el.x + el.width / 2, y: el.y + el.height };
+        case 'left': return { x: el.x, y: el.y + el.height / 2 };
+        case 'right': return { x: el.x + el.width, y: el.y + el.height / 2 };
+        case 'top-left': return { x: el.x, y: el.y };
+        case 'top-right': return { x: el.x + el.width, y: el.y };
+        case 'bottom-left': return { x: el.x, y: el.y + el.height };
+        case 'bottom-right': return { x: el.x + el.width, y: el.y + el.height };
+        case 'center':
+        default: return { x: el.x + el.width / 2, y: el.y + el.height / 2 };
+      }
+    };
+    const { x, y } = anchorToXY(p.anchorPoint);
+    return { ...p, x, y };
+  }, [elements]);
+
   return (
     <g ref={svgGroupRef} className="smart-connector-manager" style={{ pointerEvents: 'auto' }}>
       {/* Hover highlight on target element */}
@@ -508,32 +620,15 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
 
       {/* Render all connectors — endpoints recomputed live from current element bounds */}
       {connectors.map(connector => {
-        const resolvePoint = (p: ConnectorPoint): ConnectorPoint => {
-          const el = elements.find(e => e.id === p.elementId);
-          if (!el) return p;
-          const subAnchorPoint = subAnchorToPoint(el, p.subAnchor);
-          if (subAnchorPoint) return { ...p, ...subAnchorPoint };
-          const anchorToXY = (a: typeof p.anchorPoint) => {
-            switch (a) {
-              case 'top': return { x: el.x + el.width / 2, y: el.y };
-              case 'bottom': return { x: el.x + el.width / 2, y: el.y + el.height };
-              case 'left': return { x: el.x, y: el.y + el.height / 2 };
-              case 'right': return { x: el.x + el.width, y: el.y + el.height / 2 };
-              case 'top-left': return { x: el.x, y: el.y };
-              case 'top-right': return { x: el.x + el.width, y: el.y };
-              case 'bottom-left': return { x: el.x, y: el.y + el.height };
-              case 'bottom-right': return { x: el.x + el.width, y: el.y + el.height };
-              case 'center':
-              default: return { x: el.x + el.width / 2, y: el.y + el.height / 2 };
-            }
-          };
-          const { x, y } = anchorToXY(p.anchorPoint);
-          return { ...p, x, y };
-        };
         const liveData: RootConnectorData = {
           ...connector,
           startPoint: resolvePoint(connector.startPoint),
           endPoint: resolvePoint(connector.endPoint),
+          targetPoints: connector.targetPoints?.map(resolvePoint),
+          branches: connector.branches?.map((branch) => ({
+            ...branch,
+            targetPoint: resolvePoint(branch.targetPoint),
+          })),
         };
         return (
           <RootConnector
@@ -545,6 +640,8 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
               // preserve the original anchor descriptors, never persist the resolved x/y
               startPoint: { ...connector.startPoint, anchorPoint: data.startPoint.anchorPoint },
               endPoint: { ...connector.endPoint, anchorPoint: data.endPoint.anchorPoint },
+              targetPoints: connector.targetPoints,
+              branches: connector.branches,
               relationshipType: data.relationshipType || data.connectionType || UNIFIED_RELATIONSHIP_TYPES[0],
               connectionType: data.connectionType || data.relationshipType || UNIFIED_RELATIONSHIP_TYPES[0],
             })}
@@ -608,9 +705,12 @@ export const useSmartConnectors = (initialConnectors: RootConnectorData[] = []) 
   }, [selectedConnectorId]);
 
   const getConnectorsByElement = useCallback((elementId: string) => {
-    return connectors.filter(c => 
-      c.startPoint.elementId === elementId || c.endPoint.elementId === elementId
-    );
+    return connectors.filter((connector) => {
+      if (connector.startPoint.elementId === elementId || connector.endPoint.elementId === elementId) {
+        return true;
+      }
+      return getConnectorTargets(connector).some((targetPoint) => targetPoint.elementId === elementId);
+    });
   }, [connectors]);
 
   const selectedConnector = useMemo(() => 
