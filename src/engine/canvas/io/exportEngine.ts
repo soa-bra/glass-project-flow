@@ -286,6 +286,15 @@ export class ExportEngine {
     return { minX, minY, maxX, maxY };
   }
 
+  private escapeXML(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
   /**
    * تحويل عنصر إلى SVG
    */
@@ -299,15 +308,16 @@ export class ExportEngine {
 
     const rotation = element.rotation || 0;
     const transform = rotation ? ` transform="rotate(${rotation} ${x + width/2} ${y + height/2})"` : '';
+    const textContent = this.escapeXML(element.content || '');
 
     switch (element.type) {
       case 'text':
-        return `<text x="${x}" y="${y + 20}" font-family="IBM Plex Sans Arabic, sans-serif" font-size="14" fill="${stroke}"${transform}>${element.content || ''}</text>`;
+        return `<text x="${x}" y="${y + 20}" font-family="IBM Plex Sans Arabic, sans-serif" font-size="14" fill="${stroke}"${transform}>${textContent}</text>`;
       
       case 'sticky_note':
         return `<g${transform}>
           <rect x="${x}" y="${y}" width="${width}" height="${height}" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1" rx="4"/>
-          <text x="${x + 8}" y="${y + 20}" font-family="IBM Plex Sans Arabic, sans-serif" font-size="12" fill="#92400E">${element.content || ''}</text>
+          <text x="${x + 8}" y="${y + 20}" font-family="IBM Plex Sans Arabic, sans-serif" font-size="12" fill="#92400E">${textContent}</text>
         </g>`;
       
       case 'image':

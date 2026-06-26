@@ -103,41 +103,55 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
     selection?.addRange(range);
   }, [isEditing]);
 
-  const commitEditorContent = useCallback(() => {
+  const readEditorContent = useCallback(() => {
     if (!editorRef.current) return '';
-    const nextContent = sanitizeHTML(editorRef.current.innerHTML || '');
+    if (isUploadedTextPreview) return editorRef.current.textContent || '';
+    return sanitizeHTML(editorRef.current.innerHTML || '');
+  }, [isUploadedTextPreview]);
+
+  const writeEditorContent = useCallback((content: string) => {
+    if (!editorRef.current) return;
+    if (isUploadedTextPreview) {
+      editorRef.current.textContent = content;
+      return;
+    }
+    editorRef.current.innerHTML = sanitizeHTML(content);
+  }, [isUploadedTextPreview]);
+
+  const commitEditorContent = useCallback(() => {
+    const nextContent = readEditorContent();
     onUpdate(nextContent);
     setIsEmpty(isTextEmpty(nextContent));
     syncSize(nextContent);
     return nextContent;
-  }, [onUpdate, syncSize]);
+  }, [onUpdate, readEditorContent, syncSize]);
 
   const applyFormat = useCallback(
     (command: string, value?: string) => {
-      if (!editorRef.current || !isEditing) return;
+      if (!editorRef.current || !isEditing || isUploadedTextPreview) return;
       restoreFocus();
       document.execCommand(command, false, value);
       commitEditorContent();
     },
-    [commitEditorContent, isEditing, restoreFocus],
+    [commitEditorContent, isEditing, isUploadedTextPreview, restoreFocus],
   );
 
   const toggleList = useCallback(
     (listType: 'ul' | 'ol') => {
-      if (!editorRef.current || !isEditing) return;
+      if (!editorRef.current || !isEditing || isUploadedTextPreview) return;
       restoreFocus();
       document.execCommand(listType === 'ul' ? 'insertUnorderedList' : 'insertOrderedList', false);
       commitEditorContent();
     },
-    [commitEditorContent, isEditing, restoreFocus],
+    [commitEditorContent, isEditing, isUploadedTextPreview, restoreFocus],
   );
 
   const removeFormatting = useCallback(() => {
-    if (!editorRef.current || !isEditing) return;
+    if (!editorRef.current || !isEditing || isUploadedTextPreview) return;
     restoreFocus();
     document.execCommand('removeFormat', false);
     commitEditorContent();
-  }, [commitEditorContent, isEditing, restoreFocus]);
+  }, [commitEditorContent, isEditing, isUploadedTextPreview, restoreFocus]);
 
   useEffect(() => {
     if (!isEditing || !editorRef.current) return;
@@ -163,14 +177,13 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
 
   useEffect(() => {
     if (!isEditing || !editorRef.current) return;
-    const editor = editorRef.current;
-    editor.innerHTML = sanitizeHTML(element.content || '');
+    writeEditorContent(element.content || '');
     setIsEmpty(isTextEmpty(element.content || ''));
     requestAnimationFrame(() => {
       restoreFocus();
       syncSize(element.content || '');
     });
-  }, [element.content, isEditing, restoreFocus, syncSize]);
+  }, [element.content, isEditing, restoreFocus, syncSize, writeEditorContent]);
 
   useEffect(() => {
     if (isEditing) return;
@@ -231,7 +244,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
         e.preventDefault();
         const previous = undo();
         if (previous !== null && editorRef.current) {
-          editorRef.current.innerHTML = sanitizeHTML(previous);
+          writeEditorContent(previous);
           onUpdate(previous);
           syncSize(previous);
           setIsEmpty(isTextEmpty(previous));
@@ -243,7 +256,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
         e.preventDefault();
         const next = redo();
         if (next !== null && editorRef.current) {
-          editorRef.current.innerHTML = sanitizeHTML(next);
+          writeEditorContent(next);
           onUpdate(next);
           syncSize(next);
           setIsEmpty(isTextEmpty(next));
@@ -286,11 +299,13 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
         handleDirectionChange((style.direction || 'rtl') === 'rtl' ? 'ltr' : 'rtl');
       }
     },
-    [applyFormat, commitEditorContent, handleDirectionChange, isEditing, onClose, onUpdate, redo, style.direction, syncSize, textType, undo],
+    [applyFormat, commitEditorContent, handleDirectionChange, isEditing, onClose, onUpdate, redo, style.direction, syncSize, textType, undo, writeEditorContent],
   );
 
   const placeholderVisible = getTextPlaceholderVisibility({
-    content: isEditing && editorRef.current ? editorRef.current.innerHTML : element.content,
+    content: isEditing && editorRef.current
+      ? (isUploadedTextPreview ? editorRef.current.textContent : editorRef.current.innerHTML)
+      : element.content,
     isEditing,
   });
 
@@ -336,7 +351,9 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
         suppressContentEditableWarning
         dir={style.direction || 'rtl'}
         onInput={(e) => {
-          const nextContent = sanitizeHTML(e.currentTarget.innerHTML || '');
+          const nextContent = isUploadedTextPreview
+            ? e.currentTarget.textContent || ''
+            : sanitizeHTML(e.currentTarget.innerHTML || '');
           onUpdate(nextContent);
           pushState(nextContent);
           setIsEmpty(isTextEmpty(nextContent));
