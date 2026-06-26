@@ -16,11 +16,12 @@
  *   400 header          الهيدر العلوي
  *   500 toolbar         أشرطة الأدوات العائمة
  *  8000 dropdown        قوائم منسدلة عادية
+ *  9000 popover         قوائم الهيدر والقوائم العامة خارج المودال
+ *                       ⚠ أولوية popover العامة ثابتة: أعلى من header/sidebar/project-panel
+ *                          وأقل من modal-backdrop حتى تغطيها خلفية المودال عند فتحه.
  * 10000 modal-backdrop  خلفية النوافذ المنبثقة
  * 10100 modal-content   محتوى النوافذ المنبثقة
- * 10150 popover         قوائم/تقويمات منبثقة، بما فيها المفتوحة من داخل modal
- *                       ⚠ أولوية popover ثابتة: أعلى من modal-content حتى لا تظهر
- *                          تقويمات وقوائم النوافذ تحت blur، وأقل من tooltip/toast.
+ * 10150 modal-popover   قوائم/تقويمات منبثقة مفتوحة من داخل modal فقط
  * 10200 tooltip         تلميحات
  * 10300 toast           إشعارات منبثقة
  *
@@ -47,9 +48,10 @@
   /* Overlays */
   --z-toolbar: 500;
   --z-dropdown: 8000;
+  --z-popover: 9000;
   --z-modal-backdrop: 10000;
   --z-modal-content: 10100;
-  --z-popover: 10150;
+  --z-modal-popover: 10150;
   --z-tooltip: 10200;
   --z-toast: 10300;
 }
