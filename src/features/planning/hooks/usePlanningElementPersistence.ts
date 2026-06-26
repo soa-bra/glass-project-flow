@@ -68,6 +68,15 @@ function readSmartDocSourceElementIds(element: CanvasElement): string[] {
     : [];
 }
 
+function getPersistableElements(): CanvasElement[] {
+  return usePlanningStore.getState().elements.filter((element) => isPlanningElementId(element.id));
+}
+
+function getDeletedPersistedIds(lastElementIds: Set<string>, currentElements: CanvasElement[]): string[] {
+  const currentIds = new Set(currentElements.map((element) => element.id));
+  return [...lastElementIds].filter((id) => !currentIds.has(id));
+}
+
 async function upsertSmartDocsForElements(
   boardId: string,
   userId: string,
@@ -228,6 +237,12 @@ export function usePlanningElementPersistence(
       initialElements.filter((element) => isPlanningElementId(element.id)).map((element) => element.id),
     );
 
+    const persistDeletedElements = async (deletedIds: string[]): Promise<void> => {
+      if (deletedIds.length === 0) return;
+      await Promise.all(deletedIds.map((id) => PlanningBoardsService.deletePlanningElement(id)));
+      usePlanningStore.getState().acknowledgeDeletedElements(deletedIds);
+    };
+
     const unsubscribe = usePlanningStore.subscribe((state) => {
       const elements = state.elements;
       const signature = stableElementSignature(elements);
@@ -263,8 +278,7 @@ export function usePlanningElementPersistence(
         const deletedIds = [...lastElementIdsRef.current].filter((id) => !currentIds.has(id));
 
         try {
-          await Promise.all(deletedIds.map((id) => PlanningBoardsService.deletePlanningElement(id)));
-          usePlanningStore.getState().acknowledgeDeletedElements(deletedIds);
+          await persistDeletedElements(deletedIds);
           await PlanningBoardsService.upsertPlanningElements(
             currentPersistable.map((element) => canvasToPlanningInsert(element, boardId, userId)),
           );
@@ -293,6 +307,14 @@ export function usePlanningElementPersistence(
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
+      }
+
+      const currentPersistable = getPersistableElements();
+      const deletedIds = getDeletedPersistedIds(lastElementIdsRef.current, currentPersistable);
+      if (deletedIds.length > 0) {
+        void persistDeletedElements(deletedIds).catch((error) => {
+          console.error("[usePlanningElementPersistence] Failed to flush deleted planning elements", error);
+        });
       }
     };
   }, [boardId, enabled]);

@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePlanningStore } from '@/features/planning/state/store';
 import type { CanvasElement } from '@/types/canvas';
@@ -48,6 +48,7 @@ function createElement(layerId: string): CanvasElement {
 function resetStore(layerId = 'layer-a'): void {
   usePlanningStore.setState({
     elements: [createElement(layerId)],
+    pendingDeletedElementIds: [],
     layers: [
       { id: 'layer-a', name: 'Layer A', visible: true, locked: false, elements: layerId === 'layer-a' ? [elementId] : [] },
       { id: 'layer-b', name: 'Layer B', visible: true, locked: false, elements: layerId === 'layer-b' ? [elementId] : [] },
@@ -106,6 +107,31 @@ describe('usePlanningElementPersistence', () => {
     });
     expect(result.current.error).toBeNull();
     expect(result.current.lastPersistedAt).toBeInstanceOf(Date);
+  });
+
+  it('flushes deleted elements when unmounted before the debounce save runs', async () => {
+    const { unmount } = renderHook(() => usePlanningElementPersistence(boardId, true));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      usePlanningStore.getState().deleteElements([elementId]);
+    });
+
+    expect(usePlanningStore.getState().pendingDeletedElementIds).toContain(elementId);
+    expect(mocks.deletePlanningElement).not.toHaveBeenCalled();
+
+    unmount();
+
+    await waitFor(() => {
+      expect(mocks.deletePlanningElement).toHaveBeenCalledWith(elementId);
+    });
+    await waitFor(() => {
+      expect(usePlanningStore.getState().pendingDeletedElementIds).not.toContain(elementId);
+    });
+    expect(mocks.upsertPlanningElements).not.toHaveBeenCalled();
   });
 
   it('reports persistence failures instead of leaving them silent', async () => {
