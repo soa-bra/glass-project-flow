@@ -65,6 +65,10 @@ interface ContextSmartMenuProps {
   boardId?: string | null;
 }
 
+const stopCanvasEvent = (event: React.SyntheticEvent) => {
+  event.stopPropagation();
+};
+
 const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -100,8 +104,14 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   }, [selectedElements, viewport]);
 
   const busy = isLoading || isTransforming;
-  const closeAfter = (action: () => void | Promise<void>) => () => {
-    void Promise.resolve(action()).then(() => setIsVisible(false));
+  const runAction = (action: () => void | Promise<void>, options: { close?: boolean } = {}) => () => {
+    void Promise.resolve(action())
+      .then(() => {
+        if (options.close !== false) setIsVisible(false);
+      })
+      .catch(() => {
+        if (options.close !== false) setIsVisible(false);
+      });
   };
 
   if (!isVisible || selectedElements.length < 1) return <>{approvalDialog}</>;
@@ -117,18 +127,22 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
           transition={{ duration: 0.2 }}
           className="fixed z-[9999] pointer-events-auto"
           style={{ left: position.x, top: position.y, transform: 'translateX(-50%)' }}
+          onPointerDown={stopCanvasEvent}
+          onMouseDown={stopCanvasEvent}
+          onClick={stopCanvasEvent}
+          data-interactive-control
         >
           <div className="bg-background/95 backdrop-blur-lg border border-border rounded-lg shadow-xl overflow-hidden">
             <div className="flex items-center gap-1 p-1.5">
-              <Button onClick={closeAfter(quickGenerate)} disabled={busy || !canUseAI} className="h-8 px-3 gap-2 bg-gradient-to-r from-[hsl(var(--accent-green))] to-[hsl(var(--accent-blue))] hover:opacity-90 text-white text-[11px] font-medium">
+              <Button onClick={runAction(quickGenerate)} disabled={busy || !canUseAI} className="h-8 px-3 gap-2 bg-gradient-to-r from-[hsl(var(--accent-green))] to-[hsl(var(--accent-blue))] hover:opacity-90 text-white text-[11px] font-medium">
                 {busy ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                 <span>إنشاء عنصر ذكي</span>
               </Button>
-              <Button onClick={analyze} disabled={busy || !canUseAI} variant="ghost" className="h-8 px-3 gap-2 text-[11px]">
+              <Button onClick={runAction(analyze, { close: false })} disabled={busy || !canUseAI} variant="ghost" className="h-8 px-3 gap-2 text-[11px]">
                 <Search size={14} />
                 تحليل
               </Button>
-              <Button onClick={closeAfter(() => generateSmartDoc('smart_text_doc'))} disabled={busy || !canUseAI} variant="ghost" className="h-8 px-3 gap-2 text-[11px]">
+              <Button onClick={runAction(() => generateSmartDoc('smart_text_doc'))} disabled={busy || !canUseAI} variant="ghost" className="h-8 px-3 gap-2 text-[11px]">
                 <FileText size={14} />
                 وثيقة
               </Button>
@@ -140,7 +154,6 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
               </Button>
             </div>
 
-          {/* Expanded Options */}
           <AnimatePresence>
             {isExpanded && (
               <motion.div
@@ -155,21 +168,21 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
                     أوامر تنفيذية:
                   </div>
                   <SupraMenuOption
-                    onClick={closeAfter(() => suggestConversion('project'))}
+                    onClick={runAction(() => suggestConversion('project'))}
                     disabled={busy || !canUseAI}
                     icon={<FolderKanban size={16} />}
                     label="تحويل إلى مشروع"
                     description="إنشاء سجل مشروع وربطه بالعناصر المصدر"
                   />
                   <SupraMenuOption
-                    onClick={closeAfter(() => suggestConversion('task'))}
+                    onClick={runAction(() => suggestConversion('task'))}
                     disabled={busy || !canUseAI}
                     icon={<CheckSquare size={16} />}
                     label="تحويل إلى مهمة"
                     description="إنشاء مهمة تنفيذية مرتبطة بالتخطيط"
                   />
                   <SupraMenuOption
-                    onClick={closeAfter(() => generateSmartDoc('interactive_sheet'))}
+                    onClick={runAction(() => generateSmartDoc('interactive_sheet'))}
                     disabled={busy || !canUseAI}
                     icon={<Table2 size={16} />}
                     label="توليد جدول تفاعلي"
@@ -181,7 +194,7 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
                   {CONTEXT_SMART_TRANSFORM_OPTIONS.map((option) => (
                     <SupraMenuOption
                       key={option.type}
-                      onClick={closeAfter(() => transform(option.type))}
+                      onClick={runAction(() => transform(option.type))}
                       disabled={busy || !canUseAI}
                       icon={TRANSFORM_ICONS[option.type] ?? <Sparkles size={16} />}
                       label={option.label}
