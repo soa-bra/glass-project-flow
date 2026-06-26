@@ -41,6 +41,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
   const textType = element.data?.textType || 'line';
   const autoGrow = element.data?.autoGrow !== false;
   const isResizableTextBox = textType === 'box' || !autoGrow;
+  const isUploadedTextPreview = element.data?.renderMode === 'text_preview';
   const style = element.style || {};
   const justifyContent =
     style.alignItems === 'center'
@@ -294,9 +295,9 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
   });
 
   const displayMarkup = useMemo(() => {
-    if (isEmpty) return '';
+    if (isEmpty || isUploadedTextPreview) return '';
     return sanitizeHTMLForDisplay(element.content || '', '');
-  }, [element.content, isEmpty]);
+  }, [element.content, isEmpty, isUploadedTextPreview]);
 
   return (
     <div
@@ -347,7 +348,7 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
             requestAnimationFrame(finalizeCloseIfNeeded);
           }
         }}
-        dangerouslySetInnerHTML={!isEditing ? { __html: displayMarkup } : undefined}
+        dangerouslySetInnerHTML={!isEditing && !isUploadedTextPreview ? { __html: displayMarkup } : undefined}
         style={{
           ...sharedTextStyle,
           width: '100%',
@@ -362,7 +363,9 @@ export const TextElementHost: React.FC<TextElementHostProps> = ({
           userSelect: isEditing ? 'text' : 'none',
           WebkitUserModify: isEditing ? ('read-write-plaintext-only' as any) : undefined,
         }}
-      />
+      >
+        {!isEditing && isUploadedTextPreview ? element.content || '' : undefined}
+      </div>
     </div>
   );
 };
