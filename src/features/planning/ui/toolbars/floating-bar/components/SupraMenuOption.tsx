@@ -1,8 +1,17 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+export const supraMenuSurfaceClassName =
+  "bg-white rounded-[12px] border border-sb-border shadow-[0_8px_24px_rgba(0,0,0,0.12)]";
+
 export const supraMenuOptionClassName =
   "rounded-full text-black transition-colors hover:bg-black/5 data-[highlighted]:bg-black/5 data-[state=checked]:bg-black data-[state=checked]:font-bold data-[state=checked]:text-white";
+
+export const supraMenuSelectedOptionClassName =
+  "bg-black font-bold text-white hover:bg-black";
+
+export const supraCompactMenuOptionClassName =
+  "rounded-full text-sb-ink transition-colors hover:bg-black/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black/10";
 
 interface SupraMenuOptionProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: React.ReactNode;
@@ -19,7 +28,7 @@ export const SupraMenuOption = React.forwardRef<HTMLButtonElement, SupraMenuOpti
       className={cn(
         "w-full flex items-center gap-3 px-3 py-2 text-right disabled:opacity-50",
         supraMenuOptionClassName,
-        selected && "bg-black font-bold text-white hover:bg-black",
+        selected && supraMenuSelectedOptionClassName,
         className,
       )}
       {...props}
