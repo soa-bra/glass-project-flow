@@ -69,6 +69,13 @@ function derivePrimaryTabAction(tab: TabSpec): {
   };
 }
 
+function getOverviewBoxSummary(tab: TabSpec) {
+  const kpiCount = tab.boxes.filter((box) => resolveBoxLayoutRef(box) === 'LAY-BOX-SUM01').length;
+  const workflowCount = Math.max(0, tab.boxes.length - kpiCount);
+
+  return { kpiCount, workflowCount };
+}
+
 export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, boxData, className }) => {
   const [primaryActionOpen, setPrimaryActionOpen] = React.useState(false);
 
@@ -86,12 +93,30 @@ export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, box
   const tabLayout = LAYOUT_TAB_MAP[tabLayoutRef];
   const gridLayout = LAYOUT_GRID_MAP[dashboardLayout.gridRef];
   const overviewStats = tabLayout.showKpiRow ? extractOverviewStats(tab, boxData) : [];
+  const overviewSummary = tabLayout.showKpiRow ? getOverviewBoxSummary(tab) : null;
   const gridClass = gridLayout.columns === 4 ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4' : 'grid-cols-1 xl:grid-cols-2';
   const primaryTabAction = dashboardLayoutKey === 'departments' && tabLayoutRef === 'LAY-TAB-W01' ? derivePrimaryTabAction(tab) : null;
   const gridAutoRows = dashboardLayoutKey === 'departments' ? gridLayout.minRowHeight : `minmax(${gridLayout.minRowHeight}, auto)`;
 
   return (
     <div className="flex flex-col gap-6" dir="rtl">
+      {overviewSummary ? (
+        <div className="flex flex-col gap-3 rounded-lg border border-[#DADCE0] bg-white/64 px-4 py-3 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-[rgba(11,15,18,0.48)]">نظرة عامة</p>
+            <h3 className="mt-1 text-xl font-semibold leading-8 text-[#0B0F12]">{tab.name}</h3>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs text-[rgba(11,15,18,0.58)]">
+            <span className="rounded-full border border-[#DADCE0] bg-white px-3 py-1">
+              {overviewSummary.kpiCount} مؤشرات
+            </span>
+            <span className="rounded-full border border-[#DADCE0] bg-white px-3 py-1">
+              {overviewSummary.workflowCount} صناديق تشغيلية
+            </span>
+          </div>
+        </div>
+      ) : null}
+
       {tabLayout.showKpiRow && overviewStats.length > 0 ? (
         <KPIStatsSection stats={overviewStats} />
       ) : null}
