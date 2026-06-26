@@ -69,9 +69,9 @@ function derivePrimaryTabAction(tab: TabSpec): {
   };
 }
 
-function getOverviewBoxSummary(tab: TabSpec) {
-  const kpiCount = tab.boxes.filter((box) => resolveBoxLayoutRef(box) === 'LAY-BOX-SUM01').length;
-  const workflowCount = Math.max(0, tab.boxes.length - kpiCount);
+function getOverviewBoxSummary(tab: TabSpec, kpiCount: number) {
+  const summaryBoxCount = tab.boxes.filter((box) => resolveBoxLayoutRef(box) === 'LAY-BOX-SUM01').length;
+  const workflowCount = Math.max(0, tab.boxes.length - summaryBoxCount);
 
   return { kpiCount, workflowCount };
 }
@@ -93,7 +93,7 @@ export const TabRenderer: React.FC<TabRendererProps> = ({ tab, dashboardKey, box
   const tabLayout = LAYOUT_TAB_MAP[tabLayoutRef];
   const gridLayout = LAYOUT_GRID_MAP[dashboardLayout.gridRef];
   const overviewStats = tabLayout.showKpiRow ? extractOverviewStats(tab, boxData) : [];
-  const overviewSummary = tabLayout.showKpiRow ? getOverviewBoxSummary(tab) : null;
+  const overviewSummary = tabLayout.showKpiRow ? getOverviewBoxSummary(tab, overviewStats.length) : null;
   const gridClass = gridLayout.columns === 4 ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4' : 'grid-cols-1 xl:grid-cols-2';
   const primaryTabAction = dashboardLayoutKey === 'departments' && tabLayoutRef === 'LAY-TAB-W01' ? derivePrimaryTabAction(tab) : null;
   const gridAutoRows = dashboardLayoutKey === 'departments' ? gridLayout.minRowHeight : `minmax(${gridLayout.minRowHeight}, auto)`;
