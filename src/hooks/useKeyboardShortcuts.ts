@@ -5,8 +5,6 @@ import { toast } from 'sonner';
 
 export const useKeyboardShortcuts = () => {
   const {
-    selectedElementIds,
-    activeTool,
     setActiveTool,
     undo,
     redo,
@@ -29,6 +27,22 @@ export const useKeyboardShortcuts = () => {
   const isHoldingModifierRef = useRef(false);
 
   useEffect(() => {
+    const clearTemporaryToolRestore = () => {
+      isHoldingModifierRef.current = false;
+      previousToolRef.current = null;
+    };
+
+    const activateSelectionTool = () => {
+      const selectionBeforeToolSwitch = useCanvasStore.getState().selectedElementIds;
+      clearTemporaryToolRestore();
+      setActiveTool('selection_tool');
+
+      const selectionAfterToolSwitch = useCanvasStore.getState().selectedElementIds;
+      if (selectionBeforeToolSwitch.length > 0 && selectionAfterToolSwitch.length === 0) {
+        useCanvasStore.getState().selectElements(selectionBeforeToolSwitch);
+      }
+    };
+
     // ✅ Capture Phase Handler - يعمل قبل أي event handler آخر
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -87,6 +101,7 @@ export const useKeyboardShortcuts = () => {
       // ═══════════════════════════════════════════════════════════════
 
       const key = e.key.toLowerCase();
+      const selectedElementIds = useCanvasStore.getState().selectedElementIds;
 
       // ✅ التبديل المؤقت لأداة التحديد عند الضغط على Command/Ctrl
       if ((e.key === 'Meta' || e.key === 'Control') && !isHoldingModifierRef.current) {
@@ -168,34 +183,41 @@ export const useKeyboardShortcuts = () => {
       
       if (key === 'v' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        setActiveTool('selection_tool');
+        activateSelectionTool();
       }
       if (key === 't' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('text_tool');
       }
       if (key === 'r' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('shapes_tool');
       }
       if (key === 'p' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('smart_pen');
       }
       if (key === 'f' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('frame_tool');
       }
       if (key === 'u' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('file_uploader');
       }
       if (key === 's' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('smart_element_tool');
       }
       if (key === 'd' && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
+        clearTemporaryToolRestore();
         setActiveTool('smart_doc_tool');
       }
 
@@ -275,6 +297,7 @@ export const useKeyboardShortcuts = () => {
       if (e.key === 'Escape') {
         e.preventDefault();
         useCanvasStore.getState().clearSelection();
+        clearTemporaryToolRestore();
         setActiveTool('selection_tool');
       }
     };
@@ -283,10 +306,10 @@ export const useKeyboardShortcuts = () => {
     const handleKeyUp = (e: KeyboardEvent) => {
       if ((e.key === 'Meta' || e.key === 'Control') && isHoldingModifierRef.current) {
         isHoldingModifierRef.current = false;
-        if (previousToolRef.current) {
+        if (previousToolRef.current && useCanvasStore.getState().activeTool === 'selection_tool') {
           setActiveTool(previousToolRef.current as any);
-          previousToolRef.current = null;
         }
+        previousToolRef.current = null;
       }
     };
 
@@ -298,8 +321,6 @@ export const useKeyboardShortcuts = () => {
       window.removeEventListener('keyup', handleKeyUp, { capture: true });
     };
   }, [
-    selectedElementIds,
-    activeTool,
     setActiveTool,
     undo,
     redo,
