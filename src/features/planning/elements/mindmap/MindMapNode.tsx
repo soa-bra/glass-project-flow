@@ -256,13 +256,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   }, [isSelected]);
   useEffect(() => {
     if (!isSelected) return;
-    if (activeTool === 'selection_tool') {
-      selectMindMapTree(element.id);
-    } else if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
+    if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
       const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode) ? lastSmartSelectedMindMapNode : element.id;
       selectElement(nodeToSelect, false);
     }
-  }, [activeTool]);
+  }, [activeTool, element.id, isSelected, lastSmartSelectedMindMapNode, selectElement, selectedElementIds]);
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
