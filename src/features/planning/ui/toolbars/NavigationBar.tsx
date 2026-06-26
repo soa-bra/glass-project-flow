@@ -9,6 +9,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import {
+  supraCompactMenuOptionClassName,
+  supraMenuSelectedOptionClassName,
+  supraMenuSurfaceClassName,
+} from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
 
 const NavigationBar: React.FC = () => {
   const { 
@@ -47,7 +53,7 @@ const NavigationBar: React.FC = () => {
     <div className="fixed bottom-6 right-6 z-40">
       {showMinimap && (
         <div
-          className="absolute bottom-full right-0 mb-2 w-44 overflow-hidden rounded-[12px] border border-sb-border bg-white shadow-[0_8px_24px_rgba(0,0,0,0.12)]"
+          className={cn('absolute bottom-full right-0 mb-2 w-44 overflow-hidden', supraMenuSurfaceClassName)}
           data-testid="planning-minimap-panel"
           role="status"
           aria-label="الخريطة المصغرة مفعلة"
@@ -66,9 +72,7 @@ const NavigationBar: React.FC = () => {
       )}
 
       <div className="bg-white rounded-[12px] p-2 shadow-[0_1px_1px_rgba(0,0,0,0.04),0_12px_28px_rgba(0,0,0,0.10)] border border-sb-border">
-        {/* First Row - Connection Status & Tools */}
         <div className="flex items-center gap-1.5 mb-1.5">
-          {/* Connection Status */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -95,10 +99,8 @@ const NavigationBar: React.FC = () => {
             </Tooltip>
           </TooltipProvider>
 
-          {/* Separator */}
           <div className="h-3 w-px bg-border" />
 
-          {/* Fit to Screen */}
           <button
             type="button"
             onClick={zoomToFit}
@@ -108,7 +110,6 @@ const NavigationBar: React.FC = () => {
             <Maximize size={12} className="text-sb-ink" />
           </button>
           
-          {/* Pan Mode */}
           <button
             type="button"
             onClick={togglePanMode}
@@ -123,7 +124,6 @@ const NavigationBar: React.FC = () => {
             <Hand size={12} />
           </button>
           
-          {/* Snap Settings Dropdown */}
           <SnapSettingsDropdown />
           <button
             type="button"
@@ -139,7 +139,6 @@ const NavigationBar: React.FC = () => {
             <MapIcon size={12} />
           </button>
           
-          {/* Fullscreen */}
           <button
             type="button"
             onClick={toggleFullscreen}
@@ -155,9 +154,7 @@ const NavigationBar: React.FC = () => {
           </button>
         </div>
         
-        {/* Second Row */}
         <div className="flex items-center gap-1.5">
-          {/* Zoom Out */}
           <button
             type="button"
             onClick={zoomOut}
@@ -167,7 +164,6 @@ const NavigationBar: React.FC = () => {
             <ZoomOut size={12} className="text-sb-ink" />
           </button>
           
-          {/* Zoom Slider */}
           <input
             type="range"
             min="10"
@@ -178,7 +174,6 @@ const NavigationBar: React.FC = () => {
             title={`التكبير: ${zoomPercentage}%`}
           />
           
-          {/* Zoom In */}
           <button
             type="button"
             onClick={zoomIn}
@@ -188,7 +183,6 @@ const NavigationBar: React.FC = () => {
             <ZoomIn size={12} className="text-sb-ink" />
           </button>
           
-          {/* Zoom Percentage Dropdown */}
           <div className="relative">
             <button
               type="button"
@@ -204,15 +198,17 @@ const NavigationBar: React.FC = () => {
                   className="fixed inset-0 z-10" 
                   onClick={() => setIsZoomDropdownOpen(false)}
                 />
-                <div className="absolute bottom-full left-0 mb-2 bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-2 z-20 min-w-[100px]">
+                <div className={cn('absolute bottom-full left-0 mb-2 py-2 z-20 min-w-[100px]', supraMenuSurfaceClassName)}>
                   {zoomOptions.map((option) => (
                     <button
                       type="button"
                       key={option}
                       onClick={() => handleZoomSelect(option)}
-                      className={`w-full px-4 py-2 text-right hover:bg-sb-panel-bg transition-colors text-[13px] ${
-                        option === zoomPercentage ? 'bg-sb-panel-bg font-medium' : ''
-                      }`}
+                      className={cn(
+                        'mx-1 flex w-[calc(100%-0.5rem)] justify-end px-3 py-2 text-[13px]',
+                        supraCompactMenuOptionClassName,
+                        option === zoomPercentage && supraMenuSelectedOptionClassName,
+                      )}
                     >
                       {option}%
                     </button>
@@ -224,7 +220,7 @@ const NavigationBar: React.FC = () => {
                       zoomToFit();
                       setIsZoomDropdownOpen(false);
                     }}
-                    className="w-full px-4 py-2 text-right hover:bg-sb-panel-bg transition-colors text-[13px]"
+                    className={cn('mx-1 flex w-[calc(100%-0.5rem)] justify-end px-3 py-2 text-[13px]', supraCompactMenuOptionClassName)}
                   >
                     احتواء الكل
                   </button>

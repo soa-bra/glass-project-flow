@@ -8,9 +8,9 @@ import { Sparkles, Loader2, LayoutGrid, Network, Calendar, Table2, Zap, FileText
 import type { SmartElementType } from "@/types/smart-elements";
 import { useCanvasAIPermissions } from "@/features/planning/hooks/useCanvasAIPermissions";
 import { useContextSmartActions } from "@/features/planning/elements/smart/useContextSmartActions";
-import { SupraMenuOption } from "./SupraMenuOption";
+import { SupraMenuOption, supraMenuSurfaceClassName } from "./SupraMenuOption";
+import { cn } from "@/lib/utils";
 
-// خيارات التحويل للعناصر الذكية
 const TRANSFORM_OPTIONS = [
   { type: "kanban" as SmartElementType, label: "لوحة كانبان", icon: LayoutGrid, description: "تحويل إلى أعمدة ومهام" },
   { type: "mind_map" as SmartElementType, label: "خريطة ذهنية", icon: Network, description: "تنظيم كخريطة مترابطة" },
@@ -103,7 +103,7 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
       </button>
 
       {!aiPermissions.canUseAI && (
-        <div className="hidden group-hover:block group-focus-within:block absolute top-full left-1/2 mt-2 w-56 -translate-x-1/2 rounded-lg border border-[hsl(var(--border))] bg-white px-3 py-2 text-center text-[11px] text-[hsl(var(--ink-70))] shadow-[0_8px_24px_rgba(0,0,0,0.12)] z-[var(--z-tooltip)]">
+        <div className={cn("hidden group-hover:block group-focus-within:block absolute top-full left-1/2 mt-2 w-56 -translate-x-1/2 px-3 py-2 text-center text-[11px] text-[hsl(var(--ink-70))] z-[var(--z-tooltip)]", supraMenuSurfaceClassName)}>
           {disabledReason}
         </div>
       )}
@@ -115,9 +115,9 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.15)] border border-[hsl(var(--border))] overflow-hidden z-[var(--z-popover)]"
+            className={cn("absolute top-full left-0 mt-2 w-56 overflow-hidden z-[var(--z-popover)]", supraMenuSurfaceClassName)}
           >
-            <div className="p-2 border-b border-[hsl(var(--border))]">
+            <div className="p-2 border-b border-sb-border">
               <button
                 type="button"
                 onClick={() => {
@@ -125,35 +125,20 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
                   setIsOpen(false);
                 }}
                 disabled={isAIDisabled}
-                className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-lg disabled:opacity-50"
+                className="w-full flex items-center gap-2 px-3 py-2 text-[12px] text-white bg-gradient-to-r from-[#3DBE8B] to-[#3DA8F5] hover:opacity-90 rounded-full disabled:opacity-50"
               >
                 {isAIBusy ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                 <span>إنشاء عنصر ذكي تلقائياً</span>
               </button>
             </div>
 
-            <div className="p-2 border-b border-[hsl(var(--border))] space-y-1">
+            <div className="p-2 border-b border-sb-border space-y-1">
               <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1">إجراءات التحديد الذكية:</div>
-              <button type="button" onClick={() => { void smartActions.analyze(); setIsOpen(false); }} disabled={isAIDisabled} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50">
-                <Search size={16} className="text-[#3DBE8B]" />
-                <div className="flex-1"><div className="text-[12px] font-medium text-black">تحليل التحديد</div><div className="text-[10px] text-[hsl(var(--ink-60))]">اقتراح طريقة لتنظيم العناصر</div></div>
-              </button>
-              <button type="button" onClick={() => { void smartActions.generateSmartDoc('smart_text_doc'); setIsOpen(false); }} disabled={isAIDisabled} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50">
-                <FileText size={16} className="text-[#3DBE8B]" />
-                <div className="flex-1"><div className="text-[12px] font-medium text-black">توليد وثيقة ذكية</div><div className="text-[10px] text-[hsl(var(--ink-60))]">وثيقة نصية مهيكلة من التحديد</div></div>
-              </button>
-              <button type="button" onClick={() => { void smartActions.generateSmartDoc('interactive_sheet'); setIsOpen(false); }} disabled={isAIDisabled} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50">
-                <Table2 size={16} className="text-[#3DBE8B]" />
-                <div className="flex-1"><div className="text-[12px] font-medium text-black">توليد جدول تفاعلي</div><div className="text-[10px] text-[hsl(var(--ink-60))]">جدول محفوظ داخل اللوحة وقابل للربط</div></div>
-              </button>
-              <button type="button" onClick={() => { void smartActions.suggestConversion('project'); setIsOpen(false); }} disabled={isAIDisabled} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50">
-                <FolderKanban size={16} className="text-[#3DBE8B]" />
-                <div className="flex-1"><div className="text-[12px] font-medium text-black">تحويل إلى مشروع</div><div className="text-[10px] text-[hsl(var(--ink-60))]">إنشاء سجل مشروع مرتبط</div></div>
-              </button>
-              <button type="button" onClick={() => { void smartActions.suggestConversion('task'); setIsOpen(false); }} disabled={isAIDisabled} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[hsl(var(--panel))] transition-colors text-right disabled:opacity-50">
-                <CheckSquare size={16} className="text-[#3DBE8B]" />
-                <div className="flex-1"><div className="text-[12px] font-medium text-black">تحويل إلى مهمة</div><div className="text-[10px] text-[hsl(var(--ink-60))]">إنشاء مهمة تنفيذية مرتبطة</div></div>
-              </button>
+              <SupraMenuOption type="button" onClick={() => { void smartActions.analyze(); setIsOpen(false); }} disabled={isAIDisabled} icon={<Search size={16} />} label="تحليل التحديد" description="اقتراح طريقة لتنظيم العناصر" />
+              <SupraMenuOption type="button" onClick={() => { void smartActions.generateSmartDoc('smart_text_doc'); setIsOpen(false); }} disabled={isAIDisabled} icon={<FileText size={16} />} label="توليد وثيقة ذكية" description="وثيقة نصية مهيكلة من التحديد" />
+              <SupraMenuOption type="button" onClick={() => { void smartActions.generateSmartDoc('interactive_sheet'); setIsOpen(false); }} disabled={isAIDisabled} icon={<Table2 size={16} />} label="توليد جدول تفاعلي" description="جدول محفوظ داخل اللوحة وقابل للربط" />
+              <SupraMenuOption type="button" onClick={() => { void smartActions.suggestConversion('project'); setIsOpen(false); }} disabled={isAIDisabled} icon={<FolderKanban size={16} />} label="تحويل إلى مشروع" description="إنشاء سجل مشروع مرتبط" />
+              <SupraMenuOption type="button" onClick={() => { void smartActions.suggestConversion('task'); setIsOpen(false); }} disabled={isAIDisabled} icon={<CheckSquare size={16} />} label="تحويل إلى مهمة" description="إنشاء مهمة تنفيذية مرتبطة" />
             </div>
 
             <div className="p-2 space-y-1">
@@ -173,7 +158,7 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
               ))}
             </div>
 
-            <div className="p-2 border-t border-[hsl(var(--border))]">
+            <div className="p-2 border-t border-sb-border">
               <div className="text-[10px] text-[hsl(var(--ink-60))] px-2 py-1 mb-1">تحويل مخصص:</div>
               <div className="flex gap-2">
                 <input
@@ -188,21 +173,21 @@ export const AIMenuDropdown: React.FC<AIMenuDropdownProps> = React.memo(({
                     }
                   }}
                   placeholder="وصف التحويل..."
-                  className="flex-1 h-8 px-2 text-[11px] rounded-lg border border-[hsl(var(--border))] bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
+                  className="flex-1 h-8 px-2 text-[11px] rounded-full border border-sb-border bg-white focus:outline-none focus:border-[#3DBE8B] placeholder:text-[hsl(var(--ink-30))]"
                   disabled={isAIDisabled}
                 />
                 <button
                   type="button"
                   onClick={handleSubmit}
                   disabled={isAIDisabled || !localPrompt.trim()}
-                  className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
+                  className="h-8 w-8 flex-shrink-0 flex items-center justify-center rounded-full bg-gradient-to-br from-[#3DBE8B] to-[#3DA8F5] text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
                 >
                   {isAIBusy ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
                 </button>
               </div>
             </div>
 
-            <div className="px-3 py-2 border-t border-[hsl(var(--border))] text-[10px] text-[hsl(var(--ink-60))] text-center">
+            <div className="px-3 py-2 border-t border-sb-border text-[10px] text-[hsl(var(--ink-60))] text-center">
               {selectedCount} عنصر محدد
             </div>
           </motion.div>

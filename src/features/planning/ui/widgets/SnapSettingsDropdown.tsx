@@ -4,8 +4,14 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns, Check, Circle, LayoutGrid, Hexagon, Triangle } from 'lucide-react';
+import { Magnet, Grid3X3, AlignHorizontalJustifyCenter, AlignVerticalJustifyCenter, Columns, Check, Circle, LayoutGrid, Triangle } from 'lucide-react';
 import { useCanvasStore } from '@/stores/canvasStore';
+import { cn } from '@/lib/utils';
+import {
+  supraCompactMenuOptionClassName,
+  supraMenuSelectedOptionClassName,
+  supraMenuSurfaceClassName,
+} from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
 
 const SnapSettingsDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,11 +74,10 @@ const SnapSettingsDropdown: React.FC = () => {
             onClick={() => setIsOpen(false)}
           />
           <div
-            className="fixed bg-white rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-3 px-3 z-dropdown min-w-[220px]"
+            className={cn(supraMenuSurfaceClassName, "fixed py-3 px-3 z-dropdown min-w-[220px]")}
             style={{ right: dropdownPosition.right, bottom: dropdownPosition.bottom }}
             dir="rtl"
           >
-            {/* تفعيل/تعطيل السناب */}
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-sb-border">
               <span className="text-[13px] font-semibold text-sb-ink">المحاذاة التلقائية</span>
               <button
@@ -91,7 +96,6 @@ const SnapSettingsDropdown: React.FC = () => {
               </button>
             </div>
 
-            {/* نمط الشبكة */}
             <div className="mb-3">
               <div className="flex items-center gap-2 mb-2">
                 <Grid3X3 size={14} className="text-sb-ink-60" />
@@ -105,22 +109,21 @@ const SnapSettingsDropdown: React.FC = () => {
                     <button
                       key={type.id}
                       onClick={() => handleGridTypeChange(type.id)}
-                      className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
-                        isSelected
-                          ? 'bg-sb-ink text-white' 
-                          : 'bg-sb-panel-bg text-sb-ink hover:bg-sb-ink-30'
-                      }`}
+                      className={cn(
+                        'flex flex-col items-center gap-1 p-2 text-[10px]',
+                        supraCompactMenuOptionClassName,
+                        isSelected && supraMenuSelectedOptionClassName,
+                      )}
                       title={type.label}
                     >
                       <Icon size={16} />
-                      <span className="text-[10px]">{type.label}</span>
+                      <span>{type.label}</span>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* حجم الشبكة */}
             <div className="mb-3">
               <div className="flex items-center gap-2 mb-2">
                 <Grid3X3 size={14} className="text-sb-ink-60" />
@@ -131,11 +134,11 @@ const SnapSettingsDropdown: React.FC = () => {
                   <button
                     key={size}
                     onClick={() => handleGridSizeChange(size)}
-                    className={`px-2 py-1 text-[11px] rounded-md transition-colors ${
-                      settings.gridSize === size 
-                        ? 'bg-sb-ink text-white' 
-                        : 'bg-sb-panel-bg text-sb-ink hover:bg-sb-ink-30'
-                    }`}
+                    className={cn(
+                      'px-2 py-1 text-[11px]',
+                      supraCompactMenuOptionClassName,
+                      settings.gridSize === size && supraMenuSelectedOptionClassName,
+                    )}
                   >
                     {size}px
                   </button>
@@ -143,21 +146,18 @@ const SnapSettingsDropdown: React.FC = () => {
               </div>
             </div>
 
-            {/* خط فاصل */}
             <div className="h-px bg-sb-border my-3" />
 
-            {/* أنواع المحاذاة */}
             <div className="space-y-2">
               <span className="text-[12px] text-sb-ink-60 block mb-2">نوع المحاذاة</span>
               
-              {/* محاذاة للحواف */}
               <button
                 onClick={() => toggleSnapOption('snapToEdges')}
-                className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                  settings.snapToEdges 
-                    ? 'bg-sb-panel-bg' 
-                    : 'hover:bg-sb-panel-bg/50'
-                }`}
+                className={cn(
+                  'w-full flex items-center gap-2 p-2 text-right',
+                  supraCompactMenuOptionClassName,
+                  settings.snapToEdges && 'bg-black/5',
+                )}
               >
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToEdges 
@@ -172,14 +172,13 @@ const SnapSettingsDropdown: React.FC = () => {
                 <span className="text-[12px] text-sb-ink">الحواف</span>
               </button>
 
-              {/* محاذاة للمركز */}
               <button
                 onClick={() => toggleSnapOption('snapToCenter')}
-                className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                  settings.snapToCenter 
-                    ? 'bg-sb-panel-bg' 
-                    : 'hover:bg-sb-panel-bg/50'
-                }`}
+                className={cn(
+                  'w-full flex items-center gap-2 p-2 text-right',
+                  supraCompactMenuOptionClassName,
+                  settings.snapToCenter && 'bg-black/5',
+                )}
               >
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToCenter 
@@ -194,14 +193,13 @@ const SnapSettingsDropdown: React.FC = () => {
                 <span className="text-[12px] text-sb-ink">المركز</span>
               </button>
 
-              {/* توزيع متساوي */}
               <button
                 onClick={() => toggleSnapOption('snapToDistribution')}
-                className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                  settings.snapToDistribution 
-                    ? 'bg-sb-panel-bg' 
-                    : 'hover:bg-sb-panel-bg/50'
-                }`}
+                className={cn(
+                  'w-full flex items-center gap-2 p-2 text-right',
+                  supraCompactMenuOptionClassName,
+                  settings.snapToDistribution && 'bg-black/5',
+                )}
               >
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                   settings.snapToDistribution 
