@@ -7,6 +7,8 @@ const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogPortal = DialogPrimitive.Portal;
 const DialogClose = DialogPrimitive.Close;
+const DialogLayerContext = React.createContext(false);
+const useDialogLayerContext = () => React.useContext(DialogLayerContext);
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -45,7 +47,9 @@ const DialogContent = React.forwardRef<
       aria-modal="true"
       dir="rtl"
     >
-      {children}
+      <DialogLayerContext.Provider value>
+        {children}
+      </DialogLayerContext.Provider>
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
@@ -105,4 +109,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  useDialogLayerContext,
 };
