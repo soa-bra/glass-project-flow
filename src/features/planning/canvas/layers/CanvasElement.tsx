@@ -598,7 +598,7 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
           <iframe
             src={element.fileUrl}
             title={element.fileName || 'PDF preview'}
-            className="h-full w-full flex-1 bg-white pointer-events-none"
+            className={`h-full w-full flex-1 bg-white ${isSelected ? '' : 'pointer-events-none'}`}
             loading="lazy"
           />
         </div>
