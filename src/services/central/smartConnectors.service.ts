@@ -5,7 +5,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Database, Json } from '@/integrations/supabase/types';
 import type { PlanningConnectorLogicalRecord } from '@/features/planning/integration/connectors';
-import { isOperationalRelationshipType } from '@/features/planning/integration/connectors';
+import { isOperationalRelationshipType, toCentralDependencyRelationshipType } from '@/features/planning/integration/connectors';
 import { audit } from '@/services/audit';
 
 export type SmartConnector = Database['public']['Tables']['smart_connectors']['Row'];
@@ -152,19 +152,25 @@ async function refreshCentralDependencyLink(record: PlanningConnectorLogicalReco
     return;
   }
 
+  const dependencyType = toCentralDependencyRelationshipType(record.relationship_type);
+  if (!dependencyType) {
+    return;
+  }
+
   const payload: DependencyInsert = {
     id: crypto.randomUUID(),
     from_entity_type: record.sourceEntityType,
     from_entity_id: record.sourceEntityId,
     to_entity_type: record.targetEntityType,
     to_entity_id: record.targetEntityId,
-    dependency_type: record.relationship_type as never,
+    dependency_type: dependencyType,
     description: record.label ?? null,
     metadata: {
       ...record.metadata,
       ...buildOperationalMapping(record),
       connectorElementId: record.connector_element_id,
       boardId: record.board_id,
+      centralDependencyType: dependencyType,
     } as Json,
   };
 

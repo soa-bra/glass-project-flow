@@ -143,6 +143,38 @@ export const OPERATIONAL_RELATIONSHIP_TYPES = [
 
 export type OperationalRelationshipType = (typeof OPERATIONAL_RELATIONSHIP_TYPES)[number];
 
+export type CentralDependencyRelationshipType =
+  | 'execution'
+  | 'data'
+  | 'technical'
+  | 'operational'
+  | 'time'
+  | 'depends_on'
+  | 'causes'
+  | 'blocks'
+  | 'references'
+  | 'funds'
+  | 'delivers'
+  | 'belongs_to';
+
+const CENTRAL_DEPENDENCY_RELATIONSHIP_MAP: Partial<Record<UnifiedRelationshipType, CentralDependencyRelationshipType>> = {
+  dependency: 'depends_on',
+  temporal: 'time',
+  risk: 'blocks',
+  cause_effect: 'causes',
+  financial: 'funds',
+  responsibility: 'delivers',
+  ownership: 'belongs_to',
+  reference: 'references',
+  depends_on: 'depends_on',
+  causes: 'causes',
+  blocks: 'blocks',
+  references: 'references',
+  funds: 'funds',
+  delivers: 'delivers',
+  belongs_to: 'belongs_to',
+};
+
 const UNIFIED_RELATIONSHIP_TYPE_SET = new Set<string>(UNIFIED_RELATIONSHIP_TYPES);
 const OPERATIONAL_RELATIONSHIP_TYPE_SET = new Set<UnifiedRelationshipType>(OPERATIONAL_RELATIONSHIP_TYPES);
 
@@ -195,4 +227,12 @@ export function isOperationalRelationshipType(
 ): value is OperationalRelationshipType {
   const normalizedType = normalizeRelationshipType(value);
   return Boolean(normalizedType && OPERATIONAL_RELATIONSHIP_TYPE_SET.has(normalizedType));
+}
+
+export function toCentralDependencyRelationshipType(
+  value?: string | null,
+): CentralDependencyRelationshipType | null {
+  const normalizedType = normalizeRelationshipType(value);
+  if (!normalizedType) return null;
+  return CENTRAL_DEPENDENCY_RELATIONSHIP_MAP[normalizedType] ?? null;
 }
