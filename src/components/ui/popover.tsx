@@ -7,20 +7,20 @@ const PopoverTrigger = PopoverPrimitive.Trigger
 
 /**
  * PopoverContent — uses sb-popover-shell for glass styling.
- * The z-index token keeps portaled popovers above dialogs, which is required
- * for date pickers and menus opened from inside modal content.
+ * The default z-index token keeps shared popovers below modal backdrops.
+ * Modal-owned popovers can override it with a modal layer token through style.
  */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 8, ...props }, ref) => (
+>(({ className, align = "center", sideOffset = 8, style, ...props }, ref) => (
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       ref={ref}
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        "z-[var(--z-popover)] sb-popover-shell w-72 px-[14px] py-[10px] text-[#0B0F12] font-arabic outline-none",
+        "sb-popover-shell w-72 px-[14px] py-[10px] text-[#0B0F12] font-arabic outline-none",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -29,6 +29,7 @@ const PopoverContent = React.forwardRef<
         className
       )}
       dir="rtl"
+      style={{ zIndex: 'var(--z-popover)', ...style }}
       {...props}
     />
   </PopoverPrimitive.Portal>
