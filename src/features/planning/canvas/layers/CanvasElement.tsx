@@ -418,6 +418,11 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
   }, [stableMouseMove, stableMouseUp]);
 
   const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
+  const isPdfPreview = Boolean(
+    element.type === 'file' &&
+    element.fileUrl &&
+    (element.metadata?.renderMode === 'pdf_preview' || element.fileType === 'application/pdf' || element.fileType?.includes('pdf')),
+  );
 
   if (!isVisible) return null;
 
@@ -584,7 +589,22 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
         </div>
       )}
 
-      {element.type === 'file' && (
+      {element.type === 'file' && isPdfPreview && (
+        <div {...selectionAnchorProps} className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+          <div className="flex h-9 shrink-0 items-center justify-between gap-2 border-b border-border bg-muted/60 px-3" dir="rtl">
+            <span className="min-w-0 truncate text-[11px] font-medium text-foreground">{element.fileName}</span>
+            {element.fileSize && <span className="shrink-0 text-[9px] text-muted-foreground">{(element.fileSize / 1024).toFixed(1)} KB</span>}
+          </div>
+          <iframe
+            src={element.fileUrl}
+            title={element.fileName || 'PDF preview'}
+            className="h-full w-full flex-1 bg-white"
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      {element.type === 'file' && !isPdfPreview && (
         <div {...selectionAnchorProps} className="flex flex-col items-center justify-center gap-2 p-4 w-full h-full">
           <div className="w-12 h-12 rounded-lg bg-[hsl(var(--panel))] flex items-center justify-center">
             {element.fileType?.startsWith('image/') ? <span className="text-2xl">🖼️</span> : element.fileType?.includes('pdf') ? <span className="text-2xl">📄</span> : <span className="text-2xl">📁</span>}

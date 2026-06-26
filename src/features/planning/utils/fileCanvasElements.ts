@@ -26,6 +26,10 @@ const isTextLikeFile = (file: File) => {
   );
 };
 
+const isPdfFile = (file: File) => (
+  file.type === 'application/pdf' || getFileExtension(file.name) === 'pdf'
+);
+
 const readTextPreview = async (file: File) => {
   const preview = await file.slice(0, TEXT_PREVIEW_LIMIT).text();
   return file.size <= TEXT_PREVIEW_LIMIT
@@ -89,6 +93,27 @@ export const createRenderableFileCanvasElement = async (
     };
   }
 
+  const fileUrl = URL.createObjectURL(file);
+  if (isPdfFile(file)) {
+    return {
+      type: 'file',
+      position,
+      size: { width: 480, height: 620 },
+      style: {},
+      fileName: file.name,
+      fileType: file.type || 'application/pdf',
+      fileSize: file.size,
+      fileUrl,
+      metadata: {
+        source: 'uploaded_file',
+        renderMode: 'pdf_preview',
+        fileName: file.name,
+        fileType: file.type || 'application/pdf',
+        fileSize: file.size,
+      },
+    };
+  }
+
   return {
     type: 'file',
     position,
@@ -97,7 +122,7 @@ export const createRenderableFileCanvasElement = async (
     fileName: file.name,
     fileType: file.type,
     fileSize: file.size,
-    fileUrl: URL.createObjectURL(file),
+    fileUrl,
     metadata: {
       source: 'uploaded_file',
       renderMode: 'file_card',
