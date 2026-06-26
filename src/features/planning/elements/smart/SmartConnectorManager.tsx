@@ -96,7 +96,7 @@ const getConnectorBranchesWithPrimaryTarget = (connector: RootConnectorData): Co
 };
 
 const getConnectorMutationFlags = (connector: RootConnectorData) => ({
-  archived: Boolean((connector as RootConnectorData & { archived?: boolean })?.archived),
+  archived: Boolean((connector as RootConnectorData & { archived?: boolean })?.archived || connector.status === 'archived'),
   locked: Boolean((connector as RootConnectorData & { locked?: boolean })?.locked),
 });
 
