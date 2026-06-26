@@ -377,7 +377,7 @@ const SmartElementsPanel: React.FC = () => {
 
   const filteredElements = selectedCategory === 'all' 
     ? availableElements 
-    : availableElements.filter(el => el.category === selectedCategory);
+    : availableElements.filter(el => normalizeCategoryId(el.category) === selectedCategory);
 
   const departmentBoxSources = useMemo<DepartmentBoxSource[]>(() => getDepartmentBoxSources(), []);
   const shouldShowBoxes = selectedCategory === 'all' || selectedCategory === 'boxes';
