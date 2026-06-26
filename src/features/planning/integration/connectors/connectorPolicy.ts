@@ -48,7 +48,7 @@ const ALLOWED: ConnectorPolicyDecision = {
   reason: 'العلاقة مسموحة.',
 };
 
-const OPERATIONAL_NODE_TYPES = new Set([
+const SMART_OPERATIONAL_NODE_TYPES = [
   'project_card',
   'task_card',
   'finance_card',
@@ -56,10 +56,19 @@ const OPERATIONAL_NODE_TYPES = new Set([
   'crm_card',
   'thinking_board',
   'kanban',
+  'voting',
+  'brainstorming',
   'timeline',
+  'decisions_matrix',
   'gantt',
   'interactive_sheet',
+  'mind_map',
+  'visual_diagram',
   'smart_text_doc',
+];
+
+const OPERATIONAL_NODE_TYPES = new Set([
+  ...SMART_OPERATIONAL_NODE_TYPES,
   'smart-element',
   'component',
   'entity',
@@ -67,6 +76,14 @@ const OPERATIONAL_NODE_TYPES = new Set([
 
 const PROJECT_LIKE_TYPES = new Set(['project_card', 'thinking_board', 'kanban', 'timeline', 'gantt']);
 const WORK_ITEM_TYPES = new Set(['task_card', 'csr_card', 'crm_card', 'component', 'smart-element', 'entity']);
+const VISUAL_RELATIONSHIP_TYPES = new Set<UnifiedRelationshipType>([
+  'reference',
+  'references',
+  'link',
+  'knowledge',
+  'conversion',
+  'derived_from',
+]);
 
 function deny(reason: string): ConnectorPolicyDecision {
   return { allowed: false, reason };
@@ -117,15 +134,24 @@ function endpointTypesAllowRelationship(
   const sourceType = describeElementType(source);
   const targetType = describeElementType(target);
 
+  if (VISUAL_RELATIONSHIP_TYPES.has(relationshipType)) {
+    return true;
+  }
+
   switch (relationshipType) {
-    case 'references':
-      return true;
+    case 'ownership':
     case 'belongs_to':
       return isFrame(target) || PROJECT_LIKE_TYPES.has(targetType) || WORK_ITEM_TYPES.has(sourceType);
+    case 'financial':
     case 'funds':
       return sourceType === 'finance_card' && (PROJECT_LIKE_TYPES.has(targetType) || WORK_ITEM_TYPES.has(targetType));
+    case 'responsibility':
     case 'delivers':
       return PROJECT_LIKE_TYPES.has(sourceType) && WORK_ITEM_TYPES.has(targetType);
+    case 'dependency':
+    case 'temporal':
+    case 'risk':
+    case 'cause_effect':
     case 'depends_on':
     case 'blocks':
     case 'causes':
@@ -139,6 +165,10 @@ export function validateRelationshipType(input: ConnectorRelationshipValidationI
   const relationshipType = normalizeRelationshipType(input.relationshipType);
 
   if (input.relationshipType && relationshipType !== input.relationshipType) {
+    return deny('نوع العلاقة غير معروف أو غير مدعوم. اختر نوع علاقة صالحًا.');
+  }
+
+  if (!relationshipType) {
     return deny('نوع العلاقة غير معروف أو غير مدعوم. اختر نوع علاقة صالحًا.');
   }
 

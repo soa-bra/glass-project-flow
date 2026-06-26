@@ -34,6 +34,39 @@ describe('connectorPolicy', () => {
     expect(decision.allowed).toBe(true);
   });
 
+  it('allows current visual relationship types between arbitrary smart element types', () => {
+    const decision = canCreateConnector({
+      board: { canEditBoard: true },
+      source: element({ id: 'vote', smartType: 'voting', canCreateOperationalRelationship: false }),
+      target: element({ id: 'diagram', smartType: 'visual_diagram', canCreateOperationalRelationship: false }),
+      relationshipType: 'reference',
+    });
+
+    expect(decision.allowed).toBe(true);
+  });
+
+  it('allows general link relationships between smart elements and regular components', () => {
+    const decision = canCreateConnector({
+      board: { canEditBoard: true },
+      source: element({ id: 'brainstorm', smartType: 'brainstorming', canCreateOperationalRelationship: false }),
+      target: element({ id: 'component', type: 'component', smartType: null, canCreateOperationalRelationship: false }),
+      relationshipType: 'link',
+    });
+
+    expect(decision.allowed).toBe(true);
+  });
+
+  it('allows operational dependencies for all supported smart element types', () => {
+    const decision = canCreateConnector({
+      board: editableBoard,
+      source: element({ id: 'matrix', smartType: 'decisions_matrix' }),
+      target: element({ id: 'mind-map', smartType: 'mind_map' }),
+      relationshipType: 'dependency',
+    });
+
+    expect(decision.allowed).toBe(true);
+  });
+
   it('allows an operational relationship when the board and both endpoints are eligible', () => {
     const decision = canCreateConnector({
       board: editableBoard,
