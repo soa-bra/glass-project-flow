@@ -26,11 +26,20 @@ const isTextLikeFile = (file: File) => {
   );
 };
 
+const escapeHtml = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
+
 const readTextPreview = async (file: File) => {
   const preview = await file.slice(0, TEXT_PREVIEW_LIMIT).text();
-  if (file.size <= TEXT_PREVIEW_LIMIT) return preview;
+  const text = file.size <= TEXT_PREVIEW_LIMIT
+    ? preview
+    : `${preview}\n\n... تم اختصار المعاينة لأن الملف طويل.`;
 
-  return `${preview}\n\n... تم اختصار المعاينة لأن الملف طويل.`;
+  return escapeHtml(text);
 };
 
 export const createRenderableFileCanvasElement = async (
@@ -71,6 +80,14 @@ export const createRenderableFileCanvasElement = async (
       },
       content,
       textType: 'box',
+      data: {
+        textType: 'box',
+        source: 'uploaded_file',
+        renderMode: 'text_preview',
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+      },
       metadata: {
         source: 'uploaded_file',
         renderMode: 'text_preview',
