@@ -50,7 +50,32 @@ const ICONS: Record<string, React.ElementType> = {
 };
 
 const readString = (value: unknown): string | undefined =>
-  typeof value === 'string' && value.trim() ? value : undefined;
+  typeof value === 'string' && value.trim() ? value.trim() : undefined;
+
+const getSmartElementLabel = (smartType: string | undefined): string => {
+  if (!smartType) return 'عنصر ذكي';
+  return SmartElementLabels[smartType as keyof typeof SmartElementLabels] || smartType;
+};
+
+const getVisibleSmartElementTitle = (
+  data: Record<string, unknown>,
+  metadata: Record<string, unknown>,
+  element: CanvasSmartElement,
+  smartType: string | undefined,
+): string => {
+  return (
+    readString(data.title) ??
+    readString(data.label) ??
+    readString(data.question) ??
+    readString(data.topic) ??
+    readString(data.projectName) ??
+    readString(data.taskName) ??
+    readString(data.name) ??
+    readString(metadata.title) ??
+    readString(element.content) ??
+    getSmartElementLabel(smartType)
+  );
+};
 
 export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({ 
   element, 
@@ -65,6 +90,21 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   const storedData = smartElementId ? getSmartElementData(smartElementId) : null;
   const data = storedData || element.data || {};
   const metadata = element.metadata ?? {};
+  const visibleTitle = getVisibleSmartElementTitle(data, metadata, element, smartType);
+  const visibleSmartLabel = getSmartElementLabel(smartType);
+  const renderWithVisibleTitle = (children: React.ReactNode) => (
+    <div className="w-full h-full min-h-0 bg-background rounded-lg border border-border overflow-hidden flex flex-col" dir="rtl">
+      <div className="flex items-center justify-between gap-3 px-3 py-2 border-b border-border bg-panel/80 shrink-0">
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold text-foreground truncate">{visibleTitle}</h3>
+          <p className="text-[11px] text-muted-foreground truncate">{visibleSmartLabel}</p>
+        </div>
+      </div>
+      <div className="min-h-0 flex-1 overflow-hidden [&>*]:h-full [&>*]:rounded-none [&>*]:border-0">
+        {children}
+      </div>
+    </div>
+  );
   const linkedEntityId = readString(data.linkedEntityId) ?? readString(metadata.linkedEntityId);
   const dispatchOpenExecution = (entityType: ExecutionEntityType) => {
     const entityId = linkedEntityId ?? element.id;
@@ -115,7 +155,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Kanban Board
   if (smartType === 'kanban') {
-    return (
+    return renderWithVisibleTitle(
       <KanbanBoard 
         initialColumns={data.columns as any} 
         onUpdate={(columns) => onUpdate?.({ ...data, columns })} 
@@ -145,7 +185,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Timeline View
   if (smartType === 'timeline') {
-    return (
+    return renderWithVisibleTitle(
       <TimelineView 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
@@ -155,7 +195,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Decisions Matrix
   if (smartType === 'decisions_matrix') {
-    return (
+    return renderWithVisibleTitle(
       <DecisionsMatrix 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
@@ -165,7 +205,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Gantt Chart
   if (smartType === 'gantt') {
-    return (
+    return renderWithVisibleTitle(
       <GanttChart 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
@@ -175,7 +215,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Mind Map
   if (smartType === 'mind_map') {
-    return (
+    return renderWithVisibleTitle(
       <MindMap 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
@@ -185,7 +225,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Visual Diagram
   if (smartType === 'visual_diagram') {
-    return (
+    return renderWithVisibleTitle(
       <VisualDiagram 
         data={data as any} 
         onUpdate={(newData) => onUpdate?.({ ...data, ...newData })} 
@@ -195,7 +235,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Interactive Sheet & Smart Text Doc - delegated to SmartDocRenderer
   if (smartType === 'interactive_sheet') {
-    return (
+    return renderWithVisibleTitle(
       <ExpandableExecutionCard entityType="sheet" entityId={element.id} element={element} onUpdate={onUpdate}>
         <SmartDocRenderer 
           element={element} 
@@ -206,7 +246,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
   }
 
   if (smartType === 'smart_text_doc') {
-    return (
+    return renderWithVisibleTitle(
       <ExpandableExecutionCard entityType="smart_doc" entityId={element.id} element={element} onUpdate={onUpdate}>
         <SmartDocRenderer 
           element={element} 
@@ -290,7 +330,7 @@ export const SmartElementRenderer: React.FC<SmartElementRendererProps> = ({
 
   // Placeholder for other types
   const Icon = ICONS[smartType] || Brain;
-  const label = SmartElementLabels[smartType as keyof typeof SmartElementLabels] || smartType;
+  const label = getSmartElementLabel(smartType);
 
   return (
     <div className="w-full h-full flex items-center justify-center bg-background border border-border rounded-lg p-4" dir="rtl">
