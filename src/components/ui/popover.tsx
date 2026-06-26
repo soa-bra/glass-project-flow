@@ -7,9 +7,8 @@ const PopoverTrigger = PopoverPrimitive.Trigger
 
 /**
  * PopoverContent — uses sb-popover-shell for glass styling.
- * z-index set inline from CSS var --z-popover (10400), which sits above
- * both modal-content (10200) and dropdown (10300), ensuring popovers
- * work correctly inside dialogs and above select menus.
+ * The z-index token keeps portaled popovers above dialogs, which is required
+ * for date pickers and menus opened from inside modal content.
  */
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
@@ -21,7 +20,7 @@ const PopoverContent = React.forwardRef<
       align={align}
       sideOffset={sideOffset}
       className={cn(
-        "sb-popover-shell w-72 px-[14px] py-[10px] text-[#0B0F12] font-arabic outline-none",
+        "z-[var(--z-popover)] sb-popover-shell w-72 px-[14px] py-[10px] text-[#0B0F12] font-arabic outline-none",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
