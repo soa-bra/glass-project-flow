@@ -5,6 +5,7 @@ import { useCanvasStore } from '@/stores/canvasStore';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { canvasKernel, getContainerRect } from '@/engine/canvas/kernel/canvasKernel';
 import { SmartElementTypeSchema, type SmartElementType } from '@/types/smart-elements';
+import { createRenderableFileCanvasElement } from '@/features/planning/utils/fileCanvasElements';
 
 interface UseCanvasDropControllerOptions {
   containerRef: RefObject<HTMLDivElement>;
@@ -56,30 +57,16 @@ export function useCanvasDropController({ containerRef, viewport }: UseCanvasDro
 
       if (!e.dataTransfer.files || e.dataTransfer.files.length === 0) return;
       const file = e.dataTransfer.files[0];
-      const fileUrl = URL.createObjectURL(file);
 
-      if (file.type.startsWith('image/')) {
-        addElement({
-          type: 'image',
-          position: canvasPoint,
-          size: { width: 300, height: 200 },
-          src: fileUrl,
-          alt: file.name,
+      void createRenderableFileCanvasElement(file, canvasPoint)
+        .then((element) => {
+          addElement(element);
+          toast.success(`تم إدراج الملف: ${file.name}`);
+        })
+        .catch((error) => {
+          console.warn('[file_uploader] drop insert failed', error);
+          toast.error(`تعذر إدراج الملف: ${file.name}`);
         });
-        toast.success(`تم إدراج الصورة: ${file.name}`);
-        return;
-      }
-
-      addElement({
-        type: 'file',
-        position: canvasPoint,
-        size: { width: 250, height: 120 },
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size,
-        fileUrl,
-      });
-      toast.success(`تم إدراج الملف: ${file.name}`);
     },
     [addElement, containerRef, viewport],
   );
