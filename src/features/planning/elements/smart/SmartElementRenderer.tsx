@@ -1,6 +1,6 @@
 import React from 'react';
 import type { CanvasSmartElement } from '@/types/canvas-elements';
-import { SmartElementLabels } from '@/types/smart-elements';
+import { SmartElementLabels, SmartElementTypes } from '@/types/smart-elements';
 import { useSmartElementsStore } from '@/stores/smartElementsStore';
 import { KanbanBoard } from './KanbanBoard';
 import { ThinkingBoard } from './ThinkingBoard';
@@ -52,27 +52,36 @@ const ICONS: Record<string, React.ElementType> = {
 const readString = (value: unknown): string | undefined =>
   typeof value === 'string' && value.trim() ? value.trim() : undefined;
 
+const normalizeSmartTypeText = (value: string): string => value.trim().toLowerCase();
+const RAW_SMART_TYPE_TITLES = new Set<string>(SmartElementTypes.map(normalizeSmartTypeText));
+
 const getSmartElementLabel = (smartType: string | undefined): string => {
   if (!smartType) return 'عنصر ذكي';
   return SmartElementLabels[smartType as keyof typeof SmartElementLabels] || smartType;
 };
 
-const getVisibleSmartElementTitle = (
+const readDisplayTitleString = (value: unknown): string | undefined => {
+  const candidate = readString(value);
+  if (!candidate) return undefined;
+  return RAW_SMART_TYPE_TITLES.has(normalizeSmartTypeText(candidate)) ? undefined : candidate;
+};
+
+export const getVisibleSmartElementTitle = (
   data: Record<string, unknown>,
   metadata: Record<string, unknown>,
   element: CanvasSmartElement,
   smartType: string | undefined,
 ): string => {
   return (
-    readString(data.title) ??
-    readString(data.label) ??
-    readString(data.question) ??
-    readString(data.topic) ??
-    readString(data.projectName) ??
-    readString(data.taskName) ??
-    readString(data.name) ??
-    readString(metadata.title) ??
-    readString(element.content) ??
+    readDisplayTitleString(data.title) ??
+    readDisplayTitleString(data.label) ??
+    readDisplayTitleString(data.question) ??
+    readDisplayTitleString(data.topic) ??
+    readDisplayTitleString(data.projectName) ??
+    readDisplayTitleString(data.taskName) ??
+    readDisplayTitleString(data.name) ??
+    readDisplayTitleString(metadata.title) ??
+    readDisplayTitleString(element.content) ??
     getSmartElementLabel(smartType)
   );
 };
