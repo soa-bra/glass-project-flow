@@ -39,6 +39,7 @@ describe('boardSnapshot', () => {
     expect(snapshot.elements[0].data.nested.value).toBe('original');
     expect(snapshot.layers[0].elements).toEqual(['element-1']);
     expect(snapshot.selectedElementIds).toEqual(['element-1']);
+    expect(snapshot.selectedElementSelectionSource).toBeNull();
     expect(snapshot.viewport.pan.x).toBe(25);
     expect(snapshot.activeLayerId).toBe('default');
   });
@@ -76,10 +77,39 @@ describe('boardSnapshot', () => {
     expect(restored.viewport).toEqual({ zoom: 2, pan: { x: 75, y: 95 } });
     expect(restored.settings).toEqual({ zoom: 2, pan: { x: 1234, y: 95 } });
     expect(restored.activeLayerId).toBe('default');
+    expect(restored.selectedElementSelectionSource).toBeNull();
 
     expect(snapshot.elements[0].position.y).toBe(50);
     expect(snapshot.layers[0].elements).toEqual(['element-restore']);
     expect(snapshot.viewport.pan.x).toBe(75);
+  });
+
+  it('restores selection source with selection ids for undo and redo snapshots', () => {
+    const snapshot = captureBoardSnapshot({
+      elements: [],
+      layers: [],
+      selectedElementIds: ['mindmap-node', 'mindmap-connector'],
+      selectedElementSelectionSource: null,
+    });
+
+    const restored = restoreBoardSnapshot(snapshot);
+
+    expect(restored.selectedElementIds).toEqual(['mindmap-node', 'mindmap-connector']);
+    expect(restored.selectedElementSelectionSource).toBeNull();
+  });
+
+  it('preserves explicit select-all source in board snapshots', () => {
+    const snapshot = captureBoardSnapshot({
+      elements: [],
+      layers: [],
+      selectedElementIds: ['element-1', 'element-2'],
+      selectedElementSelectionSource: 'select_all',
+    });
+
+    const restored = restoreBoardSnapshot(snapshot);
+
+    expect(snapshot.selectedElementSelectionSource).toBe('select_all');
+    expect(restored.selectedElementSelectionSource).toBe('select_all');
   });
 
   it('falls back to default viewport and layer values when optional state is absent', () => {
@@ -92,7 +122,9 @@ describe('boardSnapshot', () => {
 
     expect(snapshot.viewport).toEqual({ zoom: 1, pan: { x: 0, y: 0 } });
     expect(snapshot.activeLayerId).toBe('default');
+    expect(snapshot.selectedElementSelectionSource).toBeNull();
     expect(restored.settings).toEqual({ zoom: 1, pan: { x: 0, y: 0 } });
     expect(restored.selectedElementIds).toEqual([]);
+    expect(restored.selectedElementSelectionSource).toBeNull();
   });
 });
