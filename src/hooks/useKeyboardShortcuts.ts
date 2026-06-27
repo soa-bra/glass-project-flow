@@ -169,7 +169,7 @@ export const useKeyboardShortcuts = () => {
         e.preventDefault();
         clearTemporaryToolRestore();
         const allElementIds = useCanvasStore.getState().elements.map(el => el.id);
-        useCanvasStore.getState().selectElements(allElementIds);
+        useCanvasStore.getState().selectElements(allElementIds, { source: 'select_all' });
       }
 
       // Grid toggle (G without modifiers)
