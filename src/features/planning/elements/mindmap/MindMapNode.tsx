@@ -38,6 +38,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     setLastSmartSelectedMindMapNode,
     lastSmartSelectedMindMapNode,
     selectedElementIds,
+    selectedElementSelectionSource,
     selectElement
   } = useCanvasStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -259,7 +260,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     const previousActiveTool = previousActiveToolRef.current;
     previousActiveToolRef.current = activeTool;
     if (!isSelected) return;
-    if (previousActiveTool !== 'smart_element_tool' && activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
+    if (previousActiveTool !== 'smart_element_tool' && activeTool === 'smart_element_tool' && selectedElementSelectionSource !== 'select_all' && selectedElementIds.length > 1) {
       const canvasElements = useCanvasStore.getState().elements;
       const selectedElementSet = new Set(selectedElementIds);
       const selectedElements = canvasElements.filter((entry: CanvasElement) => selectedElementSet.has(entry.id));
@@ -269,7 +270,7 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
         selectElement(nodeToSelect, false);
       }
     }
-  }, [activeTool, element.id, isSelected, lastSmartSelectedMindMapNode, selectElement, selectedElementIds]);
+  }, [activeTool, element.id, isSelected, lastSmartSelectedMindMapNode, selectElement, selectedElementIds, selectedElementSelectionSource]);
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
