@@ -4,6 +4,8 @@
 
 import type { CanvasElement, LayerInfo } from '@/types/canvas';
 
+export type BoardSelectionSource = 'select_all' | null;
+
 export interface BoardViewportSnapshot {
   zoom: number;
   pan: { x: number; y: number };
@@ -13,6 +15,7 @@ export interface BoardSnapshot {
   elements: CanvasElement[];
   layers: LayerInfo[];
   selectedElementIds: string[];
+  selectedElementSelectionSource: BoardSelectionSource;
   viewport: BoardViewportSnapshot;
   activeLayerId: string | null;
 }
@@ -29,6 +32,7 @@ export function captureBoardSnapshot(state: {
   elements: CanvasElement[];
   layers: LayerInfo[];
   selectedElementIds?: string[];
+  selectedElementSelectionSource?: BoardSelectionSource;
   viewport?: BoardViewportSnapshot;
   activeLayerId?: string | null;
 }): BoardSnapshot {
@@ -36,6 +40,7 @@ export function captureBoardSnapshot(state: {
     elements: safeClone(state.elements || []),
     layers: safeClone(state.layers || []),
     selectedElementIds: safeClone(state.selectedElementIds || []),
+    selectedElementSelectionSource: state.selectedElementSelectionSource ?? null,
     viewport: safeClone(state.viewport || { zoom: 1, pan: { x: 0, y: 0 } }),
     activeLayerId: state.activeLayerId ?? 'default',
   };
@@ -45,6 +50,7 @@ export function restoreBoardSnapshot(snapshot: BoardSnapshot): {
   elements: CanvasElement[];
   layers: LayerInfo[];
   selectedElementIds: string[];
+  selectedElementSelectionSource: BoardSelectionSource;
   viewport: BoardViewportSnapshot;
   activeLayerId: string | null;
   settings: { zoom: number; pan: { x: number; y: number } };
@@ -55,6 +61,7 @@ export function restoreBoardSnapshot(snapshot: BoardSnapshot): {
     elements: safeClone(snapshot.elements || []),
     layers: safeClone(snapshot.layers || []),
     selectedElementIds: safeClone(snapshot.selectedElementIds || []),
+    selectedElementSelectionSource: snapshot.selectedElementSelectionSource ?? null,
     viewport: restoredViewport,
     activeLayerId: snapshot.activeLayerId ?? 'default',
     settings: {
