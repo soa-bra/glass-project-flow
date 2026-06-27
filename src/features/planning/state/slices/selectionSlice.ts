@@ -25,12 +25,15 @@ type CanvasStoreState = SelectionSlice & {
   };
 };
 
+export type SelectionSource = 'select_all' | null;
+
 export interface SelectionSlice {
   selectedElementIds: string[];
+  selectedElementSelectionSource: SelectionSource;
   clipboard: CanvasElement[];
 
   selectElement: (elementId: string, multiSelect?: boolean) => void;
-  selectElements: (elementIds: string[]) => void;
+  selectElements: (elementIds: string[], options?: { source?: SelectionSource }) => void;
   clearSelection: () => void;
 
   copyElements: (elementIds: string[]) => void;
@@ -323,6 +326,7 @@ export const createSelectionSlice: StateCreator<
   SelectionSlice
 > = (set, get) => ({
   selectedElementIds: [],
+  selectedElementSelectionSource: null,
   clipboard: [],
 
   selectElement: (elementId, multiSelect = false) => {
@@ -333,19 +337,28 @@ export const createSelectionSlice: StateCreator<
           ? state.selectedElementIds.filter((id) => id !== elementId)
           : [...state.selectedElementIds, elementId];
 
-        return { selectedElementIds: Array.from(new Set(newSelection)) };
+        return {
+          selectedElementIds: Array.from(new Set(newSelection)),
+          selectedElementSelectionSource: null,
+        };
       }
 
-      return { selectedElementIds: [elementId] };
+      return {
+        selectedElementIds: [elementId],
+        selectedElementSelectionSource: null,
+      };
     });
   },
 
-  selectElements: (elementIds) => {
-    set({ selectedElementIds: elementIds });
+  selectElements: (elementIds, options) => {
+    set({
+      selectedElementIds: elementIds,
+      selectedElementSelectionSource: options?.source ?? null,
+    });
   },
 
   clearSelection: () => {
-    set({ selectedElementIds: [] });
+    set({ selectedElementIds: [], selectedElementSelectionSource: null });
   },
 
   copyElements: (elementIds) => {
@@ -434,6 +447,7 @@ export const createSelectionSlice: StateCreator<
         elements: [...frameElements, ...state.elements, ...regularElements],
         layers: updatedLayers,
         selectedElementIds: pastedIds,
+        selectedElementSelectionSource: null,
       };
     });
   },
