@@ -183,7 +183,7 @@ export const createMindmapSlice: StateCreator<
     };
 
     const treeIds = collectTree(rootId);
-    set({ selectedElementIds: treeIds });
+    set({ selectedElementIds: treeIds, selectedElementSelectionSource: null });
   },
 
   autoResolveOverlapsForMindMap: () => {
@@ -327,7 +327,7 @@ export const createMindmapSlice: StateCreator<
     });
 
     if (allTreeIds.size > 0) {
-      set({ selectedElementIds: Array.from(allTreeIds) });
+      set({ selectedElementIds: Array.from(allTreeIds), selectedElementSelectionSource: null });
     }
   }
 });
