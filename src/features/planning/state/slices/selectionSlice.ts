@@ -25,12 +25,15 @@ type CanvasStoreState = SelectionSlice & {
   };
 };
 
+export type SelectionSource = 'select_all';
+
 export interface SelectionSlice {
   selectedElementIds: string[];
+  lastSelectionSource: SelectionSource | null;
   clipboard: CanvasElement[];
 
   selectElement: (elementId: string, multiSelect?: boolean) => void;
-  selectElements: (elementIds: string[]) => void;
+  selectElements: (elementIds: string[], source?: SelectionSource) => void;
   clearSelection: () => void;
 
   copyElements: (elementIds: string[]) => void;
@@ -323,6 +326,7 @@ export const createSelectionSlice: StateCreator<
   SelectionSlice
 > = (set, get) => ({
   selectedElementIds: [],
+  lastSelectionSource: null,
   clipboard: [],
 
   selectElement: (elementId, multiSelect = false) => {
@@ -333,19 +337,19 @@ export const createSelectionSlice: StateCreator<
           ? state.selectedElementIds.filter((id) => id !== elementId)
           : [...state.selectedElementIds, elementId];
 
-        return { selectedElementIds: Array.from(new Set(newSelection)) };
+        return { selectedElementIds: Array.from(new Set(newSelection)), lastSelectionSource: null };
       }
 
-      return { selectedElementIds: [elementId] };
+      return { selectedElementIds: [elementId], lastSelectionSource: null };
     });
   },
 
-  selectElements: (elementIds) => {
-    set({ selectedElementIds: elementIds });
+  selectElements: (elementIds, source = null) => {
+    set({ selectedElementIds: elementIds, lastSelectionSource: source });
   },
 
   clearSelection: () => {
-    set({ selectedElementIds: [] });
+    set({ selectedElementIds: [], lastSelectionSource: null });
   },
 
   copyElements: (elementIds) => {
@@ -434,6 +438,7 @@ export const createSelectionSlice: StateCreator<
         elements: [...frameElements, ...state.elements, ...regularElements],
         layers: updatedLayers,
         selectedElementIds: pastedIds,
+        lastSelectionSource: null,
       };
     });
   },
