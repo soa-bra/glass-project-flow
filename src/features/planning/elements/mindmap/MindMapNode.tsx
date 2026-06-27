@@ -53,7 +53,6 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
   const nodeData = element.data as MindMapNodeData;
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isLongPressRef = useRef(false);
-  const previousActiveToolRef = useRef(activeTool);
   const LONG_PRESS_DELAY = 200;
   const hasChildren = useCanvasStore(state => state.elements.some(el => el.type === "mindmap_connector" && (el.data as any)?.startNodeId === element.id));
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -256,12 +255,14 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     };
   }, [isSelected]);
   useEffect(() => {
-    const previousActiveTool = previousActiveToolRef.current;
-    previousActiveToolRef.current = activeTool;
     if (!isSelected) return;
-    if (previousActiveTool !== 'smart_element_tool' && activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
-      const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode) ? lastSmartSelectedMindMapNode : element.id;
-      selectElement(nodeToSelect, false);
+    if (activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
+      const selectedElements = useCanvasStore.getState().elements.filter((entry: CanvasElement) => selectedElementIds.includes(entry.id));
+      const hasFullTreeConnector = selectedElements.some((entry: CanvasElement) => entry.type === 'mindmap_connector');
+      if (hasFullTreeConnector) {
+        const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode) ? lastSmartSelectedMindMapNode : element.id;
+        selectElement(nodeToSelect, false);
+      }
     }
   }, [activeTool, element.id, isSelected, lastSmartSelectedMindMapNode, selectElement, selectedElementIds]);
   useEffect(() => {
