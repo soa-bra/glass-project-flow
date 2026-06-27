@@ -260,7 +260,11 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     previousActiveToolRef.current = activeTool;
     if (!isSelected) return;
     if (previousActiveTool !== 'smart_element_tool' && activeTool === 'smart_element_tool' && selectedElementIds.length > 1) {
-      const selectedElements = useCanvasStore.getState().elements.filter((entry: CanvasElement) => selectedElementIds.includes(entry.id));
+      const canvasElements = useCanvasStore.getState().elements;
+      const selectedElementSet = new Set(selectedElementIds);
+      const isSelectAll = canvasElements.length > 0 && selectedElementSet.size === canvasElements.length && canvasElements.every((entry: CanvasElement) => selectedElementSet.has(entry.id));
+      if (isSelectAll) return;
+      const selectedElements = canvasElements.filter((entry: CanvasElement) => selectedElementSet.has(entry.id));
       const hasFullTreeConnector = selectedElements.some((entry: CanvasElement) => entry.type === 'mindmap_connector');
       if (hasFullTreeConnector) {
         const nodeToSelect = lastSmartSelectedMindMapNode && selectedElementIds.includes(lastSmartSelectedMindMapNode) ? lastSmartSelectedMindMapNode : element.id;
