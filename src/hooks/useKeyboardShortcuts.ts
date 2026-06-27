@@ -167,6 +167,7 @@ export const useKeyboardShortcuts = () => {
       // Select All (Ctrl+A)
       if ((e.ctrlKey || e.metaKey) && key === 'a') {
         e.preventDefault();
+        clearTemporaryToolRestore();
         const allElementIds = useCanvasStore.getState().elements.map(el => el.id);
         useCanvasStore.getState().selectElements(allElementIds);
       }
