@@ -10,6 +10,7 @@ import {
   upsertSmartConnectors,
 } from '@/services/central/smartConnectors.service';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import FileUploadPanel from './FileUploadToolZone';
 import ShapesPanel from './ShapesToolZone';
 import SmartElementsPanel from './SmartElementsToolZone';
@@ -52,6 +53,20 @@ const RootConnectorToolPanel: React.FC<RootConnectorToolPanelProps> = ({
       </div>
 
       <ConnectorInspector data={connector} onPatch={onPatch} />
+
+      <div className="space-y-1 rounded-lg border border-border/60 bg-muted/30 p-3">
+        <label className="text-[10px] text-muted-foreground" htmlFor="root-connector-description">
+          الوصف / التعليق
+        </label>
+        <Textarea
+          id="root-connector-description"
+          value={connector.description || ''}
+          onChange={(event) => onPatch({ description: event.target.value })}
+          placeholder="تعليق توضيحي يظهر على بطاقة الموصل..."
+          className="min-h-[88px] resize-none text-xs"
+          dir="auto"
+        />
+      </div>
 
       <Button
         type="button"
