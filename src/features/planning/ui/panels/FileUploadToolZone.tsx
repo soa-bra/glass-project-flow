@@ -13,6 +13,22 @@ interface UploadedFile {
   preview?: string;
 }
 
+const ACCEPTED_FILE_TYPES = [
+  'image/*',
+  '.pdf',
+  '.doc',
+  '.docx',
+  '.txt',
+  '.md',
+  '.markdown',
+  '.json',
+  '.pages',
+  '.csv',
+  '.xls',
+  '.xlsx',
+  '.numbers',
+].join(',');
+
 export default function FileUploadPanel() {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -131,7 +147,7 @@ export default function FileUploadPanel() {
               multiple
               onChange={handleFileInput}
               className="hidden"
-              accept="image/*,.pdf,.doc,.docx,.txt,.csv,.json"
+              accept={ACCEPTED_FILE_TYPES}
             />
           </div>
         </div>
@@ -219,9 +235,10 @@ export default function FileUploadPanel() {
           الصيغ المدعومة
         </h5>
         <p className="text-[10px] text-[hsl(var(--ink-60))] leading-relaxed">
-          الصور: JPG, PNG, GIF, SVG, WebP<br />
-          المستندات: PDF, DOC, DOCX<br />
-          ملفات أخرى: TXT, CSV, JSON
+          الصور: PNG, JPG, JPEG<br />
+          المستندات الذكية: TXT, Markdown, JSON, Pages<br />
+          الأوراق الذكية: CSV, Excel, Numbers<br />
+          المعاينة: PDF
         </p>
       </div>
     </div>
