@@ -35,6 +35,34 @@ interface SmartTextDocProps {
 
 const FONT_SIZES = [12, 14, 16, 18, 20, 24, 28, 32];
 
+const isPlainTextFormat = (format: SmartTextDocData["format"]) => (
+  format === "plain" || format === "markdown"
+);
+
+export const initializeSmartTextEditorContent = (
+  editor: HTMLElement,
+  format: SmartTextDocData["format"],
+  content: string,
+) => {
+  if (isPlainTextFormat(format)) {
+    editor.textContent = content;
+    return;
+  }
+
+  editor.innerHTML = sanitizeHTML(content);
+};
+
+export const readSmartTextEditorContent = (
+  editor: HTMLElement,
+  format: SmartTextDocData["format"],
+) => {
+  if (isPlainTextFormat(format)) {
+    return editor.textContent || "";
+  }
+
+  return sanitizeHTML(editor.innerHTML);
+};
+
 interface ActiveFormats {
   bold: boolean;
   italic: boolean;
@@ -95,20 +123,22 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   // Initialize content only once
   useEffect(() => {
     if (editorRef.current && !isInitialized.current && data.content) {
-      editorRef.current.innerHTML = sanitizeHTML(data.content);
+      initializeSmartTextEditorContent(editorRef.current, data.format, data.content);
       isInitialized.current = true;
     }
-  }, [data.content]);
+  }, [data.content, data.format]);
 
   const handleContentChange = useCallback(() => {
     if (editorRef.current) {
-      const newContent = sanitizeHTML(editorRef.current.innerHTML);
-      editorRef.current.innerHTML = newContent;
+      const newContent = readSmartTextEditorContent(editorRef.current, data.format);
+      if (!isPlainTextFormat(data.format)) {
+        editorRef.current.innerHTML = newContent;
+      }
       setContent(newContent);
       onUpdate({ content: newContent });
     }
     detectCurrentFontSize();
-  }, [onUpdate, detectCurrentFontSize]);
+  }, [onUpdate, detectCurrentFontSize, data.format]);
 
   const handleSelectionChange = useCallback(() => {
     detectCurrentFontSize();
