@@ -72,11 +72,9 @@ const BLOCK_TEXT_TAGS = new Set([
   "UL",
 ]);
 
-const normalizePlainEditorText = (value: string) => value
-  .replace(/\u00a0/g, " ")
-  .replace(/[ \t]+\n/g, "\n")
-  .replace(/\n{3,}/g, "\n\n")
-  .replace(/^\n+|\n+$/g, "");
+const isBlockTextElement = (node: Node): node is HTMLElement => (
+  node.nodeType === Node.ELEMENT_NODE && BLOCK_TEXT_TAGS.has((node as HTMLElement).tagName)
+);
 
 const readPlainTextWithLineBreaks = (node: Node): string => {
   if (node.nodeType === Node.TEXT_NODE) {
@@ -92,19 +90,16 @@ const readPlainTextWithLineBreaks = (node: Node): string => {
     return "\n";
   }
 
-  const text = Array.from(element.childNodes)
-    .map(readPlainTextWithLineBreaks)
+  const children = Array.from(element.childNodes);
+
+  return children
+    .map((child, index) => {
+      const text = readPlainTextWithLineBreaks(child);
+      const nextChild = children[index + 1];
+      const needsBlockBoundary = isBlockTextElement(child) && Boolean(nextChild) && !text.endsWith("\n");
+      return needsBlockBoundary ? `${text}\n` : text;
+    })
     .join("");
-
-  if (element.tagName === "LI") {
-    return text.endsWith("\n") ? text : `${text}\n`;
-  }
-
-  if (BLOCK_TEXT_TAGS.has(element.tagName) && element.childNodes.length > 0) {
-    return text.endsWith("\n") ? text : `${text}\n`;
-  }
-
-  return text;
 };
 
 export const initializeSmartTextEditorContent = (
@@ -125,7 +120,7 @@ export const readSmartTextEditorContent = (
   format: SmartTextDocData["format"],
 ) => {
   if (isPlainTextFormat(format)) {
-    return normalizePlainEditorText(readPlainTextWithLineBreaks(editor));
+    return readPlainTextWithLineBreaks(editor);
   }
 
   return sanitizeHTML(editor.innerHTML);
