@@ -239,6 +239,45 @@ describe('usePlanningStoreSync layer membership', () => {
     });
   });
 
+  it('does not resurrect a locally deleted element from realtime insert or update events', async () => {
+    const deletedId = '33333333-3333-4333-8333-333333333333';
+    mocks.listPlanningElements.mockResolvedValueOnce([]);
+
+    act(() => {
+      usePlanningStore.setState({
+        pendingDeletedElementIds: [deletedId],
+        selectedElementIds: [deletedId],
+      } as never);
+    });
+
+    const { result } = renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+
+    await waitFor(() => {
+      expect(result.current.hydrationStatus).toBe('ready');
+      expect(mocks.realtimeOptions).toBeDefined();
+    });
+
+    await act(async () => {
+      mocks.realtimeOptions.onElementInsert(
+        createPlanningElement({ id: deletedId, metadata: { layerId: 'layer-b' } }),
+      );
+      mocks.realtimeOptions.onElementUpdate(
+        createPlanningElement({
+          id: deletedId,
+          content: { label: 'Remote update after local delete' },
+          metadata: { layerId: 'layer-b' },
+          updated_at: '2026-01-03T00:00:00Z',
+        }),
+      );
+    });
+
+    const state = usePlanningStore.getState();
+    expect(state.elements).toEqual([]);
+    expect(state.pendingDeletedElementIds).toEqual([deletedId]);
+    expect(state.selectedElementIds).toEqual([]);
+    expect(state.layers.find((layer) => layer.id === 'layer-b')?.elements).toEqual([]);
+  });
+
   it('moves layer membership when realtime updates change layerId', async () => {
     mocks.listPlanningElements.mockResolvedValueOnce([
       createPlanningElement({ metadata: { layerId: 'layer-b' } }),
