@@ -47,6 +47,18 @@ describe('SmartTextDoc editor content helpers', () => {
     expect(readSmartTextEditorContent(editor, 'markdown')).toBe('heading\n<tag>literal</tag>');
   });
 
+  it('preserves user-authored markdown whitespace while adding DOM line breaks', () => {
+    const editor = document.createElement('div');
+    editor.append(document.createElement('br'));
+    editor.append('first line  ');
+    editor.append(document.createElement('br'));
+    editor.append(document.createElement('br'));
+    editor.append('  indented');
+    editor.append(document.createElement('br'));
+
+    expect(readSmartTextEditorContent(editor, 'markdown')).toBe('\nfirst line  \n\n  indented\n');
+  });
+
   it('keeps rich text sanitization for rich documents', () => {
     const editor = document.createElement('div');
 
