@@ -27,6 +27,26 @@ describe('SmartTextDoc editor content helpers', () => {
     expect(readSmartTextEditorContent(editor, 'markdown')).toBe(content);
   });
 
+  it('preserves line breaks inserted into plain text editor content', () => {
+    const editor = document.createElement('div');
+    editor.append('foo');
+    editor.append(document.createElement('br'));
+    editor.append('bar');
+
+    expect(readSmartTextEditorContent(editor, 'plain')).toBe('foo\nbar');
+  });
+
+  it('preserves block boundaries as line breaks for markdown editor content', () => {
+    const editor = document.createElement('div');
+    const first = document.createElement('div');
+    const second = document.createElement('div');
+    first.textContent = 'heading';
+    second.textContent = '<tag>literal</tag>';
+    editor.append(first, second);
+
+    expect(readSmartTextEditorContent(editor, 'markdown')).toBe('heading\n<tag>literal</tag>');
+  });
+
   it('keeps rich text sanitization for rich documents', () => {
     const editor = document.createElement('div');
 

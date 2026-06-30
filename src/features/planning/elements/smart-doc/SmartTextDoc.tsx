@@ -39,6 +39,74 @@ const isPlainTextFormat = (format: SmartTextDocData["format"]) => (
   format === "plain" || format === "markdown"
 );
 
+const BLOCK_TEXT_TAGS = new Set([
+  "ADDRESS",
+  "ARTICLE",
+  "ASIDE",
+  "BLOCKQUOTE",
+  "DD",
+  "DIV",
+  "DL",
+  "DT",
+  "FIELDSET",
+  "FIGCAPTION",
+  "FIGURE",
+  "FOOTER",
+  "FORM",
+  "H1",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "HEADER",
+  "HR",
+  "LI",
+  "MAIN",
+  "NAV",
+  "OL",
+  "P",
+  "PRE",
+  "SECTION",
+  "TABLE",
+  "UL",
+]);
+
+const normalizePlainEditorText = (value: string) => value
+  .replace(/\u00a0/g, " ")
+  .replace(/[ \t]+\n/g, "\n")
+  .replace(/\n{3,}/g, "\n\n")
+  .replace(/^\n+|\n+$/g, "");
+
+const readPlainTextWithLineBreaks = (node: Node): string => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return node.textContent || "";
+  }
+
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return "";
+  }
+
+  const element = node as HTMLElement;
+  if (element.tagName === "BR") {
+    return "\n";
+  }
+
+  const text = Array.from(element.childNodes)
+    .map(readPlainTextWithLineBreaks)
+    .join("");
+
+  if (element.tagName === "LI") {
+    return text.endsWith("\n") ? text : `${text}\n`;
+  }
+
+  if (BLOCK_TEXT_TAGS.has(element.tagName) && element.childNodes.length > 0) {
+    return text.endsWith("\n") ? text : `${text}\n`;
+  }
+
+  return text;
+};
+
 export const initializeSmartTextEditorContent = (
   editor: HTMLElement,
   format: SmartTextDocData["format"],
@@ -57,7 +125,7 @@ export const readSmartTextEditorContent = (
   format: SmartTextDocData["format"],
 ) => {
   if (isPlainTextFormat(format)) {
-    return editor.textContent || "";
+    return normalizePlainEditorText(readPlainTextWithLineBreaks(editor));
   }
 
   return sanitizeHTML(editor.innerHTML);
