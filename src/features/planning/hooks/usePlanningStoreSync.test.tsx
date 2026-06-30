@@ -250,9 +250,10 @@ describe('usePlanningStoreSync layer membership', () => {
       } as never);
     });
 
-    renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
+    const { result } = renderHook(() => usePlanningStoreSync('11111111-1111-4111-8111-111111111111'));
 
     await waitFor(() => {
+      expect(result.current.hydrationStatus).toBe('ready');
       expect(mocks.realtimeOptions).toBeDefined();
     });
 
@@ -273,7 +274,7 @@ describe('usePlanningStoreSync layer membership', () => {
     const state = usePlanningStore.getState();
     expect(state.elements).toEqual([]);
     expect(state.pendingDeletedElementIds).toEqual([deletedId]);
-    expect(state.selectedElementIds).toEqual([deletedId]);
+    expect(state.selectedElementIds).toEqual([]);
     expect(state.layers.find((layer) => layer.id === 'layer-b')?.elements).toEqual([]);
   });
 
