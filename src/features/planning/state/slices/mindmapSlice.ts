@@ -15,6 +15,19 @@ export interface MindmapSlice {
   expandSelectionToFullMindMapTrees: (selectedIds: string[]) => void;
 }
 
+function isCanvasElementLocked(element: CanvasElement): boolean {
+  return Boolean(
+    element.locked ||
+    element.data?.locked ||
+    element.data?.isLocked ||
+    element.metadata?.locked,
+  );
+}
+
+function isSelectableCanvasElement(element: CanvasElement): boolean {
+  return element.visible !== false && !isCanvasElementLocked(element);
+}
+
 const recomputeMindMapConnectorBounds = (elements: CanvasElement[], affectedNodeIds?: string[]): CanvasElement[] => {
   return elements.map((element) => {
     if (element.type !== 'mindmap_connector') return element;
@@ -182,7 +195,10 @@ export const createMindmapSlice: StateCreator<
       return ids;
     };
 
-    const treeIds = collectTree(rootId);
+    const treeIds = collectTree(rootId).filter((treeId) => {
+      const element = elements.find((entry: CanvasElement) => entry.id === treeId);
+      return element ? isSelectableCanvasElement(element) : false;
+    });
     set({ selectedElementIds: treeIds, selectedElementSelectionSource: null });
   },
 
@@ -265,10 +281,11 @@ export const createMindmapSlice: StateCreator<
   // ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية
   expandSelectionToFullMindMapTrees: (selectedIds: string[]) => {
     const { elements } = get();
+    const elementById = new Map(elements.map((element: CanvasElement) => [element.id, element]));
 
     // التحقق مما إذا كانت أي من العناصر المحددة من نوع mindmap
     const hasMindMapElements = selectedIds.some(id => {
-      const el = elements.find((e: CanvasElement) => e.id === id);
+      const el = elementById.get(id);
       return el && (el.type === 'mindmap_node' || el.type === 'mindmap_connector');
     });
 
@@ -305,29 +322,44 @@ export const createMindmapSlice: StateCreator<
       return ids;
     };
 
-    // جمع كل الأشجار المرتبطة بالعناصر المحددة
-    const allTreeIds = new Set<string>();
+    // جمع كل الأشجار المرتبطة بالعناصر المحددة مع الحفاظ على العناصر الأخرى المحددة
+    const expandedSelectionIds = new Set(
+      selectedIds.filter((id) => {
+        const element = elementById.get(id);
+        return element ? isSelectableCanvasElement(element) : false;
+      }),
+    );
 
     selectedIds.forEach(id => {
-      const el = elements.find((e: CanvasElement) => e.id === id);
+      const el = elementById.get(id);
       if (!el) return;
 
       if (el.type === 'mindmap_node') {
         const rootId = findRoot(id);
         const treeIds = collectTree(rootId);
-        treeIds.forEach(treeId => allTreeIds.add(treeId));
+        treeIds.forEach(treeId => {
+          const treeElement = elementById.get(treeId);
+          if (treeElement && isSelectableCanvasElement(treeElement)) {
+            expandedSelectionIds.add(treeId);
+          }
+        });
       } else if (el.type === 'mindmap_connector') {
         const connectorData = el.data as any;
         if (connectorData?.startNodeId) {
           const rootId = findRoot(connectorData.startNodeId);
           const treeIds = collectTree(rootId);
-          treeIds.forEach(treeId => allTreeIds.add(treeId));
+          treeIds.forEach(treeId => {
+            const treeElement = elementById.get(treeId);
+            if (treeElement && isSelectableCanvasElement(treeElement)) {
+              expandedSelectionIds.add(treeId);
+            }
+          });
         }
       }
     });
 
-    if (allTreeIds.size > 0) {
-      set({ selectedElementIds: Array.from(allTreeIds), selectedElementSelectionSource: null });
+    if (expandedSelectionIds.size > 0) {
+      set({ selectedElementIds: Array.from(expandedSelectionIds), selectedElementSelectionSource: null });
     }
   }
 });
