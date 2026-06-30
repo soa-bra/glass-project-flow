@@ -136,7 +136,7 @@ export function useExportImport(options?: UseExportImportOptions) {
   const importFromFile = useCallback(async (
     file: File,
     importOptions?: ImportOptions
-  ) => {
+  ): Promise<boolean> => {
     setIsImporting(true);
 
     try {
@@ -145,7 +145,7 @@ export function useExportImport(options?: UseExportImportOptions) {
       if (!validation.valid) {
         toast.error(validation.error || 'ملف غير صالح');
         options?.onImportError?.(validation.error || 'ملف غير صالح');
-        return;
+        return false;
       }
 
       const result = await importEngine.importFromFile(file, importOptions);
@@ -166,14 +166,17 @@ export function useExportImport(options?: UseExportImportOptions) {
 
         toast.success(`تم استيراد ${result.elements.length} عنصر`);
         options?.onImportSuccess?.(result);
+        return true;
       } else {
         toast.error(result.error || 'فشل الاستيراد');
         options?.onImportError?.(result.error || 'فشل الاستيراد');
+        return false;
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'خطأ غير متوقع';
       toast.error(errorMessage);
       options?.onImportError?.(errorMessage);
+      return false;
     } finally {
       setIsImporting(false);
     }
