@@ -151,12 +151,33 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [onSelectConnector]);
   const svgGroupRef = useRef<SVGGElement | null>(null);
 
+  // 🚀 اشتراك مباشر بمواضع العناصر من canvasStore حتى تتحرك الأنكرات فورًا مع السحب،
+  // بدل الاعتماد على prop `elements` الذي قد يتأخر فريمًا بسبب سلسلة memo الأب.
+  const liveElements = useCanvasStore((state) => state.elements);
+  const liveBoundsById = useMemo(() => {
+    const map = new Map<string, { x: number; y: number; width: number; height: number }>();
+    for (const el of liveElements) {
+      map.set(el.id, {
+        x: el.position.x,
+        y: el.position.y,
+        width: el.size.width,
+        height: el.size.height,
+      });
+    }
+    return map;
+  }, [liveElements]);
+
   // Show anchors for selected or hovered, non-connector elements.
   const anchoredElements = useMemo(() => {
     const anchorElementIds = new Set(selectedElementIds);
     if (hoveredConnectableElementId) anchorElementIds.add(hoveredConnectableElementId);
-    return elements.filter((el) => anchorElementIds.has(el.id));
-  }, [elements, hoveredConnectableElementId, selectedElementIds]);
+    return elements
+      .filter((el) => anchorElementIds.has(el.id))
+      .map((el) => {
+        const live = liveBoundsById.get(el.id);
+        return live ? { ...el, ...live } : el;
+      });
+  }, [elements, hoveredConnectableElementId, selectedElementIds, liveBoundsById]);
 
   const showPolicyRejection = useCallback((reason: string, point?: ConnectorPoint | { x: number; y: number }) => {
     const fallbackPoint = dragCurrent ?? dragStartPoint ?? { x: 24, y: 24 };
