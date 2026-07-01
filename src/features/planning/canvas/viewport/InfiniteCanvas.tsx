@@ -154,15 +154,19 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   useTouchGestures({
     containerRef: containerRef as React.RefObject<HTMLElement>,
+    // ✅ نعطّل tap/doubleTap الافتراضي — Pointer Events في InfiniteCanvas تتولى ذلك
+    onTap: () => {},
+    onDoubleTap: () => {},
+    onTwoFingerTap: () => {},
     onLongPress: (_point, elementId) => {
       // ✅ long-press على عنصر يفعّل وضع التحديد المتعدد اللمسي
       if (elementId && activeTool === 'selection_tool') {
         setTouchMultiSelectMode(true);
-        // اهتزاز إضافي مؤكِّد
         if ('vibrate' in navigator) navigator.vibrate([30, 20, 30]);
       }
     },
   });
+
 
 
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
