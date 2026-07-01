@@ -85,14 +85,19 @@ vi.mock('@/stores/canvasStore', () => {
   return { useCanvasStore };
 });
 
-vi.mock('@/stores/interactionStore', () => ({
-  useInteractionStore: vi.fn((selector?: any) => {
+vi.mock('@/stores/interactionStore', () => {
+  const mockUse: any = vi.fn((selector?: any) => {
     if (selector === boxSelectSelector) return boxSelectData;
     if (typeof selector !== 'function') return interactionState;
     return selector(interactionState);
-  }),
-  selectBoxSelectData: boxSelectSelector,
-}));
+  });
+  mockUse.getState = () => interactionState;
+  return {
+    useInteractionStore: mockUse,
+    selectBoxSelectData: boxSelectSelector,
+  };
+});
+
 
 vi.mock('@/hooks/useToolInteraction', () => ({
   useToolInteraction: () => ({
