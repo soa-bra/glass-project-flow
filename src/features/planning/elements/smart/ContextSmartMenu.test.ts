@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   areContextSmartMenuSelectionIdsPersisted,
   calculateContextSmartMenuPosition,
+  shouldStartContextSmartAction,
 } from './ContextSmartMenu';
 
 const mocks = vi.hoisted(() => ({
@@ -46,6 +47,20 @@ describe('calculateContextSmartMenuPosition', () => {
     );
 
     expect(position).toEqual({ x: 60, y: 180 });
+  });
+});
+
+describe('shouldStartContextSmartAction', () => {
+  it('claims the action slot once and blocks duplicate starts until reset', () => {
+    const actionInFlightRef = { current: false };
+
+    expect(shouldStartContextSmartAction(actionInFlightRef, false)).toBe(true);
+    expect(actionInFlightRef.current).toBe(true);
+    expect(shouldStartContextSmartAction(actionInFlightRef, false)).toBe(false);
+
+    actionInFlightRef.current = false;
+    expect(shouldStartContextSmartAction(actionInFlightRef, true)).toBe(false);
+    expect(actionInFlightRef.current).toBe(false);
   });
 });
 
