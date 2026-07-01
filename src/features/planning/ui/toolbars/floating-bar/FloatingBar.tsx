@@ -538,6 +538,8 @@ export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
     addElement(element as CanvasElement);
   }, [addElement]);
 
+  const activeFormats = useMemo(() => getActiveTextFormats(isEditingActiveText, elementStyle), [isEditingActiveText, elementStyle]);
+
   if (!hasSelection || selectionType === null) return <>{approvalDialog}</>;
 
   const overlayRoot = typeof document !== "undefined"
@@ -559,8 +561,6 @@ export const FloatingBar: React.FC<FloatingBarProps> = ({ boardId }) => {
   const currentVerticalAlign = (elementStyle.alignItems as "flex-start" | "center" | "flex-end") || "flex-start";
   const currentDirection = (elementStyle.direction as "rtl" | "ltr") || "rtl";
   const imageName = (firstElement?.data as any)?.name || "";
-
-  const activeFormats = useMemo(() => getActiveTextFormats(isEditingActiveText, elementStyle), [isEditingActiveText, elementStyle]);
 
   const renderContent = () => {
     if (isMindmapSelection) {
