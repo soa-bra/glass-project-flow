@@ -14,7 +14,7 @@
  *   const tryAcquire = useElementLockAcquire(acquire, peersById);
  *   const ok = await tryAcquire(elementId);
  */
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import {
   getPlanningElement,
@@ -39,6 +39,12 @@ function computeRemainingMs(lockedAtIso: string | null | undefined): number {
   return Math.max(0, ELEMENT_LOCK_TTL_MS - (Date.now() - lockedAt));
 }
 
+/**
+ * Returns a STABLE-reference async fn (identity does not change across renders).
+ * Volatile inputs (peersById, options, acquire) are captured via refs so that
+ * consumers passing this to memoized children don't trigger cascading re-renders
+ * every time presence updates arrive.
+ */
 export function useElementLockAcquire(
   acquire: AcquireFn,
   peersById: Record<string, PresencePeer> = {},
@@ -47,9 +53,17 @@ export function useElementLockAcquire(
     suppressToast?: boolean;
   },
 ) {
+  const acquireRef = useRef(acquire);
+  const peersRef = useRef(peersById);
+  const optionsRef = useRef(options);
+
+  useEffect(() => { acquireRef.current = acquire; }, [acquire]);
+  useEffect(() => { peersRef.current = peersById; }, [peersById]);
+  useEffect(() => { optionsRef.current = options; }, [options]);
+
   return useCallback(
     async (elementId: string): Promise<boolean> => {
-      const ok = await acquire(elementId);
+      const ok = await acquireRef.current(elementId);
       if (ok) return true;
 
       let row: PlanningElement | null = null;
@@ -61,7 +75,7 @@ export function useElementLockAcquire(
 
       const holderUserId = row?.locked_by ?? null;
       const holderName = holderUserId
-        ? (peersById[holderUserId]?.display_name ?? "متعاون آخر")
+        ? (peersRef.current[holderUserId]?.display_name ?? "متعاون آخر")
         : "متعاون آخر";
       const remainingMs = computeRemainingMs(row?.locked_at ?? null);
       const seconds = Math.ceil(remainingMs / 1000);
@@ -73,9 +87,9 @@ export function useElementLockAcquire(
         remainingMs,
       };
 
-      options?.onFailure?.(info);
+      optionsRef.current?.onFailure?.(info);
 
-      if (!options?.suppressToast) {
+      if (!optionsRef.current?.suppressToast) {
         toast.error(`العنصر مقفل حاليًا — يحرّره ${holderName}`, {
           description:
             seconds > 0
@@ -87,6 +101,6 @@ export function useElementLockAcquire(
 
       return false;
     },
-    [acquire, peersById, options],
+    [],
   );
 }

@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   RootConnector, 
   RootConnectorData, 
@@ -19,6 +20,7 @@ import { UNIFIED_RELATIONSHIP_TYPES } from '@/features/planning/integration/conn
 import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
 import { suggestSmartConnectorRelationship, type ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
 import { audit } from '@/services/audit';
+import { NextStepSuggestionsPanel, type NextStepChoice } from './NextStepSuggestionsPanel';
 
 interface ElementBounds extends ConnectorPolicyElement {
   id: string;
@@ -139,6 +141,9 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const [internalSelectedConnectorId, setInternalSelectedConnectorId] = useState<string | null>(null);
   const [policyMessage, setPolicyMessage] = useState<{ message: string; x: number; y: number } | null>(null);
+  const [nextStepPanel, setNextStepPanel] = useState<
+    { sourceElementId: string; canvasX: number; canvasY: number; clientX: number; clientY: number } | null
+  >(null);
   const effectiveSelectedConnectorId = selectedConnectorId ?? internalSelectedConnectorId;
   const selectConnector = useCallback((id: string | null) => {
     setInternalSelectedConnectorId(id);
@@ -562,6 +567,15 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
             },
             UNIFIED_RELATIONSHIP_TYPES[0],
           );
+        } else if (canEditBoard) {
+          // 💡 إفلات في فراغ → افتح لوحة اقتراحات الخطوة التالية
+          setNextStepPanel({
+            sourceElementId: dragStartPoint.elementId,
+            canvasX: p.x,
+            canvasY: p.y,
+            clientX: e.clientX,
+            clientY: e.clientY,
+          });
         }
       }
       setDragStartPoint(null);
@@ -700,6 +714,55 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
           <circle cx={dragCurrent.x} cy={dragCurrent.y} r={3} fill="#0B0F12" opacity={0.6} />
         </g>
       )}
+
+      {/* Next-step suggestions panel (rendered via portal so HTML can live outside SVG) */}
+      {nextStepPanel && typeof document !== 'undefined' &&
+        createPortal(
+          <NextStepSuggestionsPanel
+            clientX={nextStepPanel.clientX}
+            clientY={nextStepPanel.clientY}
+            sourceElementId={nextStepPanel.sourceElementId}
+            onClose={() => setNextStepPanel(null)}
+            onPickPreset={(choice: NextStepChoice) => {
+              const suggestion: AISuggestion = {
+                id: `next-step-${nextStepPanel.sourceElementId}-${Date.now()}`,
+                type: 'component',
+                title: choice.label,
+                description: choice.description,
+                confidence: 1,
+                data: {
+                  preset: choice.preset,
+                  smartType: choice.preset,
+                  sourceElementId: nextStepPanel.sourceElementId,
+                  position: { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY },
+                },
+              };
+              onInsertComponent?.(suggestion, { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY });
+              toast.success(`تم إنشاء ${choice.label}`);
+              setNextStepPanel(null);
+            }}
+            onSubmitCustomPrompt={(prompt: string) => {
+              const suggestion: AISuggestion = {
+                id: `custom-workflow-${nextStepPanel.sourceElementId}-${Date.now()}`,
+                type: 'component',
+                title: 'أداة مخصّصة',
+                description: prompt,
+                confidence: 1,
+                data: {
+                  preset: 'framed_workflow',
+                  smartType: 'frame',
+                  sourceElementId: nextStepPanel.sourceElementId,
+                  prompt,
+                  position: { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY },
+                },
+              };
+              onInsertComponent?.(suggestion, { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY });
+              toast.success('جارٍ توليد الأداة المخصّصة…', { description: prompt });
+              setNextStepPanel(null);
+            }}
+          />,
+          document.body,
+        )}
     </g>
   );
 };

@@ -1,124 +1,71 @@
-# خطة إصلاح أداة التحديد (Selection Tool) — مع دعم شاشات اللمس
+# خطة إصلاح أداة التحديد + الأنكر + لوحة الخطوة التالية
 
-بعد مراجعة الملفات الأساسية للأداة:
-- `InfiniteCanvas.tsx` (المدخل الرئيسي لأحداث الماوس/اللمس)
-- `useCanvasSelectionController.ts` (منسّق marquee)
-- `SelectionBox.tsx` + `useSelectionBox`
-- `BoundingBox.tsx` (سحب/تغيير حجم العناصر المحددة)
-- `CanvasElement.tsx` (نقر العنصر واختيار المتعدد)
-- `selectionSlice.ts` + `selectionCoordinator.ts`
-- `useTouchGestures.ts` (لمس)
+## 1) استقرار الكانفاس عند تحديد عنصر ذكي (السبب الجذري "الجنون")
 
-تم رصد 4 مشاكل جذرية متشابكة + فجوة كاملة في دعم اللمس على التابلت وشاشات اللمس في الكمبيوتر.
+**المشكلة:** عند تحديد أي عنصر ذكي، تحدث سلسلة إعادة رندر مستمرة سببها ثلاثة أشياء متداخلة:
+- `useElementLockAcquire` يعيد إنشاء نفسه على كل تغيير في `peersById` (يتغير باستمرار)، فيتغير `requestElementLock` prop لكل `CanvasElement`.
+- `SmartConnectorManager` يقوم بحساب `resolvePoint` و `nearestEdgeAnchor` على كل mousemove حتى بدون سحب، ما يعيد رندر كل الموصلات.
+- في `useElementLockAcquire` الاعتماديات `[acquire, peersById, options]` تعيد بناء الدالة بلا داعٍ (options جديد كل render).
 
-## المشاكل الجذرية
+**الإصلاح:**
+- تثبيت `requestElementLock` عبر `useRef`+`useCallback` بمرجع ثابت داخل `PlanningCanvas`.
+- إزالة `options` و`peersById` من مصفوفة الاعتماديات في `useElementLockAcquire` وقراءتهما عبر ref.
+- في `SmartConnectorManager`: عزل مستمعات `mousemove/mouseup` بحيث لا تُسجَّل إلا حال `isCreatingConnector === true` (موجود جزئيًا)، ووضع `resolvePoint` داخل `useMemo` مفهرس على `[connectors, elements]` فقط.
+- التحقق من عدم استدعاء `acquire` تلقائيًا عند مجرد التحديد — القفل يُطلب فقط عند بدء تحرير/سحب فعلي (تعديل `CanvasElement.handleMouseDown` لتأجيل `ensureEditLock` حتى تجاوز عتبة السحب 6px بدل استدعائه فورًا).
 
-**١) Marquee (السحب) غير دقيق**
-- `beginBoxSelection` يستخدم `additive = e.shiftKey` فقط — Ctrl/Meta لا تعمل كإضافة.
-- لا يوجد مسح للتحديد السابق عند بدء marquee بدون shift → التحديد القديم يبقى ظاهراً ثم يتبدّل فجأة.
-- عتبة 5px صغيرة → رجفة تحوّل نقرة إلى marquee فارغ يمسح التحديد.
+## 2) مراجعة كاملة لأداة التحديد
 
-**٢) Shift/Ctrl+Click خربان**
-- عند `!isSelected && multiSelect` يُستدعى `onSelect(multiSelect)` ثم `startDrag` فوراً → يبدأ سحب عنصر واحد.
-- منطق multi-select مكرر في `CanvasElement` و`selectionCoordinator` بدون توحيد.
+مراجعة سيناريو-سيناريو وضمان عملها 100%:
 
-**٣) تحريك المحدد فيه لخبطة**
-- `startDrag` في `CanvasElement` يحرّك `[element.id]` فقط دون احترام `metadata.groupId` بينما `BoundingBox` يحترمه → مساران متعارضان.
+| السيناريو | الإصلاح |
+|---|---|
+| نقرة على عنصر غير محدد | تحديد فوري بدون قفل — القفل عند تجاوز عتبة السحب |
+| نقرة على عنصر محدد | لا يبدأ سحب من `CanvasElement`، يترك `BoundingBox` يتولى |
+| Shift/Ctrl/Meta + نقرة | عبر `selectionCoordinator` (متأكد لا يبدأ سحب) |
+| سحب على فراغ | Marquee بعد عتبة (موجود) — التأكد أن `clearSelection` لا يستدعى قبل العتبة |
+| Long-press باللمس | يُفعّل `touchMultiSelectMode` (موجود) |
+| نقرة على عنصر مقفل من متعاون | تجاهل النقرة بصمت (بدون toast متكرر) |
+| نقر على عنصر ذكي | نفس منطق العناصر العادية — عزل smart-specific handlers لتجنب تعارض stopPropagation |
+| Escape أثناء marquee/drag | إلغاء نظيف وإعادة تعيين `interactionStore` |
 
-**٤) التحديد يختفي بدون سبب**
-- كل نقرة تبدأ `boxSelect` فوراً؛ mouseUp بلا سحب فعلي ينفّذ `clearSelection`.
-- `setTimeout(0)` داخل `useSelectionBox.finishSelection` يسبّب race مع تحديد لاحق.
-- `setHoveredConnectableElementId` كل حركة → إعادة تصيير مستمرة تُبطل ذاكرة الأحداث (يفسّر ملاحظة المستخدم عن الاستقرار بعد تحديث زر الذكاء).
+## 3) إعادة تصميم أنكر الجذر (Root Connector Anchor) — نمط Miro
 
-**٥) اللمس غير مدعوم للأداة (تابلت + شاشات لمس كمبيوتر)**
-- كل معالجات الأداة تستخدم `onMouseDown/Move/Up` بدل `onPointerDown/Move/Up`؛ اللمس على Chromium يولّد أحداث Mouse مركّبة لكن مع تأخير 300ms، وبدون ضغط modifiers (لا Shift/Ctrl على اللمس).
-- `useTouchGestures` مُستدعى لكن مقتصر على `onLongPress` كـ `console.log` فقط، ولا يفعّل marquee أو multi-select.
-- BoundingBox يستخدم Pointer Events (جيد) لكن مقاسات المقابض 16px × 16px، صغيرة لأصابع اللمس (الحد الأدنى الموصى: 40px hit-area).
-- لا يوجد سلوك اختيار متعدد لمسي بديل عن Shift (المطلوب: **long-press → دخول وضع multi-select**، ثم كل tap يضيف/يزيل).
-- لا يوجد `touch-action` مضبوط على الحاوية → المتصفح يحاول عمل تمرير أثناء marquee.
+**الحالي:** نقطة واحدة أعلى-وسط، رأس السهم مثلث أسود متجه للأعلى.
 
-## خطة الإصلاح
+**المطلوب:**
+- **الموقع:** أعلى-يمين العنصر (خارج الحد بمقدار ~14px)، مطابق لسلوك Miro.
+- **الشكل:** دائرة صغيرة (8px) مع سهم رفيع داخلها متجه لليمين (→).
+- **اللون:** يطابق ألوان الذكاء الاصطناعي — استخدام gradient tokens `--ai-gradient-from` → `--ai-gradient-to` (نفس ألوان أزرار AI في FloatingBar)، مع stroke `hsl(var(--primary))`.
+- **hover:** توسع 1.3x + توهج ناعم (glow) بلون AI.
+- **ملاحظة:** `anchorPoint` سيظل `top-right` في الـtype ويُحسب `x = bounds.x + bounds.width + offset`, `y = bounds.y - offset`.
 
-### أ. توحيد marquee + عتبة سحب حقيقية (ماوس + لمس)
-- في `InfiniteCanvas` بدّل `onMouseDown/Move/Up` بـ `onPointerDown/Move/Up` + `onPointerCancel`.
-- خزّن `pendingBoxSelect = {clientX, clientY, additive, pointerType, pointerId}` في ref بدل بدء `boxSelect` فوراً.
-- في `PointerMove`: إذا تجاوزت المسافة threshold ديناميكية:
-  - **ماوس**: 6px.
-  - **لمس/قلم** (`pointerType === 'touch' | 'pen'`): 10px (لتقليل الحساسية للرجفة).
-- عند التجاوز: إن لم يكن additive نفّذ `clearSelection()` مرة قبل `beginBoxSelection`.
-- على `PointerUp`: إن بقي pending (نقرة قصيرة) فامسح التحديد فقط إذا كان الهدف كانفاس فارغ ولم يكن additive.
-- في `useCanvasSelectionController.completeBoxSelection`: أزل مسار "clearSelection عند غياب drag" (صار محسوماً في PointerUp).
+## 4) لوحة اقتراحات الخطوة التالية (Drop-on-Empty Workflow Panel)
 
-### ب. توحيد سحب العناصر داخل BoundingBox فقط
-- في `CanvasElement.handleMouseDown` → حوّله إلى `handlePointerDown`:
-  - `!isSelected` بدون multiSelect: نفّذ `onSelect(false)` فقط، **لا** تبدأ drag.
-  - `multiSelect`: نفّذ toggle عبر `selectionCoordinator.handleElementSelect` و`stopPropagation()` وارجع.
-  - أزل `startDrag` الداخلي، عدا حالة `isAllArrows` (حيث BoundingBox = null) — احتفظ به كـ fallback.
-- `BoundingBox.handleDragStart` يبقى المصدر الوحيد لتحريك المجموعة.
+**السلوك الجديد:** عند سحب من الأنكر وإفلاته في مساحة فارغة (لا يوجد `target` في `SmartConnectorManager.onUp`)، بدلًا من الإلغاء الصامت الحالي، تُفتح لوحة عائمة عند نقطة الإفلات:
 
-### ج. تثبيت منطق multi-select (ماوس + لمس)
-- استبدل الكتلة اليدوية في `CanvasElement` باستدعاء `selectionCoordinator.handleElementSelect(id, isSelected, modifiers)`.
-- **وضع Multi-Select اللمسي**: أضف حقلاً `touchMultiSelectMode: boolean` في `interactionStore`:
-  - يُفعَّل عند **long-press ≥ 500ms** على عنصر (عبر `useTouchGestures.onLongPress` المفعّل حقيقياً).
-  - أثناء تفعّله، كل `tap` على عنصر = toggle كأن Shift مضغوط.
-  - يُطفأ بزر عائم صغير "إنهاء التحديد" داخل شريط أدوات التحديد، أو عند مسح التحديد.
-  - أضف مؤشراً بصرياً واضحاً (شارة صغيرة في الفلوتنق بار) بلغة عربية: "وضع التحديد المتعدد".
-- في `selectionCoordinator.handleElementSelect`: عامل `touchMultiSelectMode` كأنه `modifiers.shift = true`.
+**محتوى اللوحة:**
+1. **قائمة اقتراحات الخطوة التالية** — تُولَّد بالذكاء الاصطناعي عبر `useSmartElementAI.generateElements` مستخدمة سياق العنصر المصدر (نوعه، محتواه، الموصلات الحالية) لاقتراح 3-5 خطوات منطقية (مهمة، قرار، مرحلة، تحقق…). كل اقتراح بطاقة قابلة للنقر تُنشئ عنصر ذكي جديد + موصل من المصدر إليه.
+2. **زر "كتابة أمر"** — يفتح صندوق محادثة صغير (input + send)، يستقبل وصف المستخدم، ثم يستدعي `generateElements` مع prompt مخصص. الناتج يُنشأ كـ **فريم واحد** يحوي مجموعة عناصر ذكية تعمل كأداة مركّبة موحدة.
+3. **زر "إلغاء"** — يغلق اللوحة دون فعل.
 
-### د. إزالة race الخريطة الذهنية
-- في `useSelectionBox.finishSelection`: احذف `setTimeout(0)` وادمج التوسّع في نفس التحديث:
-  - احسب `expandedIds` مباشرة قبل استدعاء `selectElements(finalIds)` مرة واحدة.
+**الملفات الجديدة:**
+- `src/features/planning/elements/smart/NextStepSuggestionsPanel.tsx` — لوحة عائمة (Popover) بستايل glass modal.
+- تعديل `SmartConnectorManager.onUp`: عند غياب target، فتح اللوحة عند `p.x, p.y` مع تمرير `sourceElementId`.
+- إضافة helper `createFramedWorkflow(elements, sourceId)` في `SmartConnectorManager` — يُنشئ frame + عناصر داخله + موصل من المصدر لأول عنصر.
 
-### هـ. تقليل إعادة التصيير من hover
-- في `handlePointerMove`: لا تستدعِ `setHoveredConnectableElementId` إلا عند تغيّر فعلي.
-- تعطيل hover تماماً عند `pointerType !== 'mouse'` (اللمس لا يوفر hover مفيداً).
-- استخدم `requestAnimationFrame` throttle للـ hover detection.
+## 5) تغييرات تقنية موجزة
 
-### و. تحسينات اللمس على الحاوية والمقابض
-- الحاوية `infinite-canvas-container`: أضف `style={{ touchAction: 'none' }}` عند `activeTool === 'selection_tool'` لمنع المتصفح من التمرير أثناء marquee. عند أدوات أخرى تكتفي بـ `touchAction: 'pan-x pan-y'` كي يعمل التمرير الطبيعي.
-- BoundingBox `ResizeHandle`:
-  - رفع hit-area إلى 24×24 مع إبقاء المقبض المرئي 8px (استخدم `padding` شفاف داخل غلاف الحدث).
-  - dragArea الرئيسي يبقى pointer-events auto كما هو.
-- إضافة `user-select: none; -webkit-touch-callout: none;` على الحاوية لمنع القوائم السياقية للنظام أثناء long-press.
+| ملف | التغيير |
+|---|---|
+| `src/features/planning/hooks/useElementLockAcquire.ts` | تثبيت مرجع الدالة، إزالة deps المتقلبة |
+| `src/features/planning/ui/PlanningCanvas.tsx` | تمرير `requestElementLock` ثابت |
+| `src/features/planning/canvas/layers/CanvasElement.tsx` | تأجيل `ensureEditLock` حتى بدء السحب الفعلي |
+| `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` | تحسين clearSelection قبل العتبة |
+| `src/features/planning/elements/smart/RootConnector.tsx` | إعادة تصميم `ConnectionAnchors` (موقع top-right، شكل دائري، ألوان AI، اتجاه ←) |
+| `src/features/planning/elements/smart/SmartConnectorManager.tsx` | drop-on-empty يفتح لوحة الاقتراحات + memo لـresolvePoint |
+| `src/features/planning/elements/smart/NextStepSuggestionsPanel.tsx` | **جديد** — لوحة الخطوة التالية + محادثة الأمر المخصص |
 
-### ز. Pan/Zoom باللمس بدون تعارض مع marquee
-- في `useTouchGestures`:
-  - **إصبع واحد + selection_tool**: يبدأ pending marquee (نفس مسار الماوس).
-  - **إصبعان**: pinch-zoom + pan (بدل marquee) — عبر `zoomByWheel`/`panBy`.
-  - **long-press ≥ 500ms على عنصر**: يفعّل `touchMultiSelectMode`.
-  - **long-press على كانفاس فارغ**: يفتح قائمة سياقية خفيفة (لاحقاً — خارج النطاق).
-- عند اكتشاف إصبع ثانٍ أثناء pending/boxSelect: ألغِ marquee وحوّل إلى pan/zoom.
-
-### ح. اختبارات وتحقّق
-- شغّل: `useCanvasSelectionController.test.ts`, `SelectionBox.test.tsx`, `selectionSlice.test.ts`.
-- سيناريوهات Playwright (viewport = tablet 1024×1366 + touch emulation):
-  1. Marquee ماوس من فراغ يحدد؛ Shift+drag يضيف.
-  2. Ctrl/Meta+Click متعدد يعمل بدون بدء سحب.
-  3. سحب عضو مجموعة يحرّك المجموعة.
-  4. نقرة سريعة على عنصر محدد لا تفقد التحديد.
-  5. **لمس تابلت**: tap على عنصر يحدده؛ long-press يفعّل multi-select mode؛ tap لاحق يضيف.
-  6. **لمس تابلت**: إصبعان يعملان pinch-zoom بدل marquee.
-  7. **لمس تابلت**: drag بإصبع واحد فوق فراغ يعمل marquee بعد 10px.
-  8. لا context menu للمتصفح عند long-press.
-
-## الملفات المتأثرة
-- `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` — تحويل إلى Pointer Events + threshold + touchAction.
-- `src/features/planning/canvas/controllers/useCanvasSelectionController.ts` — عتبة ديناميكية + إزالة clearSelection الضمني.
-- `src/features/planning/canvas/selection/SelectionBox.tsx` — إزالة setTimeout.
-- `src/features/planning/canvas/selection/BoundingBox.tsx` — hit-area مقابض + PointerEvents موحّدة.
-- `src/features/planning/canvas/layers/CanvasElement.tsx` — تحويل إلى PointerDown + إزالة startDrag الافتراضي.
-- `src/features/planning/state/slices/selectionSlice.ts` — حراسة.
-- `src/stores/interactionStore.ts` — إضافة `touchMultiSelectMode` + actions.
-- `src/hooks/useTouchGestures.ts` — تنفيذ long-press/two-finger/single-finger فعلياً.
-- `src/engine/canvas/interaction/selectionCoordinator.ts` — قراءة `touchMultiSelectMode` كـ shift.
-- (اختياري) شارة "وضع التحديد المتعدد" في `FloatingBar`.
-
-## المخاطر
-- تحويل الأحداث من Mouse إلى Pointer قد يكسر مستمعين معتمدين على bubble من `mousedown` — سنراجع كل `addEventListener('mousedown')` في `CanvasElement`/`BoundingBox` ونحوّلها متزامناً.
-- `touchAction: 'none'` يعطّل تمرير الصفحة داخل الكانفاس — مقبول لأن الكانفاس ملء الشاشة.
-- زيادة hit-area للمقابض قد تسبّب اعتراض نقرات قريبة — سنستخدم padding شفاف فقط دون تغيير المرئي.
-- long-press قد يتعارض مع القائمة السياقية للنظام — نمنعها بـ `contextmenu` preventDefault داخل الكانفاس.
-
-## خارج النطاق
-- قائمة سياقية لمسية عند long-press على فراغ (تُجدول لاحقاً).
-- دعم Apple Pencil/Stylus tilt/pressure لأداة التحديد (لا معنى له للتحديد).
+## 6) الاختبار
+- تحديث `RootConnector.test.tsx` لتوقع anchor في `top-right` بموقع `(bounds.x + bounds.width, bounds.y)`.
+- إضافة اختبار: drop في فراغ → لوحة تظهر بـ testId `next-step-panel`.
+- اختبار يدوي: تحديد عنصر ذكي، مراقبة أن `CanvasElement` لا يُعاد رندره أكثر من مرة واحدة (React DevTools Profiler).
