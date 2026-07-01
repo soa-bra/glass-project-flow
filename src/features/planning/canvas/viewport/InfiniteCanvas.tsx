@@ -573,13 +573,29 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       ref={containerRef}
       data-canvas-container="true"
       className={`relative w-full h-full overflow-hidden infinite-canvas-container ${activeTool === 'text_tool' ? 'text-tool-active' : ''}`}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onPointerDown={handleMouseDown}
+      onPointerMove={handleMouseMove}
+      onPointerUp={handleMouseUp}
+      onPointerCancel={handleMouseUp}
+      onPointerLeave={handleMouseUp}
       onDrop={canEdit ? handleFileDrop : handleReadOnlyDrop}
       onDragOver={canEdit ? handleFileDragOver : handleReadOnlyDrop}
-      style={{ backgroundColor: settings.background, cursor: getCursorStyle() }}
+      onContextMenu={(e) => {
+        // ✅ منع القائمة السياقية للنظام عند long-press باللمس
+        if ((e.nativeEvent as PointerEvent).pointerType && (e.nativeEvent as PointerEvent).pointerType !== 'mouse') {
+          e.preventDefault();
+        }
+      }}
+      style={{
+        backgroundColor: settings.background,
+        cursor: getCursorStyle(),
+        // ✅ منع تمرير المتصفح أثناء marquee على أداة التحديد؛ السماح بالتمرير الطبيعي للأدوات الأخرى
+        touchAction: activeTool === 'selection_tool' ? 'none' : 'pan-x pan-y',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+      }}
+
     >
       <CanvasGridLayer />
 
