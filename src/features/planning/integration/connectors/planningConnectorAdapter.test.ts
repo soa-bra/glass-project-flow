@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toPlanningConnectorLogicalRecord } from './planningConnectorAdapter';
+import { toPlanningConnectorLogicalRecord, toPlanningConnectorLogicalRecords } from './planningConnectorAdapter';
 import { isOperationalRelationshipType } from './relationshipTypes';
 import type { CanvasElement } from '@/types/canvas';
 
@@ -112,6 +112,77 @@ describe('planning connector adapter', () => {
     });
     expect(record?.sourceEntityType).toBe('planning_element');
     expect(record?.targetEntityType).toBe('planning_element');
+  });
+
+  it('expands branched root connectors into sub-anchor logical records', () => {
+    const element: CanvasElement = {
+      id: '12345678-1234-4234-9234-123456789abc',
+      type: 'smart',
+      position: { x: 0, y: 0 },
+      size: { width: 100, height: 100 },
+      style: {},
+      data: {
+        smartType: 'root_connector',
+        startPoint: {
+          elementId: 'source-1',
+          x: 0,
+          y: 50,
+          anchorPoint: 'right',
+          subAnchor: 'source-top-output',
+        },
+        endPoint: { elementId: 'target-original', x: 100, y: 50, anchorPoint: 'left' },
+        relationshipType: 'dependency',
+        connectorMode: 'operational',
+        status: 'approved',
+        approvedByUser: true,
+        branches: [
+          {
+            id: 'branch-a',
+            sourceSubAnchor: 'source-top-output',
+            targetSubAnchor: 'target-a-input',
+            targetPoint: { elementId: 'target-a', x: 160, y: 30, anchorPoint: 'left' },
+          },
+          {
+            id: 'branch-b',
+            sourceSubAnchor: 'source-bottom-output',
+            targetSubAnchor: 'target-b-input',
+            targetPoint: { elementId: 'target-b', x: 160, y: 90, anchorPoint: 'left' },
+          },
+        ],
+      },
+    };
+
+    const records = toPlanningConnectorLogicalRecords(element, 'board-1');
+
+    expect(records).toHaveLength(2);
+    expect(records[0]).toMatchObject({
+      connector_element_id: '12345678-1234-4234-9234-000000000001',
+      source_element_id: 'source-1',
+      target_element_id: 'target-a',
+      branchId: 'branch-a',
+      branchIndex: 0,
+    });
+    expect(records[0].style).toMatchObject({
+      sourceSubAnchor: 'source-top-output',
+      targetSubAnchor: 'target-a-input',
+    });
+    expect(records[0].metadata).toMatchObject({
+      branchId: 'branch-a',
+      branchIndex: 0,
+      sourceSubAnchor: 'source-top-output',
+      targetSubAnchor: 'target-a-input',
+    });
+    expect(records[1]).toMatchObject({
+      connector_element_id: '12345678-1234-4234-9234-000000000002',
+      source_element_id: 'source-1',
+      target_element_id: 'target-b',
+      branchId: 'branch-b',
+      branchIndex: 1,
+    });
+    expect(records[1].style).toMatchObject({
+      sourceSubAnchor: 'source-bottom-output',
+      targetSubAnchor: 'target-b-input',
+    });
   });
 
   it('classifies operational relationship types for data link mirroring', () => {
