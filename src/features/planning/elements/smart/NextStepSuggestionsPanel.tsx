@@ -54,7 +54,7 @@ const PRESETS: NextStepChoice[] = [
   { preset: 'note', label: 'ملاحظة', description: 'تعليق أو تنبيه' },
 ];
 
-const PRESET_ICON: Record<NextStepPreset, React.ComponentType<{ size?: number; className?: string }>> = {
+const PRESET_ICON: Record<NextStepPreset, LucideIcon> = {
   task: CheckSquare,
   decision: GitBranch,
   milestone: Milestone,
