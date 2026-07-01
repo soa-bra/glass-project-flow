@@ -287,7 +287,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" broadcastCursor={mockBroadcastCursor} />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseMove(container, { clientX: 130, clientY: 170 });
+    fireEvent.pointerMove(container, { clientX: 130, clientY: 170 });
 
     expect(mockUpdatePointerFromClient).toHaveBeenCalledWith(130, 170);
     expect(mockBroadcastCursor).toHaveBeenCalledWith(88, 144);
@@ -297,7 +297,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseDown(container, { button: 0, altKey: true, clientX: 100, clientY: 200 });
+    fireEvent.pointerDown(container, { button: 0, altKey: true, clientX: 100, clientY: 200 });
 
     expect(mockBeginPanning).toHaveBeenCalledWith(100, 200);
     expect(mockHandleCanvasMouseDown).not.toHaveBeenCalled();
@@ -307,7 +307,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseDown(container, { button: 0, clientX: 70, clientY: 90, shiftKey: true });
+    fireEvent.pointerDown(container, { button: 0, clientX: 70, clientY: 90, shiftKey: true });
 
     expect(mockClearSelection).not.toHaveBeenCalled();
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(70, 90, true);
@@ -317,7 +317,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseDown(container, { button: 0, clientX: 72, clientY: 94, shiftKey: false });
+    fireEvent.pointerDown(container, { button: 0, clientX: 72, clientY: 94, shiftKey: false });
 
     expect(mockClearSelection).not.toHaveBeenCalled();
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(72, 94, false);
@@ -328,7 +328,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseMove(container, { clientX: 130, clientY: 170 });
+    fireEvent.pointerMove(container, { clientX: 130, clientY: 170 });
 
     expect(mockUpdatePointerFromClient).toHaveBeenCalledWith(130, 170);
     expect(mockUpdatePan).toHaveBeenCalledWith(130, 170, mockPanBy);
@@ -339,7 +339,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseMove(container, { clientX: 210, clientY: 240 });
+    fireEvent.pointerMove(container, { clientX: 210, clientY: 240 });
 
     expect(mockUpdateBoxSelectionFromClient).toHaveBeenCalledWith(210, 240);
   });
@@ -352,7 +352,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseUp(container);
+    fireEvent.pointerUp(container);
 
     expect(mockHandleEndConnection).toHaveBeenCalledWith('target-node', 'left');
     expect(mockCancelConnection).not.toHaveBeenCalled();
