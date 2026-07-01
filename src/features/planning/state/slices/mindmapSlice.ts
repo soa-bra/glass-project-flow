@@ -281,7 +281,7 @@ export const createMindmapSlice: StateCreator<
   // ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية
   expandSelectionToFullMindMapTrees: (selectedIds: string[]) => {
     const { elements } = get();
-    const elementById = new Map(elements.map((element: CanvasElement) => [element.id, element]));
+    const elementById = new Map<string, CanvasElement>(elements.map((element: CanvasElement) => [element.id, element] as const));
 
     // التحقق مما إذا كانت أي من العناصر المحددة من نوع mindmap
     const hasMindMapElements = selectedIds.some(id => {
