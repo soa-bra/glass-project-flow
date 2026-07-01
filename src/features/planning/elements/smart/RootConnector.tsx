@@ -130,18 +130,24 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  const HIT_RADIUS = 16;
-  const ARROW_SIZE = 6;
-  const ARROW_HOVER_SCALE = 1.35;
+  const HIT_RADIUS = 18;
+  const DOT_RADIUS = 9;
+  const ARROW = 4;
+  const OFFSET_X = 14; // خارج الحد يمينًا
+  const OFFSET_Y = 14; // خارج الحد أعلى
   const [isHovered, setIsHovered] = useState(false);
+
+  // ⭐ نمط Miro: نقطة الأنكر أعلى-يمين خارج العنصر
   const anchor = {
-    anchorPoint: 'top' as const,
-    x: bounds.x + bounds.width / 2,
-    y: bounds.y,
+    anchorPoint: 'top-right' as const,
+    x: bounds.x + bounds.width + OFFSET_X,
+    y: bounds.y - OFFSET_Y,
   };
 
+  const gradientId = `ai-anchor-grad-${elementId}`;
+  const glowId = `ai-anchor-glow-${elementId}`;
+
   const handlePointerDown = (
-    anchor: { anchorPoint: AnchorPosition; x: number; y: number },
     event: React.PointerEvent<SVGElement> | React.MouseEvent<SVGElement>,
   ) => {
     event.stopPropagation();
@@ -150,6 +156,7 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   };
 
   const active = isHovered || isConnecting;
+  const scale = active ? 1.25 : 1;
 
   return (
     <g
@@ -158,6 +165,21 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
       data-anchor-position={anchor.anchorPoint}
       style={{ pointerEvents: 'auto' }}
     >
+      <defs>
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#3DBE8B" />
+          <stop offset="100%" stopColor="#3DA8F5" />
+        </linearGradient>
+        <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* منطقة اللمس/الفأرة الشفافة */}
       <circle
         cx={anchor.x}
         cy={anchor.y}
@@ -166,23 +188,36 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         className="cursor-crosshair connection-anchor-hit"
         onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={() => setIsHovered(false)}
-        onPointerDown={(event) => handlePointerDown(anchor, event)}
-        onMouseDown={(event) => handlePointerDown(anchor, event)}
+        onPointerDown={handlePointerDown}
+        onMouseDown={handlePointerDown}
       />
-      <path
-        d={`M ${anchor.x} ${anchor.y - ARROW_SIZE} L ${anchor.x - ARROW_SIZE} ${anchor.y + ARROW_SIZE} L ${anchor.x + ARROW_SIZE} ${anchor.y + ARROW_SIZE} Z`}
-        fill="#0B0F12"
-        stroke="#FFFFFF"
-        strokeWidth={1.5}
-        className="connection-anchor-dot drop-shadow-sm"
+
+      {/* الدائرة الملوّنة بألوان الذكاء الاصطناعي */}
+      <g
         pointerEvents="none"
         style={{
-          transform: active ? `scale(${ARROW_HOVER_SCALE})` : 'scale(1)',
-          transformBox: 'fill-box',
-          transformOrigin: 'center',
-          transition: 'transform 120ms ease',
+          transform: `translate(${anchor.x}px, ${anchor.y}px) scale(${scale})`,
+          transformBox: 'view-box',
+          transformOrigin: '0 0',
+          transition: 'transform 140ms cubic-bezier(0.22, 1, 0.36, 1)',
+          filter: active ? `url(#${glowId})` : undefined,
         }}
-      />
+      >
+        <circle
+          cx={0}
+          cy={0}
+          r={DOT_RADIUS}
+          fill={`url(#${gradientId})`}
+          stroke="#FFFFFF"
+          strokeWidth={1.5}
+          className="connection-anchor-dot"
+        />
+        {/* رأس السهم متجه لليمين (→) */}
+        <path
+          d={`M ${-ARROW / 2} ${-ARROW} L ${ARROW} 0 L ${-ARROW / 2} ${ARROW} Z`}
+          fill="#FFFFFF"
+        />
+      </g>
     </g>
   );
 };
