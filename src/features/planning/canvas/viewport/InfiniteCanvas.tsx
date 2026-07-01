@@ -526,7 +526,14 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   );
 
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e?: React.PointerEvent) => {
+    // ✅ إلغاء pending marquee — إن كان معلّقاً ولم يبدأ فعلاً: نقرة قصيرة على فراغ
+    const pending = pendingBoxSelectRef.current;
+    pendingBoxSelectRef.current = null;
+    if (pending && !pending.started && !pending.additive) {
+      clearSelection();
+    }
+
     setHoveredConnectableElementId(null);
     const conn = mindMapConnectionRef.current;
     if (conn.isConnecting && conn.sourceNodeId) {
@@ -551,7 +558,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     if (canEdit) {
       handleCanvasMouseUp();
     }
-  }, [boxSelectData, cancelConnection, canEdit, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
+  }, [boxSelectData, cancelConnection, canEdit, clearSelection, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
+
 
   useEffect(() => {
     const container = containerRef.current;
