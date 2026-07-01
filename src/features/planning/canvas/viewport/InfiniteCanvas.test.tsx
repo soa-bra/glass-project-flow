@@ -48,12 +48,15 @@ const canvasState: any = {
 
 const interactionState: any = {
   mode: { kind: 'idle' },
+  touchMultiSelectMode: false,
+  setTouchMultiSelectMode: vi.fn(),
   startPanning: vi.fn(),
   startBoxSelect: vi.fn(),
   updateBoxSelect: vi.fn(),
   resetToIdle: vi.fn(),
   isMode: vi.fn((kind: string) => kind === interactionState.mode.kind),
 };
+
 
 const boxSelectData = {
   startWorld: { x: 10, y: 20 },
