@@ -76,6 +76,44 @@ describe('planning connector adapter', () => {
     expect(toPlanningConnectorLogicalRecord(element, 'board-1')?.relationship_type).toBe('funds');
   });
 
+  it('persists approved generic links between arbitrary smart elements', () => {
+    const element: CanvasElement = {
+      id: 'connector-generic-link',
+      type: 'smart',
+      position: { x: 0, y: 0 },
+      size: { width: 100, height: 100 },
+      style: {},
+      data: {
+        smartType: 'root_connector',
+        startPoint: { elementId: 'smart-doc-1', x: 0, y: 50, anchorPoint: 'right' },
+        endPoint: { elementId: 'smart-sheet-1', x: 100, y: 50, anchorPoint: 'left' },
+        relationshipType: 'link',
+        connectorMode: 'semantic',
+        status: 'approved',
+        approvedByUser: true,
+        title: 'رابط سياقي',
+      },
+      metadata: {
+        source: { entityId: 'smart-doc-1', entityType: 'planning_element' },
+        target: { entityId: 'smart-sheet-1', entityType: 'planning_element' },
+      },
+    };
+
+    const record = toPlanningConnectorLogicalRecord(element, 'board-1');
+
+    expect(record).toMatchObject({
+      connector_element_id: 'connector-generic-link',
+      source_element_id: 'smart-doc-1',
+      target_element_id: 'smart-sheet-1',
+      relationship_type: 'link',
+      connector_kind: 'root_connector',
+      label: 'رابط سياقي',
+      approvedByUser: true,
+    });
+    expect(record?.sourceEntityType).toBe('planning_element');
+    expect(record?.targetEntityType).toBe('planning_element');
+  });
+
   it('classifies operational relationship types for data link mirroring', () => {
     expect(isOperationalRelationshipType('depends_on')).toBe(true);
     expect(isOperationalRelationshipType('blocks')).toBe(true);
