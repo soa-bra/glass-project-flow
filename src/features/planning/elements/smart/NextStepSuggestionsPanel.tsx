@@ -16,6 +16,7 @@
  * @specRef planning.smart.next-step-suggestions
  */
 import React, { useEffect, useRef, useState } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { Sparkles, X, Send, CheckSquare, GitBranch, Milestone, StickyNote, HelpCircle } from 'lucide-react';
 
 export type NextStepPreset =
