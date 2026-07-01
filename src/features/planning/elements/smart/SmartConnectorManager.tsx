@@ -566,6 +566,15 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
             },
             UNIFIED_RELATIONSHIP_TYPES[0],
           );
+        } else if (canEditBoard) {
+          // 💡 إفلات في فراغ → افتح لوحة اقتراحات الخطوة التالية
+          setNextStepPanel({
+            sourceElementId: dragStartPoint.elementId,
+            canvasX: p.x,
+            canvasY: p.y,
+            clientX: e.clientX,
+            clientY: e.clientY,
+          });
         }
       }
       setDragStartPoint(null);
