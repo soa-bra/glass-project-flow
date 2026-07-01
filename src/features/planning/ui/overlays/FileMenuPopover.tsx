@@ -11,11 +11,16 @@ import {
   LayoutTemplate,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import { useExportImport } from '@/hooks/useExportImport';
 import { createRenderableFileCanvasElement } from '@/features/planning/utils/fileCanvasElements';
 import TemplateSelector from '@/features/planning/ui/widgets/TemplateSelector';
+import {
+  supraCompactMenuOptionClassName,
+  supraMenuSurfaceClassName,
+} from '@/features/planning/ui/toolbars/floating-bar/components/SupraMenuOption';
 
 interface FileMenuPopoverProps {
   isOpen: boolean;
@@ -39,6 +44,16 @@ const RENDERABLE_UPLOAD_FILE_TYPES = [
   '.xlsx',
   '.numbers',
 ].join(',');
+
+const fileMenuOptionClassName = cn(
+  'w-full flex items-center gap-3 px-4 py-2 text-right disabled:opacity-50',
+  supraCompactMenuOptionClassName,
+);
+
+const fileMenuNestedOptionClassName = cn(
+  'w-full flex items-center gap-3 px-3 py-2 text-right disabled:opacity-50',
+  supraCompactMenuOptionClassName,
+);
 
 export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClose }) => {
   const { createBoard, boards, currentBoard, saveBoard, setCurrentBoard } = usePlanningStore();
@@ -165,11 +180,12 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={onClose} />
-          <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-[18px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-sb-border py-2 z-dropdown max-h-[calc(100vh-200px)] overflow-y-auto">
+          <div className={cn('absolute top-full right-0 mt-2 w-64 py-2 z-dropdown max-h-[calc(100vh-200px)] overflow-y-auto', supraMenuSurfaceClassName)}>
             {/* New */}
             <button
+              type="button"
               onClick={handleNewBoard}
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right"
+              className={fileMenuOptionClassName}
             >
               <FilePlus size={16} className="text-sb-ink" />
               <span className="text-[13px] text-sb-ink">لوحة جديدة</span>
@@ -177,8 +193,9 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
             </button>
 
             <button
+              type="button"
               onClick={handleOpenTemplateSelector}
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right"
+              className={fileMenuOptionClassName}
             >
               <LayoutTemplate size={16} className="text-sb-ink" />
               <span className="text-[13px] text-sb-ink">لوحة من قالب</span>
@@ -186,9 +203,10 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
 
             {/* Save */}
             <button
+              type="button"
               onClick={() => void handleSaveBoard()}
               disabled={isSaving || !currentBoard}
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right disabled:opacity-50"
+              className={fileMenuOptionClassName}
             >
               {isSaving ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <Save size={16} className="text-sb-ink" />}
               <span className="text-[13px] text-sb-ink">حفظ</span>
@@ -202,36 +220,40 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
               <p className="px-2 py-1 text-[11px] text-sb-ink-40 font-medium">تصدير كـ</p>
 
               <button
+                type="button"
                 onClick={() => handleExport('png')}
                 disabled={isExporting}
-                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
+                className={fileMenuNestedOptionClassName}
               >
                 {exportingFormat === 'png' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileImage size={16} className="text-sb-ink" />}
                 <span className="text-[13px] text-sb-ink">PNG صورة</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => handleExport('pdf')}
                 disabled={isExporting}
-                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
+                className={fileMenuNestedOptionClassName}
               >
                 {exportingFormat === 'pdf' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileText size={16} className="text-sb-ink" />}
                 <span className="text-[13px] text-sb-ink">PDF ملف</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => handleExport('svg')}
                 disabled={isExporting}
-                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
+                className={fileMenuNestedOptionClassName}
               >
                 {exportingFormat === 'svg' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileImage size={16} className="text-sb-ink" />}
                 <span className="text-[13px] text-sb-ink">SVG متجهات</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => handleExport('json')}
                 disabled={isExporting}
-                className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right disabled:opacity-50"
+                className={fileMenuNestedOptionClassName}
               >
                 {exportingFormat === 'json' ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FileJson size={16} className="text-sb-ink" />}
                 <span className="text-[13px] text-sb-ink">JSON نسخة احتياطية</span>
@@ -242,9 +264,10 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
 
             {/* Open */}
             <button
+              type="button"
               onClick={handleBoardImport}
               disabled={isImporting}
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right disabled:opacity-50"
+              className={fileMenuOptionClassName}
             >
               {isImporting ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <FolderOpen size={16} className="text-sb-ink" />}
               <span className="text-[13px] text-sb-ink">فتح لوحة</span>
@@ -253,9 +276,10 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
 
             {/* Import */}
             <button
+              type="button"
               onClick={handleRenderableFileUpload}
               disabled={isUploadingFiles}
-              className="w-full flex items-center gap-3 px-4 py-2 hover:bg-sb-panel-bg transition-colors text-right disabled:opacity-50"
+              className={fileMenuOptionClassName}
             >
               {isUploadingFiles ? <Loader2 size={16} className="text-sb-ink animate-spin" /> : <Upload size={16} className="text-sb-ink" />}
               <span className="text-[13px] text-sb-ink">رفع ملف إلى اللوحة</span>
@@ -268,9 +292,10 @@ export const FileMenuPopover: React.FC<FileMenuPopoverProps> = ({ isOpen, onClos
                   <p className="px-2 py-1 text-[11px] text-sb-ink-40 font-medium">اللوحات الأخيرة</p>
                   {boards.slice(0, 5).map(board => (
                     <button
+                      type="button"
                       key={board.id}
                       onClick={() => handleOpenRecentBoard(board)}
-                      className="w-full px-4 py-2 hover:bg-sb-panel-bg rounded-lg transition-colors text-right text-[12px] text-sb-ink truncate"
+                      className={cn('w-full px-3 py-2 text-right text-[12px] text-sb-ink truncate', supraCompactMenuOptionClassName)}
                     >
                       {board.name}
                     </button>
