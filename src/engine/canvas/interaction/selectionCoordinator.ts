@@ -148,7 +148,9 @@ class SelectionCoordinator {
     modifiers: { shift: boolean; ctrl: boolean; meta: boolean }
   ): { shouldStartDrag: boolean; wasSelectionChanged: boolean } {
     const { selectElement, selectedElementIds, selectElements } = useCanvasStore.getState();
-    const isMultiSelect = modifiers.shift || modifiers.ctrl || modifiers.meta;
+    // ✅ اللمس: touchMultiSelectMode يُعامل كأن Shift مضغوط (بديل modifiers على شاشات اللمس)
+    const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
+    const isMultiSelect = modifiers.shift || modifiers.ctrl || modifiers.meta || touchMulti;
     
     // إذا كان العنصر محدد بالفعل
     if (isCurrentlySelected) {
@@ -171,6 +173,7 @@ class SelectionCoordinator {
     // ✅ بدء السحب للعنصر الجديد
     return { shouldStartDrag: true, wasSelectionChanged: true };
   }
+
 
   /**
    * معالجة بدء سحب العناصر المحددة

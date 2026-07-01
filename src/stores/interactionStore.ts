@@ -57,6 +57,15 @@ interface InteractionState {
   
   // المؤشر المناسب للحالة
   cursor: string;
+
+  /**
+   * وضع التحديد المتعدد اللمسي (Touch Multi-Select Mode)
+   * يُفعَّل عند long-press على عنصر باللمس، ويجعل كل نقرة لاحقة تعمل كأن Shift مضغوط.
+   * يُطفأ عند مسح التحديد أو الخروج من أداة التحديد.
+   */
+  touchMultiSelectMode: boolean;
+  setTouchMultiSelectMode: (enabled: boolean) => void;
+  
   
   // ============= Actions =============
   
@@ -160,6 +169,9 @@ export const useInteractionStore = create<InteractionState>((set, get) => ({
   // الحالة الابتدائية
   mode: createIdleMode(),
   cursor: 'default',
+  touchMultiSelectMode: false,
+  setTouchMultiSelectMode: (enabled) => set({ touchMultiSelectMode: enabled }),
+
   
   // ============= Actions Implementation =============
   

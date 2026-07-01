@@ -20,8 +20,10 @@ import VisualConnector from '@/features/planning/elements/diagram/VisualConnecto
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
+import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
+
 
 export const isInteractiveCanvasTarget = (target: HTMLElement): boolean => {
   return Boolean(
@@ -325,18 +327,28 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
 
     const clientX = e.clientX;
     const clientY = e.clientY;
-    const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
+    // ✅ اللمس: touchMultiSelectMode يعمل كأن Shift مضغوط
+    const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
+    const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey || touchMulti;
 
-    if (isSelected && multiSelect) {
-      const currentSelection = useCanvasStore.getState().selectedElementIds;
-      const newSelection = currentSelection.filter((id) => id !== element.id);
-      useCanvasStore.getState().selectElements(newSelection);
+    // ✅ توحيد multi-select عبر selectionCoordinator (يعالج toggle + add)
+    if (multiSelect) {
+      selectionCoordinator.handleElementSelect(element.id, isSelected, {
+        shift: e.shiftKey || touchMulti,
+        ctrl: e.ctrlKey,
+        meta: e.metaKey,
+      });
       return;
     }
 
-    if (!isSelected) {
-      onSelect(multiSelect);
+
+    // ✅ إذا كان العنصر محدد بالفعل (بدون multi-select) — BoundingBox يتولى السحب، لا نبدأ drag هنا
+    if (isSelected) {
+      return;
     }
+
+    // عنصر جديد — حدده وابدأ سحبه في نفس الحركة
+    onSelect(false);
 
     if (isEditingThisText) return;
 
@@ -345,6 +357,7 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       startDrag(clientX, clientY);
     });
   }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
+
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
     if (element.type === 'frame' && !isLocked) {

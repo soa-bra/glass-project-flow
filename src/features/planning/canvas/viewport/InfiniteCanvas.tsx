@@ -150,15 +150,47 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   useKeyboardShortcuts();
 
+  const setTouchMultiSelectMode = useInteractionStore((s) => s.setTouchMultiSelectMode);
+
+  // ✅ إطفاء وضع التحديد المتعدد اللمسي تلقائياً عند مسح التحديد أو تغيير الأداة
+  useEffect(() => {
+    if (activeTool !== 'selection_tool' || selectedElementIds.length === 0) {
+      if (useInteractionStore.getState().touchMultiSelectMode) {
+        setTouchMultiSelectMode(false);
+      }
+    }
+  }, [activeTool, selectedElementIds.length, setTouchMultiSelectMode]);
+
+
   useTouchGestures({
     containerRef: containerRef as React.RefObject<HTMLElement>,
-    onLongPress: (point) => {
-      console.log('Long press at:', point);
+    // ✅ نعطّل tap/doubleTap الافتراضي — Pointer Events في InfiniteCanvas تتولى ذلك
+    onTap: () => {},
+    onDoubleTap: () => {},
+    onTwoFingerTap: () => {},
+    onLongPress: (_point, elementId) => {
+      // ✅ long-press على عنصر يفعّل وضع التحديد المتعدد اللمسي
+      if (elementId && activeTool === 'selection_tool') {
+        setTouchMultiSelectMode(true);
+        if ('vibrate' in navigator) navigator.vibrate([30, 20, 30]);
+      }
     },
   });
 
+
+
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
   const [hoveredConnectableElementId, setHoveredConnectableElementId] = useState<string | null>(null);
+  // ✅ تحديد معلّق (Pending Marquee) — يمنع إنشاء boxSelect إلا بعد تجاوز عتبة السحب
+  const pendingBoxSelectRef = useRef<{
+    clientX: number;
+    clientY: number;
+    additive: boolean;
+    pointerType: string;
+    started: boolean;
+  } | null>(null);
+  const hoverRafRef = useRef<number | null>(null);
+
 
   const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
     containerRef,
@@ -387,7 +419,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   }, []);
 
   const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
+      const pointerType = e.pointerType || 'mouse';
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
         beginPanning(e.clientX, e.clientY);
         if (containerRef.current) {
@@ -400,7 +433,15 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
 
       if (e.button === 0 && activeTool === 'selection_tool' && target.type === 'canvas') {
-        beginBoxSelection(e.clientX, e.clientY, e.shiftKey);
+        // ✅ لا نبدأ boxSelect فوراً — نخزّن حالة معلّقة حتى يتجاوز المؤشر عتبة السحب
+        const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
+        pendingBoxSelectRef.current = {
+          clientX: e.clientX,
+          clientY: e.clientY,
+          additive: e.shiftKey || e.ctrlKey || e.metaKey || touchMulti,
+          pointerType,
+          started: false,
+        };
         return;
       }
 
@@ -431,7 +472,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           activeTool === 'smart_doc_tool'
         )
       ) {
-        handleCanvasMouseDown(e);
+        handleCanvasMouseDown(e as unknown as React.MouseEvent);
         return;
       }
 
@@ -439,18 +480,41 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         clearSelection();
       }
     },
-    [activeTool, beginBoxSelection, beginPanning, canEdit, clearSelection, handleCanvasMouseDown],
+    [activeTool, beginPanning, canEdit, clearSelection, handleCanvasMouseDown],
   );
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
+      const pointerType = e.pointerType || 'mouse';
       const pointer = updatePointerFromClient(e.clientX, e.clientY);
       if (pointer) {
         broadcastCursor?.(pointer.x, pointer.y);
-        if (canEdit && activeTool === 'selection_tool') {
-          setHoveredConnectableElementId(findHoveredConnectableElement(pointer.x, pointer.y)?.id ?? null);
+        // ✅ hover فقط للماوس، ومع throttle عبر rAF + مقارنة قيمة
+        if (pointerType === 'mouse' && canEdit && activeTool === 'selection_tool') {
+          if (hoverRafRef.current === null) {
+            hoverRafRef.current = requestAnimationFrame(() => {
+              hoverRafRef.current = null;
+              const next = findHoveredConnectableElement(pointer.x, pointer.y)?.id ?? null;
+              setHoveredConnectableElementId((prev) => (prev === next ? prev : next));
+            });
+          }
         } else if (hoveredConnectableElementId) {
           setHoveredConnectableElementId(null);
+        }
+      }
+
+      // ✅ ترقية Pending Marquee إلى Box Select بعد تجاوز عتبة السحب (ماوس=6px, لمس/قلم=10px)
+      const pending = pendingBoxSelectRef.current;
+      if (pending && !pending.started) {
+        const dx = e.clientX - pending.clientX;
+        const dy = e.clientY - pending.clientY;
+        const threshold = pending.pointerType === 'mouse' ? 6 : 10;
+        if (Math.hypot(dx, dy) >= threshold) {
+          pending.started = true;
+          if (!pending.additive) {
+            clearSelection();
+          }
+          beginBoxSelection(pending.clientX, pending.clientY, pending.additive);
         }
       }
 
@@ -469,13 +533,21 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       }
 
       if (canEdit) {
-        handleCanvasMouseMove(e);
+        handleCanvasMouseMove(e as unknown as React.MouseEvent);
       }
     },
-    [activeTool, broadcastCursor, boxSelectData, canEdit, findHoveredConnectableElement, handleCanvasMouseMove, hoveredConnectableElementId, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
+    [activeTool, beginBoxSelection, broadcastCursor, boxSelectData, canEdit, clearSelection, findHoveredConnectableElement, handleCanvasMouseMove, hoveredConnectableElementId, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
 
-  const handleMouseUp = useCallback(() => {
+
+  const handleMouseUp = useCallback((e?: React.PointerEvent) => {
+    // ✅ إلغاء pending marquee — إن كان معلّقاً ولم يبدأ فعلاً: نقرة قصيرة على فراغ
+    const pending = pendingBoxSelectRef.current;
+    pendingBoxSelectRef.current = null;
+    if (pending && !pending.started && !pending.additive) {
+      clearSelection();
+    }
+
     setHoveredConnectableElementId(null);
     const conn = mindMapConnectionRef.current;
     if (conn.isConnecting && conn.sourceNodeId) {
@@ -500,7 +572,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     if (canEdit) {
       handleCanvasMouseUp();
     }
-  }, [boxSelectData, cancelConnection, canEdit, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
+  }, [boxSelectData, cancelConnection, canEdit, clearSelection, completeBoxSelection, handleCanvasMouseUp, handleEndConnection, isMode, mindMapConnectionRef, resetToIdle]);
+
 
   useEffect(() => {
     const container = containerRef.current;
@@ -514,13 +587,29 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       ref={containerRef}
       data-canvas-container="true"
       className={`relative w-full h-full overflow-hidden infinite-canvas-container ${activeTool === 'text_tool' ? 'text-tool-active' : ''}`}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
+      onPointerDown={handleMouseDown}
+      onPointerMove={handleMouseMove}
+      onPointerUp={handleMouseUp}
+      onPointerCancel={handleMouseUp}
+      onPointerLeave={handleMouseUp}
       onDrop={canEdit ? handleFileDrop : handleReadOnlyDrop}
       onDragOver={canEdit ? handleFileDragOver : handleReadOnlyDrop}
-      style={{ backgroundColor: settings.background, cursor: getCursorStyle() }}
+      onContextMenu={(e) => {
+        // ✅ منع القائمة السياقية للنظام عند long-press باللمس
+        if ((e.nativeEvent as PointerEvent).pointerType && (e.nativeEvent as PointerEvent).pointerType !== 'mouse') {
+          e.preventDefault();
+        }
+      }}
+      style={{
+        backgroundColor: settings.background,
+        cursor: getCursorStyle(),
+        // ✅ منع تمرير المتصفح أثناء marquee على أداة التحديد؛ السماح بالتمرير الطبيعي للأدوات الأخرى
+        touchAction: activeTool === 'selection_tool' ? 'none' : 'pan-x pan-y',
+        userSelect: 'none',
+        WebkitUserSelect: 'none',
+        WebkitTouchCallout: 'none',
+      }}
+
     >
       <CanvasGridLayer />
 

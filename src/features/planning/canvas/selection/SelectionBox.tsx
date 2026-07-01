@@ -234,21 +234,16 @@ export function useSelectionBox() {
     const intersectingIds = getMatchingElementIds(elements, visibilityMap, selectionBounds, selectionMode);
 
     // تحديد العناصر
-    if (addToSelection) {
-      const combinedIds = [...new Set([...selectedElementIds, ...intersectingIds])];
-      selectElements(combinedIds);
-    } else {
-      selectElements(intersectingIds);
-    }
+    const finalIds = addToSelection
+      ? [...new Set([...selectedElementIds, ...intersectingIds])]
+      : intersectingIds;
+    selectElements(finalIds);
 
-    // ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية
-    // نستخدم setTimeout لتأخير التوسيع حتى يتم تحديث الـ store أولاً
-    setTimeout(() => {
-      const currentSelectedIds = useCanvasStore.getState().selectedElementIds;
-      expandSelectionToFullMindMapTrees(currentSelectedIds);
-    }, 0);
+    // ✅ توسيع التحديد ليشمل كامل أشجار الخريطة الذهنية (متزامن — بدون setTimeout لتجنب race)
+    expandSelectionToFullMindMapTrees(finalIds);
 
     return intersectingIds;
+
   }, [selectElements, viewport, expandSelectionToFullMindMapTrees]);
 
   return { finishSelection };

@@ -1,60 +1,124 @@
-## Goal
-Bring the project back to a clean `tsc` build by resolving every TS2304 / TS2305 / TS2339 / TS2352 / TS2677 / TS1117 / TS2345 / TS2322 / TS2300 error reported. Most are simple missing imports; the rest are small type/refactor fixes contained to the files already touched.
+# خطة إصلاح أداة التحديد (Selection Tool) — مع دعم شاشات اللمس
 
-## Diff table
+بعد مراجعة الملفات الأساسية للأداة:
+- `InfiniteCanvas.tsx` (المدخل الرئيسي لأحداث الماوس/اللمس)
+- `useCanvasSelectionController.ts` (منسّق marquee)
+- `SelectionBox.tsx` + `useSelectionBox`
+- `BoundingBox.tsx` (سحب/تغيير حجم العناصر المحددة)
+- `CanvasElement.tsx` (نقر العنصر واختيار المتعدد)
+- `selectionSlice.ts` + `selectionCoordinator.ts`
+- `useTouchGestures.ts` (لمس)
 
-| # | File | Issue | Required fix |
-|---|------|-------|--------------|
-| 1 | `src/components/DepartmentTabs/Financial/FinancialDashboard.tsx` | `LinkIndicator` not imported | Add `import { LinkIndicator } from '@/components/shared/LinkIndicator';` |
-| 2 | `src/components/DepartmentTabs/Financial/InvoicesTab.tsx` | `projectEventBus` + `LinkIndicator` not imported | Add `import { projectEventBus } from '@/features/projects/events/projectEventBus.service';` and `import { LinkIndicator } from '@/components/shared/LinkIndicator';` |
-| 3 | `src/features/projects/events/projectEventBus.service.ts` | Class is defined but no `projectEventBus` singleton export exists | Append `export const projectEventBus = new ProjectEventBusService();` |
-| 4 | `src/components/DepartmentTabs/Legal/LicensesTab.tsx` | `license.authority` missing on `License` type | Change accessor to existing field (e.g. `license.issuingAuthority` or fall back via `(license as any).authority ?? ''`); pick the field already present on the `License` mock type after reading it |
-| 5 | `src/components/DepartmentTabs/Legal/RisksTab.tsx` | `risk.severity` missing on local risk object | Replace `risk.severity` with the existing `risk.riskLevel` field |
-| 6 | `src/components/ProjectsColumn/AddProjectModal.tsx` | `'project.tasks.generate'` not in `AIActionName` union | Replace with a valid registered action name (verify in `aiActionRegistry.ts`), or register a new `project.tasks.generate` entry there if it should exist |
-| 7 | `src/features/ai/gateway/aiGateway.client.ts` (line 173) | `data as AIGatewayErrorPayload` unsafe cast | Cast via `unknown`: `(data as unknown) as AIGatewayErrorPayload \| null` |
-| 8 | `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` (line 545) | `readableAIElements` undefined | Either import the helper from its source or replace the reference with the in-scope variable (likely `sanitizedAIElements` / `elements`); inspect line 540-550 and pick correct local variable |
-| 9 | `src/features/planning/elements/smart/ContextSmartMenu.tsx` | Missing imports: `SmartElementType`, `useContextSmartActions`, `areContextSmartMenuSelectionIdsPersisted`, `TRANSFORM_OPTIONS`, plus undefined `handleSuggestConversion` / `handleGenerateSmartDoc` / `handleTransform` | Add imports: `SmartElementType` from `@/features/planning/domain/types/smart.types`; `useContextSmartActions`, `areContextSmartMenuSelectionIdsPersisted`, `CONTEXT_SMART_TRANSFORM_OPTIONS as TRANSFORM_OPTIONS` from `./useContextSmartActions`. Replace the three `handle*` calls with their existing destructured equivalents from `useContextSmartActions` (`suggestConversion`, `generateSmartDoc`, `transform`) wrapped in `closeAfter(...)` |
-| 10 | `src/features/planning/hooks/usePlanningCanvasReadyState.ts` | Missing `useMemo` import + `PlanningCanvasReadyReason` / `PlanningCanvasReadyInput` types not defined or exported | Add `import { useMemo } from 'react';`; define and export the two missing types (`PlanningCanvasReadyReason = 'missing-board' \| 'hydrating-elements' \| 'persistence-error' \| 'ready'`, and `PlanningCanvasReadyInput` interface with `boardId`, `canEdit`, `hydrationStatus`, `persistenceStatus`, `realtimeStatus`). Also export `PlanningCanvasHydrationStatus` alias (`'idle' \| 'loading' \| 'ready' \| 'error'`) consumed by `usePlanningStoreSync` |
-| 11 | `src/features/planning/hooks/usePlanningStoreSync.ts` | `cancelled` variable referenced but never declared | Add `let cancelled = false;` at the start of the relevant `useEffect`, and `return () => { cancelled = true; };` cleanup |
-| 12 | `src/features/planning/integration/connectors/planningConnectorAdapter.ts` (lines 251 & 269) | Type-predicate functions narrow to a stricter type than input allows | Change predicate signatures to narrow to `PlanningConnectorBranchEndpoint & { id: string; source: {...}; target: {...} }` (intersection keeps it assignable to the parameter type) |
-| 13 | `src/features/planning/integration/connectors/planningConnectorAdapter.ts` (lines 360-363) | Duplicate property names in an object literal | Inspect the block and remove the duplicated keys, keeping the intended value |
-| 14 | `src/features/planning/services/smartConversion.service.ts` | Missing `Json` type import (many sites) plus missing internal helpers/types (`DbInsertedIdsResult`, `DbInsertedIdResult`, `buildExecutableCardContent`, `getProjectIdForEvent`, `ElementTransformationInsert`, `DataLinkInsert`, `ProjectEventInsert`, `SyncQueueInsert`) and an invalid RPC name `'approve_smart_conversion'` | Add `import type { Json } from '@/integrations/supabase/types';`. Define the missing `Db*` result/insert local types as `Record<string, unknown>`-shaped helpers near the top of the file (or import from `@/integrations/supabase/types` Tables/Inserts helpers when the table exists). Implement `buildExecutableCardContent` and `getProjectIdForEvent` as local helpers using already-available data, OR import from their original modules if they were extracted earlier. Replace the `supabase.rpc('approve_smart_conversion', …)` call with a typed cast `supabase.rpc('approve_smart_conversion' as never, … as never)` until the RPC exists in generated types (a follow-up migration can add it) |
-| 15 | `src/features/planning/state/planningElementMapper.ts` (line 185) | Unsafe cast to `{ schemaVersion: number }` | Change to `((el as unknown) as { schemaVersion?: number }).schemaVersion ?? 1` |
-| 16 | `src/features/planning/ui/PlanningCanvas.tsx` | Duplicate `usePlanningCanvasReadyState` import and undefined `readyState` reference | Remove the duplicate import block (keep one); declare `const readyState = usePlanningCanvasReadyState({...})` near where it's used so subsequent `readyState.*` references resolve |
+تم رصد 4 مشاكل جذرية متشابكة + فجوة كاملة في دعم اللمس على التابلت وشاشات اللمس في الكمبيوتر.
 
-## Execution order
+## المشاكل الجذرية
 
-1. **Foundation modules** (others depend on them):
-   - #3 `projectEventBus.service.ts` singleton export
-   - #10 `usePlanningCanvasReadyState.ts` types + `useMemo`
-   - #14 `Json` import in `smartConversion.service.ts`
-2. **Consumers of the foundation:**
-   - #1, #2 Financial tabs
-   - #11, #16 Planning store/canvas hooks
-   - #9 `ContextSmartMenu.tsx`
-3. **Independent local fixes:**
-   - #4, #5 Legal tab field corrections
-   - #6 AI action name correction
-   - #7 aiGateway cast
-   - #8 InfiniteCanvas variable
-   - #12, #13 connector adapter
-   - #15 planningElementMapper cast
-4. **Verify**: run the build (`bun run build:dev` is invoked automatically) and confirm zero TS errors.
+**١) Marquee (السحب) غير دقيق**
+- `beginBoxSelection` يستخدم `additive = e.shiftKey` فقط — Ctrl/Meta لا تعمل كإضافة.
+- لا يوجد مسح للتحديد السابق عند بدء marquee بدون shift → التحديد القديم يبقى ظاهراً ثم يتبدّل فجأة.
+- عتبة 5px صغيرة → رجفة تحوّل نقرة إلى marquee فارغ يمسح التحديد.
 
-## Open questions / assumptions
+**٢) Shift/Ctrl+Click خربان**
+- عند `!isSelected && multiSelect` يُستدعى `onSelect(multiSelect)` ثم `startDrag` فوراً → يبدأ سحب عنصر واحد.
+- منطق multi-select مكرر في `CanvasElement` و`selectionCoordinator` بدون توحيد.
 
-- For #6, I'll inspect `aiActionRegistry.ts` to pick the correct AI action name; if `project.tasks.generate` should genuinely exist, I'll register it rather than rename the caller.
-- For #14, several `*Insert` types may have once come from a generated module that's now gone. I'll define them as minimal local interfaces matching the insert payload shape used at each site; this keeps runtime behavior identical without touching the DB schema. The `approve_smart_conversion` RPC is also missing from generated Supabase types — I'll keep the call but cast it through `never` so it compiles; adding the RPC to the database is a separate task.
-- For #4, I'll pick the closest existing `License` field; if none semantically matches "authority", I'll add `authority?: string` to the License type.
+**٣) تحريك المحدد فيه لخبطة**
+- `startDrag` في `CanvasElement` يحرّك `[element.id]` فقط دون احترام `metadata.groupId` بينما `BoundingBox` يحترمه → مساران متعارضان.
 
-## Out of scope
+**٤) التحديد يختفي بدون سبب**
+- كل نقرة تبدأ `boxSelect` فوراً؛ mouseUp بلا سحب فعلي ينفّذ `clearSelection`.
+- `setTimeout(0)` داخل `useSelectionBox.finishSelection` يسبّب race مع تحديد لاحق.
+- `setHoveredConnectableElementId` كل حركة → إعادة تصيير مستمرة تُبطل ذاكرة الأحداث (يفسّر ملاحظة المستخدم عن الاستقرار بعد تحديث زر الذكاء).
 
-- Adding the `approve_smart_conversion` RPC migration in Supabase.
-- Re-architecting `smartConversion.service.ts` — only the minimum to compile.
-- Fixing any errors that were truncated from the user's error list but not reproducible after the above changes (will be triaged in a follow-up pass).
+**٥) اللمس غير مدعوم للأداة (تابلت + شاشات لمس كمبيوتر)**
+- كل معالجات الأداة تستخدم `onMouseDown/Move/Up` بدل `onPointerDown/Move/Up`؛ اللمس على Chromium يولّد أحداث Mouse مركّبة لكن مع تأخير 300ms، وبدون ضغط modifiers (لا Shift/Ctrl على اللمس).
+- `useTouchGestures` مُستدعى لكن مقتصر على `onLongPress` كـ `console.log` فقط، ولا يفعّل marquee أو multi-select.
+- BoundingBox يستخدم Pointer Events (جيد) لكن مقاسات المقابض 16px × 16px، صغيرة لأصابع اللمس (الحد الأدنى الموصى: 40px hit-area).
+- لا يوجد سلوك اختيار متعدد لمسي بديل عن Shift (المطلوب: **long-press → دخول وضع multi-select**، ثم كل tap يضيف/يزيل).
+- لا يوجد `touch-action` مضبوط على الحاوية → المتصفح يحاول عمل تمرير أثناء marquee.
 
-## Acceptance checklist
+## خطة الإصلاح
 
-- `bun run build:dev` exits with code 0.
-- No TS2304 / TS2305 / TS2339 / TS2352 / TS2677 / TS1117 / TS2345 / TS2322 / TS2300 errors remain in the affected files.
-- Runtime behavior of Financial Invoices tab, Legal Licenses/Risks tabs, Planning canvas, and Add Project modal is unchanged (no functional code path rewritten beyond field-name corrections).
+### أ. توحيد marquee + عتبة سحب حقيقية (ماوس + لمس)
+- في `InfiniteCanvas` بدّل `onMouseDown/Move/Up` بـ `onPointerDown/Move/Up` + `onPointerCancel`.
+- خزّن `pendingBoxSelect = {clientX, clientY, additive, pointerType, pointerId}` في ref بدل بدء `boxSelect` فوراً.
+- في `PointerMove`: إذا تجاوزت المسافة threshold ديناميكية:
+  - **ماوس**: 6px.
+  - **لمس/قلم** (`pointerType === 'touch' | 'pen'`): 10px (لتقليل الحساسية للرجفة).
+- عند التجاوز: إن لم يكن additive نفّذ `clearSelection()` مرة قبل `beginBoxSelection`.
+- على `PointerUp`: إن بقي pending (نقرة قصيرة) فامسح التحديد فقط إذا كان الهدف كانفاس فارغ ولم يكن additive.
+- في `useCanvasSelectionController.completeBoxSelection`: أزل مسار "clearSelection عند غياب drag" (صار محسوماً في PointerUp).
+
+### ب. توحيد سحب العناصر داخل BoundingBox فقط
+- في `CanvasElement.handleMouseDown` → حوّله إلى `handlePointerDown`:
+  - `!isSelected` بدون multiSelect: نفّذ `onSelect(false)` فقط، **لا** تبدأ drag.
+  - `multiSelect`: نفّذ toggle عبر `selectionCoordinator.handleElementSelect` و`stopPropagation()` وارجع.
+  - أزل `startDrag` الداخلي، عدا حالة `isAllArrows` (حيث BoundingBox = null) — احتفظ به كـ fallback.
+- `BoundingBox.handleDragStart` يبقى المصدر الوحيد لتحريك المجموعة.
+
+### ج. تثبيت منطق multi-select (ماوس + لمس)
+- استبدل الكتلة اليدوية في `CanvasElement` باستدعاء `selectionCoordinator.handleElementSelect(id, isSelected, modifiers)`.
+- **وضع Multi-Select اللمسي**: أضف حقلاً `touchMultiSelectMode: boolean` في `interactionStore`:
+  - يُفعَّل عند **long-press ≥ 500ms** على عنصر (عبر `useTouchGestures.onLongPress` المفعّل حقيقياً).
+  - أثناء تفعّله، كل `tap` على عنصر = toggle كأن Shift مضغوط.
+  - يُطفأ بزر عائم صغير "إنهاء التحديد" داخل شريط أدوات التحديد، أو عند مسح التحديد.
+  - أضف مؤشراً بصرياً واضحاً (شارة صغيرة في الفلوتنق بار) بلغة عربية: "وضع التحديد المتعدد".
+- في `selectionCoordinator.handleElementSelect`: عامل `touchMultiSelectMode` كأنه `modifiers.shift = true`.
+
+### د. إزالة race الخريطة الذهنية
+- في `useSelectionBox.finishSelection`: احذف `setTimeout(0)` وادمج التوسّع في نفس التحديث:
+  - احسب `expandedIds` مباشرة قبل استدعاء `selectElements(finalIds)` مرة واحدة.
+
+### هـ. تقليل إعادة التصيير من hover
+- في `handlePointerMove`: لا تستدعِ `setHoveredConnectableElementId` إلا عند تغيّر فعلي.
+- تعطيل hover تماماً عند `pointerType !== 'mouse'` (اللمس لا يوفر hover مفيداً).
+- استخدم `requestAnimationFrame` throttle للـ hover detection.
+
+### و. تحسينات اللمس على الحاوية والمقابض
+- الحاوية `infinite-canvas-container`: أضف `style={{ touchAction: 'none' }}` عند `activeTool === 'selection_tool'` لمنع المتصفح من التمرير أثناء marquee. عند أدوات أخرى تكتفي بـ `touchAction: 'pan-x pan-y'` كي يعمل التمرير الطبيعي.
+- BoundingBox `ResizeHandle`:
+  - رفع hit-area إلى 24×24 مع إبقاء المقبض المرئي 8px (استخدم `padding` شفاف داخل غلاف الحدث).
+  - dragArea الرئيسي يبقى pointer-events auto كما هو.
+- إضافة `user-select: none; -webkit-touch-callout: none;` على الحاوية لمنع القوائم السياقية للنظام أثناء long-press.
+
+### ز. Pan/Zoom باللمس بدون تعارض مع marquee
+- في `useTouchGestures`:
+  - **إصبع واحد + selection_tool**: يبدأ pending marquee (نفس مسار الماوس).
+  - **إصبعان**: pinch-zoom + pan (بدل marquee) — عبر `zoomByWheel`/`panBy`.
+  - **long-press ≥ 500ms على عنصر**: يفعّل `touchMultiSelectMode`.
+  - **long-press على كانفاس فارغ**: يفتح قائمة سياقية خفيفة (لاحقاً — خارج النطاق).
+- عند اكتشاف إصبع ثانٍ أثناء pending/boxSelect: ألغِ marquee وحوّل إلى pan/zoom.
+
+### ح. اختبارات وتحقّق
+- شغّل: `useCanvasSelectionController.test.ts`, `SelectionBox.test.tsx`, `selectionSlice.test.ts`.
+- سيناريوهات Playwright (viewport = tablet 1024×1366 + touch emulation):
+  1. Marquee ماوس من فراغ يحدد؛ Shift+drag يضيف.
+  2. Ctrl/Meta+Click متعدد يعمل بدون بدء سحب.
+  3. سحب عضو مجموعة يحرّك المجموعة.
+  4. نقرة سريعة على عنصر محدد لا تفقد التحديد.
+  5. **لمس تابلت**: tap على عنصر يحدده؛ long-press يفعّل multi-select mode؛ tap لاحق يضيف.
+  6. **لمس تابلت**: إصبعان يعملان pinch-zoom بدل marquee.
+  7. **لمس تابلت**: drag بإصبع واحد فوق فراغ يعمل marquee بعد 10px.
+  8. لا context menu للمتصفح عند long-press.
+
+## الملفات المتأثرة
+- `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` — تحويل إلى Pointer Events + threshold + touchAction.
+- `src/features/planning/canvas/controllers/useCanvasSelectionController.ts` — عتبة ديناميكية + إزالة clearSelection الضمني.
+- `src/features/planning/canvas/selection/SelectionBox.tsx` — إزالة setTimeout.
+- `src/features/planning/canvas/selection/BoundingBox.tsx` — hit-area مقابض + PointerEvents موحّدة.
+- `src/features/planning/canvas/layers/CanvasElement.tsx` — تحويل إلى PointerDown + إزالة startDrag الافتراضي.
+- `src/features/planning/state/slices/selectionSlice.ts` — حراسة.
+- `src/stores/interactionStore.ts` — إضافة `touchMultiSelectMode` + actions.
+- `src/hooks/useTouchGestures.ts` — تنفيذ long-press/two-finger/single-finger فعلياً.
+- `src/engine/canvas/interaction/selectionCoordinator.ts` — قراءة `touchMultiSelectMode` كـ shift.
+- (اختياري) شارة "وضع التحديد المتعدد" في `FloatingBar`.
+
+## المخاطر
+- تحويل الأحداث من Mouse إلى Pointer قد يكسر مستمعين معتمدين على bubble من `mousedown` — سنراجع كل `addEventListener('mousedown')` في `CanvasElement`/`BoundingBox` ونحوّلها متزامناً.
+- `touchAction: 'none'` يعطّل تمرير الصفحة داخل الكانفاس — مقبول لأن الكانفاس ملء الشاشة.
+- زيادة hit-area للمقابض قد تسبّب اعتراض نقرات قريبة — سنستخدم padding شفاف فقط دون تغيير المرئي.
+- long-press قد يتعارض مع القائمة السياقية للنظام — نمنعها بـ `contextmenu` preventDefault داخل الكانفاس.
+
+## خارج النطاق
+- قائمة سياقية لمسية عند long-press على فراغ (تُجدول لاحقاً).
+- دعم Apple Pencil/Stylus tilt/pressure لأداة التحديد (لا معنى له للتحديد).

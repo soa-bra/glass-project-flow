@@ -374,8 +374,9 @@ export function useTouchGestures({
     if (e.touches.length === 0) {
       state.initialTouches = [];
       state.startPoint = null;
-      resetToIdle();
+      // ✅ لا نستدعي resetToIdle هنا لأن Pointer Events في InfiniteCanvas تدير الحالة (marquee/pan)
     }
+
   }, [cancelLongPress, resetToIdle, handleTap, handleDoubleTap]);
   
   // ============= تسجيل المستمعين =============

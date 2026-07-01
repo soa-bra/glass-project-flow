@@ -48,12 +48,15 @@ const canvasState: any = {
 
 const interactionState: any = {
   mode: { kind: 'idle' },
+  touchMultiSelectMode: false,
+  setTouchMultiSelectMode: vi.fn(),
   startPanning: vi.fn(),
   startBoxSelect: vi.fn(),
   updateBoxSelect: vi.fn(),
   resetToIdle: vi.fn(),
   isMode: vi.fn((kind: string) => kind === interactionState.mode.kind),
 };
+
 
 const boxSelectData = {
   startWorld: { x: 10, y: 20 },
@@ -85,14 +88,19 @@ vi.mock('@/stores/canvasStore', () => {
   return { useCanvasStore };
 });
 
-vi.mock('@/stores/interactionStore', () => ({
-  useInteractionStore: vi.fn((selector?: any) => {
+vi.mock('@/stores/interactionStore', () => {
+  const mockUse: any = vi.fn((selector?: any) => {
     if (selector === boxSelectSelector) return boxSelectData;
     if (typeof selector !== 'function') return interactionState;
     return selector(interactionState);
-  }),
-  selectBoxSelectData: boxSelectSelector,
-}));
+  });
+  mockUse.getState = () => interactionState;
+  return {
+    useInteractionStore: mockUse,
+    selectBoxSelectData: boxSelectSelector,
+  };
+});
+
 
 vi.mock('@/hooks/useToolInteraction', () => ({
   useToolInteraction: () => ({
@@ -287,7 +295,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" broadcastCursor={mockBroadcastCursor} />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseMove(container, { clientX: 130, clientY: 170 });
+    fireEvent.pointerMove(container, { clientX: 130, clientY: 170 });
 
     expect(mockUpdatePointerFromClient).toHaveBeenCalledWith(130, 170);
     expect(mockBroadcastCursor).toHaveBeenCalledWith(88, 144);
@@ -297,38 +305,47 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseDown(container, { button: 0, altKey: true, clientX: 100, clientY: 200 });
+    fireEvent.pointerDown(container, { button: 0, altKey: true, clientX: 100, clientY: 200 });
 
     expect(mockBeginPanning).toHaveBeenCalledWith(100, 200);
     expect(mockHandleCanvasMouseDown).not.toHaveBeenCalled();
   });
 
-  it('starts box selection on canvas mouse down with selection tool', () => {
+  it('starts box selection on canvas pointer drag past threshold with selection tool', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseDown(container, { button: 0, clientX: 70, clientY: 90, shiftKey: true });
+    fireEvent.pointerDown(container, { button: 0, clientX: 70, clientY: 90, shiftKey: true });
+    // Marquee لا يبدأ حتى يتجاوز المؤشر عتبة السحب (6px للماوس)
+    expect(mockBeginBoxSelection).not.toHaveBeenCalled();
+    fireEvent.pointerMove(container, { clientX: 80, clientY: 100 });
 
     expect(mockClearSelection).not.toHaveBeenCalled();
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(70, 90, true);
   });
 
-  it('preserves the current selection while a non-additive selection marquee is starting', () => {
+  it('preserves the current selection while a non-additive selection marquee is starting (clears once past threshold)', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseDown(container, { button: 0, clientX: 72, clientY: 94, shiftKey: false });
-
+    fireEvent.pointerDown(container, { button: 0, clientX: 72, clientY: 94, shiftKey: false });
+    expect(mockBeginBoxSelection).not.toHaveBeenCalled();
     expect(mockClearSelection).not.toHaveBeenCalled();
+
+    fireEvent.pointerMove(container, { clientX: 82, clientY: 104 });
+
+    // ✅ التحديد يُمسح مرة واحدة عند بدء marquee غير-إضافي
+    expect(mockClearSelection).toHaveBeenCalledTimes(1);
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(72, 94, false);
   });
+
 
   it('updates panning on mouse move when interaction mode is panning', () => {
     interactionState.mode = { kind: 'panning' };
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseMove(container, { clientX: 130, clientY: 170 });
+    fireEvent.pointerMove(container, { clientX: 130, clientY: 170 });
 
     expect(mockUpdatePointerFromClient).toHaveBeenCalledWith(130, 170);
     expect(mockUpdatePan).toHaveBeenCalledWith(130, 170, mockPanBy);
@@ -339,7 +356,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseMove(container, { clientX: 210, clientY: 240 });
+    fireEvent.pointerMove(container, { clientX: 210, clientY: 240 });
 
     expect(mockUpdateBoxSelectionFromClient).toHaveBeenCalledWith(210, 240);
   });
@@ -352,7 +369,7 @@ describe('InfiniteCanvas', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
-    fireEvent.mouseUp(container);
+    fireEvent.pointerUp(container);
 
     expect(mockHandleEndConnection).toHaveBeenCalledWith('target-node', 'left');
     expect(mockCancelConnection).not.toHaveBeenCalled();
