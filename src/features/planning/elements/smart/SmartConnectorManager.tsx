@@ -19,6 +19,7 @@ import { UNIFIED_RELATIONSHIP_TYPES } from '@/features/planning/integration/conn
 import { useCanvasAIPermissions } from '@/features/planning/hooks/useCanvasAIPermissions';
 import { suggestSmartConnectorRelationship, type ReadableConnectorElementForAI } from '@/features/planning/services/smartConnectorAI.service';
 import { audit } from '@/services/audit';
+import { NextStepSuggestionsPanel, type NextStepChoice } from './NextStepSuggestionsPanel';
 
 interface ElementBounds extends ConnectorPolicyElement {
   id: string;
