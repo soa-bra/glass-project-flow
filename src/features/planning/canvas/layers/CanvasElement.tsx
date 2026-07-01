@@ -321,6 +321,8 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     }
     const target = e.target as HTMLElement;
     if (target.classList.contains('resize-handle') || target.hasAttribute('data-resize-handle')) return;
+    // ⛔ لا نبدأ تحديدًا/سحبًا إذا جاء الحدث من أنكر SmartConnector
+    if (target.closest?.('[data-anchor-hit="true"]')) return;
     if (isInteractiveCanvasTarget(target)) return;
     if (activeTool !== 'selection_tool') return;
     e.stopPropagation();
