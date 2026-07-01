@@ -169,6 +169,9 @@ export const useInteractionStore = create<InteractionState>((set, get) => ({
   // الحالة الابتدائية
   mode: createIdleMode(),
   cursor: 'default',
+  touchMultiSelectMode: false,
+  setTouchMultiSelectMode: (enabled) => set({ touchMultiSelectMode: enabled }),
+
   
   // ============= Actions Implementation =============
   
