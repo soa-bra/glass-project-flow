@@ -167,6 +167,16 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
   const [hoveredConnectableElementId, setHoveredConnectableElementId] = useState<string | null>(null);
+  // ✅ تحديد معلّق (Pending Marquee) — يمنع إنشاء boxSelect إلا بعد تجاوز عتبة السحب
+  const pendingBoxSelectRef = useRef<{
+    clientX: number;
+    clientY: number;
+    additive: boolean;
+    pointerType: string;
+    started: boolean;
+  } | null>(null);
+  const hoverRafRef = useRef<number | null>(null);
+
 
   const { lastPointerPositionRef, updatePointerFromClient } = useCanvasPointerTracking({
     containerRef,
