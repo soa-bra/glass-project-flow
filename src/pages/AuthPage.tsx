@@ -25,6 +25,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
+  const [logoLoadFailed, setLogoLoadFailed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
@@ -69,17 +70,24 @@ export default function AuthPage() {
         description="سجّل الدخول إلى منصة سـوبــرا للوصول إلى لوحات إدارة المشاريع والعمليات والأقسام والتخطيط والأرشيف."
         path="/auth"
       />
-      <Card className="w-full max-w-md rounded-[32px] border border-[#3e494c]/15 bg-white/95 shadow-[0_24px_70px_rgba(25,35,38,0.14)] backdrop-blur-xl">
+      <Card className="w-full max-w-md rounded-[32px] border border-[#3e494c]/15 bg-card/95 text-card-foreground shadow-[0_24px_70px_rgba(25,35,38,0.14)] backdrop-blur-xl dark:border-white/10 dark:shadow-[0_24px_70px_rgba(0,0,0,0.35)]">
         <CardHeader className="space-y-0 px-8 pb-6 pt-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center justify-end">
-              <img
-                src={SOABRA_LOGO_SRC}
-                alt="شعار سوبرا"
-                className="h-12 w-auto max-w-[160px] object-contain"
-              />
+              {logoLoadFailed ? (
+                <span className="text-2xl font-semibold text-card-foreground">
+                  سـوبــرا
+                </span>
+              ) : (
+                <img
+                  src={SOABRA_LOGO_SRC}
+                  alt="شعار سوبرا"
+                  className="h-12 w-auto max-w-[160px] object-contain"
+                  onError={() => setLogoLoadFailed(true)}
+                />
+              )}
             </div>
-            <CardDescription className="max-w-[180px] text-left text-sm leading-6 text-[#3e494c]">
+            <CardDescription className="max-w-[180px] text-left text-sm leading-6 text-muted-foreground">
               تسجيل الدخول إلى حسابك
             </CardDescription>
           </div>
@@ -113,7 +121,7 @@ export default function AuthPage() {
               />
             </div>
             {authError && (
-              <p id="signin-error" role="alert" className="rounded-2xl bg-red-50 px-4 py-3 text-right text-sm leading-6 text-red-700">
+              <p id="signin-error" role="alert" className="rounded-2xl bg-red-50 px-4 py-3 text-right text-sm leading-6 text-red-700 dark:bg-red-950/35 dark:text-red-200">
                 {authError}
               </p>
             )}
