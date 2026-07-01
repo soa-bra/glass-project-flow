@@ -131,17 +131,16 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   isConnecting,
 }) => {
   const HIT_RADIUS = 18;
-  const DOT_RADIUS = 9;
-  const ARROW = 4;
-  const OFFSET_X = 14; // خارج الحد يمينًا
-  const OFFSET_Y = 14; // خارج الحد أعلى
+  const OFFSET_X = 12; // خارج الحد يمينًا
+  const SHAFT = 14;    // طول جسم السهم
+  const HEAD = 6;      // نصف عرض رأس السهم
   const [isHovered, setIsHovered] = useState(false);
 
-  // ⭐ نمط Miro: نقطة الأنكر أعلى-يمين خارج العنصر
+  // ⭐ نمط Miro: نقطة الأنكر على يمين العنصر عند 1/4 من الأعلى (= 3/4 الارتفاع من الأسفل)
   const anchor = {
-    anchorPoint: 'top-right' as const,
+    anchorPoint: 'right' as const,
     x: bounds.x + bounds.width + OFFSET_X,
-    y: bounds.y - OFFSET_Y,
+    y: bounds.y + bounds.height * 0.25,
   };
 
   const gradientId = `ai-anchor-grad-${elementId}`;
@@ -158,20 +157,25 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   const active = isHovered || isConnecting;
   const scale = active ? 1.25 : 1;
 
+  // مسار سهم رفيع متجه لليمين (بدون دائرة حاوية)
+  // يبدأ من الحافة اليسرى للسهم عند (0,0) وينتهي عند (SHAFT,0)
+  const arrowPath = `M 0 0 L ${SHAFT} 0 M ${SHAFT - HEAD} ${-HEAD} L ${SHAFT} 0 L ${SHAFT - HEAD} ${HEAD}`;
+
   return (
     <g
       className="connection-anchors"
       data-anchor-element-id={elementId}
+      data-anchor-hit="true"
       data-anchor-position={anchor.anchorPoint}
       style={{ pointerEvents: 'auto' }}
     >
       <defs>
-        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#3DBE8B" />
           <stop offset="100%" stopColor="#3DA8F5" />
         </linearGradient>
         <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feGaussianBlur stdDeviation="2" result="blur" />
           <feMerge>
             <feMergeNode in="blur" />
             <feMergeNode in="SourceGraphic" />
@@ -181,10 +185,11 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
 
       {/* منطقة اللمس/الفأرة الشفافة */}
       <circle
-        cx={anchor.x}
+        cx={anchor.x + SHAFT / 2}
         cy={anchor.y}
         r={HIT_RADIUS}
         fill="transparent"
+        data-anchor-hit="true"
         className="cursor-crosshair connection-anchor-hit"
         onPointerEnter={() => setIsHovered(true)}
         onPointerLeave={() => setIsHovered(false)}
@@ -192,30 +197,25 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         onMouseDown={handlePointerDown}
       />
 
-      {/* الدائرة الملوّنة بألوان الذكاء الاصطناعي */}
+      {/* سهم مباشر بدون دائرة، بألوان AI متجه لليمين → */}
       <g
         pointerEvents="none"
+        data-anchor-hit="true"
         style={{
           transform: `translate(${anchor.x}px, ${anchor.y}px) scale(${scale})`,
-          transformBox: 'view-box',
-          transformOrigin: '0 0',
-          transition: 'transform 140ms cubic-bezier(0.22, 1, 0.36, 1)',
+          transformOrigin: '0px 0px',
+          transition: 'transform 120ms cubic-bezier(0.22, 1, 0.36, 1)',
           filter: active ? `url(#${glowId})` : undefined,
         }}
       >
-        <circle
-          cx={0}
-          cy={0}
-          r={DOT_RADIUS}
-          fill={`url(#${gradientId})`}
-          stroke="#FFFFFF"
-          strokeWidth={1.5}
-          className="connection-anchor-dot"
-        />
-        {/* رأس السهم متجه لليمين (→) */}
         <path
-          d={`M ${-ARROW / 2} ${-ARROW} L ${ARROW} 0 L ${-ARROW / 2} ${ARROW} Z`}
-          fill="#FFFFFF"
+          d={arrowPath}
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="connection-anchor-arrow"
         />
       </g>
     </g>

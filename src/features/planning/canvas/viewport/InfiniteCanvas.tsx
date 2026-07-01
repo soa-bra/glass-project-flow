@@ -414,9 +414,119 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
     [addElement, deleteElements, rootConnectorElements, updateElement, _boardId],
   );
 
+  // 🧩 معالج لوحة اقتراحات الخطوة التالية (drop-on-empty)
+  // - يُنشئ عنصرًا ذكيًا (أو فريمًا مع أبناء لعنصر مركّب) عند نقطة الإفلات.
+  // - يوصّل المصدر بالعنصر الجديد تلقائيًا عبر RootConnector.
+  const handleInsertNextStepSuggestion = useCallback(
+    (
+      suggestion: import('@/features/planning/elements/smart/RootConnector').AISuggestion,
+      position: { x: number; y: number },
+    ) => {
+      const sourceId = (suggestion.data as { sourceElementId?: string } | undefined)?.sourceElementId;
+      const preset = (suggestion.data as { preset?: string } | undefined)?.preset ?? 'task';
+      const promptText = (suggestion.data as { prompt?: string } | undefined)?.prompt;
+      const source = elements.find((el) => el.id === sourceId);
+      if (!source || !sourceId) return;
+
+      const now = new Date().toISOString();
+      const newId = crypto.randomUUID();
+
+      let newElementBounds: { x: number; y: number; width: number; height: number };
+      const elementsToAdd: Array<Parameters<typeof addElement>[0]> = [];
+
+      if (preset === 'framed_workflow') {
+        // 🖼️ فريم واحد يحوي 3 عناصر ذكية كأداة مركّبة موحّدة
+        const frameW = 520;
+        const frameH = 300;
+        const frameX = position.x;
+        const frameY = position.y;
+        newElementBounds = { x: frameX, y: frameY, width: frameW, height: frameH };
+
+        const childIds = [crypto.randomUUID(), crypto.randomUUID(), crypto.randomUUID()];
+        const childW = 140;
+        const childH = 90;
+        const gap = 16;
+        const startX = frameX + gap;
+        const childY = frameY + 60;
+
+        elementsToAdd.push({
+          id: newId,
+          type: 'frame',
+          position: { x: frameX, y: frameY },
+          size: { width: frameW, height: frameH },
+          style: {},
+          data: { title: promptText?.slice(0, 60) || 'أداة مخصّصة', smartType: 'framed_workflow' },
+          metadata: { generatedByAI: true, sourcePrompt: promptText, children: childIds, createdAt: now },
+          children: childIds,
+        } as Parameters<typeof addElement>[0]);
+
+        childIds.forEach((cid, i) => {
+          elementsToAdd.push({
+            id: cid,
+            type: 'smart',
+            position: { x: startX + i * (childW + gap), y: childY },
+            size: { width: childW, height: childH },
+            style: {},
+            data: { smartType: 'task_card', title: `خطوة ${i + 1}`, parentFrameId: newId },
+            metadata: { parentFrameId: newId, generatedByAI: true, createdAt: now },
+          } as Parameters<typeof addElement>[0]);
+        });
+      } else {
+        // عنصر ذكي مفرد بحسب preset
+        const w = 180;
+        const h = 90;
+        newElementBounds = { x: position.x, y: position.y, width: w, height: h };
+        elementsToAdd.push({
+          id: newId,
+          type: 'smart',
+          position: { x: position.x, y: position.y },
+          size: { width: w, height: h },
+          style: {},
+          data: { smartType: preset, title: suggestion.title },
+          metadata: { generatedByAI: false, createdAt: now },
+        } as Parameters<typeof addElement>[0]);
+      }
+
+      elementsToAdd.forEach((el) => addElement(el));
+
+      // 🔗 موصل تلقائي من المصدر إلى العنصر الجديد
+      const startPoint = {
+        elementId: sourceId,
+        x: source.position.x + source.size.width,
+        y: source.position.y + source.size.height * 0.25,
+        anchorPoint: 'right' as const,
+      };
+      const endPoint = {
+        elementId: newId,
+        x: newElementBounds.x,
+        y: newElementBounds.y + newElementBounds.height / 2,
+        anchorPoint: 'left' as const,
+      };
+      const newConnector: RootConnectorData = {
+        id: crypto.randomUUID(),
+        startPoint,
+        endPoint,
+        status: 'approved',
+        direction: 'source_to_target',
+        connectorMode: 'semantic',
+        source: 'user',
+        approvedByUser: true,
+        requiresReview: false,
+        color: '#9CA3AF',
+        strokeWidth: 1,
+        style: 'solid',
+        createdAt: now,
+        updatedAt: now,
+      };
+      syncRootConnectors([...rootConnectors, newConnector]);
+    },
+    [addElement, elements, rootConnectors, syncRootConnectors],
+  );
+
   const handleReadOnlyDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
   }, []);
+
 
   const handleMouseDown = useCallback(
     (e: React.PointerEvent) => {
@@ -664,6 +774,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             selectedElementIds={selectedElementIds}
             hoveredElementId={hoveredConnectableElementId}
             showAnchors={canEdit && activeTool === 'selection_tool' && (selectedElementIds.length > 0 || hoveredConnectableElementId !== null)}
+            onInsertComponent={handleInsertNextStepSuggestion}
           />
 
         </svg>

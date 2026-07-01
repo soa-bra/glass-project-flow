@@ -151,12 +151,33 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [onSelectConnector]);
   const svgGroupRef = useRef<SVGGElement | null>(null);
 
+  // 🚀 اشتراك مباشر بمواضع العناصر من canvasStore حتى تتحرك الأنكرات فورًا مع السحب،
+  // بدل الاعتماد على prop `elements` الذي قد يتأخر فريمًا بسبب سلسلة memo الأب.
+  const liveElements = useCanvasStore((state) => state.elements);
+  const liveBoundsById = useMemo(() => {
+    const map = new Map<string, { x: number; y: number; width: number; height: number }>();
+    for (const el of liveElements) {
+      map.set(el.id, {
+        x: el.position.x,
+        y: el.position.y,
+        width: el.size.width,
+        height: el.size.height,
+      });
+    }
+    return map;
+  }, [liveElements]);
+
   // Show anchors for selected or hovered, non-connector elements.
   const anchoredElements = useMemo(() => {
     const anchorElementIds = new Set(selectedElementIds);
     if (hoveredConnectableElementId) anchorElementIds.add(hoveredConnectableElementId);
-    return elements.filter((el) => anchorElementIds.has(el.id));
-  }, [elements, hoveredConnectableElementId, selectedElementIds]);
+    return elements
+      .filter((el) => anchorElementIds.has(el.id))
+      .map((el) => {
+        const live = liveBoundsById.get(el.id);
+        return live ? { ...el, ...live } : el;
+      });
+  }, [elements, hoveredConnectableElementId, selectedElementIds, liveBoundsById]);
 
   const showPolicyRejection = useCallback((reason: string, point?: ConnectorPoint | { x: number; y: number }) => {
     const fallbackPoint = dragCurrent ?? dragStartPoint ?? { x: 24, y: 24 };
@@ -568,14 +589,19 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
             UNIFIED_RELATIONSHIP_TYPES[0],
           );
         } else if (canEditBoard) {
-          // 💡 إفلات في فراغ → افتح لوحة اقتراحات الخطوة التالية
-          setNextStepPanel({
-            sourceElementId: dragStartPoint.elementId,
-            canvasX: p.x,
-            canvasY: p.y,
-            clientX: e.clientX,
-            clientY: e.clientY,
-          });
+          // 💡 لا تفتح لوحة الخطوة التالية إلا:
+          //   - إذا لم يوجد target تحت المؤشر (تأكيد إضافي)
+          //   - إذا تجاوزت مسافة السحب 8px (تفادي فتحها من نقرة عابرة على الأنكر)
+          const dragDist = Math.hypot(p.x - dragStartPoint.x, p.y - dragStartPoint.y);
+          if (dragDist >= 8) {
+            setNextStepPanel({
+              sourceElementId: dragStartPoint.elementId,
+              canvasX: p.x,
+              canvasY: p.y,
+              clientX: e.clientX,
+              clientY: e.clientY,
+            });
+          }
         }
       }
       setDragStartPoint(null);
@@ -604,8 +630,10 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [isCreatingConnector, dragStartPoint, elements, viewport.zoom, handleCreateConnector]);
 
   const resolvePoint = useCallback((p: ConnectorPoint): ConnectorPoint => {
-    const el = elements.find(e => e.id === p.elementId);
-    if (!el) return p;
+    const baseEl = elements.find(e => e.id === p.elementId);
+    if (!baseEl) return p;
+    const live = liveBoundsById.get(p.elementId);
+    const el = live ? { ...baseEl, ...live } : baseEl;
     const subAnchorPoint = subAnchorToPoint(el, p.subAnchor);
     if (subAnchorPoint) return { ...p, ...subAnchorPoint };
     const anchorToXY = (a: typeof p.anchorPoint) => {
@@ -624,7 +652,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     };
     const { x, y } = anchorToXY(p.anchorPoint);
     return { ...p, x, y };
-  }, [elements]);
+  }, [elements, liveBoundsById]);
 
   return (
     <g ref={svgGroupRef} className="smart-connector-manager" style={{ pointerEvents: 'auto' }}>
