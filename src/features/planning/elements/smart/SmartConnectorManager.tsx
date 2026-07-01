@@ -630,8 +630,10 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   }, [isCreatingConnector, dragStartPoint, elements, viewport.zoom, handleCreateConnector]);
 
   const resolvePoint = useCallback((p: ConnectorPoint): ConnectorPoint => {
-    const el = elements.find(e => e.id === p.elementId);
-    if (!el) return p;
+    const baseEl = elements.find(e => e.id === p.elementId);
+    if (!baseEl) return p;
+    const live = liveBoundsById.get(p.elementId);
+    const el = live ? { ...baseEl, ...live } : baseEl;
     const subAnchorPoint = subAnchorToPoint(el, p.subAnchor);
     if (subAnchorPoint) return { ...p, ...subAnchorPoint };
     const anchorToXY = (a: typeof p.anchorPoint) => {
@@ -650,7 +652,7 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
     };
     const { x, y } = anchorToXY(p.anchorPoint);
     return { ...p, x, y };
-  }, [elements]);
+  }, [elements, liveBoundsById]);
 
   return (
     <g ref={svgGroupRef} className="smart-connector-manager" style={{ pointerEvents: 'auto' }}>
