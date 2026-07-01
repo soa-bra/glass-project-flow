@@ -152,6 +152,16 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   const setTouchMultiSelectMode = useInteractionStore((s) => s.setTouchMultiSelectMode);
 
+  // ✅ إطفاء وضع التحديد المتعدد اللمسي تلقائياً عند مسح التحديد أو تغيير الأداة
+  useEffect(() => {
+    if (activeTool !== 'selection_tool' || selectedElementIds.length === 0) {
+      if (useInteractionStore.getState().touchMultiSelectMode) {
+        setTouchMultiSelectMode(false);
+      }
+    }
+  }, [activeTool, selectedElementIds.length, setTouchMultiSelectMode]);
+
+
   useTouchGestures({
     containerRef: containerRef as React.RefObject<HTMLElement>,
     // ✅ نعطّل tap/doubleTap الافتراضي — Pointer Events في InfiniteCanvas تتولى ذلك
