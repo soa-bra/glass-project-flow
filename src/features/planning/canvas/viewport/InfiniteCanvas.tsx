@@ -150,12 +150,20 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
   useKeyboardShortcuts();
 
+  const setTouchMultiSelectMode = useInteractionStore((s) => s.setTouchMultiSelectMode);
+
   useTouchGestures({
     containerRef: containerRef as React.RefObject<HTMLElement>,
-    onLongPress: (point) => {
-      console.log('Long press at:', point);
+    onLongPress: (_point, elementId) => {
+      // ✅ long-press على عنصر يفعّل وضع التحديد المتعدد اللمسي
+      if (elementId && activeTool === 'selection_tool') {
+        setTouchMultiSelectMode(true);
+        // اهتزاز إضافي مؤكِّد
+        if ('vibrate' in navigator) navigator.vibrate([30, 20, 30]);
+      }
     },
   });
+
 
   const [snapGuides, setSnapGuides] = useState<SnapLine[]>([]);
   const [hoveredConnectableElementId, setHoveredConnectableElementId] = useState<string | null>(null);
