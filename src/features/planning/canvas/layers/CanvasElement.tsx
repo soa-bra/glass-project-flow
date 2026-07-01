@@ -325,18 +325,28 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
 
     const clientX = e.clientX;
     const clientY = e.clientY;
-    const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
+    // ✅ اللمس: touchMultiSelectMode يعمل كأن Shift مضغوط
+    const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
+    const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey || touchMulti;
 
-    if (isSelected && multiSelect) {
-      const currentSelection = useCanvasStore.getState().selectedElementIds;
-      const newSelection = currentSelection.filter((id) => id !== element.id);
-      useCanvasStore.getState().selectElements(newSelection);
+    // ✅ توحيد multi-select عبر selectionCoordinator (يعالج toggle + add)
+    if (multiSelect) {
+      const { selectionCoordinator } = require('@/engine/canvas/interaction/selectionCoordinator');
+      selectionCoordinator.handleElementSelect(element.id, isSelected, {
+        shift: e.shiftKey || touchMulti,
+        ctrl: e.ctrlKey,
+        meta: e.metaKey,
+      });
       return;
     }
 
-    if (!isSelected) {
-      onSelect(multiSelect);
+    // ✅ إذا كان العنصر محدد بالفعل (بدون multi-select) — BoundingBox يتولى السحب، لا نبدأ drag هنا
+    if (isSelected) {
+      return;
     }
+
+    // عنصر جديد — حدده وابدأ سحبه في نفس الحركة
+    onSelect(false);
 
     if (isEditingThisText) return;
 
@@ -345,6 +355,7 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       startDrag(clientX, clientY);
     });
   }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
+
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
     if (element.type === 'frame' && !isLocked) {
