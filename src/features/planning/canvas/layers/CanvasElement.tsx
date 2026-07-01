@@ -352,10 +352,29 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
 
     if (isEditingThisText) return;
 
-    void ensureEditLock().then((granted) => {
-      if (!granted) return;
-      startDrag(clientX, clientY);
-    });
+    // ⛔ لا نطلب القفل عند مجرد التحديد؛ نطلبه فقط عند بدء سحب فعلي (بعد تجاوز عتبة 4px)
+    // هذا يمنع سلاسل إعادة الرندر التي تحدث حين يتحدث سيرفر الحضور بعد كل نقرة.
+    const THRESHOLD = 4;
+    let lockRequested = false;
+    const onPreMove = (ev: MouseEvent) => {
+      const dx = ev.clientX - clientX;
+      const dy = ev.clientY - clientY;
+      if (Math.hypot(dx, dy) < THRESHOLD) return;
+      window.removeEventListener('mousemove', onPreMove);
+      window.removeEventListener('mouseup', onPreUp);
+      if (lockRequested) return;
+      lockRequested = true;
+      void ensureEditLock().then((granted) => {
+        if (!granted) return;
+        startDrag(clientX, clientY);
+      });
+    };
+    const onPreUp = () => {
+      window.removeEventListener('mousemove', onPreMove);
+      window.removeEventListener('mouseup', onPreUp);
+    };
+    window.addEventListener('mousemove', onPreMove);
+    window.addEventListener('mouseup', onPreUp);
   }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
 
 
