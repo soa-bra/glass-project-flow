@@ -16,7 +16,7 @@ interface ArchivedTaskRow {
   created_at: string;
 }
 
-const ARCHIVED_TASK_STATES = ['archived', 'completed', 'cancelled', 'failed'];
+const ARCHIVED_TASK_STATES = ['archived', 'completed', 'cancelled', 'failed'] as const;
 
 const getTaskStateLabel = (state: string | null) => {
   switch (state) {

@@ -662,7 +662,7 @@ const HeaderBar = () => {
       {
         id: createId('refresh'),
         text: `تم تحديث قسم ${navigationState.activeSection}`,
-        type: 'app',
+        type: 'app' as const,
         isNew: true,
         createdAt: refreshedAt,
       },
@@ -737,7 +737,7 @@ const HeaderBar = () => {
       {
         id: createId('message-sent'),
         text: `تم إرسال رسالة إلى ${selectedChat.name}`,
-        type: 'message',
+        type: 'message' as const,
         isNew: true,
         createdAt: sentAt,
       },

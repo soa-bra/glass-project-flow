@@ -34,7 +34,7 @@ type AssistantFeature = {
   description: string;
   metric: string;
   status: 'active' | 'warning';
-  Icon: React.ComponentType<{ size?: number; className?: string }>;
+  Icon: React.ComponentType<any>;
   onApply: () => void;
 };
 
