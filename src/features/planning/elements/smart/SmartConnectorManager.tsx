@@ -140,6 +140,9 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
   const [internalSelectedConnectorId, setInternalSelectedConnectorId] = useState<string | null>(null);
   const [policyMessage, setPolicyMessage] = useState<{ message: string; x: number; y: number } | null>(null);
+  const [nextStepPanel, setNextStepPanel] = useState<
+    { sourceElementId: string; canvasX: number; canvasY: number; clientX: number; clientY: number } | null
+  >(null);
   const effectiveSelectedConnectorId = selectedConnectorId ?? internalSelectedConnectorId;
   const selectConnector = useCallback((id: string | null) => {
     setInternalSelectedConnectorId(id);
