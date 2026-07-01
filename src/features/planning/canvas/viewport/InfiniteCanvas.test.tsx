@@ -311,25 +311,34 @@ describe('InfiniteCanvas', () => {
     expect(mockHandleCanvasMouseDown).not.toHaveBeenCalled();
   });
 
-  it('starts box selection on canvas mouse down with selection tool', () => {
+  it('starts box selection on canvas pointer drag past threshold with selection tool', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
     fireEvent.pointerDown(container, { button: 0, clientX: 70, clientY: 90, shiftKey: true });
+    // Marquee لا يبدأ حتى يتجاوز المؤشر عتبة السحب (6px للماوس)
+    expect(mockBeginBoxSelection).not.toHaveBeenCalled();
+    fireEvent.pointerMove(container, { clientX: 80, clientY: 100 });
 
     expect(mockClearSelection).not.toHaveBeenCalled();
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(70, 90, true);
   });
 
-  it('preserves the current selection while a non-additive selection marquee is starting', () => {
+  it('preserves the current selection while a non-additive selection marquee is starting (clears once past threshold)', () => {
     render(<InfiniteCanvas boardId="board-123" />);
     const container = document.querySelector('[data-canvas-container="true"]') as HTMLElement;
 
     fireEvent.pointerDown(container, { button: 0, clientX: 72, clientY: 94, shiftKey: false });
-
+    expect(mockBeginBoxSelection).not.toHaveBeenCalled();
     expect(mockClearSelection).not.toHaveBeenCalled();
+
+    fireEvent.pointerMove(container, { clientX: 82, clientY: 104 });
+
+    // ✅ التحديد يُمسح مرة واحدة عند بدء marquee غير-إضافي
+    expect(mockClearSelection).toHaveBeenCalledTimes(1);
     expect(mockBeginBoxSelection).toHaveBeenCalledWith(72, 94, false);
   });
+
 
   it('updates panning on mouse move when interaction mode is panning', () => {
     interactionState.mode = { kind: 'panning' };
