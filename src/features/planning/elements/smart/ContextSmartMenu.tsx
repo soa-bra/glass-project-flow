@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, LayoutGrid, Network, Calendar, Table2, Zap, Loader2, X, ChevronDown, FileText, FolderKanban, CheckSquare, Search } from 'lucide-react';
@@ -61,6 +61,15 @@ export function calculateContextSmartMenuPosition(
   return { x: screenX, y: Math.max(boardFrameOffset.top + 60, screenY) };
 }
 
+export function shouldStartContextSmartAction(
+  actionInFlightRef: { current: boolean },
+  busy: boolean,
+): boolean {
+  if (busy || actionInFlightRef.current) return false;
+  actionInFlightRef.current = true;
+  return true;
+}
+
 interface ContextSmartMenuProps {
   boardId?: string | null;
 }
@@ -73,6 +82,7 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const actionInFlightRef = useRef(false);
   const { viewport } = useCanvasStore();
   const {
     selectedElements,
@@ -105,12 +115,17 @@ const ContextSmartMenu: React.FC<ContextSmartMenuProps> = ({ boardId }) => {
 
   const busy = isLoading || isTransforming;
   const runAction = (action: () => void | Promise<void>, options: { close?: boolean } = {}) => () => {
+    if (!shouldStartContextSmartAction(actionInFlightRef, busy)) return;
+
     void Promise.resolve(action())
       .then(() => {
         if (options.close !== false) setIsVisible(false);
       })
       .catch(() => {
         if (options.close !== false) setIsVisible(false);
+      })
+      .finally(() => {
+        actionInFlightRef.current = false;
       });
   };
 
