@@ -714,6 +714,55 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
           <circle cx={dragCurrent.x} cy={dragCurrent.y} r={3} fill="#0B0F12" opacity={0.6} />
         </g>
       )}
+
+      {/* Next-step suggestions panel (rendered via portal so HTML can live outside SVG) */}
+      {nextStepPanel && typeof document !== 'undefined' &&
+        createPortal(
+          <NextStepSuggestionsPanel
+            clientX={nextStepPanel.clientX}
+            clientY={nextStepPanel.clientY}
+            sourceElementId={nextStepPanel.sourceElementId}
+            onClose={() => setNextStepPanel(null)}
+            onPickPreset={(choice: NextStepChoice) => {
+              const suggestion: AISuggestion = {
+                id: `next-step-${nextStepPanel.sourceElementId}-${Date.now()}`,
+                type: 'component',
+                title: choice.label,
+                description: choice.description,
+                confidence: 1,
+                data: {
+                  preset: choice.preset,
+                  smartType: choice.preset,
+                  sourceElementId: nextStepPanel.sourceElementId,
+                  position: { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY },
+                },
+              };
+              onInsertComponent?.(suggestion, { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY });
+              toast.success(`تم إنشاء ${choice.label}`);
+              setNextStepPanel(null);
+            }}
+            onSubmitCustomPrompt={(prompt: string) => {
+              const suggestion: AISuggestion = {
+                id: `custom-workflow-${nextStepPanel.sourceElementId}-${Date.now()}`,
+                type: 'component',
+                title: 'أداة مخصّصة',
+                description: prompt,
+                confidence: 1,
+                data: {
+                  preset: 'framed_workflow',
+                  smartType: 'frame',
+                  sourceElementId: nextStepPanel.sourceElementId,
+                  prompt,
+                  position: { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY },
+                },
+              };
+              onInsertComponent?.(suggestion, { x: nextStepPanel.canvasX, y: nextStepPanel.canvasY });
+              toast.success('جارٍ توليد الأداة المخصّصة…', { description: prompt });
+              setNextStepPanel(null);
+            }}
+          />,
+          document.body,
+        )}
     </g>
   );
 };
