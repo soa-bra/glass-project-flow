@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ConnectionAnchors } from './RootConnector';
 
 describe('ConnectionAnchors', () => {
-  it('places the root connector handle at the top-right of the element (Miro style)', () => {
+  it('places the root connector handle on the right side at 1/4 height (Miro style, top-3/4)', () => {
     const onStartDrag = vi.fn();
 
     render(
@@ -18,15 +18,16 @@ describe('ConnectionAnchors', () => {
     );
 
     const anchorGroup = document.querySelector('[data-anchor-element-id="selected-element"]') as SVGGElement;
-    expect(anchorGroup).toHaveAttribute('data-anchor-position', 'top-right');
+    expect(anchorGroup).toHaveAttribute('data-anchor-position', 'right');
+    expect(anchorGroup).toHaveAttribute('data-anchor-hit', 'true');
 
-    // top-right = bounds.x + bounds.width + OFFSET_X, bounds.y - OFFSET_Y
-    const expectedX = 120 + 240 + 14; // 374
-    const expectedY = 80 - 14; // 66
+    // right = bounds.x + bounds.width + OFFSET_X(12), bounds.y + height * 0.25
+    const expectedX = 120 + 240 + 12; // 372
+    const expectedY = 80 + 160 * 0.25; // 120
 
     const hitArea = anchorGroup.querySelector('.connection-anchor-hit') as SVGCircleElement;
-    expect(hitArea).toHaveAttribute('cx', String(expectedX));
-    expect(hitArea).toHaveAttribute('cy', String(expectedY));
+    // hit circle is centered on the shaft midpoint (anchor.x + SHAFT/2)
+    expect(hitArea.getAttribute('cy')).toBe(String(expectedY));
 
     fireEvent.pointerDown(hitArea);
 
@@ -34,7 +35,7 @@ describe('ConnectionAnchors', () => {
       elementId: 'selected-element',
       x: expectedX,
       y: expectedY,
-      anchorPoint: 'top-right',
+      anchorPoint: 'right',
     });
   });
 });
