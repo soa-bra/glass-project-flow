@@ -20,8 +20,10 @@ import VisualConnector from '@/features/planning/elements/diagram/VisualConnecto
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
+import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
+
 
 export const isInteractiveCanvasTarget = (target: HTMLElement): boolean => {
   return Boolean(
