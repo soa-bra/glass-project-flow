@@ -774,6 +774,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
             selectedElementIds={selectedElementIds}
             hoveredElementId={hoveredConnectableElementId}
             showAnchors={canEdit && activeTool === 'selection_tool' && (selectedElementIds.length > 0 || hoveredConnectableElementId !== null)}
+            onInsertComponent={handleInsertNextStepSuggestion}
           />
 
         </svg>
