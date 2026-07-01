@@ -333,7 +333,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
 
     // ✅ توحيد multi-select عبر selectionCoordinator (يعالج toggle + add)
     if (multiSelect) {
-      const { selectionCoordinator } = require('@/engine/canvas/interaction/selectionCoordinator');
       selectionCoordinator.handleElementSelect(element.id, isSelected, {
         shift: e.shiftKey || touchMulti,
         ctrl: e.ctrlKey,
@@ -341,6 +340,7 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       });
       return;
     }
+
 
     // ✅ إذا كان العنصر محدد بالفعل (بدون multi-select) — BoundingBox يتولى السحب، لا نبدأ drag هنا
     if (isSelected) {
