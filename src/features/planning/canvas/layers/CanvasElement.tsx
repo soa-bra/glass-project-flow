@@ -326,30 +326,24 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     const clientX = e.clientX;
     const clientY = e.clientY;
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey;
-    const beginEditableInteraction = async () => {
-      const granted = await ensureEditLock();
-      if (!granted) return;
 
-      if (isSelected) {
-        if (multiSelect) {
-          const currentSelection = useCanvasStore.getState().selectedElementIds;
-          const newSelection = currentSelection.filter((id) => id !== element.id);
-          useCanvasStore.getState().selectElements(newSelection);
-          return;
-        }
+    if (isSelected && multiSelect) {
+      const currentSelection = useCanvasStore.getState().selectedElementIds;
+      const newSelection = currentSelection.filter((id) => id !== element.id);
+      useCanvasStore.getState().selectElements(newSelection);
+      return;
+    }
 
-        if (!isEditingThisText) {
-          startDrag(clientX, clientY);
-        }
-        return;
-      }
-
+    if (!isSelected) {
       onSelect(multiSelect);
-      if (isEditingThisText) return;
-      startDrag(clientX, clientY);
-    };
+    }
 
-    void beginEditableInteraction();
+    if (isEditingThisText) return;
+
+    void ensureEditLock().then((granted) => {
+      if (!granted) return;
+      startDrag(clientX, clientY);
+    });
   }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
