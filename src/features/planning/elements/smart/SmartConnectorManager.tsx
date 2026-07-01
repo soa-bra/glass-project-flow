@@ -568,14 +568,19 @@ export const SmartConnectorManager: React.FC<SmartConnectorManagerProps> = ({
             UNIFIED_RELATIONSHIP_TYPES[0],
           );
         } else if (canEditBoard) {
-          // 💡 إفلات في فراغ → افتح لوحة اقتراحات الخطوة التالية
-          setNextStepPanel({
-            sourceElementId: dragStartPoint.elementId,
-            canvasX: p.x,
-            canvasY: p.y,
-            clientX: e.clientX,
-            clientY: e.clientY,
-          });
+          // 💡 لا تفتح لوحة الخطوة التالية إلا:
+          //   - إذا لم يوجد target تحت المؤشر (تأكيد إضافي)
+          //   - إذا تجاوزت مسافة السحب 8px (تفادي فتحها من نقرة عابرة على الأنكر)
+          const dragDist = Math.hypot(p.x - dragStartPoint.x, p.y - dragStartPoint.y);
+          if (dragDist >= 8) {
+            setNextStepPanel({
+              sourceElementId: dragStartPoint.elementId,
+              canvasX: p.x,
+              canvasY: p.y,
+              clientX: e.clientX,
+              clientY: e.clientY,
+            });
+          }
         }
       }
       setDragStartPoint(null);
