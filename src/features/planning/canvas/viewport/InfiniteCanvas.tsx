@@ -405,7 +405,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
   }, []);
 
   const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
+      const pointerType = e.pointerType || 'mouse';
       if (e.button === 1 || (e.button === 0 && e.altKey)) {
         beginPanning(e.clientX, e.clientY);
         if (containerRef.current) {
@@ -418,7 +419,15 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       const target = selectionCoordinator.identifyTarget(e.target as HTMLElement);
 
       if (e.button === 0 && activeTool === 'selection_tool' && target.type === 'canvas') {
-        beginBoxSelection(e.clientX, e.clientY, e.shiftKey);
+        // ✅ لا نبدأ boxSelect فوراً — نخزّن حالة معلّقة حتى يتجاوز المؤشر عتبة السحب
+        const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
+        pendingBoxSelectRef.current = {
+          clientX: e.clientX,
+          clientY: e.clientY,
+          additive: e.shiftKey || e.ctrlKey || e.metaKey || touchMulti,
+          pointerType,
+          started: false,
+        };
         return;
       }
 
@@ -449,7 +458,7 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
           activeTool === 'smart_doc_tool'
         )
       ) {
-        handleCanvasMouseDown(e);
+        handleCanvasMouseDown(e as unknown as React.MouseEvent);
         return;
       }
 
@@ -457,18 +466,41 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
         clearSelection();
       }
     },
-    [activeTool, beginBoxSelection, beginPanning, canEdit, clearSelection, handleCanvasMouseDown],
+    [activeTool, beginPanning, canEdit, clearSelection, handleCanvasMouseDown],
   );
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.PointerEvent) => {
+      const pointerType = e.pointerType || 'mouse';
       const pointer = updatePointerFromClient(e.clientX, e.clientY);
       if (pointer) {
         broadcastCursor?.(pointer.x, pointer.y);
-        if (canEdit && activeTool === 'selection_tool') {
-          setHoveredConnectableElementId(findHoveredConnectableElement(pointer.x, pointer.y)?.id ?? null);
+        // ✅ hover فقط للماوس، ومع throttle عبر rAF + مقارنة قيمة
+        if (pointerType === 'mouse' && canEdit && activeTool === 'selection_tool') {
+          if (hoverRafRef.current === null) {
+            hoverRafRef.current = requestAnimationFrame(() => {
+              hoverRafRef.current = null;
+              const next = findHoveredConnectableElement(pointer.x, pointer.y)?.id ?? null;
+              setHoveredConnectableElementId((prev) => (prev === next ? prev : next));
+            });
+          }
         } else if (hoveredConnectableElementId) {
           setHoveredConnectableElementId(null);
+        }
+      }
+
+      // ✅ ترقية Pending Marquee إلى Box Select بعد تجاوز عتبة السحب (ماوس=6px, لمس/قلم=10px)
+      const pending = pendingBoxSelectRef.current;
+      if (pending && !pending.started) {
+        const dx = e.clientX - pending.clientX;
+        const dy = e.clientY - pending.clientY;
+        const threshold = pending.pointerType === 'mouse' ? 6 : 10;
+        if (Math.hypot(dx, dy) >= threshold) {
+          pending.started = true;
+          if (!pending.additive) {
+            clearSelection();
+          }
+          beginBoxSelection(pending.clientX, pending.clientY, pending.additive);
         }
       }
 
@@ -487,11 +519,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
       }
 
       if (canEdit) {
-        handleCanvasMouseMove(e);
+        handleCanvasMouseMove(e as unknown as React.MouseEvent);
       }
     },
-    [activeTool, broadcastCursor, boxSelectData, canEdit, findHoveredConnectableElement, handleCanvasMouseMove, hoveredConnectableElementId, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
+    [activeTool, beginBoxSelection, broadcastCursor, boxSelectData, canEdit, clearSelection, findHoveredConnectableElement, handleCanvasMouseMove, hoveredConnectableElementId, isMode, mindMapConnectionRef, panBy, updateBoxSelectionFromClient, updateConnectionPosition, updatePan, updatePointerFromClient],
   );
+
 
   const handleMouseUp = useCallback(() => {
     setHoveredConnectableElementId(null);
