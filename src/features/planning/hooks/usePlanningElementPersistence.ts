@@ -8,7 +8,8 @@ import { useInteractionStore } from "@/stores/interactionStore";
 import type { CanvasElement } from "@/types/canvas";
 import type { Database, Json } from "@/integrations/supabase/types";
 
-const SAVE_DEBOUNCE_MS = 700;
+const SAVE_DEBOUNCE_MS = 1200;
+const SIGNATURE_THROTTLE_MS = 200;
 type SmartDocInsert = Database["public"]["Tables"]["smart_docs"]["Insert"];
 type DataLinkInsert = Database["public"]["Tables"]["data_links"]["Insert"];
 type AuditEventInsert = Database["public"]["Tables"]["audit_events"]["Insert"];
