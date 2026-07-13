@@ -1,70 +1,37 @@
+# Fix: Approved guests land on 404
 
-# خطة الإصلاح — أداة التحديد + الأنكر + لوحة الخطوة التالية
+## Confirmed issue
+After a join request is approved, `src/pages/JoinBoardPage.tsx` navigates to `/board/${board_id}?guest=true&session=...&role=...`. No such route exists in `src/App.tsx`, so guests hit `NotFound`. Additionally, `/` is wrapped in `ProtectedRoute`, so even redirecting there would bounce unauthenticated guests to `/auth`. Boards today are opened purely via in-memory state (`planningStore.setCurrentBoard`) — there is no deep-link entry point for any user.
 
-## 1) مراجعة كاملة لأداة التحديد (بلا تعارض مع الأقفال والأنكرات)
+## Proposed fix (bounded)
 
-الهدف: التأكد أن الاختيار لا يستدعي منطق القفل ولا يتضارب مع أنكرات SmartConnector.
-
-- **Single click** على عنصر ذكي/عادي: يحدّد فقط. لا يستدعي `ensureEditLock` ولا يبدأ سحبًا. القفل يُطلب فقط بعد تجاوز عتبة السحب (4px مؤشر / 10px لمس).
-- **Shift/Ctrl/Meta + click**: يمر عبر `selectionCoordinator` فقط، لا يبدأ drag ولا lock.
-- **Marquee (سحب على فراغ)**: يعمل بعد عتبة 6px، ولا يمسح التحديد قبل تجاوز العتبة.
-- **Long-press باللمس**: يُفعّل `touchMultiSelectMode` — النقرات التالية = shift-click. تمرير واحد إصبع = marquee بعد عتبة اللمس.
-- **النقر على أنكر SmartConnector**: يجب أن يوقف انتشار الحدث قبل وصول `CanvasElement.onPointerDown` (يستخدم `event.stopPropagation()` بالفعل، لكن سنضيف `data-anchor-hit` للحماية من selectionCoordinator).
-- **العنصر المقفل من متعاون آخر**: النقرة تحدد فقط للقراءة (بدون toast متكرر)، ولا تفتح تحرير.
-- **Escape**: يلغي marquee/drag/anchor-drag ويعيد `interactionStore` إلى idle.
-
-الملفات المتأثرة:
-- `src/features/planning/canvas/layers/CanvasElement.tsx` — تأجيل `ensureEditLock` نهائيًا لبدء drag فعلي، والتأكد من تجاهل النقر إذا انطلق من عنصر يحمل `data-anchor-hit`.
-- `src/engine/canvas/interaction/selectionCoordinator.ts` — التأكد من أن shift/ctrl لا يُشغّل drag.
-- `src/features/planning/canvas/viewport/InfiniteCanvas.tsx` — عدم استدعاء `clearSelection` قبل عتبة marquee (كما هو، مع مراجعة سريعة).
-
-## 2) لوحة اقتراحات الخطوة التالية — تعمل فقط عند الإفلات في فراغ
-
-`SmartConnectorManager.onUp` حاليًا:
+### 1. Add a guest-accessible board route
+In `src/App.tsx`, add:
 ```
-if (target) → handleCreateConnector(...)
-else if (canEditBoard) → setNextStepPanel(...)
+<Route path="/board/:boardId" element={<BoardPage />} />
 ```
-هذا صحيح مبدئيًا. سنضيف حواجز إضافية لضمان عدم التعارض مع التوصيل:
-- **عدم فتح اللوحة** إذا كان `hoveredElementId` موجودًا لحظة الإفلات (target موجود).
-- **عدم فتح اللوحة** إذا كانت مسافة السحب < 8px (نقرة عابرة على الأنكر).
-- **صندوق "كتابة أمر"**: يُرسل payload بـ `preset='framed_workflow'` و`smartType='frame'` (موجود). سنتأكد أن `onInsertComponent` في `PlanningCanvas` يتعامل مع هذا الـ preset ويُنشئ **فريمًا واحدًا يحتوي عناصر متعدّدة** عبر استدعاء `useSmartElementAI.generateElements({ prompt, wrapInFrame: true, sourceElementId })`، ثم يستدعي `handleCreateConnector` لربط المصدر بأول عنصر داخل الفريم.
-- **عدم التعارض مع التوصيل**: اللوحة تُفتح فقط بعد `onUp` وليس أثناء السحب، لذا لا تتقاطع مع snap على العناصر.
+outside `ProtectedRoute` (guests are unauthenticated). Access control is enforced by the existing invite/RLS layer.
 
-## 3) إعادة تصميم أنكر الجذر (RootConnector)
+### 2. Create `src/pages/BoardPage.tsx`
+Responsibilities:
+- Read `:boardId` and query params `guest`, `session`, `role`.
+- Fetch the board row from Supabase by id (already RLS-protected — approved guests receive access via `board_join_requests` policy; verify policy allows read for the granted session or fall back to a `get_board_for_guest(session_id)` RPC if RLS blocks anonymous reads).
+- On success: hydrate `planningStore.setCurrentBoard(board)` and render the existing planning canvas shell (same component `MainContent` uses when a board is active — extract or reuse `PlanningWorkspace`/`CanvasBoardView`).
+- Pass `guestSession`/`role` down so `CanvasToolbar`, presence, and edit-lock hooks treat the user as a guest with the granted role (read-only vs editor).
+- On failure (no access / bad id): show a friendly "لا تملك صلاحية الوصول" state with link back to `/`.
 
-**الموقع الجديد** (نمط Miro، ثابت لكل عنصر):
-- محاذاة يمين العنصر بالضبط: `x = bounds.x + bounds.width + 12`
-- على ارتفاع 1/4 من الأعلى (= 3/4 من الأسفل): `y = bounds.y + bounds.height * 0.25`
+### 3. Verify RLS for anonymous guest reads
+Confirm `canvas_boards` (or equivalent) SELECT policy allows a row when a matching approved `board_join_requests.requester_session_id` exists. If not, add a SECURITY DEFINER RPC `get_board_by_guest_session(board_id, session_id)` and call it from `BoardPage`.
 
-**الشكل الجديد**:
-- **بلا دائرة حاوية**. سهم فقط.
-- سهم رفيع متجه لليمين (→) مرسوم بـ `path` مع stroke بلون AI gradient (`linearGradient` من `#3DBE8B` إلى `#3DA8F5`).
-- عند hover: تكبير 1.25x + توهج ناعم (glow filter) بلون AI.
-- منطقة hit شفافة (18px radius) حول السهم لسهولة الاستهداف.
+### 4. Preserve authenticated flow
+Signed-in users navigating to `/board/:id` should also work: same page, skip guest params, use normal RLS read.
 
-**تزامن حركة الأنكر مع العنصر (إصلاح التأخر)**:
-حاليًا `ConnectionAnchors` تُرسم داخل `SmartConnectorManager` باستخدام `elements` prop، الذي يُحدَّث من `canvasStore.elements`. أثناء drag العناصر تستخدم transform مؤقتًا (interactionStore.dragOffset) لتقليل عدد الـcommits، فتتأخر الأنكرات.
-الحل: 
-- في `SmartConnectorManager` نقرأ `interactionStore` مباشرة (`useInteractionStore(s => s.dragOffset, s.draggingIds)`) ونضيف الإزاحة إلى `bounds` عند حساب موقع الأنكر لكل عنصر يجري سحبه (نفس ما يفعله renderer العنصر).
-- بديل احتياطي: نقلها ليتم رندرها كأبناء لطبقة العنصر مباشرة داخل `CanvasElement` بحيث تشترك في نفس transform.
-- سنعتمد الحل الأول لأنه لا يغيّر شجرة SVG ويحافظ على `svgGroupRef` لحسابات clientToCanvas.
+## Files touched
+- `src/App.tsx` — add route
+- `src/pages/BoardPage.tsx` — new
+- possibly `supabase/migrations/*` — new RPC if RLS insufficient
+- optional small prop on canvas shell for `guestRole`
 
-## 4) التغييرات التقنية الموجزة
-
-| ملف | التغيير |
-|---|---|
-| `src/features/planning/elements/smart/RootConnector.tsx` | إعادة رسم `ConnectionAnchors`: y = 0.25 من الأعلى على يمين العنصر، سهم بلا دائرة، gradient AI، اتجاه ←، glow عند hover |
-| `src/features/planning/elements/smart/SmartConnectorManager.tsx` | قراءة `dragOffset/draggingIds` من `interactionStore` وتطبيقها على `bounds` قبل تمريرها لـ`ConnectionAnchors` وقبل `resolvePoint`. إضافة عتبة 8px قبل فتح `nextStepPanel`، والتأكد من عدم فتحها عند وجود hovered target |
-| `src/features/planning/canvas/layers/CanvasElement.tsx` | تجاهل onPointerDown القادم من عنصر بـ`data-anchor-hit`، وتأكيد أن lock/drag يبدآن فقط بعد عتبة الحركة |
-| `src/features/planning/ui/PlanningCanvas.tsx` | معالجة `preset='framed_workflow'` في `onInsertComponent`: توليد فريم + عناصر داخله عبر `useSmartElementAI`، ثم توصيل المصدر بأول عنصر |
-| `src/features/planning/elements/smart/RootConnector.test.ts` (وملف الاختبار المرافق) | تحديث القيم المتوقعة لموقع الأنكر (top-right at 25% height) |
-
-## 5) الاختبار
-- Unit: تحديث `RootConnector.test` لموقع الأنكر الجديد.
-- يدوي: 
-  1. سحب عنصر → مراقبة أن الأنكر يتحرك متزامنًا 60fps بلا تأخر.
-  2. سحب من الأنكر وإفلات على عنصر آخر → يُنشئ موصلًا فقط.
-  3. سحب من الأنكر وإفلات في فراغ → تظهر لوحة الخطوة التالية.
-  4. كتابة أمر مخصص → يُنشأ فريم يحوي عدة عناصر + موصل من المصدر.
-  5. Shift+Click على 5 عناصر ذكية متتالية → لا رعشة، لا فقدان تحديد.
+## Out of scope
+- Redesigning how authenticated users open boards
+- Changing invite/approval flow itself
