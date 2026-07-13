@@ -11,7 +11,7 @@ import {
   FolderPlus,
   X,
   Check,
-  MousePointerSquare,
+  MousePointer as MousePointerSquare,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePlanningStore } from '@/stores/planningStore';
