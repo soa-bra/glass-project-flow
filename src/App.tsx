@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import JoinBoardPage from "./pages/JoinBoardPage";
+import BoardPage from "./pages/BoardPage";
 import AuthPage from "./pages/AuthPage";
 import DepartmentRoutePage from "./pages/DepartmentRoutePage";
 import SpecPreviewPage from "./pages/SpecPreviewPage";
@@ -38,6 +39,7 @@ function App() {
               <Routes>
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/join/:token" element={<JoinBoardPage />} />
+                <Route path="/board/:boardId" element={<BoardPage />} />
                 <Route
                   path="/"
                   element={
