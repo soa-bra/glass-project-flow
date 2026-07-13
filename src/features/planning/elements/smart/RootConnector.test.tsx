@@ -21,9 +21,9 @@ describe('ConnectionAnchors', () => {
     expect(anchorGroup).toHaveAttribute('data-anchor-position', 'right');
     expect(anchorGroup).toHaveAttribute('data-anchor-hit', 'true');
 
-    // GAP = 8 (single selection-handle width), y = bounds.y + height/6
-    const expectedX = 120 + 240 + 8; // 368
-    const expectedY = 80 + 160 / 6;  // ≈ 106.666...
+    // GAP = handle diameter (8) + half triangle (8) = 16; y = bounds.y + height/6
+    const expectedX = 120 + 240 + 16; // 376
+    const expectedY = 80 + 160 / 6;   // ≈ 106.666...
 
     const hitArea = anchorGroup.querySelector('.connection-anchor-hit') as SVGCircleElement;
     const arrow = anchorGroup.querySelector('[data-anchor-hit="true"] .connection-anchor-arrow') as SVGPathElement;
