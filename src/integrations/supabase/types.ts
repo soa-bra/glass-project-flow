@@ -188,6 +188,7 @@ export type Database = {
           granted_role: string | null
           id: string
           invite_link_id: string
+          invite_token: string | null
           processed_at: string | null
           processed_by: string | null
           requester_name: string
@@ -200,6 +201,7 @@ export type Database = {
           granted_role?: string | null
           id?: string
           invite_link_id: string
+          invite_token?: string | null
           processed_at?: string | null
           processed_by?: string | null
           requester_name: string
@@ -212,6 +214,7 @@ export type Database = {
           granted_role?: string | null
           id?: string
           invite_link_id?: string
+          invite_token?: string | null
           processed_at?: string | null
           processed_by?: string | null
           requester_name?: string
