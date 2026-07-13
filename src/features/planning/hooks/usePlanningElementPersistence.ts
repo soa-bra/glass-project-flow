@@ -4,6 +4,7 @@ import { PlanningBoardsService } from "@/services/central";
 import { usePlanningStore } from "@/features/planning/state/store";
 import { canvasToPlanningInsert } from "@/features/planning/state/planningElementMapper";
 import { isPlanningElementId } from "@/features/planning/state/createPlanningElementId";
+import { useInteractionStore } from "@/stores/interactionStore";
 import type { CanvasElement } from "@/types/canvas";
 import type { Database, Json } from "@/integrations/supabase/types";
 
@@ -26,24 +27,59 @@ export type PlanningElementPersistenceState = {
   lastPersistedAt: Date | null;
 };
 
+function stableSingleElementSignature(element: CanvasElement): string {
+  return JSON.stringify({
+    id: element.id,
+    type: element.type,
+    position: element.position,
+    size: element.size,
+    rotation: element.rotation,
+    layer: element.layer,
+    layerId: element.layerId,
+    data: element.data,
+    content: element.content,
+    style: element.style,
+    metadata: element.metadata,
+  });
+}
+
 function stableElementSignature(elements: CanvasElement[]): string {
   return JSON.stringify(
     elements
       .filter((element) => isPlanningElementId(element.id))
-      .map((element) => ({
-        id: element.id,
-        type: element.type,
-        position: element.position,
-        size: element.size,
-        rotation: element.rotation,
-        layer: element.layer,
-        layerId: element.layerId,
-        data: element.data,
-        content: element.content,
-        style: element.style,
-        metadata: element.metadata,
-      }))
+      .map((element) => ({ id: element.id, signature: stableSingleElementSignature(element) }))
       .sort((a, b) => a.id.localeCompare(b.id)),
+  );
+}
+
+function stableElementSignatureMap(elements: CanvasElement[]): Map<string, string> {
+  return new Map(
+    elements
+      .filter((element) => isPlanningElementId(element.id))
+      .map((element) => [element.id, stableSingleElementSignature(element)]),
+  );
+}
+
+function getSmartDocElementSignature(element: CanvasElement): string | null {
+  const smartType = element.data?.smartType ?? element.metadata?.smartType;
+  if (smartType !== "interactive_sheet" && smartType !== "smart_text_doc") return null;
+
+  return JSON.stringify({
+    id: element.id,
+    smartType,
+    title: element.data?.title,
+    data: element.data,
+    sourceElementIds: readSmartDocSourceElementIds(element),
+    metadataSourceElementIds: asPlainRecord(element.metadata).sourceElementIds,
+  });
+}
+
+function stableSmartDocSignature(elements: CanvasElement[]): string {
+  return JSON.stringify(
+    elements
+      .map(getSmartDocElementSignature)
+      .filter((signature): signature is string => Boolean(signature))
+      .sort(),
   );
 }
 
@@ -197,6 +233,8 @@ export function usePlanningElementPersistence(
 ): PlanningElementPersistenceState {
   const userIdRef = useRef<string | null>(null);
   const lastPersistedSignatureRef = useRef<string>("");
+  const lastElementSignaturesRef = useRef<Map<string, string>>(new Map());
+  const lastSmartDocSignatureRef = useRef<string>("");
   const lastElementIdsRef = useRef<Set<string>>(new Set());
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [persistenceState, setPersistenceState] = useState<PlanningElementPersistenceState>({
@@ -233,6 +271,8 @@ export function usePlanningElementPersistence(
 
     const initialElements = usePlanningStore.getState().elements;
     lastPersistedSignatureRef.current = stableElementSignature(initialElements);
+    lastElementSignaturesRef.current = stableElementSignatureMap(initialElements);
+    lastSmartDocSignatureRef.current = stableSmartDocSignature(initialElements);
     lastElementIdsRef.current = new Set(
       initialElements.filter((element) => isPlanningElementId(element.id)).map((element) => element.id),
     );
@@ -256,6 +296,13 @@ export function usePlanningElementPersistence(
 
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(async () => {
+        if (useInteractionStore.getState().localMutatingElementIds.length > 0) {
+          saveTimerRef.current = setTimeout(() => {
+            usePlanningStore.setState((current) => ({ elements: current.elements }));
+          }, SAVE_DEBOUNCE_MS);
+          return;
+        }
+
         const userId = userIdRef.current;
         if (!userId) {
           setPersistenceState((current) => ({
@@ -274,18 +321,55 @@ export function usePlanningElementPersistence(
 
         const currentElements = usePlanningStore.getState().elements;
         const currentPersistable = currentElements.filter((element) => isPlanningElementId(element.id));
+        const currentSignatureMap = stableElementSignatureMap(currentPersistable);
+        const changedPersistable = currentPersistable.filter(
+          (element) => lastElementSignaturesRef.current.get(element.id) !== currentSignatureMap.get(element.id),
+        );
         const currentIds = new Set(currentPersistable.map((element) => element.id));
         const deletedIds = [...lastElementIdsRef.current].filter((id) => !currentIds.has(id));
+        const nextSmartDocSignature = stableSmartDocSignature(currentPersistable);
+        const smartDocsChanged = nextSmartDocSignature !== lastSmartDocSignatureRef.current;
+
+        if (changedPersistable.length === 0 && deletedIds.length === 0 && !smartDocsChanged) {
+          lastPersistedSignatureRef.current = stableElementSignature(currentElements);
+          setPersistenceState({
+            status: "saved",
+            error: null,
+            lastPersistedAt: new Date(),
+          });
+          return;
+        }
 
         try {
           await persistDeletedElements(deletedIds);
-          await PlanningBoardsService.upsertPlanningElements(
-            currentPersistable.map((element) => canvasToPlanningInsert(element, boardId, userId)),
+          const savedRows = await PlanningBoardsService.upsertPlanningElements(
+            changedPersistable.map((element) => canvasToPlanningInsert(element, boardId, userId)),
           );
-          await upsertSmartDocsForElements(boardId, userId, currentPersistable);
+          if (smartDocsChanged) {
+            await upsertSmartDocsForElements(boardId, userId, currentPersistable);
+          }
+
+          if (savedRows.length > 0) {
+            const savedMeta = new Map(savedRows.map((row) => [row.id, row]));
+            usePlanningStore.setState((state) => ({
+              elements: state.elements.map((element) => {
+                const row = savedMeta.get(element.id);
+                if (!row) return element;
+                return {
+                  ...element,
+                  locked: false,
+                  lockedBy: row.locked_by ?? null,
+                  lockedAt: row.locked_at ?? null,
+                  updatedAt: row.updated_at,
+                } as CanvasElement;
+              }),
+            }));
+          }
 
           lastElementIdsRef.current = currentIds;
+          lastElementSignaturesRef.current = currentSignatureMap;
           lastPersistedSignatureRef.current = stableElementSignature(currentElements);
+          lastSmartDocSignatureRef.current = nextSmartDocSignature;
           setPersistenceState({
             status: "saved",
             error: null,
