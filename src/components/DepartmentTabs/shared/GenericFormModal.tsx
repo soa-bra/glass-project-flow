@@ -31,7 +31,7 @@ interface GenericFormModalProps {
 }
 
 export const GenericFormModal: React.FC<GenericFormModalProps> = ({
-  isOpen, onClose, title, fields, onSubmit, submitLabel = 'حفظ', successMessage = 'تم الحفظ بنجاح'
+  isOpen, onClose, title, fields, onSubmit, submitLabel = 'حفظ'
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {};
