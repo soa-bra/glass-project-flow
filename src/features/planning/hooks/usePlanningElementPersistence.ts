@@ -284,8 +284,14 @@ export function usePlanningElementPersistence(
       usePlanningStore.getState().acknowledgeDeletedElements(deletedIds);
     };
 
-    const unsubscribe = usePlanningStore.subscribe((state) => {
-      const elements = state.elements;
+    let lastSignatureCheckAt = 0;
+    let throttleTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastSelectionKey = usePlanningStore.getState().selectedElementIds.join(",");
+
+    const evaluateAndSchedule = () => {
+      throttleTimer = null;
+      lastSignatureCheckAt = Date.now();
+      const elements = usePlanningStore.getState().elements;
       const signature = stableElementSignature(elements);
       if (signature === lastPersistedSignatureRef.current) return;
 
@@ -296,7 +302,10 @@ export function usePlanningElementPersistence(
       }));
 
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = setTimeout(async () => {
+      saveTimerRef.current = setTimeout(runSave, SAVE_DEBOUNCE_MS);
+    };
+
+    const runSave = async () => {
         if (useInteractionStore.getState().localMutatingElementIds.length > 0) {
           saveTimerRef.current = setTimeout(() => {
             usePlanningStore.setState((current) => ({ elements: current.elements }));
