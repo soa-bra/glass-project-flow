@@ -342,9 +342,9 @@ export function usePlanningElementPersistence(
 
         try {
           await persistDeletedElements(deletedIds);
-          const savedRows = await PlanningBoardsService.upsertPlanningElements(
+          const savedRows = (await PlanningBoardsService.upsertPlanningElements(
             changedPersistable.map((element) => canvasToPlanningInsert(element, boardId, userId)),
-          );
+          )) ?? [];
           if (smartDocsChanged) {
             await upsertSmartDocsForElements(boardId, userId, currentPersistable);
           }
