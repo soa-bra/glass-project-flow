@@ -113,6 +113,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
 
   const activePointerIdRef = useRef<number | null>(null);
   const capturedPointerTargetRef = useRef<Element | null>(null);
+  const locallyMutatingIdsRef = useRef<string[]>([]);
   const dragAreaRef = useRef<HTMLDivElement>(null);
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
@@ -221,7 +222,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     }
     
     setDraggedElements([]);
-    endLocalElementMutation(expandedSelectedIds);
+    endLocalElementMutation(locallyMutatingIdsRef.current);
+    locallyMutatingIdsRef.current = [];
     setHoveredFrame(null);
     setIsDragging(false);
     setIsResizing(null);
@@ -236,10 +238,18 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       return () => {
         window.removeEventListener('pointermove', handlePointerMove);
         window.removeEventListener('pointerup', handlePointerUp);
-        endLocalElementMutation(expandedSelectedIds);
       };
     }
-  }, [isDragging, isResizing, handlePointerMove, handlePointerUp, endLocalElementMutation, expandedSelectedIds]);
+  }, [isDragging, isResizing, handlePointerMove, handlePointerUp]);
+
+  useEffect(() => {
+    return () => {
+      if (locallyMutatingIdsRef.current.length > 0) {
+        endLocalElementMutation(locallyMutatingIdsRef.current);
+        locallyMutatingIdsRef.current = [];
+      }
+    };
+  }, [endLocalElementMutation]);
   
   const handleDragStart = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
@@ -252,6 +262,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       activePointerIdRef.current = e.pointerId;
     }
     beginLocalElementMutation(expandedSelectedIds);
+    locallyMutatingIdsRef.current = expandedSelectedIds;
     setDraggedElements(expandedSelectedIds);
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
@@ -269,6 +280,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       activePointerIdRef.current = e.pointerId;
     }
     beginLocalElementMutation(expandedSelectedIds);
+    locallyMutatingIdsRef.current = expandedSelectedIds;
     setIsResizing(corner);
     dragStart.current = { x: e.clientX, y: e.clientY };
   }, [beginLocalElementMutation, expandedSelectedIds]);
