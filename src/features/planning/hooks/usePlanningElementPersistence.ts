@@ -8,7 +8,8 @@ import { useInteractionStore } from "@/stores/interactionStore";
 import type { CanvasElement } from "@/types/canvas";
 import type { Database, Json } from "@/integrations/supabase/types";
 
-const SAVE_DEBOUNCE_MS = 700;
+const SAVE_DEBOUNCE_MS = 1200;
+const SIGNATURE_THROTTLE_MS = 200;
 type SmartDocInsert = Database["public"]["Tables"]["smart_docs"]["Insert"];
 type DataLinkInsert = Database["public"]["Tables"]["data_links"]["Insert"];
 type AuditEventInsert = Database["public"]["Tables"]["audit_events"]["Insert"];
@@ -283,8 +284,14 @@ export function usePlanningElementPersistence(
       usePlanningStore.getState().acknowledgeDeletedElements(deletedIds);
     };
 
-    const unsubscribe = usePlanningStore.subscribe((state) => {
-      const elements = state.elements;
+    let lastSignatureCheckAt = 0;
+    let throttleTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastSelectionKey = usePlanningStore.getState().selectedElementIds.join(",");
+
+    const evaluateAndSchedule = () => {
+      throttleTimer = null;
+      lastSignatureCheckAt = Date.now();
+      const elements = usePlanningStore.getState().elements;
       const signature = stableElementSignature(elements);
       if (signature === lastPersistedSignatureRef.current) return;
 
@@ -295,7 +302,10 @@ export function usePlanningElementPersistence(
       }));
 
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-      saveTimerRef.current = setTimeout(async () => {
+      saveTimerRef.current = setTimeout(runSave, SAVE_DEBOUNCE_MS);
+    };
+
+    const runSave = async () => {
         if (useInteractionStore.getState().localMutatingElementIds.length > 0) {
           saveTimerRef.current = setTimeout(() => {
             usePlanningStore.setState((current) => ({ elements: current.elements }));
@@ -383,7 +393,24 @@ export function usePlanningElementPersistence(
             error: getErrorMessage(error),
           }));
         }
-      }, SAVE_DEBOUNCE_MS);
+    };
+
+    const unsubscribe = usePlanningStore.subscribe((state) => {
+      // Skip if only selection changed — selection state doesn't affect persistence.
+      const selectionKey = state.selectedElementIds.join(",");
+      const selectionOnlyChanged = selectionKey !== lastSelectionKey;
+      lastSelectionKey = selectionKey;
+      if (selectionOnlyChanged) {
+        const sig = stableElementSignature(state.elements);
+        if (sig === lastPersistedSignatureRef.current) return;
+      }
+
+      // Throttle signature evaluation to reduce work under rapid store updates
+      // (e.g., realtime bursts, smart element re-renders).
+      if (throttleTimer) return;
+      const elapsed = Date.now() - lastSignatureCheckAt;
+      const wait = Math.max(0, SIGNATURE_THROTTLE_MS - elapsed);
+      throttleTimer = setTimeout(evaluateAndSchedule, wait);
     });
 
     return () => {
@@ -391,6 +418,10 @@ export function usePlanningElementPersistence(
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
+      }
+      if (throttleTimer) {
+        clearTimeout(throttleTimer);
+        throttleTimer = null;
       }
 
       const currentPersistable = getPersistableElements();
