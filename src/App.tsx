@@ -39,6 +39,7 @@ function App() {
               <Routes>
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/join/:token" element={<JoinBoardPage />} />
+                <Route path="/board/:boardId" element={<BoardPage />} />
                 <Route
                   path="/"
                   element={
