@@ -105,21 +105,5 @@ const ActionCard = ({ icon, title, description, onClick, meta }: {
   </motion.button>
 );
 
-const CapabilityPill = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
-  <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-white px-3 py-2 text-[12px] font-semibold text-[hsl(var(--ink))]">
-    <span className="text-[hsl(var(--accent-green))]">{icon}</span>
-    {label}
-  </div>
-);
-
-const ReadinessCard = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
-  <div className="rounded-lg border border-[hsl(var(--border))] bg-white/80 p-4">
-    <div className="mb-2 flex items-center gap-2 text-[hsl(var(--ink))]">
-      <span className="text-[hsl(var(--accent-green))]">{icon}</span>
-      <h3 className="text-[13px] font-bold">{title}</h3>
-    </div>
-    <p className="text-[12px] leading-6 text-[hsl(var(--ink-60))]">{description}</p>
-  </div>
-);
 
 export default PlanningEntryScreen;
