@@ -130,11 +130,14 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
-  // مقبض التحديد ~8px، لذا حجم الأنكر = 2× = 16px، والمسافة بين
-  // صندوق التحديد والأنكر = عرض مقبض واحد = 8px.
+  // مقبض التحديد قطره ~8px، حجم الأنكر = 2× = 16px.
+  // المسافة المرئية بين صندوق التحديد وأقرب حافة للأنكر = قطر مقبض التحرير (8px).
+  // بما أن قاعدة المثلث متمركزة على نقطة الأنكر (تمتد يساراً بمقدار نصف حجمه)،
+  // فإن الإزاحة الفعلية للأنكر عن الصندوق = القطر + نصف حجم المثلث.
   const HANDLE_SIZE = 8;
-  const TRIANGLE_SIZE = HANDLE_SIZE * 2; // 16px – قاعدة المثلث وارتفاعه
-  const GAP = HANDLE_SIZE;                // 8px – مسافة بين الصندوق والأنكر
+  const TRIANGLE_SIZE = HANDLE_SIZE * 2; // 16px
+  const HANDLE_DIAMETER = HANDLE_SIZE;    // 8px قطر مقبض التحرير
+  const GAP = HANDLE_DIAMETER + TRIANGLE_SIZE / 2; // 16px إزاحة مركز الأنكر
   const HIT_RADIUS = 18;
   const [isHovered, setIsHovered] = useState(false);
 
