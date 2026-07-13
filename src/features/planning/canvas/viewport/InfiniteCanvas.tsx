@@ -737,21 +737,25 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
         {visibleElements
           .filter((element) => element.data?.smartType !== 'root_connector')
-          .map((element) => (
-          <CanvasElement
+          .map((element, index) => (
+          <div
             key={element.id}
-            element={element}
-            isSelected={selectedElementIds.includes(element.id)}
-            onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
-            snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
-            activeTool={activeTool}
-            requestElementLock={requestElementLock}
-            releaseElementLock={releaseElementLock}
-            onStartConnection={handleStartConnection}
-            onEndConnection={handleEndConnection}
-            isConnecting={mindMapConnectionUI.isConnecting}
-            nearestAnchor={mindMapConnectionUI.nearestAnchor}
-          />
+            style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, zIndex: index + 1, pointerEvents: 'none' }}
+          >
+            <CanvasElement
+              element={element}
+              isSelected={selectedElementIds.includes(element.id)}
+              onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
+              snapToGrid={settings.snapToGrid ? snapToGrid : undefined}
+              activeTool={activeTool}
+              requestElementLock={requestElementLock}
+              releaseElementLock={releaseElementLock}
+              onStartConnection={handleStartConnection}
+              onEndConnection={handleEndConnection}
+              isConnecting={mindMapConnectionUI.isConnecting}
+              nearestAnchor={mindMapConnectionUI.nearestAnchor}
+            />
+          </div>
         ))}
 
         <svg
