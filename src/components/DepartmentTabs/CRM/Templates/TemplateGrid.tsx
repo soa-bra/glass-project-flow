@@ -3,7 +3,6 @@ import React from 'react';
 import { DataCardFrame } from '@/components/shared/visual-data/DataCardFrame';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Eye, Download, Copy, Edit, Calendar, User } from 'lucide-react';
-import { toast } from 'sonner';
 import { downloadAsCSV } from '../../shared/downloadUtils';
 
 interface Template {
@@ -31,7 +30,6 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
   getCategoryColor
 }) => {
   const handlePreview = (template: Template) => {
-    toast.info(`معاينة: ${template.name}`, { description: template.description });
   };
 
   const handleDownload = (template: Template) => {
@@ -40,16 +38,13 @@ export const TemplateGrid: React.FC<TemplateGridProps> = ({
       [[template.id, template.name, template.category, template.description, String(template.usageCount), template.variables.map(v => v.name || v).join(', ')]],
       `قالب-${template.id}`
     );
-    toast.success(`تم تحميل القالب: ${template.name}`);
   };
 
   const handleCopy = (template: Template) => {
     navigator.clipboard.writeText(`قالب: ${template.name}\nالوصف: ${template.description}\nالمتغيرات: ${template.variables.map(v => v.name || v).join(', ')}`);
-    toast.success('تم نسخ بيانات القالب');
   };
 
   const handleEdit = (template: Template) => {
-    toast.info(`تعديل القالب: ${template.name}`, { description: 'سيتم فتح محرر القوالب قريباً' });
   };
 
   return (

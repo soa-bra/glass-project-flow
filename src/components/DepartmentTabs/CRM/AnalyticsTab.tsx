@@ -7,7 +7,6 @@ import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart
 import { ChartTooltipShell, CHART_CURSOR_STYLE } from '@/components/shared/visual-data';
 import { mockCRMAnalytics, mockNPS } from './data';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 export const AnalyticsTab: React.FC = () => {
   const [timeRange, setTimeRange] = useState('6months');
@@ -68,7 +67,6 @@ export const AnalyticsTab: React.FC = () => {
       salesPerformance.map(r => [r.month, String(r.target), String(r.actual)]),
       'تقرير-تحليلات-CRM'
     );
-    toast.success('تم تصدير التقرير');
   };
 
   return (
@@ -82,7 +80,7 @@ export const AnalyticsTab: React.FC = () => {
           <option value="1year">السنة</option>
         </select>
         <div className="flex gap-2">
-          <button onClick={() => toast.success('تم التحديث')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DADCE0] text-xs font-arabic hover:bg-[#d9e7ed]/50 transition-colors">
+          <button onClick={() => {}} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DADCE0] text-xs font-arabic hover:bg-[#d9e7ed]/50 transition-colors">
             <RefreshCw className="w-3.5 h-3.5" /> تحديث
           </button>
           <button onClick={handleExport} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0B0F12] text-white text-xs font-arabic hover:bg-[#0B0F12]/90 transition-colors">

@@ -8,7 +8,6 @@ import { FileText, Download, Eye, Copy, Plus, Search } from 'lucide-react';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 export const TemplatesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -36,18 +35,16 @@ export const TemplatesTab: React.FC = () => {
 
   const handleDownload = (template: { name: string; category: string; type: string }) => {
     downloadAsCSV(['الاسم', 'الفئة', 'النوع'], [[template.name, template.category, template.type]], `قالب-تسويق`);
-    toast.success(`تم تحميل: ${template.name}`);
   };
 
   const handlePreview = (name: string) => toast.info(`معاينة: ${name}`);
 
   const handleCopy = (template: { name: string; category: string; downloads: number; lastUpdated: string; status: string; type: string }) => {
     setPopularTemplates(prev => [{ ...template, name: `نسخة من ${template.name}`, downloads: 0 }, ...prev]);
-    toast.success('تم نسخ القالب');
   };
 
-  const handleAddTemplate = () => toast.success('تم فتح نموذج إضافة قالب جديد');
-  const handleFilter = () => toast.info('تم تطبيق الفلتر');
+  const handleAddTemplate = () => {};
+  const handleFilter = () => {};
 
   const filtered = searchTerm
     ? popularTemplates.filter(t => t.name.includes(searchTerm) || t.category.includes(searchTerm))
@@ -71,7 +68,7 @@ export const TemplatesTab: React.FC = () => {
         <AppDashboardGrid columns={12} minRowHeight="auto">
           {templateCategories.map((category, index) => (
             <AppGridItem key={index} colSpan={3} tabletSpan={3}>
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" onClick={() => toast.info(`فئة: ${category.name} - ${category.count} قالب`)}>
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-md transition-shadow cursor-pointer" onClick={() => {}}>
                 <div className="flex items-center justify-between mb-3"><category.icon className={`h-6 w-6 ${category.color}`} /><BaseBadge variant="default" size="sm">{category.count}</BaseBadge></div>
                 <h4 className="font-medium font-arabic text-sm">{category.name}</h4>
               </div>

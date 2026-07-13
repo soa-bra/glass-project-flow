@@ -9,7 +9,6 @@ import { getStatusText, formatCurrency, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 import type { License } from './types';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
@@ -78,7 +77,6 @@ export const LicensesTab: React.FC = () => {
       aggregateId: id,
       projectId: null,
     }).catch((error) => console.error('[LicensesTab] emitProjectEvent(renew) failed:', error));
-    toast.success('تم تجديد الترخيص بنجاح');
   };
 
   const handleDownload = (license: any) => {
@@ -87,7 +85,6 @@ export const LicensesTab: React.FC = () => {
       [[license.id, license.name, getStatusText(license.type), getStatusText(license.status), license.expiryDate, String(license.renewalCost)]],
       `ترخيص-${license.id}`
     );
-    toast.success('تم تنزيل بيانات الترخيص');
   };
 
   const getViewFields = (license: any): DetailField[] => [

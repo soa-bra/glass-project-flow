@@ -12,7 +12,6 @@ import { ClientInfoBox, getClientData } from './ClientInfoBox';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 import { useInvoices, useCreateInvoice, useUpdateInvoice } from '@/hooks/useInvoices';
 import { registerAIContextSource } from '@/features/ai/context/projectContextBuilder';
 import { LinkIndicator } from '@/components/shared/LinkIndicator';
@@ -145,7 +144,6 @@ export const InvoicesTab: React.FC = () => {
       [[invoice.id, invoice.client, invoice.projectName, String(invoice.totalAmount), String(invoice.paymentAmount), invoice.dueDate, getStatusText(invoice.status)]],
       `فاتورة-${invoice.id}`
     );
-    toast.success(`تم تنزيل الفاتورة ${invoice.id}`);
   };
 
   const getInvoiceStatusVariant = (status: string) => {
@@ -164,7 +162,6 @@ export const InvoicesTab: React.FC = () => {
   };
 
   const handleProjectClick = (projectName: string) => {
-    toast.info(`الانتقال إلى مشروع: ${projectName}`);
   };
 
   const editFields = editingInvoice ? createFields.map(f => ({

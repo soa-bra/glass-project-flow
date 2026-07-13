@@ -14,7 +14,6 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { mockCustomerService } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { toast } from 'sonner';
 
 // ─── Maps ───────────────────────────────────────────────────────
 const PRIORITY_MAP: Record<string, { label: string; color: string }> = {
@@ -102,7 +101,6 @@ export const ServiceTab: React.FC = () => {
   const handleStatusChange = (id: string, newStatus: string) => {
     setTickets(prev => prev.map(t => t.id === id ? { ...t, status: newStatus as any } : t));
     const label = STATUS_MAP[newStatus]?.label || newStatus;
-    toast.success(`تم تغيير الحالة إلى: ${label}`);
   };
 
   // ── Chart data ──

@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { mockContentAnalytics, mockKnowledgeDocuments } from './data/mockData';
 import { downloadAsJSON } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 export const AnalyticsImpactTab: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
@@ -56,7 +55,6 @@ export const AnalyticsImpactTab: React.FC = () => {
       analytics: { views: analytics.views, downloads: analytics.downloads, citations: analytics.citations, geography: analytics.geography },
     };
     downloadAsJSON(report, `تقرير-التحليلات-${selectedPeriod}`);
-    toast.success('تم تصدير التقرير بنجاح');
   };
 
   return (

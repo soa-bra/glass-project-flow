@@ -108,7 +108,7 @@ export const EmployeesTab: React.FC = () => {
         metadata: { department_label: data.department_label },
       },
       {
-        onSuccess: () => toast.success('تمت إضافة الموظف'),
+        onSuccess: () => {},
         onError: (e) => toast.error('فشل الإضافة: ' + (e as Error).message),
       },
     );
@@ -135,7 +135,6 @@ export const EmployeesTab: React.FC = () => {
       },
       {
         onSuccess: () => {
-          toast.success('تم تحديث البيانات');
           setEditingEmployee(null);
           if (selectedEmployee?.id === editingEmployee.id) setSelectedEmployee(null);
         },
@@ -148,7 +147,6 @@ export const EmployeesTab: React.FC = () => {
     if (!confirm('حذف هذا الموظف؟')) return;
     removeEmp.mutate(id, {
       onSuccess: () => {
-        toast.success('تم الحذف');
         if (selectedEmployee?.id === id) setSelectedEmployee(null);
       },
       onError: (e) => toast.error('فشل الحذف: ' + (e as Error).message),

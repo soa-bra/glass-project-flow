@@ -62,18 +62,15 @@ export const TemplatesTab: React.FC = () => {
     const newT: any = { id: `u-${Date.now()}`, name: uploadName, category: uploadCategory, description: uploadDesc || 'قالب مرفوع', createdBy: 'المستخدم الحالي', lastModified: new Date().toISOString(), usageCount: 0, isActive: true, variables: [], tags: ['مرفوع'] };
     setTemplates(prev => [newT, ...prev]);
     setShowUploadForm(false); setUploadName(''); setUploadDesc('');
-    toast.success('تم رفع القالب بنجاح');
   };
 
   const handleDownload = (t: any) => {
     downloadAsCSV(['الاسم', 'الفئة', 'الوصف', 'المنشئ', 'الاستخدام'], [[t.name, t.category, t.description, t.createdBy, String(t.usageCount)]], `قالب-${t.id}`);
-    toast.success(`تم تحميل: ${t.name}`);
   };
 
   const handleCopy = (t: any) => {
     const copy: any = { ...t, id: `c-${Date.now()}`, name: `نسخة من ${t.name}`, usageCount: 0, lastModified: new Date().toISOString() };
     setTemplates(prev => [copy, ...prev]);
-    toast.success('تم نسخ القالب');
   };
 
   const getViewFields = (t: any): DetailField[] => [

@@ -7,7 +7,6 @@ import { Plus, Search, Download, Eye, Calendar, Globe, Target } from 'lucide-rea
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 export const ReportsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,12 +46,10 @@ export const ReportsTab: React.FC = () => {
     const type = reportTypes.find(t => t.id === typeId);
     const newReport = { id: `rep-${Date.now().toString().slice(-4)}`, title: `${type?.label || 'تقرير'} - ${new Date().toLocaleDateString('ar-SA')}`, type: typeId, period: { start: new Date().toISOString().split('T')[0], end: new Date().toISOString().split('T')[0] }, generatedDate: new Date().toISOString().split('T')[0], status: 'draft', metrics: { totalBudget: 0, totalBeneficiaries: 0, totalVolunteerHours: 0, averageSROI: 0 } };
     setReports(prev => [newReport, ...prev]);
-    toast.success(`تم إنشاء ${type?.label || 'التقرير'} بنجاح`);
   };
 
   const handleDownload = (report: any) => {
     downloadAsCSV(['الرقم', 'العنوان', 'النوع', 'الفترة', 'الميزانية', 'المستفيدين', 'SROI'], [[report.id, report.title, report.type, `${report.period.start} - ${report.period.end}`, String(report.metrics.totalBudget), String(report.metrics.totalBeneficiaries), String(report.metrics.averageSROI)]], `تقرير-CSR-${report.id}`);
-    toast.success(`تم تحميل: ${report.title}`);
   };
 
   const getViewFields = (report: any): DetailField[] => [

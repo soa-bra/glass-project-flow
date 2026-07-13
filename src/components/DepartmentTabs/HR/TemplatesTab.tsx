@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { MetricHeroCard } from '@/components/shared/visual-data/MetricHeroCard';
 import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart';
 import { mockHRTemplates } from './data';
-import { toast } from 'sonner';
 
 export const TemplatesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,7 +45,6 @@ export const TemplatesTab: React.FC = () => {
     a.download = `${template.name}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`تم تحميل: ${template.name}`);
   };
 
   const handlePreview = (template: typeof mockHRTemplates[0]) => {
@@ -61,7 +59,6 @@ export const TemplatesTab: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (editTemplate) {
-      toast.success(`تم حفظ التعديلات على: ${editName}`);
       setEditTemplate(null);
     }
   };

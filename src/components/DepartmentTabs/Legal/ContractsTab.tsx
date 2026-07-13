@@ -12,7 +12,6 @@ import { getStatusText, formatCurrency, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 
 export const ContractsTab: React.FC = () => {
@@ -67,7 +66,6 @@ export const ContractsTab: React.FC = () => {
       [[contract.id, contract.title, contract.client, getStatusText(contract.type), String(contract.value), getStatusText(contract.status), contract.endDate]],
       `عقد-${contract.id}`
     );
-    toast.success(`تم تنزيل العقد ${contract.id}`);
   };
 
   const getViewFields = (contract: any): DetailField[] => [

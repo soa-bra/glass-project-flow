@@ -10,7 +10,6 @@ import { Users, Search, Plus, Mail, Phone, MapPin, Star, Calendar, TrendingUp, E
 import { mockCustomers } from './data';
 import type { Customer } from './types';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { toast } from 'sonner';
 
 // ─── Maps ───────────────────────────────────────────────────────
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
@@ -88,7 +87,6 @@ export const CustomersTab: React.FC = () => {
 
   const handleSendSurvey = () => {
     const activeCount = customers.filter(c => c.status === 'active').length;
-    toast.success(`تم إرسال استطلاع الرضا إلى ${activeCount} عميل نشط`, { description: 'سيتم جمع الردود خلال 7 أيام عمل' });
   };
 
   const filteredCustomers = customers.filter(customer => {

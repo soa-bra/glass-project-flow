@@ -9,7 +9,6 @@ import {
   TemplateVariablesReference
 } from './Templates';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { toast } from 'sonner';
 
 const newTemplateFields: FormField[] = [
   { name: 'name', label: 'اسم القالب', type: 'text', required: true, placeholder: 'أدخل اسم القالب' },
@@ -78,7 +77,6 @@ export const TemplatesTab: React.FC = () => {
   };
 
   const handleUploadSubmit = () => {
-    toast.success('تم رفع القالب بنجاح');
     setShowUploadForm(false);
   };
 

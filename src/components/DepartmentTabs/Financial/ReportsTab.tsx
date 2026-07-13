@@ -6,7 +6,6 @@ import { SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 export const ReportsTab: React.FC = () => {
   const reports = [
@@ -19,7 +18,6 @@ export const ReportsTab: React.FC = () => {
   ];
 
   const handleViewReport = (report: typeof reports[0]) => {
-    toast.info(`عرض: ${report.name} - الفترة: ${report.period} - آخر تحديث: ${report.lastGenerated}`);
   };
 
   const handleExportReport = (report: typeof reports[0]) => {
@@ -28,7 +26,6 @@ export const ReportsTab: React.FC = () => {
       [[report.name, report.period, report.lastGenerated]],
       `تقرير-مالي-${report.name}`
     );
-    toast.success(`تم تصدير: ${report.name}`);
   };
 
   const handleCreateReport = () => {
@@ -38,7 +35,6 @@ export const ReportsTab: React.FC = () => {
       allData,
       `تقرير-مالي-مخصص-${new Date().toISOString().split('T')[0]}`
     );
-    toast.success('تم إنشاء وتحميل التقرير المخصص بنجاح');
   };
 
   return (

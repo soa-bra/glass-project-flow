@@ -8,7 +8,6 @@ import { FileText, Download, Calendar, Filter, BarChart3, TrendingUp, PieChart, 
 import { BaseBadge } from '@/components/ui/BaseBadge';
 import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 export const ReportsTab: React.FC = () => {
   const [filterType, setFilterType] = useState('all');
@@ -44,19 +43,16 @@ export const ReportsTab: React.FC = () => {
 
   const handleDownloadReport = (report: { name: string; date: string; type: string; category: string }) => {
     downloadAsCSV(['الاسم', 'التاريخ', 'النوع', 'الفئة'], [[report.name, report.date, report.type, report.category]], `تقرير-تسويق`);
-    toast.success(`تم تحميل: ${report.name}`);
   };
 
   const handleGenerateReport = (report: { title: string; status: string }) => {
     if (report.status === 'متاح') {
       downloadAsCSV(['التقرير', 'الحالة', 'التاريخ'], [[report.title, 'جاهز', new Date().toISOString().split('T')[0]]], `تقرير-${report.title}`);
-      toast.success(`تم تحميل: ${report.title}`);
     } else {
-      toast.info('جارِ إعداد التقرير...');
     }
   };
 
-  const handleAddSchedule = () => toast.success('تم فتح نموذج جدولة تقرير جديد');
+  const handleAddSchedule = () => {};
   const handleFilter = () => setFilterType(filterType === 'all' ? 'متاح' : 'all');
 
   const filteredReportTypes = filterType === 'all' ? reportTypes : reportTypes.filter(r => r.status === filterType);
@@ -93,7 +89,7 @@ export const ReportsTab: React.FC = () => {
         <BaseBox variant="operations" className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2"><Download className="h-5 w-5 text-black" /><h3 className="text-xl font-bold text-black font-arabic">التقارير الحديثة</h3></div>
-            <BaseActionButton variant="outline" size="sm" onClick={() => toast.info('عرض جميع التقارير')}>عرض الكل</BaseActionButton>
+            <BaseActionButton variant="outline" size="sm" onClick={() => {}}>عرض الكل</BaseActionButton>
           </div>
           <div className="space-y-3">
             {recentReports.map((report, index) => (

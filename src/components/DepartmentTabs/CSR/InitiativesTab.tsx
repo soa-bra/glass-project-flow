@@ -10,7 +10,6 @@ import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
 
 export const InitiativesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -92,7 +91,6 @@ export const InitiativesTab: React.FC = () => {
   };
 
   const handleSaveToC = () => {
-    toast.success('تم حفظ نظرية التغيير بنجاح');
     setIsToCOpen(false);
     setTocData({ problem: '', inputs: '', activities: '', outputs: '', outcomes: '', impact: '' });
   };

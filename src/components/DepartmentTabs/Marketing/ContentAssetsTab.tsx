@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Calendar, Image, FileText, Settings, Plus, Upload, Search, Filter, Eye, Download } from 'lucide-react';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { toast } from 'sonner';
 
 export const ContentAssetsTab: React.FC = () => {
   const [activeView, setActiveView] = useState<'calendar' | 'assets' | 'dam'>('calendar');
@@ -52,7 +51,7 @@ export const ContentAssetsTab: React.FC = () => {
     setContentCalendar(prev => [{ id: `c-${Date.now()}`, title: data.title, content: data.content, type: data.type, platform: [], scheduledDate: new Date().toISOString(), status: 'draft', campaign: data.campaign || '', approvalStatus: 'pending', assets: [] }, ...prev]);
   };
 
-  const handleUploadAsset = () => toast.success('تم فتح نافذة رفع الأصول');
+  const handleUploadAsset = () => {};
 
   const getContentViewFields = (item: any): DetailField[] => [
     { label: 'العنوان', value: item.title }, { label: 'المحتوى', value: item.content },
@@ -101,7 +100,7 @@ export const ContentAssetsTab: React.FC = () => {
                     <div className="flex gap-2">{content.platform.map((p, i) => <UnifiedBadge key={i} variant="default" size="sm">{p}</UnifiedBadge>)}</div>
                     <div className="flex gap-2">
                       <UnifiedButton size="sm" variant="outline" onClick={() => setViewingItem(content)}><Eye className="w-4 h-4 ml-1" /> معاينة</UnifiedButton>
-                      <UnifiedButton size="sm" variant="outline" onClick={() => toast.info(`تعديل: ${content.title}`)}><Settings className="w-4 h-4 ml-1" /> تعديل</UnifiedButton>
+                      <UnifiedButton size="sm" variant="outline" onClick={() => {}}><Settings className="w-4 h-4 ml-1" /> تعديل</UnifiedButton>
                     </div>
                   </div>
                 </div>
@@ -116,7 +115,7 @@ export const ContentAssetsTab: React.FC = () => {
           <BaseBox variant="operations">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-1 relative"><Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" /><Input placeholder="البحث في الأصول..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pr-10 font-arabic" /></div>
-              <UnifiedButton variant="outline" onClick={() => toast.info('تم تطبيق الفلتر')}><Filter className="w-4 h-4 ml-2" /> فلترة</UnifiedButton>
+              <UnifiedButton variant="outline" onClick={() => {}}><Filter className="w-4 h-4 ml-2" /> فلترة</UnifiedButton>
             </div>
           </BaseBox>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,8 +129,8 @@ export const ContentAssetsTab: React.FC = () => {
                     <div className="flex gap-2">{getStatusBadge(asset.status)}{asset.brandCompliant && <UnifiedBadge variant="success" size="sm">متوافق</UnifiedBadge>}</div>
                     <div className="flex gap-1">
                       <UnifiedButton size="sm" variant="outline" onClick={() => setViewingItem(asset)}><Eye className="w-3 h-3" /></UnifiedButton>
-                      <UnifiedButton size="sm" variant="outline" onClick={() => toast.success(`تم تحميل: ${asset.name}`)}><Download className="w-3 h-3" /></UnifiedButton>
-                      <UnifiedButton size="sm" variant="outline" onClick={() => toast.info(`إعدادات: ${asset.name}`)}><Settings className="w-3 h-3" /></UnifiedButton>
+                      <UnifiedButton size="sm" variant="outline" onClick={() => {}}><Download className="w-3 h-3" /></UnifiedButton>
+                      <UnifiedButton size="sm" variant="outline" onClick={() => {}}><Settings className="w-3 h-3" /></UnifiedButton>
                     </div>
                   </div>
                 </div>
@@ -149,8 +148,8 @@ export const ContentAssetsTab: React.FC = () => {
             <p className="text-gray-600 font-arabic mb-6">نظام متكامل لإدارة وتنظيم جميع الأصول الرقمية</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <div className="text-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={handleUploadAsset}><div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3"><Upload className="w-6 h-6 text-blue-600" /></div><h4 className="font-semibold font-arabic mb-2">رفع الأصول</h4><p className="text-sm text-gray-600 font-arabic">رفع وتصنيف الأصول تلقائياً</p></div>
-              <div className="text-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={() => toast.info('إعدادات الصلاحيات')}><div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3"><Settings className="w-6 h-6 text-green-600" /></div><h4 className="font-semibold font-arabic mb-2">إدارة الصلاحيات</h4><p className="text-sm text-gray-600 font-arabic">تحكم دقيق في صلاحيات الوصول</p></div>
-              <div className="text-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={() => toast.info('مراجعة الجودة')}><div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3"><Eye className="w-6 h-6 text-purple-600" /></div><h4 className="font-semibold font-arabic mb-2">مراجعة الجودة</h4><p className="text-sm text-gray-600 font-arabic">مراجعة وضمان جودة المحتوى</p></div>
+              <div className="text-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={() => {}}><div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3"><Settings className="w-6 h-6 text-green-600" /></div><h4 className="font-semibold font-arabic mb-2">إدارة الصلاحيات</h4><p className="text-sm text-gray-600 font-arabic">تحكم دقيق في صلاحيات الوصول</p></div>
+              <div className="text-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow" onClick={() => {}}><div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3"><Eye className="w-6 h-6 text-purple-600" /></div><h4 className="font-semibold font-arabic mb-2">مراجعة الجودة</h4><p className="text-sm text-gray-600 font-arabic">مراجعة وضمان جودة المحتوى</p></div>
             </div>
           </div>
         </BaseBox>

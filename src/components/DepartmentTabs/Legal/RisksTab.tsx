@@ -8,7 +8,6 @@ import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { getStatusColor, getStatusText, calculateRiskScore, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
-import { toast } from 'sonner';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const RisksTab: React.FC = () => {
@@ -78,7 +77,6 @@ export const RisksTab: React.FC = () => {
 
   const handleMitigate = (id: string) => {
     setRisks(prev => prev.map(r => r.id === id ? { ...r, status: 'mitigated' as const } : r));
-    toast.success('تم تحديث حالة المخاطرة');
   };
 
   const getViewFields = (risk: any): DetailField[] => [

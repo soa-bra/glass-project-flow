@@ -19,7 +19,6 @@ import {
 import { mockSoaBraMetrics } from "./data/mockData";
 import { GenericFormModal, FormField } from "../shared/GenericFormModal";
 import { downloadAsJSON } from "../shared/downloadUtils";
-import { toast } from "sonner";
 
 // ─── Category Maps ──────────────────────────────────────────────
 const CATEGORY_MAP: Record<string, { label: string; icon: any; color: string }> = {
@@ -94,16 +93,13 @@ export const ModelsTemplatesTab: React.FC = () => {
   const handleDownloadTemplate = (template: any) => {
     downloadAsJSON(template, `قالب-${template.name}`);
     setTemplates(prev => prev.map(t => t.id === template.id ? { ...t, downloads: t.downloads + 1 } : t));
-    toast.success(`تم تنزيل: ${template.name}`);
   };
 
   const handleDownloadMetric = (metric: any) => {
     downloadAsJSON(metric, `مقياس-${metric.name}`);
-    toast.success(`تم تنزيل: ${metric.name}`);
   };
 
   const handleUploadMetric = (_data: Record<string, string>) => {
-    toast.success("تم رفع المقياس بنجاح (سيظهر بعد المراجعة)");
   };
 
   // ── Metric Detail View ──
@@ -129,7 +125,7 @@ export const ModelsTemplatesTab: React.FC = () => {
               <BaseBadge variant="outline" className="mt-2">{cat.label}</BaseBadge>
             </div>
             <div className="flex gap-2">
-              <BaseActionButton variant="outline" size="sm" onClick={() => toast.info(`معاينة: ${metric.name}`, { description: metric.description })}>
+              <BaseActionButton variant="outline" size="sm" onClick={() => {}}>
                 <Eye className="h-3 w-3 ml-1" /> معاينة
               </BaseActionButton>
               <BaseActionButton size="sm" onClick={() => handleDownloadMetric(metric)}>
