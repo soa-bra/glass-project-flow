@@ -159,12 +159,13 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   };
 
   const active = isHovered || isConnecting;
-  const scale = active ? 1.2 : 1;
+  const visualSize = TRIANGLE_SIZE * (active ? 1.2 : 1);
 
-  // مثلث ممتلئ (Play-shape) يشير لليمين، رأسه عند (TRIANGLE_SIZE, 0)
-  // وقاعدته على المحور y بارتفاع TRIANGLE_SIZE.
-  const half = TRIANGLE_SIZE / 2;
-  const trianglePath = `M 0 ${-half} L ${TRIANGLE_SIZE} 0 L 0 ${half} Z`;
+  // المؤشر يُرسم حول نقطة الأنكر الفعلية نفسها، وليس بإزاحة CSS.
+  // رأس المثلث وقاعدته موزعان حول (0,0)، ثم ننقله بصفة SVG transform
+  // إلى نفس إحداثيات دائرة الهفر ونقطة onStartDrag.
+  const half = visualSize / 2;
+  const trianglePath = `M ${-half} ${-half} L ${half} 0 L ${-half} ${half} Z`;
 
   return (
     <g
@@ -188,9 +189,9 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         </filter>
       </defs>
 
-      {/* منطقة اللمس/الفأرة الشفافة – مركزها منتصف المثلث */}
+      {/* منطقة اللمس/الفأرة الشفافة – مركزها نقطة الأنكر الفعلية */}
       <circle
-        cx={anchor.x + TRIANGLE_SIZE / 2}
+        cx={anchor.x}
         cy={anchor.y}
         r={HIT_RADIUS}
         fill="transparent"
@@ -206,10 +207,8 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
       <g
         pointerEvents="none"
         data-anchor-hit="true"
+        transform={`translate(${anchor.x} ${anchor.y})`}
         style={{
-          transform: `translate(${anchor.x}px, ${anchor.y}px) scale(${scale})`,
-          transformOrigin: '0px 0px',
-          transition: 'transform 120ms cubic-bezier(0.22, 1, 0.36, 1)',
           filter: active ? `url(#${glowId})` : undefined,
         }}
       >

@@ -26,7 +26,11 @@ describe('ConnectionAnchors', () => {
     const expectedY = 80 + 160 / 6;  // ≈ 106.666...
 
     const hitArea = anchorGroup.querySelector('.connection-anchor-hit') as SVGCircleElement;
+    const arrow = anchorGroup.querySelector('[data-anchor-hit="true"] .connection-anchor-arrow') as SVGPathElement;
+    const arrowGroup = arrow.parentElement as SVGGElement;
+    expect(Number(hitArea.getAttribute('cx'))).toBeCloseTo(expectedX, 5);
     expect(Number(hitArea.getAttribute('cy'))).toBeCloseTo(expectedY, 5);
+    expect(arrowGroup.getAttribute('transform')).toBe(`translate(${expectedX} ${expectedY})`);
 
     fireEvent.pointerDown(hitArea);
 
