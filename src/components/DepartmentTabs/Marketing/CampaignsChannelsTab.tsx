@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
 
 export const CampaignsChannelsTab: React.FC = () => {
   const [activeView, setActiveView] = useState<'campaigns' | 'channels' | 'calendar'>('campaigns');

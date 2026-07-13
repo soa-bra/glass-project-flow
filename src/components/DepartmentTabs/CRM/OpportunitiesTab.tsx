@@ -17,7 +17,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recha
 import { ChartTooltipShell, CHART_CURSOR_STYLE, RingMetricCard } from '@/components/shared/visual-data';
 import { mockOpportunities, mockCRMAnalytics } from './data';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
-import { toast } from 'sonner';
 
 // ─── Labels ─────────────────────────────────────────────────────
 const STAGE_MAP: Record<string, { label: string; color: string }> = {
