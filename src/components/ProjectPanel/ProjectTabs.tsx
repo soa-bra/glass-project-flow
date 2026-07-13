@@ -535,10 +535,8 @@ export const TeamTab = ({
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
             <button onClick={() => {
-            // Check if user has permission (Department Manager or above)
-            const userRole = 'department_manager'; // This should come from user context
-            const hasPermission = ['department_manager', 'admin', 'owner'].includes(userRole);
-            if (hasPermission) {
+            // Client-side gate — real enforcement is RLS on the server (owner-only).
+            if (isOwner) {
               setIsPerformanceEvaluationModalOpen(true);
             } else {
               alert('غير مصرح لك بالوصول إلى تقييم الأداء. هذه الميزة متاحة فقط لمدير القسم فأعلى.');
