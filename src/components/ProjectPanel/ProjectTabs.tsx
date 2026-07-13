@@ -20,6 +20,7 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { LinkIndicator } from '@/components/shared/LinkIndicator';
 import { SmartConfirmationDialog } from '@/components/shared/SmartConfirmationDialog';
 import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
+import { useIsOwner } from '@/hooks/useIsOwner';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
@@ -325,6 +326,7 @@ export const ClientTab = ({
 export const TeamTab = ({
   teamData
 }: any) => {
+  const { isOwner } = useIsOwner();
   const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
   const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
@@ -435,9 +437,8 @@ export const TeamTab = ({
 
   // معالج إزالة عضو
   const handleRemoveMember = (memberId: string) => {
-    const userRole = 'admin'; // This should come from user context
-    const hasPermission = ['admin', 'owner', 'general_manager'].includes(userRole);
-    if (!hasPermission) {
+    // Client-side gate — real enforcement is RLS on the server (owner-only).
+    if (!isOwner) {
       alert('غير مصرح لك بإستبعاد الأعضاء. هذه الميزة متاحة فقط لمدير التطبيق.');
       return;
     }
@@ -534,10 +535,8 @@ export const TeamTab = ({
             <h4 className="text-sm font-bold text-black mb-3">تقييم الأداء</h4>
             <p className="text-xs text-black/70 mb-3">إجراء تقييم دوري لأداء الفريق (متاحة فقط لمدير قسم فأعلى)</p>
             <button onClick={() => {
-            // Check if user has permission (Department Manager or above)
-            const userRole = 'department_manager'; // This should come from user context
-            const hasPermission = ['department_manager', 'admin', 'owner'].includes(userRole);
-            if (hasPermission) {
+            // Client-side gate — real enforcement is RLS on the server (owner-only).
+            if (isOwner) {
               setIsPerformanceEvaluationModalOpen(true);
             } else {
               alert('غير مصرح لك بالوصول إلى تقييم الأداء. هذه الميزة متاحة فقط لمدير القسم فأعلى.');
@@ -649,6 +648,7 @@ export const TeamTab = ({
 export const AttachmentsTab = ({
   documents
 }: any) => {
+  const { isOwner } = useIsOwner();
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
   const [isFolderOrganizationModalOpen, setIsFolderOrganizationModalOpen] = useState(false);
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
@@ -783,10 +783,8 @@ export const AttachmentsTab = ({
             <h4 className="text-sm font-bold text-black mb-3">إدارة الصلاحيات</h4>
             <p className="text-xs text-black/70 mb-3">تحديد صلاحيات الوصول للملفات</p>
             <button onClick={() => {
-            // التحقق من صلاحيات المستخدم (مدير المشروع فأعلى)
-            const userRole = 'project_manager'; // هذا يجب أن يأتي من سياق المستخدم
-            const hasPermission = ['project_manager', 'department_manager', 'admin', 'owner'].includes(userRole);
-            if (hasPermission) {
+            // Client-side gate — real enforcement is RLS on the server (owner-only).
+            if (isOwner) {
               setIsPermissionsModalOpen(true);
             } else {
               alert('غير مصرح لك بالوصول إلى إدارة الصلاحيات. هذه الميزة متاحة فقط لمدير المشروع فأعلى.');
