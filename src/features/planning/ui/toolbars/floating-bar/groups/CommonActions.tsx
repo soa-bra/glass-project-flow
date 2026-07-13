@@ -156,67 +156,61 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          className="w-48 bg-white z-[var(--z-popover)] pointer-events-auto"
+          dir="rtl"
+          className="w-56 bg-white z-[var(--z-popover)] pointer-events-auto"
           onMouseDown={(e) => e.stopPropagation()}
         >
-          <DropdownMenuItem onClick={onCopy}>
-            <Copy size={14} className="ml-2" />
-            نسخ
+          <DropdownMenuItem onClick={onCopy} className="gap-3 justify-between">
+            <span>نسخ</span>
+            <Copy size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onCut}>
-            <Scissors size={14} className="ml-2" />
-            قص
+          <DropdownMenuItem onClick={onCut} className="gap-3 justify-between">
+            <span>قص</span>
+            <Scissors size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onPaste} disabled={clipboardLength === 0}>
-            <ClipboardPaste size={14} className="ml-2" />
-            لصق
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem onClick={onAddText}>
-            <Type size={14} className="ml-2" />
-            إضافة نص
+          <DropdownMenuItem onClick={onPaste} disabled={clipboardLength === 0} className="gap-3 justify-between">
+            <span>لصق</span>
+            <ClipboardPaste size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <Layers size={14} className="ml-2" />
-              تغيير الطبقة
+            <DropdownMenuSubTrigger className="gap-3 justify-between">
+              <span>تغيير الطبقة</span>
+              <Layers size={16} className="opacity-70 shrink-0" />
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent className="bg-white z-[var(--z-tooltip)]">
+            <DropdownMenuSubContent dir="rtl" className="bg-white z-[var(--z-tooltip)]">
               {layers.map((layer) => (
-                <DropdownMenuItem key={layer.id} onClick={() => onChangeLayer(layer.id)}>
+                <DropdownMenuItem key={layer.id} onClick={() => onChangeLayer(layer.id)} className="justify-end">
                   {layer.name}
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => onChangeLayer("new")}>
-                <Plus size={14} className="ml-2" />
-                طبقة جديدة
+              <DropdownMenuItem onClick={() => onChangeLayer("new")} className="gap-3 justify-between">
+                <span>طبقة جديدة</span>
+                <Plus size={16} className="opacity-70 shrink-0" />
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem onClick={onBringToFront}>
-            <ChevronsUp size={14} className="ml-2" />
-            إحضار إلى الأمام
+          <DropdownMenuItem onClick={onBringToFront} className="gap-3 justify-between">
+            <span>إحضار إلى الأمام</span>
+            <ChevronsUp size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onBringForward}>
-            <ArrowUp size={14} className="ml-2" />
-            نقل خطوة إلى الأمام
+          <DropdownMenuItem onClick={onBringForward} className="gap-3 justify-between">
+            <span>نقل خطوة إلى الأمام</span>
+            <ArrowUp size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onSendBackward}>
-            <ArrowDown size={14} className="ml-2" />
-            نقل خطوة إلى الخلف
+          <DropdownMenuItem onClick={onSendBackward} className="gap-3 justify-between">
+            <span>نقل خطوة إلى الخلف</span>
+            <ArrowDown size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onSendToBack}>
-            <ChevronsDown size={14} className="ml-2" />
-            إرسال إلى الخلف
+          <DropdownMenuItem onClick={onSendToBack} className="gap-3 justify-between">
+            <span>إرسال إلى الخلف</span>
+            <ChevronsDown size={16} className="opacity-70 shrink-0" />
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
