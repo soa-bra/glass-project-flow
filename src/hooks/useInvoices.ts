@@ -27,7 +27,6 @@ export function useCreateInvoice() {
     mutationFn: (input: CreateInvoiceInput) => createInvoice(input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: INVOICES_KEY });
-      toast.success('تم إنشاء الفاتورة بنجاح');
     },
     onError: (error: unknown) => {
       const msg = error instanceof Error ? error.message : 'فشل إنشاء الفاتورة';
@@ -45,7 +44,6 @@ export function useUpdateInvoice() {
       updateInvoice(id, input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: INVOICES_KEY });
-      toast.success('تم تحديث الفاتورة بنجاح');
     },
     onError: (error: unknown) => {
       const msg = error instanceof Error ? error.message : 'فشل تحديث الفاتورة';

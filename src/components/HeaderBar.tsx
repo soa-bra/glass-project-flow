@@ -234,12 +234,7 @@ const notificationColors: Record<NotificationType, string> = {
   alert: 'bg-[#D9D2FE]',
 };
 
-const initialNotifications: NotificationItem[] = [
-  { id: 'n1', text: 'تم تحديث حالة مشروع جديد', type: 'app', isNew: true, createdAt: nowIso() },
-  { id: 'n2', text: 'وصلت رسالة من فريق التنفيذ', type: 'message', isNew: true, createdAt: nowIso() },
-  { id: 'n3', text: 'مهمة بانتظار المراجعة', type: 'task', isNew: false, createdAt: nowIso() },
-  { id: 'n4', text: 'تنبيه: موعد تسليم قريب', type: 'alert', isNew: false, createdAt: nowIso() },
-];
+const initialNotifications: NotificationItem[] = [];
 
 const initialChats: ChatItem[] = [
   {
