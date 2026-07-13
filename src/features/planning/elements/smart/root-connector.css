@@ -1,3 +1,6 @@
+/* The anchor position is computed precisely in JS/SVG coordinates.
+   Do NOT apply a visual transform here — it desyncs the drawn arrow
+   from its hit region. */
 .connection-anchors {
-  transform: translateY(12px);
+  /* intentionally empty */
 }
