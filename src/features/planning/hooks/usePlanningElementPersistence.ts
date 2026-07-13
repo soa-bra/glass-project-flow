@@ -393,7 +393,24 @@ export function usePlanningElementPersistence(
             error: getErrorMessage(error),
           }));
         }
-      }, SAVE_DEBOUNCE_MS);
+    };
+
+    const unsubscribe = usePlanningStore.subscribe((state) => {
+      // Skip if only selection changed — selection state doesn't affect persistence.
+      const selectionKey = state.selectedElementIds.join(",");
+      const selectionOnlyChanged = selectionKey !== lastSelectionKey;
+      lastSelectionKey = selectionKey;
+      if (selectionOnlyChanged) {
+        const sig = stableElementSignature(state.elements);
+        if (sig === lastPersistedSignatureRef.current) return;
+      }
+
+      // Throttle signature evaluation to reduce work under rapid store updates
+      // (e.g., realtime bursts, smart element re-renders).
+      if (throttleTimer) return;
+      const elapsed = Date.now() - lastSignatureCheckAt;
+      const wait = Math.max(0, SIGNATURE_THROTTLE_MS - elapsed);
+      throttleTimer = setTimeout(evaluateAndSchedule, wait);
     });
 
     return () => {
