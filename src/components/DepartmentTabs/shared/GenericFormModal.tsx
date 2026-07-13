@@ -31,7 +31,7 @@ interface GenericFormModalProps {
 }
 
 export const GenericFormModal: React.FC<GenericFormModalProps> = ({
-  isOpen, onClose, title, fields, onSubmit, submitLabel = 'حفظ', successMessage = 'تم الحفظ بنجاح'
+  isOpen, onClose, title, fields, onSubmit, submitLabel = 'حفظ'
 }) => {
   const [formData, setFormData] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {};
@@ -46,7 +46,6 @@ export const GenericFormModal: React.FC<GenericFormModalProps> = ({
       return;
     }
     onSubmit(formData);
-    toast.success(successMessage);
     setFormData(() => {
       const defaults: Record<string, string> = {};
       fields.forEach(f => { defaults[f.name] = f.defaultValue || ''; });

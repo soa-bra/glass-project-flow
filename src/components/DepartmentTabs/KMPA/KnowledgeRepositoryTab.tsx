@@ -15,7 +15,6 @@ import {
 import { mockKnowledgeDocuments } from './data/mockData';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { downloadAsJSON } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 // ─── Labels ─────────────────────────────────────────────────────
 const TYPE_LABELS: Record<string, string> = {
@@ -120,10 +119,8 @@ export const KnowledgeRepositoryTab: React.FC = () => {
       const next = new Set(prev);
       if (next.has(docId)) {
         next.delete(docId);
-        toast.success('تمت إزالة الوثيقة من المفضلة');
       } else {
         next.add(docId);
-        toast.success('تمت إضافة الوثيقة إلى المفضلة');
       }
       return next;
     });
@@ -135,7 +132,6 @@ export const KnowledgeRepositoryTab: React.FC = () => {
       `وثيقة-${doc.title}`
     );
     setDocuments(prev => prev.map(d => d.id === doc.id ? { ...d, downloads: d.downloads + 1 } : d));
-    toast.success(`تم تنزيل: ${doc.title}`);
   };
 
   const formatSize = (bytes: number) => {

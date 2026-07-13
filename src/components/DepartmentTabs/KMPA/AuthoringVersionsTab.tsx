@@ -106,7 +106,6 @@ export const AuthoringVersionsTab: React.FC = () => {
     setDocStatus(doc.status);
     setDocTags(doc.tags || '');
     setContent(`# ${doc.title}\n\nمحتوى الوثيقة يتم تحميله هنا...`);
-    toast.success(`تم تحميل: ${doc.title}`);
   };
 
   const handleSaveContent = () => {
@@ -116,11 +115,9 @@ export const AuthoringVersionsTab: React.FC = () => {
       { version: newVersion, date: new Date().toISOString().split('T')[0], author: 'المستخدم الحالي', changes: 'حفظ تعديلات جديدة', status: 'current' },
       ...prev.map(v => ({ ...v, status: 'previous' })),
     ]);
-    toast.success('تم حفظ الوثيقة بنجاح');
   };
 
   const handlePreviewContent = () => {
-    toast.info('معاينة المحتوى', { description: content.slice(0, 100) || 'لا يوجد محتوى للمعاينة' });
   };
 
   const handleAddComment = () => {
@@ -130,11 +127,9 @@ export const AuthoringVersionsTab: React.FC = () => {
       ...prev,
     ]);
     setNewComment('');
-    toast.success('تم إضافة التعليق');
   };
 
   const handleAddCollaborator = () => {
-    toast.info('إضافة متعاون', { description: 'سيتم فتح نظام دعوة المتعاونين قريباً' });
   };
 
   const handleToolbarAction = (action: string) => {

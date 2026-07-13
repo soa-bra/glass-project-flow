@@ -152,7 +152,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
 
     setNewItemName('');
     setNewItemAmount('');
-    toast.success('تم إضافة العنصر بنجاح');
   };
 
   const removeBudgetItem = (id: string) => {
@@ -160,7 +159,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
       ...prev,
       items: prev.items.filter(item => item.id !== id)
     }));
-    toast.success('تم حذف العنصر بنجاح');
   };
 
   const generateAIBudget = async () => {
@@ -187,8 +185,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
         items: aiGeneratedItems,
         aiGenerated: true
       }));
-
-      toast.success('تم توليد توزيع الميزانية بالذكاء الاصطناعي');
     } catch (error) {
       toast.error('حدث خطأ في توليد الميزانية');
     } finally {
@@ -219,8 +215,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
         items: optimizedItems,
         totalAmount: (parseFloat(prev.totalAmount) * 0.95).toString()
       }));
-
-      toast.success('تم تحسين توزيع الميزانية لزيادة الكفاءة بنسبة 5%');
     } catch (error) {
       toast.error('حدث خطأ في تحسين الميزانية');
     } finally {
@@ -260,7 +254,6 @@ export const CreateBudgetModal: React.FC<CreateBudgetModalProps> = ({
     };
 
     onBudgetCreated?.(budgetData);
-    toast.success('تم إنشاء الميزانية بنجاح');
     onClose();
     resetForm();
   };

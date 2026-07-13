@@ -20,7 +20,6 @@ import {
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericFilterPopover, FilterOption } from '../shared/GenericFilterPopover';
 import { downloadAsJSON } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 
 // ─── Type helpers ───────────────────────────────────────────────
 const ASSET_TYPE_MAP: Record<string, { label: string; icon: React.ElementType; color: string }> = {
@@ -107,7 +106,6 @@ export const VisualAssetsTab: React.FC = () => {
   const handleDownloadAsset = (asset: any) => {
     downloadAsJSON({ name: asset.name, type: asset.type, format: asset.format, size: asset.size, description: asset.description, tags: asset.tags }, `أصل-${asset.name}`);
     setAssets(prev => prev.map(a => a.id === asset.id ? { ...a, downloads: a.downloads + 1 } : a));
-    toast.success(`تم تنزيل: ${asset.name}`);
   };
 
   const editFields: FormField[] = editingAsset ? [

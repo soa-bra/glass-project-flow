@@ -13,7 +13,6 @@ import { mockCSRPartners } from './data';
 import { CSRPartner } from './types';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
-import { toast } from 'sonner';
 
 export const PartnershipsTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,7 +84,6 @@ export const PartnershipsTab: React.FC = () => {
   ];
 
   const handleViewContract = (p: CSRPartner) => {
-    toast.info(`عقد الشريك: ${p.name} - الحالة: ${getContractStatusText(p.contractStatus)}${p.contractId ? ` (${p.contractId})` : ''}`);
   };
 
   return (
@@ -166,9 +164,9 @@ export const PartnershipsTab: React.FC = () => {
       <DataCardFrame title="مخصص الموارد" icon={<Building className="h-5 w-5" />}>
         <p className="text-gray-600 font-arabic mb-4">ربط احتياجات المبادرات بالموارد المتاحة والموردين المعتمدين</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح قائمة الموردين المعتمدين')}><Building className="ml-2 h-4 w-4" /> إدارة الموردين</BaseActionButton>
-          <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم فتح أداة تخصيص الموارد')}><Users className="ml-2 h-4 w-4" /> تخصيص الموارد</BaseActionButton>
-          <BaseActionButton variant="outline" className="font-arabic" onClick={() => toast.success('تم تصدير تقرير الموارد')}><FileText className="ml-2 h-4 w-4" /> تقارير الموارد</BaseActionButton>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={() => {}}><Building className="ml-2 h-4 w-4" /> إدارة الموردين</BaseActionButton>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={() => {}}><Users className="ml-2 h-4 w-4" /> تخصيص الموارد</BaseActionButton>
+          <BaseActionButton variant="outline" className="font-arabic" onClick={() => {}}><FileText className="ml-2 h-4 w-4" /> تقارير الموارد</BaseActionButton>
         </div>
       </DataCardFrame>
 

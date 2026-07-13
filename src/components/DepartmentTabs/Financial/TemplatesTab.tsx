@@ -5,7 +5,6 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { SPACING } from '@/components/shared/design-system/constants';
 import { Reveal, Stagger } from '@/components/shared/motion';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
 
 export const TemplatesTab: React.FC = () => {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -30,7 +29,6 @@ export const TemplatesTab: React.FC = () => {
     a.download = `${template.name}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`تم تحميل: ${template.name}`);
   };
 
   return (

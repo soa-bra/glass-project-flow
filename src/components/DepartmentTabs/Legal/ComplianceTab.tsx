@@ -9,7 +9,6 @@ import { mockComplianceItems } from './data';
 import { getStatusText, formatDate } from './utils';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
-import { toast } from 'sonner';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 export const ComplianceTab: React.FC = () => {
@@ -69,7 +68,6 @@ export const ComplianceTab: React.FC = () => {
 
   const handleMarkCompliant = (id: string) => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'compliant' as const, lastReview: new Date().toISOString().split('T')[0] } : i));
-    toast.success('تم تحديث حالة الامتثال');
   };
 
   const getViewFields = (item: any): DetailField[] => [

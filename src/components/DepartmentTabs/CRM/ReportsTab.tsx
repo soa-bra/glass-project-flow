@@ -46,7 +46,7 @@ export const ReportsTab: React.FC = () => {
     return matchesSearch && (selectedType === 'all' || report.type === selectedType);
   });
 
-  const handleRefresh = () => toast.success('تم تحديث البيانات بنجاح');
+  const handleRefresh = () => {};
 
   const handleCreateReport = () => {
     if (!newReport.title) { toast.error('يرجى إدخال عنوان التقرير'); return; }
@@ -54,22 +54,18 @@ export const ReportsTab: React.FC = () => {
     setReports(prev => [report, ...prev]);
     setShowNewReportForm(false);
     setNewReport({ title: '', type: 'customer', period: 'last30days', format: 'pdf' });
-    toast.success('تم إنشاء التقرير بنجاح');
   };
 
   const handleDownloadReport = (report: any) => {
     downloadAsCSV(['العنوان', 'النوع', 'التكرار', 'الحالة', 'آخر إنشاء'], [[report.title, report.type, report.frequency, report.status, report.lastGenerated]], `تقرير-${report.id}`);
-    toast.success(`تم تحميل التقرير: ${report.title}`);
   };
 
   const handleShareReport = (report: any) => {
     navigator.clipboard.writeText(`تقرير: ${report.title} - الحالة: ${report.status} - آخر تحديث: ${report.lastGenerated}`);
-    toast.success('تم نسخ رابط التقرير');
   };
 
   const handleRefreshReport = (reportId: string) => {
     setReports(prev => prev.map(r => r.id === reportId ? { ...r, lastGenerated: new Date().toISOString().split('T')[0], status: 'جاهز' } : r));
-    toast.success('تم تحديث التقرير');
   };
 
   const handleAIReport = () => {
@@ -77,7 +73,6 @@ export const ReportsTab: React.FC = () => {
     const report = { id: `ai-${Date.now()}`, title: `تقرير ذكي: ${aiPrompt.substring(0, 40)}...`, type: 'analytics', description: aiPrompt, lastGenerated: new Date().toISOString().split('T')[0], frequency: 'مرة واحدة', status: 'جاهز', format: ['PDF'], insights: ['تقرير مولد بالذكاء الاصطناعي', 'يتطلب مراجعة يدوية'], charts: 3 };
     setReports(prev => [report, ...prev]);
     setAiPrompt('');
-    toast.success('تم إنشاء التقرير الذكي بنجاح');
   };
 
   const getViewFields = (report: any): DetailField[] => [

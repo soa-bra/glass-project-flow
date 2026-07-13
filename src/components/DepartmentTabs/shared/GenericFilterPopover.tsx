@@ -7,7 +7,6 @@ import { BaseActionButton } from '@/components/shared/BaseActionButton';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Filter } from 'lucide-react';
-import { toast } from 'sonner';
 
 export interface FilterOption {
   name: string;
@@ -33,14 +32,12 @@ export const GenericFilterPopover: React.FC<GenericFilterPopoverProps> = ({
     onApply(values);
     setOpen(false);
     const activeFilters = Object.values(values).filter(v => v && v !== 'all').length;
-    toast.success(`تم تطبيق ${activeFilters} فلتر${resultCount !== undefined ? ` • ${resultCount} نتيجة` : ''}`);
   };
 
   const handleReset = () => {
     setValues({});
     onReset();
     setOpen(false);
-    toast.success('تم إعادة تعيين الفلاتر');
   };
 
   return (

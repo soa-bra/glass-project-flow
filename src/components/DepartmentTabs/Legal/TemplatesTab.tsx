@@ -5,7 +5,6 @@ import { FileText, Download, Plus, Search, Eye } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
@@ -61,7 +60,6 @@ export const TemplatesTab: React.FC = () => {
       [[template.id, template.name, template.category, template.type, template.description, String(template.usage)]],
       `نموذج-${template.id}`
     );
-    toast.success(`تم تنزيل النموذج: ${template.name}`);
   };
 
   const getViewFields = (template: any): DetailField[] => [

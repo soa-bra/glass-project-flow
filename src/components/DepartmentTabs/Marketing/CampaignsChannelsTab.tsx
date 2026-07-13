@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
 
 export const CampaignsChannelsTab: React.FC = () => {
   const [activeView, setActiveView] = useState<'campaigns' | 'channels' | 'calendar'>('campaigns');
@@ -275,7 +274,7 @@ export const CampaignsChannelsTab: React.FC = () => {
             ))}
           </div>
           <div className="flex justify-end mt-4">
-            <UnifiedButton variant="primary" onClick={() => { setIsChannelSettingsOpen(false); toast.success("تم حفظ إعدادات القنوات"); }}>حفظ الإعدادات</UnifiedButton>
+            <UnifiedButton variant="primary" onClick={() => { setIsChannelSettingsOpen(false); }}>حفظ الإعدادات</UnifiedButton>
           </div>
         </DialogContent>
       </Dialog>

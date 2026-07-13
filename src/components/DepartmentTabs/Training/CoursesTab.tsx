@@ -105,7 +105,6 @@ export const CoursesTab: React.FC = () => {
     if (!newModule.title) { toast.error('أدخل عنوان الوحدة'); return; }
     setBuilderModules(prev => [...prev, { ...newModule }]);
     setNewModule({ title: '', type: 'video', duration: '', description: '' });
-    toast.success('تم إضافة الوحدة');
   };
 
   const handleSaveBuilder = () => {
@@ -122,7 +121,6 @@ export const CoursesTab: React.FC = () => {
       })),
       updatedAt: new Date().toISOString(),
     } : c));
-    toast.success(`تم حفظ ${builderModules.length} وحدة في "${builderCourse.title}"`);
     setBuilderCourse(null);
     setBuilderModules([]);
   };

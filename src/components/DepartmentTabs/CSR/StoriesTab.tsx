@@ -9,7 +9,6 @@ import { mockCSRStories } from './data';
 import { CSRStory } from './types';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
-import { toast } from 'sonner';
 
 export const StoriesTab: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,7 +54,6 @@ export const StoriesTab: React.FC = () => {
 
   const handleShare = (story: CSRStory) => {
     navigator.clipboard.writeText(`قصة أثر: ${story.title} - ${story.summary.substring(0, 100)}...`);
-    toast.success('تم نسخ رابط القصة');
   };
 
   const getViewFields = (s: CSRStory): DetailField[] => [

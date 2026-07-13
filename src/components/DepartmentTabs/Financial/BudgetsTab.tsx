@@ -10,7 +10,6 @@ import { formatCurrency, getStatusColor, getStatusText } from './utils';
 import { CreateBudgetModal } from './CreateBudgetModal';
 import { BudgetManagementModal } from './BudgetManagementModal';
 import { BudgetTreeItem } from './types';
-import { toast } from 'sonner';
 import { LinkIndicator } from '@/components/shared/LinkIndicator';
 import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
 
@@ -91,7 +90,6 @@ export const BudgetsTab: React.FC = () => {
       projectId: updateData.projectId ?? null,
       payload: updateData,
     }).catch((error) => console.error('[BudgetsTab] emitProjectEvent(update) failed:', error));
-    toast.success('تم تحديث الميزانية بنجاح');
   };
 
   const toggleExpand = (itemId: number) => {

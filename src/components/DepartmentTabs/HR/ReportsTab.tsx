@@ -5,7 +5,6 @@ import { CapsuleBarChart } from '@/components/shared/visual-data/CapsuleBarChart
 import { AppDashboardGrid } from '@/components/shared/layout/AppDashboardGrid';
 import { AppGridItem } from '@/components/shared/layout/AppGridItem';
 import { mockWorkforceAnalytics, mockHRStats } from './data';
-import { toast } from 'sonner';
 
 export const ReportsTab: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
@@ -41,7 +40,6 @@ export const ReportsTab: React.FC = () => {
     a.download = `${report.id}-${selectedPeriod}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`تم تحميل: ${report.title}`);
   };
 
   const handlePreview = (report: typeof reportTypes[0]) => {

@@ -9,7 +9,6 @@ import { BaseActionButton as UnifiedButton } from '@/components/shared/BaseActio
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
 
 export const BudgetsTab: React.FC = () => {
   const [channelBudgets, setChannelBudgets] = useState([
@@ -57,7 +56,6 @@ export const BudgetsTab: React.FC = () => {
       return { ...c, allocated: newAllocated, remaining: newAllocated - c.spent, status: c.spent / newAllocated > 0.85 ? 'warning' : c.spent / newAllocated < 0.5 ? 'under-utilized' : 'on-track' };
     }));
     setIsRedistributeOpen(false);
-    toast.success('تم إعادة توزيع الميزانية بنجاح');
   };
 
   return (

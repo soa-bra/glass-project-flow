@@ -7,7 +7,6 @@ import { BarChart, Download, Calendar, Filter, Eye } from 'lucide-react';
 import { GenericFormModal, FormField } from '../shared/GenericFormModal';
 import { GenericDetailModal, DetailField } from '../shared/GenericDetailModal';
 import { downloadAsCSV } from '../shared/downloadUtils';
-import { toast } from 'sonner';
 import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 
 const initialReports = [
@@ -62,7 +61,6 @@ export const ReportsTab: React.FC = () => {
       [[report.id, report.title, report.category, report.type, report.format, report.lastGenerated]],
       `تقرير-${report.id}`
     );
-    toast.success(`تم تحميل التقرير: ${report.title}`);
   };
 
   const getViewFields = (report: any): DetailField[] => [
