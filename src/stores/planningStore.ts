@@ -12,6 +12,7 @@ interface PlanningState {
   templates: CanvasTemplate[];
   createBoard: (type: 'blank' | 'template' | 'from_file', data?: any) => Promise<CanvasBoard | null>;
   deleteBoard: (id: string) => Promise<void>;
+  archiveBoard: (id: string) => Promise<void>;
   renameBoard: (id: string, name: string) => Promise<void>;
   saveBoard: (id: string, savedAt?: Date, canvasState?: CanvasBoardStateSnapshot) => Promise<void>;
   duplicateBoard: (id: string) => Promise<CanvasBoard | null>;
