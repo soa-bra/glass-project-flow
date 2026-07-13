@@ -32,6 +32,8 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     addChildToFrame,
     removeChildFromFrame
   } = useCanvasStore();
+  const beginLocalElementMutation = useInteractionStore((state) => state.beginLocalElementMutation);
+  const endLocalElementMutation = useInteractionStore((state) => state.endLocalElementMutation);
   
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState<string | null>(null);
@@ -110,6 +112,7 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   }, [elements, selectedElementIds, settings.snapToGrid, settings.gridSize]);
 
   const activePointerIdRef = useRef<number | null>(null);
+  const capturedPointerTargetRef = useRef<Element | null>(null);
   const dragAreaRef = useRef<HTMLDivElement>(null);
 
   const handlePointerMove = useCallback((e: PointerEvent) => {
@@ -190,9 +193,11 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
   
   const handlePointerUp = useCallback((e: PointerEvent) => {
     if (activePointerIdRef.current !== e.pointerId) return;
-    if (e.target instanceof Element && e.target.hasPointerCapture(e.pointerId)) {
-      e.target.releasePointerCapture(e.pointerId);
+    const capturedTarget = capturedPointerTargetRef.current;
+    if (capturedTarget?.hasPointerCapture(e.pointerId)) {
+      capturedTarget.releasePointerCapture(e.pointerId);
     }
+    capturedPointerTargetRef.current = null;
     activePointerIdRef.current = null;
     selectionCoordinator.releaseEvent();
     
@@ -216,12 +221,13 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     }
     
     setDraggedElements([]);
+    endLocalElementMutation(expandedSelectedIds);
     setHoveredFrame(null);
     setIsDragging(false);
     setIsResizing(null);
     hasDuplicated.current = false;
     if (onGuidesChange) onGuidesChange([]);
-  }, [isDragging, selectedElements, elements, onGuidesChange, addChildToFrame, removeChildFromFrame, setDraggedElements, setHoveredFrame]);
+  }, [isDragging, selectedElements, elements, onGuidesChange, addChildToFrame, removeChildFromFrame, setDraggedElements, setHoveredFrame, endLocalElementMutation, expandedSelectedIds]);
   
   useEffect(() => {
     if (isDragging || isResizing) {
@@ -230,9 +236,10 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
       return () => {
         window.removeEventListener('pointermove', handlePointerMove);
         window.removeEventListener('pointerup', handlePointerUp);
+        endLocalElementMutation(expandedSelectedIds);
       };
     }
-  }, [isDragging, isResizing, handlePointerMove, handlePointerUp]);
+  }, [isDragging, isResizing, handlePointerMove, handlePointerUp, endLocalElementMutation, expandedSelectedIds]);
   
   const handleDragStart = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
@@ -241,14 +248,16 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     if (!selectionCoordinator.lockEvent('bounding-box-drag')) return;
     if (e.currentTarget instanceof Element) {
       e.currentTarget.setPointerCapture(e.pointerId);
+      capturedPointerTargetRef.current = e.currentTarget;
       activePointerIdRef.current = e.pointerId;
     }
+    beginLocalElementMutation(expandedSelectedIds);
     setDraggedElements(expandedSelectedIds);
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY };
     elementStartPos.current = { x: bounds.x, y: bounds.y };
     lastAppliedPos.current = { x: bounds.x, y: bounds.y };
-  }, [bounds.x, bounds.y, expandedSelectedIds, setDraggedElements]);
+  }, [bounds.x, bounds.y, expandedSelectedIds, setDraggedElements, beginLocalElementMutation]);
   
   const handleResizeStart = useCallback((e: React.PointerEvent, corner: string) => {
     e.stopPropagation();
@@ -256,11 +265,13 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     if (!selectionCoordinator.lockEvent('resize-start')) return;
     if (e.currentTarget instanceof Element) {
       e.currentTarget.setPointerCapture(e.pointerId);
+      capturedPointerTargetRef.current = e.currentTarget;
       activePointerIdRef.current = e.pointerId;
     }
+    beginLocalElementMutation(expandedSelectedIds);
     setIsResizing(corner);
     dragStart.current = { x: e.clientX, y: e.clientY };
-  }, []);
+  }, [beginLocalElementMutation, expandedSelectedIds]);
   
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     const worldPoint = eventPipeline.screenToWorld(e.clientX, e.clientY);
