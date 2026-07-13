@@ -326,6 +326,7 @@ export const ClientTab = ({
 export const TeamTab = ({
   teamData
 }: any) => {
+  const { isOwner } = useIsOwner();
   const [isTaskAssignmentModalOpen, setIsTaskAssignmentModalOpen] = useState(false);
   const [isTaskRedistributionModalOpen, setIsTaskRedistributionModalOpen] = useState(false);
   const [isAddTeamMemberModalOpen, setIsAddTeamMemberModalOpen] = useState(false);
