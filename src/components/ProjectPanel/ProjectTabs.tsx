@@ -20,6 +20,7 @@ import { AppCardSurface } from '@/components/shared/surfaces/AppCardSurface';
 import { LinkIndicator } from '@/components/shared/LinkIndicator';
 import { SmartConfirmationDialog } from '@/components/shared/SmartConfirmationDialog';
 import { projectEventBus } from '@/features/projects/events/projectEventBus.service';
+import { useIsOwner } from '@/hooks/useIsOwner';
 
 // تبويب الوضع المالي
 export const FinancialTab = ({
