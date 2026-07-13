@@ -61,20 +61,19 @@ const BoardsGrid = () => {
   const bulkDelete = async () => {
     const ids = Array.from(selectedIds);
     await Promise.all(ids.map((id) => deleteBoard(id)));
-    toast.success(`تم حذف ${ids.length} لوحة`);
     exitSelection();
   };
 
   const bulkArchive = async () => {
     const ids = Array.from(selectedIds);
     await Promise.all(ids.map((id) => archiveBoard(id)));
-    toast.success(`تمت أرشفة ${ids.length} لوحة`);
     exitSelection();
   };
 
   const bulkGroupIntoFile = () => {
-    toast.info(`سيتم جمع ${selectedIds.size} لوحة في ملف (قريباً)`);
+    // TODO: implement grouping into folder when backend is ready
   };
+
 
   const handleRename = (id: string, currentName: string) => {
     setRenamingId(id);
