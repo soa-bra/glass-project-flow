@@ -154,6 +154,18 @@ export const usePlanningStore = create<PlanningState>()((set, get) => ({
       currentBoard: state.currentBoard?.id === id ? null : state.currentBoard,
     }));
   },
+  archiveBoard: async (id) => {
+    const updated = await PlanningBoardsService.updatePlanningBoard(id, {
+      state: 'archived',
+    });
+    set((state) => ({
+      boards: updateBoards(state.boards, id, (board) => ({
+        ...board,
+        status: 'archived',
+        lastModified: new Date(updated.updated_at),
+      })),
+    }));
+  },
   renameBoard: async (id, name) => {
     const trimmedName = name.trim();
     if (!trimmedName) return;
