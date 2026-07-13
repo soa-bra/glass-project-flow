@@ -419,6 +419,10 @@ export function usePlanningElementPersistence(
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
       }
+      if (throttleTimer) {
+        clearTimeout(throttleTimer);
+        throttleTimer = null;
+      }
 
       const currentPersistable = getPersistableElements();
       const deletedIds = getDeletedPersistedIds(lastElementIdsRef.current, currentPersistable);
