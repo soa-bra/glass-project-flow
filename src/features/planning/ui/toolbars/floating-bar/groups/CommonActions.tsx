@@ -156,7 +156,6 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           align="end"
-          dir="rtl"
           className="w-56 bg-white z-[var(--z-popover)] pointer-events-auto"
           onMouseDown={(e) => e.stopPropagation()}
         >
@@ -180,7 +179,7 @@ export const CommonActions: React.FC<CommonActionsProps> = ({
               <span>تغيير الطبقة</span>
               <Layers size={16} className="opacity-70 shrink-0" />
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent dir="rtl" className="bg-white z-[var(--z-tooltip)]">
+            <DropdownMenuSubContent className="bg-white z-[var(--z-tooltip)]">
               {layers.map((layer) => (
                 <DropdownMenuItem key={layer.id} onClick={() => onChangeLayer(layer.id)} className="justify-end">
                   {layer.name}
