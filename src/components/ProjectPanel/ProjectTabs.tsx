@@ -437,9 +437,8 @@ export const TeamTab = ({
 
   // معالج إزالة عضو
   const handleRemoveMember = (memberId: string) => {
-    const userRole = 'admin'; // This should come from user context
-    const hasPermission = ['admin', 'owner', 'general_manager'].includes(userRole);
-    if (!hasPermission) {
+    // Client-side gate — real enforcement is RLS on the server (owner-only).
+    if (!isOwner) {
       alert('غير مصرح لك بإستبعاد الأعضاء. هذه الميزة متاحة فقط لمدير التطبيق.');
       return;
     }
