@@ -1,37 +1,39 @@
-# Fix: Approved guests land on 404
+## خطة الإصلاح
 
-## Confirmed issue
-After a join request is approved, `src/pages/JoinBoardPage.tsx` navigates to `/board/${board_id}?guest=true&session=...&role=...`. No such route exists in `src/App.tsx`, so guests hit `NotFound`. Additionally, `/` is wrapped in `ProtectedRoute`, so even redirecting there would bounce unauthenticated guests to `/auth`. Boards today are opened purely via in-memory state (`planningStore.setCurrentBoard`) — there is no deep-link entry point for any user.
+### 1) توحيد مسار السحب ومنع التصادم بين المسارات
+- مراجعة وتعديل مساري السحب الحاليين:
+  - `CanvasElement.tsx` يسحب العنصر عند تحديد عنصر جديد.
+  - `BoundingBox.tsx` يسحب العناصر المحددة.
+- الهدف: لا يعمل إلا مسار واحد لكل عملية Pointer واحدة.
+- إضافة حالة سحب مركزية مؤقتة تمنع `InfiniteCanvas` و `CanvasElement` و `BoundingBox` من معالجة نفس الحركة بشكل متزامن.
+- جعل بداية/نهاية السحب تعتمد على `PointerEvent` مع `pointerId` و `pointercapture` بدل مزج `mouse*` و `pointer*` الذي قد يسبب التصاق العنصر بالمؤشر أو عدم الإفلات.
 
-## Proposed fix (bounded)
+### 2) إصلاح القفل حتى لا يعيد العنصر لموقع قديم
+- تعديل دمج تحديثات Realtime الخاصة بـ `locked_by / locked_at` بحيث لا تستبدل كامل العنصر عند وصول تحديث قفل فقط.
+- عند طلب قفل عنصر للسحب، إذا وصل رد/Realtime من قاعدة البيانات يحتوي موضعاً قديماً، يتم دمج حقول القفل فقط مع الاحتفاظ بالموضع المحلي الحالي.
+- منع طلب القفل من بدء السحب إذا انتهت الحركة أو حدث `mouseup` قبل اكتمال طلب القفل، حتى لا يبدأ drag متأخر ويلتصق بالمؤشر.
 
-### 1. Add a guest-accessible board route
-In `src/App.tsx`, add:
-```
-<Route path="/board/:boardId" element={<BoardPage />} />
-```
-outside `ProtectedRoute` (guests are unauthenticated). Access control is enforced by the existing invite/RLS layer.
+### 3) منع ارتداد العنصر بسبب Realtime أثناء السحب
+- إضافة قائمة عناصر “قيد التحرير المحلي” أثناء السحب/التحجيم.
+- أثناء السحب، يتم تجاهل أو تأجيل تحديثات Realtime لنفس العناصر إذا كانت ستستبدل geometry محلية أحدث.
+- بعد الحفظ الناجح، تحديث `updatedAt` المحلي من صفوف Supabase الراجعة حتى تعمل آلية echo suppression فعلياً ولا تعيد تطبيق صدى الحفظ على الكانفس.
 
-### 2. Create `src/pages/BoardPage.tsx`
-Responsibilities:
-- Read `:boardId` and query params `guest`, `session`, `role`.
-- Fetch the board row from Supabase by id (already RLS-protected — approved guests receive access via `board_join_requests` policy; verify policy allows read for the granted session or fall back to a `get_board_for_guest(session_id)` RPC if RLS blocks anonymous reads).
-- On success: hydrate `planningStore.setCurrentBoard(board)` and render the existing planning canvas shell (same component `MainContent` uses when a board is active — extract or reuse `PlanningWorkspace`/`CanvasBoardView`).
-- Pass `guestSession`/`role` down so `CanvasToolbar`, presence, and edit-lock hooks treat the user as a guest with the granted role (read-only vs editor).
-- On failure (no access / bad id): show a friendly "لا تملك صلاحية الوصول" state with link back to `/`.
+### 4) فصل حفظ الموضع عن حفظ المستندات/العناصر الذكية
+- حالياً أي تحريك عنصر قد يشغل `upsertSmartDocsForElements` لكل المستندات الذكية، ويعيد حذف/إدخال روابط `data_links` وسجلات audit حتى لو تغيّر الموضع فقط.
+- سأقسم التوقيعات إلى:
+  - توقيع geometry/visual للحفظ العام.
+  - توقيع smart-doc/content/link مستقل.
+- لا يتم تحديث `smart_docs` و `data_links` إلا عند تغير محتوى المستند أو `sourceElementIds`، وليس عند مجرد تحديد أو تحريك.
 
-### 3. Verify RLS for anonymous guest reads
-Confirm `canvas_boards` (or equivalent) SELECT policy allows a row when a matching approved `board_join_requests.requester_session_id` exists. If not, add a SECURITY DEFINER RPC `get_board_by_guest_session(board_id, session_id)` and call it from `BoardPage`.
+### 5) تهدئة تحديثات AI والموصلات أثناء التحديد
+- تقليل إعادة تسجيل سياق AI في `PlanningCanvas.tsx` بحيث لا يعتمد على كامل `elements` في كل حركة سحب؛ يعتمد فقط على ملخص مستقر للتحديد أو يتم debouncing له.
+- مراجعة `SmartConnectorManager` حتى يعرض الأنكرات/الموصلات من مواضع حيّة بدون إطلاق تحديثات Store أو persistence غير لازمة أثناء selection فقط.
+- التأكد أن أزرار AI والأشرطة الطافية لا تبدأ تحديثات كانفس عند مجرد تحديد عنصر ذكي أو مستند.
 
-### 4. Preserve authenticated flow
-Signed-in users navigating to `/board/:id` should also work: same page, skip guest params, use normal RLS read.
-
-## Files touched
-- `src/App.tsx` — add route
-- `src/pages/BoardPage.tsx` — new
-- possibly `supabase/migrations/*` — new RPC if RLS insufficient
-- optional small prop on canvas shell for `guestRole`
-
-## Out of scope
-- Redesigning how authenticated users open boards
-- Changing invite/approval flow itself
+### 6) التحقق العملي
+- تشغيل فحص TypeScript/اختبارات موجهة عند التنفيذ.
+- استخدام Playwright على اللوحة للتحقق من:
+  - تحديد شكل تحت/فوق عناصر أخرى ثم سحبه وإفلاته بدون ارتداد.
+  - تحديد عنصر ذكي ومستند ذكي بدون حلقة تحديثات.
+  - سحب عنصر ذكي متصل بموصلات بدون التصاق بالمؤشر.
+  - عدم ظهور طلبات حفظ متكررة عند مجرد التحديد.
