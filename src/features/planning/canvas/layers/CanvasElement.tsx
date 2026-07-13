@@ -149,6 +149,8 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     addChildToFrame,
     removeChildFromFrame,
   } = useCanvasStore();
+  const beginLocalElementMutation = useInteractionStore((state) => state.beginLocalElementMutation);
+  const endLocalElementMutation = useInteractionStore((state) => state.endLocalElementMutation);
 
   const elementRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
@@ -220,6 +222,7 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
 
   const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
   const handleMouseUpRef = useRef<() => void>();
+  const locallyMutatingIdsRef = useRef<string[]>([]);
 
   handleMouseMoveRef.current = (e: MouseEvent) => {
     if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
@@ -282,6 +285,8 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
         }
       }
       isDraggingRef.current = false;
+      endLocalElementMutation(locallyMutatingIdsRef.current);
+      locallyMutatingIdsRef.current = [];
       void releaseElementLock?.();
     }
   };
@@ -297,6 +302,9 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
   }, [stableMouseMove]);
 
   const startDrag = useCallback((clientX: number, clientY: number) => {
+    const groupIds = getGroupElementIds();
+    beginLocalElementMutation(groupIds);
+    locallyMutatingIdsRef.current = groupIds;
     isDraggingRef.current = true;
     dragStartRef.current = {
       x: clientX,
@@ -306,7 +314,7 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     };
     window.addEventListener('mousemove', stableMouseMove);
     window.addEventListener('mouseup', stableMouseUp);
-  }, [element.position.x, element.position.y, stableMouseMove, stableMouseUp]);
+  }, [beginLocalElementMutation, element.position.x, element.position.y, getGroupElementIds, stableMouseMove, stableMouseUp]);
 
   const ensureEditLock = useCallback(async () => {
     if (isLockedBySelf) return true;
@@ -358,7 +366,9 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     // هذا يمنع سلاسل إعادة الرندر التي تحدث حين يتحدث سيرفر الحضور بعد كل نقرة.
     const THRESHOLD = 4;
     let lockRequested = false;
+    let preDragActive = true;
     const onPreMove = (ev: MouseEvent) => {
+      if (!preDragActive) return;
       const dx = ev.clientX - clientX;
       const dy = ev.clientY - clientY;
       if (Math.hypot(dx, dy) < THRESHOLD) return;
@@ -367,11 +377,13 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       if (lockRequested) return;
       lockRequested = true;
       void ensureEditLock().then((granted) => {
+        if (!preDragActive) return;
         if (!granted) return;
         startDrag(clientX, clientY);
       });
     };
     const onPreUp = () => {
+      preDragActive = false;
       window.removeEventListener('mousemove', onPreMove);
       window.removeEventListener('mouseup', onPreUp);
     };
@@ -440,10 +452,12 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       if (isDraggingRef.current) {
         window.removeEventListener('mousemove', stableMouseMove);
         window.removeEventListener('mouseup', stableMouseUp);
+        endLocalElementMutation(locallyMutatingIdsRef.current);
+        locallyMutatingIdsRef.current = [];
         isDraggingRef.current = false;
       }
     };
-  }, [stableMouseMove, stableMouseUp]);
+  }, [endLocalElementMutation, stableMouseMove, stableMouseUp]);
 
   const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
   const isPdfPreview = Boolean(

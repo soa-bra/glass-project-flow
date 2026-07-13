@@ -65,6 +65,10 @@ interface InteractionState {
    */
   touchMultiSelectMode: boolean;
   setTouchMultiSelectMode: (enabled: boolean) => void;
+  localMutatingElementIds: string[];
+  beginLocalElementMutation: (elementIds: string[]) => void;
+  endLocalElementMutation: (elementIds?: string[]) => void;
+  isElementLocallyMutating: (elementId: string) => boolean;
   
   
   // ============= Actions =============
@@ -171,6 +175,26 @@ export const useInteractionStore = create<InteractionState>((set, get) => ({
   cursor: 'default',
   touchMultiSelectMode: false,
   setTouchMultiSelectMode: (enabled) => set({ touchMultiSelectMode: enabled }),
+  localMutatingElementIds: [],
+  beginLocalElementMutation: (elementIds) => {
+    if (elementIds.length === 0) return;
+    set((state) => ({
+      localMutatingElementIds: Array.from(new Set([...state.localMutatingElementIds, ...elementIds])),
+    }));
+  },
+  endLocalElementMutation: (elementIds) => {
+    set((state) => {
+      if (!elementIds || elementIds.length === 0) {
+        return { localMutatingElementIds: [] };
+      }
+
+      const ended = new Set(elementIds);
+      return {
+        localMutatingElementIds: state.localMutatingElementIds.filter((id) => !ended.has(id)),
+      };
+    });
+  },
+  isElementLocallyMutating: (elementId) => get().localMutatingElementIds.includes(elementId),
 
   
   // ============= Actions Implementation =============

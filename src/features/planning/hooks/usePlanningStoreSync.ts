@@ -21,6 +21,7 @@ import { DEFAULT_LAYER } from "@/features/planning/state/types";
 import type { CanvasElement, LayerInfo } from "@/features/planning/state/types";
 import { planningElementToCanvas } from "@/features/planning/state/planningElementMapper";
 import { isPlanningConnectorElement } from "@/features/planning/integration/connectors";
+import { useInteractionStore } from "@/stores/interactionStore";
 import { usePlanningRealtime } from "./usePlanningRealtime";
 import { useAutoUnlockStaleLocks } from "./useAutoUnlockStaleLocks";
 
@@ -71,6 +72,32 @@ function rebuildLayerMembership(layers: LayerInfo[] | undefined, elements: Canva
     ...layer,
     elements: elementIdsByLayer.get(layer.id) ?? [],
   }));
+}
+
+function stableComparable(value: unknown): string {
+  return JSON.stringify(value ?? null);
+}
+
+function isLockOnlyUpdate(existing: CanvasElement, mapped: CanvasElement): boolean {
+  return existing.type === mapped.type &&
+    stableComparable(existing.position) === stableComparable(mapped.position) &&
+    stableComparable(existing.size) === stableComparable(mapped.size) &&
+    stableComparable(existing.rotation ?? 0) === stableComparable(mapped.rotation ?? 0) &&
+    stableComparable(existing.layer ?? 0) === stableComparable(mapped.layer ?? 0) &&
+    stableComparable(existing.data) === stableComparable(mapped.data) &&
+    stableComparable(existing.style) === stableComparable(mapped.style) &&
+    stableComparable(existing.metadata) === stableComparable(mapped.metadata) &&
+    stableComparable((existing as { schemaVersion?: unknown }).schemaVersion ?? 1) === stableComparable((mapped as { schemaVersion?: unknown }).schemaVersion ?? 1);
+}
+
+function mergeLockState(existing: CanvasElement, mapped: CanvasElement): CanvasElement {
+  return {
+    ...existing,
+    locked: false,
+    lockedBy: (mapped as { lockedBy?: string | null }).lockedBy ?? null,
+    lockedAt: (mapped as { lockedAt?: string | null }).lockedAt ?? null,
+    updatedAt: (mapped as { updatedAt?: string | null }).updatedAt ?? (existing as { updatedAt?: string | null }).updatedAt,
+  } as CanvasElement;
 }
 
 export type PlanningStoreHydrationStatus = "idle" | "loading" | "ready" | "error";
@@ -191,6 +218,14 @@ export function usePlanningStoreSync(
       if (existing.updatedAt === row.updated_at) return state;
       const mapped = planningElementToCanvas(row);
       const next = state.elements.slice();
+      const isLocallyMutating = useInteractionStore.getState().isElementLocallyMutating(row.id);
+      if (isLocallyMutating || isLockOnlyUpdate(existing, mapped)) {
+        next[idx] = mergeLockState(existing, mapped);
+        return {
+          elements: next,
+          layers: state.layers,
+        };
+      }
       next[idx] = assignLayerIds([{ ...mapped, layerId: mapped.layerId ?? existing.layerId }], layers)[0];
       return {
         elements: next,
