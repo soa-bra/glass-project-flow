@@ -737,10 +737,12 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
 
         {visibleElements
           .filter((element) => element.data?.smartType !== 'root_connector')
-          .map((element, index) => (
+          .map((element) => {
+            const stackIndex = elements.indexOf(element);
+            return (
           <div
             key={element.id}
-            style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, zIndex: index + 1, pointerEvents: 'none' }}
+            style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, zIndex: stackIndex + 1, pointerEvents: 'none' }}
           >
             <CanvasElement
               element={element}
