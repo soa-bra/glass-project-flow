@@ -112,24 +112,24 @@ const BoardsGrid = () => {
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem onClick={() => handleSelectBoard(board)}>
-                        <ExternalLink size={14} className="ml-2" />
-                        فتح
+                      <DropdownMenuItem onClick={() => handleSelectBoard(board)} className="gap-3 justify-between">
+                        <span>فتح</span>
+                        <ExternalLink size={16} className="opacity-70 shrink-0" />
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleRename(board.id, board.name)}>
-                        <Edit2 size={14} className="ml-2" />
-                        إعادة تسمية
+                      <DropdownMenuItem onClick={() => handleRename(board.id, board.name)} className="gap-3 justify-between">
+                        <span>إعادة تسمية</span>
+                        <Edit2 size={16} className="opacity-70 shrink-0" />
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => duplicateBoard(board.id)}>
-                        <Copy size={14} className="ml-2" />
-                        نسخ
+                      <DropdownMenuItem onClick={() => duplicateBoard(board.id)} className="gap-3 justify-between">
+                        <span>نسخ</span>
+                        <Copy size={16} className="opacity-70 shrink-0" />
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => deleteBoard(board.id)}
-                        className="text-red-600"
+                        className="text-red-600 gap-3 justify-between"
                       >
-                        <Trash2 size={14} className="ml-2" />
-                        حذف
+                        <span>حذف</span>
+                        <Trash2 size={16} className="opacity-70 shrink-0" />
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
