@@ -37,7 +37,7 @@ export const TemplatesTab: React.FC = () => {
     downloadAsCSV(['الاسم', 'الفئة', 'النوع'], [[template.name, template.category, template.type]], `قالب-تسويق`);
   };
 
-  const handlePreview = (name: string) => toast.info(`معاينة: ${name}`);
+  const handlePreview = (name: string) => {};
 
   const handleCopy = (template: { name: string; category: string; downloads: number; lastUpdated: string; status: string; type: string }) => {
     setPopularTemplates(prev => [{ ...template, name: `نسخة من ${template.name}`, downloads: 0 }, ...prev]);
