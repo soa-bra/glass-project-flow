@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ConnectionAnchors } from './RootConnector';
 
 describe('ConnectionAnchors', () => {
-  it('places the root connector handle on the right side at 1/4 height (Miro style, top-3/4)', () => {
+  it('places the root connector anchor at the T1/T2 boundary (y = height/6) with a one-handle gap', () => {
     const onStartDrag = vi.fn();
 
     render(
@@ -21,13 +21,12 @@ describe('ConnectionAnchors', () => {
     expect(anchorGroup).toHaveAttribute('data-anchor-position', 'right');
     expect(anchorGroup).toHaveAttribute('data-anchor-hit', 'true');
 
-    // right = bounds.x + bounds.width + OFFSET_X(12), bounds.y + height * 0.25
-    const expectedX = 120 + 240 + 12; // 372
-    const expectedY = 80 + 160 * 0.25; // 120
+    // GAP = 8 (single selection-handle width), y = bounds.y + height/6
+    const expectedX = 120 + 240 + 8; // 368
+    const expectedY = 80 + 160 / 6;  // ≈ 106.666...
 
     const hitArea = anchorGroup.querySelector('.connection-anchor-hit') as SVGCircleElement;
-    // hit circle is centered on the shaft midpoint (anchor.x + SHAFT/2)
-    expect(hitArea.getAttribute('cy')).toBe(String(expectedY));
+    expect(Number(hitArea.getAttribute('cy'))).toBeCloseTo(expectedY, 5);
 
     fireEvent.pointerDown(hitArea);
 

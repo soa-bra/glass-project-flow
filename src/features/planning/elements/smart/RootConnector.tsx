@@ -130,17 +130,21 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   onStartDrag,
   isConnecting,
 }) => {
+  // مقبض التحديد ~8px، لذا حجم الأنكر = 2× = 16px، والمسافة بين
+  // صندوق التحديد والأنكر = عرض مقبض واحد = 8px.
+  const HANDLE_SIZE = 8;
+  const TRIANGLE_SIZE = HANDLE_SIZE * 2; // 16px – قاعدة المثلث وارتفاعه
+  const GAP = HANDLE_SIZE;                // 8px – مسافة بين الصندوق والأنكر
   const HIT_RADIUS = 18;
-  const OFFSET_X = 12; // خارج الحد يمينًا
-  const SHAFT = 14;    // طول جسم السهم
-  const HEAD = 6;      // نصف عرض رأس السهم
   const [isHovered, setIsHovered] = useState(false);
 
-  // ⭐ نمط Miro: نقطة الأنكر على يمين العنصر عند 1/4 من الأعلى (= 3/4 الارتفاع من الأسفل)
+  // الموقع رأسياً: F = ارتفاع الصندوق، H1 = F/2 (النصف العلوي)،
+  // H1 = T1 + T2 + T3 بأثلاث متساوية، والأنكر عند التقاء T1 مع T2
+  // ⇒ y = bounds.y + H1/3 = bounds.y + F/6.
   const anchor = {
     anchorPoint: 'right' as const,
-    x: bounds.x + bounds.width + OFFSET_X,
-    y: bounds.y + bounds.height * 0.25,
+    x: bounds.x + bounds.width + GAP,
+    y: bounds.y + bounds.height / 6,
   };
 
   const gradientId = `ai-anchor-grad-${elementId}`;
@@ -155,11 +159,12 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
   };
 
   const active = isHovered || isConnecting;
-  const scale = active ? 1.25 : 1;
+  const scale = active ? 1.2 : 1;
 
-  // مسار سهم رفيع متجه لليمين (بدون دائرة حاوية)
-  // يبدأ من الحافة اليسرى للسهم عند (0,0) وينتهي عند (SHAFT,0)
-  const arrowPath = `M 0 0 L ${SHAFT} 0 M ${SHAFT - HEAD} ${-HEAD} L ${SHAFT} 0 L ${SHAFT - HEAD} ${HEAD}`;
+  // مثلث ممتلئ (Play-shape) يشير لليمين، رأسه عند (TRIANGLE_SIZE, 0)
+  // وقاعدته على المحور y بارتفاع TRIANGLE_SIZE.
+  const half = TRIANGLE_SIZE / 2;
+  const trianglePath = `M 0 ${-half} L ${TRIANGLE_SIZE} 0 L 0 ${half} Z`;
 
   return (
     <g
@@ -183,9 +188,9 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         </filter>
       </defs>
 
-      {/* منطقة اللمس/الفأرة الشفافة */}
+      {/* منطقة اللمس/الفأرة الشفافة – مركزها منتصف المثلث */}
       <circle
-        cx={anchor.x + SHAFT / 2}
+        cx={anchor.x + TRIANGLE_SIZE / 2}
         cy={anchor.y}
         r={HIT_RADIUS}
         fill="transparent"
@@ -197,7 +202,7 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         onMouseDown={handlePointerDown}
       />
 
-      {/* سهم مباشر بدون دائرة، بألوان AI متجه لليمين → */}
+      {/* مثلث ممتلئ (Play) بألوان AI، رأسه لليمين ► */}
       <g
         pointerEvents="none"
         data-anchor-hit="true"
@@ -209,12 +214,9 @@ export const ConnectionAnchors: React.FC<ConnectionAnchorsProps> = ({
         }}
       >
         <path
-          d={arrowPath}
-          fill="none"
-          stroke={`url(#${gradientId})`}
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          d={trianglePath}
+          fill={`url(#${gradientId})`}
+          stroke="none"
           className="connection-anchor-arrow"
         />
       </g>
