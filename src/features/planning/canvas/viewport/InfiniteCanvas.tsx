@@ -758,7 +758,8 @@ const InfiniteCanvas: React.FC<InfiniteCanvasProps> = ({
               nearestAnchor={mindMapConnectionUI.nearestAnchor}
             />
           </div>
-        ))}
+            );
+          })}
 
         <svg
           className="absolute left-0 top-0 overflow-visible"
