@@ -146,7 +146,7 @@ export function planningElementToCanvas(row: PlanningElement): CanvasElement {
     layerId,
     metadata,
     data,
-    locked: !!row.locked_by,
+    locked: false,
     lockedBy: row.locked_by ?? null,
     lockedAt: row.locked_at ?? null,
     schemaVersion: row.schema_version ?? 1,
