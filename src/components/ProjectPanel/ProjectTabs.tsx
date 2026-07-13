@@ -648,6 +648,7 @@ export const TeamTab = ({
 export const AttachmentsTab = ({
   documents
 }: any) => {
+  const { isOwner } = useIsOwner();
   const [isFileUploadModalOpen, setIsFileUploadModalOpen] = useState(false);
   const [isFolderOrganizationModalOpen, setIsFolderOrganizationModalOpen] = useState(false);
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
