@@ -108,6 +108,7 @@ export const JoinBoardPage: React.FC = () => {
         .insert({
           board_id: inviteLink.board_id,
           invite_link_id: inviteLink.id,
+          invite_token: token,
           requester_name: guestName.trim(),
           requester_session_id: sessionId,
           status: 'pending',
