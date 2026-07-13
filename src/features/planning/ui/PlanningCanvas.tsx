@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePlanningStore } from '@/stores/planningStore';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasBoard } from '@/types/planning';
@@ -97,10 +97,40 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
 
   useBoardCanvasLifecycle(board);
 
-  useEffect(() => {
+  const selectedAIContextSignature = useMemo(
+    () => selectedElementIds
+      .map((id) => {
+        const element = elements.find((entry) => entry.id === id);
+        if (!element) return id;
+        const title = 'title' in element ? element.title : undefined;
+        return [
+          id,
+          element.type,
+          title,
+          element.data?.type,
+          element.data?.smartType,
+          element.metadata?.title,
+        ].join('::');
+      })
+      .join('|'),
+    [elements, selectedElementIds],
+  );
+
+  const aiContextSnapshot = useMemo(() => {
     const selectedElements = elements.filter((element) => selectedElementIds.includes(element.id));
     const selectedProjectCards = selectedElements.filter((element) => element.type === 'smart' && element.data?.type === 'project_card');
     const selectedTaskCards = selectedElements.filter((element) => element.type === 'smart' && element.data?.type === 'task_card');
+
+    return {
+      selectedElements,
+      selectedProjectCardsCount: selectedProjectCards.length,
+      selectedTaskCardsCount: selectedTaskCards.length,
+      totalElements: elements.length,
+    };
+  }, [elements.length, selectedAIContextSignature, selectedElementIds]);
+
+  useEffect(() => {
+    const selectedElements = aiContextSnapshot.selectedElements;
 
     return registerAIContextSource({
       id: `planning-canvas-${board.id}`,
@@ -110,7 +140,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
           boardId: board.id,
           boardName: board.name,
           boardStatus: board.status,
-          totalElements: elements.length,
+          totalElements: aiContextSnapshot.totalElements,
           selectedElementsCount: selectedElementIds.length,
         },
         active_tab: { id: 'planning-canvas', label: 'لوحة التخطيط', boardId: board.id },
@@ -125,8 +155,8 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
           entityType: element.data?.type,
         })),
         tasks_snapshot: {
-          selectedTaskCards: selectedTaskCards.length,
-          selectedProjectCards: selectedProjectCards.length,
+          selectedTaskCards: aiContextSnapshot.selectedTaskCardsCount,
+          selectedProjectCards: aiContextSnapshot.selectedProjectCardsCount,
         },
         recent_events: [
           { type: 'planning-canvas-opened', boardId: board.id, status: board.status },
@@ -141,7 +171,7 @@ const PlanningCanvas: React.FC<PlanningCanvasProps> = ({ board }) => {
         canViewSensitive: boardRole.role === 'host' || boardRole.role === 'editor',
       },
     });
-  }, [aiPermissions.canUseAI, aiPermissions.denialReason, board.id, board.name, board.status, boardRole.role, elements, selectedElementIds]);
+  }, [aiContextSnapshot, aiPermissions.canUseAI, aiPermissions.denialReason, board.id, board.name, board.status, boardRole.role, selectedElementIds.length]);
 
   const sync = usePlanningCanvasPersistence(board.id, {
     selfDisplayName: selfName,
