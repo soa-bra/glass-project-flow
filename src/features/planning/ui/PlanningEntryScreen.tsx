@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Brain, Cable, FileText, FileUp, Layout, Plus, Users, Workflow } from 'lucide-react';
+import { FileUp, Layout, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePlanningStore } from '@/stores/planningStore';
 import BoardsGrid from '@/features/planning/ui/widgets/BoardsGrid';
@@ -25,21 +25,13 @@ const PlanningEntryScreen = () => {
 
   return (
     <div className="h-full flex flex-col p-6 lg:p-8 bg-[hsl(var(--sb-column-3-bg))] overflow-y-auto" dir="rtl">
-      <div className="mb-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-        <div>
-          <h1 className="text-[30px] font-bold text-[hsl(var(--ink))] mb-3">
-            مساحة التخطيط التضامني
-          </h1>
-          <p className="text-[14px] text-[hsl(var(--ink-60))] max-w-3xl leading-7">
-            كانفاس حي للتخطيط، التعاون، توليد المستندات، إنشاء الموصلات الدلالية، وتحويل الأفكار إلى مشاريع ومهام وسجلات تنفيذية مرتبطة.
-          </p>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 min-w-[min(100%,520px)]">
-          <CapabilityPill icon={<Users size={15} />} label="حضور لحظي" />
-          <CapabilityPill icon={<Brain size={15} />} label="AI سياقي" />
-          <CapabilityPill icon={<Cable size={15} />} label="موصلات ذكية" />
-          <CapabilityPill icon={<Workflow size={15} />} label="تحويل للتنفيذ" />
-        </div>
+      <div className="mb-8">
+        <h1 className="text-[30px] font-bold text-[hsl(var(--ink))] mb-3">
+          مساحة التخطيط التضامني
+        </h1>
+        <p className="text-[14px] text-[hsl(var(--ink-60))] max-w-3xl leading-7">
+          كانفاس حي للتخطيط، التعاون، توليد المستندات، إنشاء الموصلات الدلالية، وتحويل الأفكار إلى مشاريع ومهام وسجلات تنفيذية مرتبطة.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -66,11 +58,6 @@ const PlanningEntryScreen = () => {
         />
       </div>
 
-      <div className="mb-6 grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <ReadinessCard icon={<FileText size={18} />} title="المستندات الذكية" description="توليد وثيقة أو جدول من التحديد وربطها بالعناصر المصدر." />
-        <ReadinessCard icon={<Cable size={18} />} title="العلاقات الدلالية" description="اسحب من anchors لإنشاء علاقة references أو depends_on أو blocks." />
-        <ReadinessCard icon={<Workflow size={18} />} title="التحويل التنفيذي" description="حوّل التخطيط إلى مشروع أو مهمة مع مراجعة وربط وتدقيق." />
-      </div>
 
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-[18px] font-bold text-[hsl(var(--ink))]">اللوحات المحفوظة</h2>
@@ -118,21 +105,5 @@ const ActionCard = ({ icon, title, description, onClick, meta }: {
   </motion.button>
 );
 
-const CapabilityPill = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
-  <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-white px-3 py-2 text-[12px] font-semibold text-[hsl(var(--ink))]">
-    <span className="text-[hsl(var(--accent-green))]">{icon}</span>
-    {label}
-  </div>
-);
-
-const ReadinessCard = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
-  <div className="rounded-lg border border-[hsl(var(--border))] bg-white/80 p-4">
-    <div className="mb-2 flex items-center gap-2 text-[hsl(var(--ink))]">
-      <span className="text-[hsl(var(--accent-green))]">{icon}</span>
-      <h3 className="text-[13px] font-bold">{title}</h3>
-    </div>
-    <p className="text-[12px] leading-6 text-[hsl(var(--ink-60))]">{description}</p>
-  </div>
-);
 
 export default PlanningEntryScreen;

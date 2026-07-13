@@ -12,6 +12,7 @@ interface PlanningState {
   templates: CanvasTemplate[];
   createBoard: (type: 'blank' | 'template' | 'from_file', data?: any) => Promise<CanvasBoard | null>;
   deleteBoard: (id: string) => Promise<void>;
+  archiveBoard: (id: string) => Promise<void>;
   renameBoard: (id: string, name: string) => Promise<void>;
   saveBoard: (id: string, savedAt?: Date, canvasState?: CanvasBoardStateSnapshot) => Promise<void>;
   duplicateBoard: (id: string) => Promise<CanvasBoard | null>;
@@ -151,6 +152,18 @@ export const usePlanningStore = create<PlanningState>()((set, get) => ({
     set((state) => ({
       boards: state.boards.filter((board) => board.id !== id),
       currentBoard: state.currentBoard?.id === id ? null : state.currentBoard,
+    }));
+  },
+  archiveBoard: async (id) => {
+    const updated = await PlanningBoardsService.updatePlanningBoard(id, {
+      state: 'archived',
+    });
+    set((state) => ({
+      boards: updateBoards(state.boards, id, (board) => ({
+        ...board,
+        status: 'archived',
+        lastModified: new Date(updated.updated_at),
+      })),
     }));
   },
   renameBoard: async (id, name) => {
