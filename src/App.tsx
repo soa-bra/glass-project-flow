@@ -9,6 +9,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import JoinBoardPage from "./pages/JoinBoardPage";
+import BoardPage from "./pages/BoardPage";
 import AuthPage from "./pages/AuthPage";
 import DepartmentRoutePage from "./pages/DepartmentRoutePage";
 import SpecPreviewPage from "./pages/SpecPreviewPage";
