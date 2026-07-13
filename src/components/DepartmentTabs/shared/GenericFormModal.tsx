@@ -46,7 +46,6 @@ export const GenericFormModal: React.FC<GenericFormModalProps> = ({
       return;
     }
     onSubmit(formData);
-    toast.success(successMessage);
     setFormData(() => {
       const defaults: Record<string, string> = {};
       fields.forEach(f => { defaults[f.name] = f.defaultValue || ''; });
