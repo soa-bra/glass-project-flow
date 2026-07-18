@@ -171,6 +171,9 @@ export default {
 				'slide-in-right': 'slide-in-right 300ms ease-out',
 				'slide-out-right': 'slide-out-right 300ms ease-out'
 			},
+			transitionTimingFunction: {
+				'sb-out': 'cubic-bezier(0.22, 1, 0.36, 1)',
+			},
 			spacing: {
 				'18': '4.5rem',
 				'88': '22rem'
