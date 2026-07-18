@@ -164,7 +164,10 @@ export default function AuthPage() {
                 dir="ltr"
                 aria-invalid={emailMsg?.tone === "error"}
                 aria-describedby="signin-email-hint"
-                className={cn(emailMsg && "focus-visible:ring-0")}
+                className={cn(
+                  "text-left",
+                  emailMsg && "focus-visible:ring-0"
+                )}
                 style={borderFor(emailMsg)}
               />
               <div id="signin-email-hint">
@@ -185,7 +188,10 @@ export default function AuthPage() {
                 dir="ltr"
                 aria-invalid={passwordMsg?.tone === "error"}
                 aria-describedby="signin-password-hint"
-                className={cn(passwordMsg && "focus-visible:ring-0")}
+                className={cn(
+                  "text-left",
+                  passwordMsg && "focus-visible:ring-0"
+                )}
                 style={borderFor(passwordMsg)}
               />
               <div id="signin-password-hint">
