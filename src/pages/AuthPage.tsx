@@ -62,7 +62,15 @@ export default function AuthPage() {
         description="سجّل الدخول إلى منصة سـوبــرا للوصول إلى لوحات إدارة المشاريع والعمليات والأقسام والتخطيط والأرشيف."
         path="/auth"
       />
-      <Card className="w-full max-w-md">
+      <Card
+        className="w-full max-w-md border bg-white"
+        style={{
+          borderColor: "#DADCE0",
+          borderRadius: "24px 24px 6px 6px",
+          boxShadow:
+            "0 1px 1px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.06)",
+        }}
+      >
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">سـوبــرا</CardTitle>
           <CardDescription>تسجيل الدخول إلى حسابك</CardDescription>
