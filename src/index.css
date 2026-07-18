@@ -19,12 +19,18 @@
     --ink-60: 11 15 18 / 0.60;
     --ink-30: 11 15 18 / 0.30;
     --border: 218 220 224;
+
+    /* SoaBra Design Tokens v1.0 — Accent Palette */
+    --sb-accent-green: #3DBE8B;
+    --sb-accent-yellow: #F6C445;
+    --sb-accent-red: #E5564D;
+    --sb-accent-blue: #3DA8F5;
     
     /* SoaBra UI Guidelines v1.2.6 - Design Tokens */
-    --sb-ink: #000000;
-    --sb-ink-70: rgba(0,0,0,0.7);
-    --sb-ink-40: rgba(0,0,0,0.4);
-    --sb-ink-20: rgba(0,0,0,0.2);
+    --sb-ink: #0B0F12;
+    --sb-ink-70: rgba(11,15,18,0.7);
+    --sb-ink-40: rgba(11,15,18,0.4);
+    --sb-ink-20: rgba(11,15,18,0.2);
     --sb-white: #FFFFFF;
     --sb-app-bg: #F1F5F9;
     --sb-panel-bg: #F8F9FA;

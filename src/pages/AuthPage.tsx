@@ -14,12 +14,13 @@ import { isAuthBypassEnabled } from "@/lib/authBypass";
 import { PageMeta } from "@/components/seo/PageMeta";
 import { cn } from "@/lib/utils";
 
-type FieldTone = "error" | "warning" | "success";
+type FieldTone = "error" | "warning" | "success" | "info";
 
 const TONE_STYLES: Record<FieldTone, { text: string; border: string; icon: typeof AlertCircle }> = {
   error: { text: "#E5564D", border: "#E5564D", icon: AlertCircle },
   warning: { text: "#F6C445", border: "#F6C445", icon: AlertCircle },
   success: { text: "#3DBE8B", border: "#3DBE8B", icon: CheckCircle2 },
+  info: { text: "#3DA8F5", border: "#3DA8F5", icon: AlertCircle },
 };
 
 interface FieldMessage {
@@ -190,6 +191,19 @@ export default function AuthPage() {
               <div id="signin-password-hint">
                 <FieldHint message={passwordMsg} />
               </div>
+            </div>
+
+            <div className="flex justify-end -mt-1">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setFormMsg({ tone: "info", text: "يرجى التواصل مع مدير النظام لإعادة تعيين كلمة المرور." });
+                }}
+                className="text-xs text-sb-ink/70 hover:text-sb-accent-blue hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sb-accent-blue/50 focus-visible:ring-offset-2 transition-colors"
+              >
+                نسيت كلمة المرور؟
+              </a>
             </div>
 
             {formMsg && (

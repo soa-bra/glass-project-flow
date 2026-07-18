@@ -34,13 +34,13 @@ function isActionStatusRef(value?: string): value is ActionStatusRef {
 function getButtonIntentClass(family: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]['family']) {
   switch (family) {
     case 'primary':
-      return 'border border-transparent bg-black text-white hover:bg-black/90 active:bg-black/80';
+      return 'border border-transparent bg-sb-ink text-sb-white hover:bg-sb-ink/90 hover:shadow-md active:bg-sb-ink/80';
     case 'secondary':
-      return 'border border-black bg-transparent text-black hover:bg-black/[0.04] active:bg-black/[0.08]';
+      return 'border border-sb-ink bg-transparent text-sb-ink hover:bg-sb-ink/[0.04] active:bg-sb-ink/[0.08]';
     case 'primarySensitiveAction':
-      return 'border border-transparent bg-[#EF4444] text-black hover:bg-[#EF4444]/90 active:bg-[#EF4444]/80';
+      return 'border border-transparent bg-sb-accent-red text-sb-white hover:bg-sb-accent-red/90 active:bg-sb-accent-red/80';
     case 'secondarySensitiveAction':
-      return 'border border-[#EF4444] bg-transparent text-[#EF4444] hover:bg-[#EF4444]/[0.06] active:bg-[#EF4444]/[0.10]';
+      return 'border border-sb-accent-red bg-transparent text-sb-accent-red hover:bg-sb-accent-red/[0.06] active:bg-sb-accent-red/[0.10]';
   }
 }
 
@@ -139,9 +139,9 @@ function BaseActionButtonControl(props: {
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        'inline-flex w-fit max-w-full items-center justify-center whitespace-nowrap rounded-full font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.2,0,0,1)]',
+        'inline-flex w-fit max-w-full items-center justify-center whitespace-nowrap rounded-full font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]',
         'hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 focus-visible:ring-offset-2',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sb-accent-blue/50 focus-visible:ring-offset-2',
         'disabled:pointer-events-none disabled:opacity-50',
         config.content === 'iconOnly' ? 'p-0 shrink-0' : '',
         getButtonIntentClass(config.family),
@@ -275,7 +275,7 @@ export const ActionMenu: React.FC<{
             key={`${item.label}-${index}`}
             disabled={item.disabled}
             onSelect={item.onSelect}
-            className={cn(item.destructive && 'text-[#EF4444] hover:!bg-red-50 hover:!text-[#EF4444] focus:!bg-red-50 focus:!text-[#EF4444]')}
+            className={cn(item.destructive && 'text-sb-accent-red hover:!bg-sb-accent-red/10 hover:!text-sb-accent-red focus:!bg-sb-accent-red/10 focus:!text-sb-accent-red')}
           >
             {item.label}
           </DropdownMenuItem>
