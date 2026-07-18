@@ -139,9 +139,9 @@ function BaseActionButtonControl(props: {
       onClick={onClick}
       aria-label={ariaLabel}
       className={cn(
-        'inline-flex w-fit max-w-full items-center justify-center whitespace-nowrap rounded-full font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.2,0,0,1)]',
+        'inline-flex w-fit max-w-full items-center justify-center whitespace-nowrap rounded-full font-semibold transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-[cubic-bezier(0.22,1,0.36,1)]',
         'hover:-translate-y-px active:translate-y-0 active:scale-[0.98]',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/40 focus-visible:ring-offset-2',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sb-accent-blue/50 focus-visible:ring-offset-2',
         'disabled:pointer-events-none disabled:opacity-50',
         config.content === 'iconOnly' ? 'p-0 shrink-0' : '',
         getButtonIntentClass(config.family),
