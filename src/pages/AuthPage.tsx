@@ -144,12 +144,12 @@ export default function AuthPage() {
           boxShadow: "0 1px 1px rgba(0,0,0,0.03), 0 8px 24px rgba(0,0,0,0.06)",
         }}
       >
-        <CardHeader className="text-center">
+        <CardHeader className="text-center space-y-2">
           <CardTitle className="text-2xl">سـوبــرا</CardTitle>
           <CardDescription>تسجيل الدخول إلى حسابك</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="signin-email">البريد الإلكتروني</Label>
               <Input
@@ -197,19 +197,18 @@ export default function AuthPage() {
               <div id="signin-password-hint">
                 <FieldHint message={passwordMsg} />
               </div>
-            </div>
-
-            <div className="flex justify-end -mt-1">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFormMsg({ tone: "info", text: "يرجى التواصل مع مدير النظام لإعادة تعيين كلمة المرور." });
-                }}
-                className="text-xs text-sb-ink/70 hover:text-sb-accent-blue hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sb-accent-blue/50 focus-visible:ring-offset-2 transition-colors"
-              >
-                نسيت كلمة المرور؟
-              </a>
+              <div className="flex justify-end pt-2">
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFormMsg({ tone: "info", text: "يرجى التواصل مع مدير النظام لإعادة تعيين كلمة المرور." });
+                  }}
+                  className="text-xs text-sb-ink/70 hover:text-sb-accent-blue hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sb-accent-blue/50 focus-visible:ring-offset-2 transition-colors"
+                >
+                  نسيت كلمة المرور؟
+                </a>
+              </div>
             </div>
 
             {formMsg && (
@@ -233,10 +232,10 @@ export default function AuthPage() {
             >
               دخول
             </ActionButton>
-            <p className="text-center text-xs text-muted-foreground pt-2">
-              جاهز لإنجاز اليوم؟
-            </p>
           </form>
+          <p className="text-center text-xs text-muted-foreground mt-3">
+            جاهز لإنجاز اليوم؟
+          </p>
         </CardContent>
       </Card>
     </div>
