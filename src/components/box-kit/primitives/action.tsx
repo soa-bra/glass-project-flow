@@ -275,7 +275,7 @@ export const ActionMenu: React.FC<{
             key={`${item.label}-${index}`}
             disabled={item.disabled}
             onSelect={item.onSelect}
-            className={cn(item.destructive && 'text-[#EF4444] hover:!bg-red-50 hover:!text-[#EF4444] focus:!bg-red-50 focus:!text-[#EF4444]')}
+            className={cn(item.destructive && 'text-sb-accent-red hover:!bg-sb-accent-red/10 hover:!text-sb-accent-red focus:!bg-sb-accent-red/10 focus:!text-sb-accent-red')}
           >
             {item.label}
           </DropdownMenuItem>
