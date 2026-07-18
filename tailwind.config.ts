@@ -26,10 +26,10 @@ export default {
 			colors: {
 				// SoaBra UI Guidelines v1.2.6 Palette
 				'sb': {
-					'ink': '#000000',
-					'ink-70': 'rgba(0,0,0,0.7)',
-					'ink-40': 'rgba(0,0,0,0.4)', 
-					'ink-20': 'rgba(0,0,0,0.2)',
+					'ink': '#0B0F12',
+					'ink-70': 'rgba(11,15,18,0.7)',
+					'ink-40': 'rgba(11,15,18,0.4)',
+					'ink-20': 'rgba(11,15,18,0.2)',
 					'white': '#FFFFFF',
 					'app-bg': '#F1F5F9',
 					'panel-bg': '#F8F9FA',
@@ -46,6 +46,10 @@ export default {
 					'task-card-bg': '#F8F9FA',
 					'box-bg': '#FFFFFF',
 					'modal-scrim': 'rgba(0,0,0,0.2)',
+					'accent-green': '#3DBE8B',
+					'accent-yellow': '#F6C445',
+					'accent-red': '#E5564D',
+					'accent-blue': '#3DA8F5',
 				},
 				
 				// Original colors for compatibility
