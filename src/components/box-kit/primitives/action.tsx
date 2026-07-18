@@ -34,13 +34,13 @@ function isActionStatusRef(value?: string): value is ActionStatusRef {
 function getButtonIntentClass(family: (typeof ACTION_BUTTON_REFERENCE_MAP)[ActionButtonRef]['family']) {
   switch (family) {
     case 'primary':
-      return 'border border-transparent bg-black text-white hover:bg-black/90 active:bg-black/80';
+      return 'border border-transparent bg-sb-ink text-sb-white hover:bg-sb-ink/90 hover:shadow-md active:bg-sb-ink/80';
     case 'secondary':
-      return 'border border-black bg-transparent text-black hover:bg-black/[0.04] active:bg-black/[0.08]';
+      return 'border border-sb-ink bg-transparent text-sb-ink hover:bg-sb-ink/[0.04] active:bg-sb-ink/[0.08]';
     case 'primarySensitiveAction':
-      return 'border border-transparent bg-[#EF4444] text-black hover:bg-[#EF4444]/90 active:bg-[#EF4444]/80';
+      return 'border border-transparent bg-sb-accent-red text-sb-white hover:bg-sb-accent-red/90 active:bg-sb-accent-red/80';
     case 'secondarySensitiveAction':
-      return 'border border-[#EF4444] bg-transparent text-[#EF4444] hover:bg-[#EF4444]/[0.06] active:bg-[#EF4444]/[0.10]';
+      return 'border border-sb-accent-red bg-transparent text-sb-accent-red hover:bg-sb-accent-red/[0.06] active:bg-sb-accent-red/[0.10]';
   }
 }
 
