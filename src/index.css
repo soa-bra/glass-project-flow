@@ -19,6 +19,12 @@
     --ink-60: 11 15 18 / 0.60;
     --ink-30: 11 15 18 / 0.30;
     --border: 218 220 224;
+
+    /* SoaBra Design Tokens v1.0 — Accent Palette */
+    --sb-accent-green: #3DBE8B;
+    --sb-accent-yellow: #F6C445;
+    --sb-accent-red: #E5564D;
+    --sb-accent-blue: #3DA8F5;
     
     /* SoaBra UI Guidelines v1.2.6 - Design Tokens */
     --sb-ink: #000000;
