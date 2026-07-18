@@ -193,6 +193,19 @@ export default function AuthPage() {
               </div>
             </div>
 
+            <div className="flex justify-end -mt-1">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setFormMsg({ tone: "info", text: "يرجى التواصل مع مدير النظام لإعادة تعيين كلمة المرور." });
+                }}
+                className="text-xs text-sb-ink/70 hover:text-sb-accent-blue hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sb-accent-blue/50 focus-visible:ring-offset-2 transition-colors"
+              >
+                نسيت كلمة المرور؟
+              </a>
+            </div>
+
             {formMsg && (
               <div
                 className="rounded-md border px-3 py-2"
