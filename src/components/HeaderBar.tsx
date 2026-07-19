@@ -17,6 +17,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
+import soabraLogo from '@/assets/brand/SoaBra-logo-color.svg.asset.json';
+
 
 type HeaderOverlay = 'search' | 'notifications' | 'messages' | 'user' | null;
 type NotificationType = 'app' | 'message' | 'task' | 'alert';
@@ -420,8 +422,8 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
 const HeaderBar = () => {
   const { navigationState, setActiveSection } = useNavigation();
   const { signOut } = useAuth();
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+
+
   const [openOverlay, setOpenOverlay] = useState<HeaderOverlay>(null);
   const [searchValue, setSearchValue] = useState('');
   const [notifications, setNotifications] = useState(initialNotifications);
@@ -745,26 +747,13 @@ const HeaderBar = () => {
     <header data-testid="app-header" className="fixed top-0 right-0 left-0 h-[60px] my-0 py-[65px] px-[5px] bg-slate-100" style={{ zIndex: 'var(--z-header)' }}>
       <div className="flex items-center justify-between h-full px-0">
         <div className="text-right ml-4 mx-[5px] flex items-center">
-          {!imageError ? (
-            <img
-              src="/lovable-uploads/9a8b8ed4-b3d6-4ecf-b62c-e6c1eba8c3d4.png"
-              alt="SoaBra Logo"
-              className="h-12 w-auto object-contain transition-opacity duration-300"
-              onError={() => setImageError(true)}
-              onLoad={() => setImageLoaded(true)}
-              style={{
-                opacity: imageLoaded ? 1 : 0.7,
-                border: '1px solid rgba(255,255,255,0.2)',
-              }}
-            />
-          ) : (
-            <div>
-              <span className="text-soabra-text-primary font-bold text-lg font-arabic">
-                SoaBra
-              </span>
-            </div>
-          )}
+          <img
+            src={soabraLogo.url}
+            alt="SoaBra"
+            className="h-10 w-auto object-contain"
+          />
         </div>
+
 
         <div className="flex-1" />
 

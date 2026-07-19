@@ -13,6 +13,8 @@ import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { isAuthBypassEnabled } from "@/lib/authBypass";
 import { PageMeta } from "@/components/seo/PageMeta";
 import { cn } from "@/lib/utils";
+import soabraLogo from "@/assets/brand/SoaBra-logo-color.svg.asset.json";
+
 
 type FieldTone = "error" | "warning" | "success" | "info";
 
@@ -145,7 +147,10 @@ export default function AuthPage() {
         }}
       >
         <CardHeader className="text-center space-y-2">
-          <CardTitle className="text-2xl">سـوبــرا</CardTitle>
+          <div className="flex justify-center">
+            <img src={soabraLogo.url} alt="SoaBra" className="h-12 w-auto object-contain" />
+          </div>
+
           <CardDescription>تسجيل الدخول إلى حسابك</CardDescription>
         </CardHeader>
         <CardContent>
