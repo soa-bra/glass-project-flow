@@ -17,6 +17,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigation } from '@/contexts/NavigationContext';
+import soabraLogo from '@/assets/brand/SoaBra-logo-color.svg.asset.json';
+
 
 type HeaderOverlay = 'search' | 'notifications' | 'messages' | 'user' | null;
 type NotificationType = 'app' | 'message' | 'task' | 'alert';
@@ -420,8 +422,8 @@ const getVisibleSearchItems = (permissions: string[]): SearchItem[] => {
 const HeaderBar = () => {
   const { navigationState, setActiveSection } = useNavigation();
   const { signOut } = useAuth();
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
+
+
   const [openOverlay, setOpenOverlay] = useState<HeaderOverlay>(null);
   const [searchValue, setSearchValue] = useState('');
   const [notifications, setNotifications] = useState(initialNotifications);
