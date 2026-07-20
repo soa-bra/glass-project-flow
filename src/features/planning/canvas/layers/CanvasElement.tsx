@@ -55,10 +55,6 @@ interface CanvasElementProps {
   nearestAnchor?: { nodeId: string; anchor: string; position: { x: number; y: number } } | null;
 }
 
-interface StandardCanvasElementProps extends CanvasElementProps {
-  elements: CanvasElementType[];
-}
-
 const CanvasElementInner: React.FC<CanvasElementProps> = (props) => {
   const {
     element,
@@ -121,17 +117,16 @@ const CanvasElementInner: React.FC<CanvasElementProps> = (props) => {
     return <VisualConnector element={element} isSelected={isSelected} onSelect={onSelect} />;
   }
 
-  return <StandardCanvasElement {...props} elements={elements} />;
+  return <StandardCanvasElement {...props} />;
 };
 
-const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
+const StandardCanvasElement: React.FC<CanvasElementProps> = ({
   element,
   isSelected,
   onSelect,
   activeTool,
   requestElementLock,
   releaseElementLock,
-  elements,
 }) => {
   const {
     updateElement,

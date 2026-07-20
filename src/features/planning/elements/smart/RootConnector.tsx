@@ -315,6 +315,14 @@ const getConnectorActionDisabledReason = (
   return null;
 };
 
+const connectorPatchChangesData = (data: RootConnectorData, patch: Partial<RootConnectorData>): boolean => {
+  return Object.entries(patch).some(([key, nextValue]) => {
+    if (key === 'updatedAt') return false;
+    const currentValue = (data as Record<string, unknown>)[key];
+    return JSON.stringify(currentValue ?? null) !== JSON.stringify(nextValue ?? null);
+  });
+};
+
 interface ConnectorInspectorProps {
   data: RootConnectorData;
   onPatch: (patch: Partial<RootConnectorData>) => void;
@@ -518,6 +526,8 @@ const ConnectorQuickPanel: React.FC<ConnectorQuickPanelProps> = ({
       <div
         className="rounded-xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur-sm"
         dir="rtl"
+        data-interactive-control
+        onPointerDown={(event) => event.stopPropagation()}
         onMouseDown={(event) => event.stopPropagation()}
         onClick={(event) => event.stopPropagation()}
       >
@@ -594,6 +604,7 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
       width="360"
       height="auto"
       className="overflow-visible"
+      data-interactive-control
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 10 }}
@@ -601,6 +612,10 @@ const FloatingPanel: React.FC<FloatingPanelProps> = ({
         exit={{ opacity: 0, scale: 0.9, y: 10 }}
         className="bg-card/95 backdrop-blur-sm border border-border rounded-xl shadow-xl p-4"
         dir="rtl"
+        data-interactive-control
+        onPointerDown={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
         {!isEditing ? (
           <div className="space-y-3">
@@ -822,7 +837,20 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [isQuickPanelOpen, setIsQuickPanelOpen] = useState(false);
 
+  const patchConnector = useCallback((patch: Partial<RootConnectorData>) => {
+    if (!connectorPatchChangesData(data, patch)) return;
+    onUpdate?.({
+      ...data,
+      ...patch,
+      updatedAt: new Date().toISOString(),
+    });
+  }, [data, onUpdate]);
+
   const handleSave = (title: string, description: string) => {
+    if ((data.title || '') === title && (data.description || '') === description) {
+      setIsEditing(false);
+      return;
+    }
     onUpdate?.({
       ...data,
       title,
@@ -1036,7 +1064,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
             data={data}
             onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
             onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
-            onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
+            onPatch={patchConnector}
           />
         )}
       </AnimatePresence>
@@ -1059,7 +1087,7 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
             onInsertSuggestion={handleInsertSuggestion}
             onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
             onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
-            onPatch={(patch) => onUpdate?.({ ...data, ...patch, updatedAt: new Date().toISOString() })}
+            onPatch={patchConnector}
             isLoadingAI={isLoadingAI}
           />
         )}
