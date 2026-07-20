@@ -13,6 +13,16 @@ type SmartConnectorInsert = Database['public']['Tables']['smart_connectors']['In
 type DataLinkInsert = Database['public']['Tables']['data_links']['Insert'];
 type DependencyInsert = Database['public']['Tables']['dependencies']['Insert'];
 type CentralEntityType = Database['public']['Enums']['central_entity_type'];
+type ExtendedDataLinkInsert = DataLinkInsert & {
+  source_type?: string | null;
+  source_id?: string | null;
+  target_type?: string | null;
+  target_id?: string | null;
+  relation_type?: string | null;
+  sync_type?: string | null;
+  fields_map?: Json | null;
+  status?: string | null;
+};
 
 type SmartConnectorWithNullableEndpoints = Omit<SmartConnector, 'source_element_id' | 'target_element_id'> & {
   source_element_id: string | null;
@@ -101,7 +111,7 @@ async function refreshOperationalDataLink(
   const mapping = buildOperationalMapping(record);
   const hasRealEntities = hasEntityEndpoints(record);
 
-  const payload = {
+  const payload: ExtendedDataLinkInsert = {
     board_id: record.board_id,
     created_by: createdBy,
     source_element_id: record.source_element_id,
@@ -129,7 +139,7 @@ async function refreshOperationalDataLink(
     status: 'active',
   };
 
-  const { error: insertError } = await supabase.from('data_links').insert(payload as never);
+  const { error: insertError } = await supabase.from('data_links').insert(payload);
   if (insertError) throw insertError;
 
   await refreshCentralDependencyLink(record);

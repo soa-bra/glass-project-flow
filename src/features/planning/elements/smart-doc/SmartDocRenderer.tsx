@@ -51,6 +51,8 @@ const normalizeInteractiveSheetForSmartStore = (data: Record<string, unknown>) =
   };
 };
 
+const stableSmartDocData = (value: unknown) => JSON.stringify(value ?? null);
+
 /**
  * SmartDocRenderer - Renderer for Smart Document elements
  * يعرض المستندات الذكية (ورقة تفاعلية، مستند نصي ذكي)
@@ -69,6 +71,7 @@ export const SmartDocRenderer: React.FC<SmartDocRendererProps> = ({
 
   const handleSmartDocUpdate = useCallback((newData: any) => {
     const nextData = { ...data, ...newData };
+    if (stableSmartDocData(nextData) === stableSmartDocData(data)) return;
 
     if (smartElementId) {
       const smartStoreData = smartType === 'interactive_sheet'

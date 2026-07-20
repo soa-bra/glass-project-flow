@@ -10,9 +10,20 @@ import type { Database, Json } from "@/integrations/supabase/types";
 
 const SAVE_DEBOUNCE_MS = 1200;
 const SIGNATURE_THROTTLE_MS = 200;
+const MAX_LOCAL_MUTATION_SAVE_DEFERRALS = 8;
 type SmartDocInsert = Database["public"]["Tables"]["smart_docs"]["Insert"];
 type DataLinkInsert = Database["public"]["Tables"]["data_links"]["Insert"];
 type AuditEventInsert = Database["public"]["Tables"]["audit_events"]["Insert"];
+type ExtendedDataLinkInsert = DataLinkInsert & {
+  source_type?: string | null;
+  source_id?: string | null;
+  target_type?: string | null;
+  target_id?: string | null;
+  relation_type?: string | null;
+  sync_type?: string | null;
+  fields_map?: Json | null;
+  status?: string | null;
+};
 
 export type PlanningElementPersistenceStatus =
   | "disabled"
@@ -169,7 +180,7 @@ async function upsertSmartDocsForElements(
     throw new Error(`Failed to refresh smart doc links: ${deleteLinksError.message}`);
   }
 
-  const linkRows: DataLinkInsert[] = smartDocElements.flatMap((element) => {
+  const linkRows: ExtendedDataLinkInsert[] = smartDocElements.flatMap((element) => {
     const sourceElementIds = readSmartDocSourceElementIds(element);
 
     return sourceElementIds.map((sourceElementId) => ({
@@ -236,8 +247,10 @@ export function usePlanningElementPersistence(
   const lastPersistedSignatureRef = useRef<string>("");
   const lastElementSignaturesRef = useRef<Map<string, string>>(new Map());
   const lastSmartDocSignatureRef = useRef<string>("");
+  const lastErroredSmartDocSignatureRef = useRef<string | null>(null);
   const lastElementIdsRef = useRef<Set<string>>(new Set());
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const localMutationDeferralsRef = useRef(0);
   const [persistenceState, setPersistenceState] = useState<PlanningElementPersistenceState>({
     status: boardId && enabled ? "idle" : "disabled",
     error: null,
@@ -306,11 +319,18 @@ export function usePlanningElementPersistence(
     };
 
     const runSave = async () => {
-        if (useInteractionStore.getState().localMutatingElementIds.length > 0) {
-          saveTimerRef.current = setTimeout(() => {
-            usePlanningStore.setState((current) => ({ elements: current.elements }));
-          }, SAVE_DEBOUNCE_MS);
-          return;
+        const localMutatingIds = useInteractionStore.getState().localMutatingElementIds;
+        if (localMutatingIds.length > 0) {
+          localMutationDeferralsRef.current += 1;
+          if (localMutationDeferralsRef.current <= MAX_LOCAL_MUTATION_SAVE_DEFERRALS) {
+            saveTimerRef.current = setTimeout(runSave, SAVE_DEBOUNCE_MS);
+            return;
+          }
+
+          useInteractionStore.getState().endLocalElementMutation(localMutatingIds);
+          localMutationDeferralsRef.current = 0;
+        } else {
+          localMutationDeferralsRef.current = 0;
         }
 
         const userId = userIdRef.current;
@@ -355,8 +375,16 @@ export function usePlanningElementPersistence(
           const savedRows = (await PlanningBoardsService.upsertPlanningElements(
             changedPersistable.map((element) => canvasToPlanningInsert(element, boardId, userId)),
           )) ?? [];
-          if (smartDocsChanged) {
-            await upsertSmartDocsForElements(boardId, userId, currentPersistable);
+          let smartDocError: unknown = null;
+          if (smartDocsChanged && lastErroredSmartDocSignatureRef.current !== nextSmartDocSignature) {
+            try {
+              await upsertSmartDocsForElements(boardId, userId, currentPersistable);
+              lastErroredSmartDocSignatureRef.current = null;
+            } catch (error) {
+              smartDocError = error;
+              lastErroredSmartDocSignatureRef.current = nextSmartDocSignature;
+              console.error("[usePlanningElementPersistence] Failed to persist smart doc links", error);
+            }
           }
 
           if (savedRows.length > 0) {
@@ -380,6 +408,15 @@ export function usePlanningElementPersistence(
           lastElementSignaturesRef.current = currentSignatureMap;
           lastPersistedSignatureRef.current = stableElementSignature(currentElements);
           lastSmartDocSignatureRef.current = nextSmartDocSignature;
+          if (smartDocError) {
+            setPersistenceState((current) => ({
+              ...current,
+              status: "error",
+              error: getErrorMessage(smartDocError),
+            }));
+            return;
+          }
+
           setPersistenceState({
             status: "saved",
             error: null,

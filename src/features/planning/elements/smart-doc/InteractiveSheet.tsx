@@ -88,6 +88,7 @@ const getColumnLabel = (index: number): string => {
 };
 
 const getCellId = (row: number, col: number): string => `${getColumnLabel(col)}${row + 1}`;
+const stableSheetValue = (value: unknown) => JSON.stringify(value ?? null);
 
 const safeEvaluateArithmetic = (expression: string): number | null => {
   const sanitizedExpression = expression.replace(/\s+/g, '');
@@ -260,8 +261,9 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
   const rows = data.rows || 10;
 
   const updateCells = useCallback((newCells: Record<string, CellData>) => {
+    if (stableSheetValue(newCells) === stableSheetValue(cells)) return;
     onUpdate({ cells: newCells });
-  }, [onUpdate]);
+  }, [cells, onUpdate]);
 
   const evaluateFormula = useCallback((formula: string): string => {
     try {
@@ -373,7 +375,9 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
       formula: isFormula ? editValue : undefined,
     };
 
-    updateCells({ ...cells, [editingCell]: newCell });
+    if (stableSheetValue(newCell) !== stableSheetValue(cells[editingCell])) {
+      updateCells({ ...cells, [editingCell]: newCell });
+    }
     setEditingCell(null);
     setEditValue('');
   };
@@ -421,6 +425,7 @@ export const InteractiveSheet: React.FC<InteractiveSheetProps> = ({ data, onUpda
 
   const formatCell = (format: CellFormatType) => {
     if (!selectedCell) return;
+    if (getCellFormatType(cells[selectedCell]) === format) return;
     updateCells({
       ...cells,
       [selectedCell]: withCellFormat(cells[selectedCell], { type: format }),

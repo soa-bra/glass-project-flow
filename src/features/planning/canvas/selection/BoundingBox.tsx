@@ -235,9 +235,12 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     if (isDragging || isResizing) {
       window.addEventListener('pointermove', handlePointerMove);
       window.addEventListener('pointerup', handlePointerUp);
+      window.addEventListener('pointercancel', handlePointerUp);
       return () => {
         window.removeEventListener('pointermove', handlePointerMove);
         window.removeEventListener('pointerup', handlePointerUp);
+        window.removeEventListener('pointercancel', handlePointerUp);
+        selectionCoordinator.releaseEvent();
       };
     }
   }, [isDragging, isResizing, handlePointerMove, handlePointerUp]);
@@ -248,8 +251,11 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         endLocalElementMutation(locallyMutatingIdsRef.current);
         locallyMutatingIdsRef.current = [];
       }
+      selectionCoordinator.releaseEvent();
+      setDraggedElements([]);
+      setHoveredFrame(null);
     };
-  }, [endLocalElementMutation]);
+  }, [endLocalElementMutation, setDraggedElements, setHoveredFrame]);
   
   const handleDragStart = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
@@ -381,7 +387,21 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
         <ResizeHandle position="w" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'w')} />
         <ResizeHandle position="e" cursor="ew-resize" onStart={(e) => handleResizeStart(e, 'e')} />
 
-        <div ref={dragAreaRef} className="absolute inset-0 pointer-events-auto cursor-move touch-none" onPointerDown={handleDragStart} onDoubleClick={handleDoubleClick} />
+        {selectedElements.map((selectedElement) => (
+          <div
+            key={`drag-hit-${selectedElement.id}`}
+            ref={selectedElement.id === selectedElements[0]?.id ? dragAreaRef : undefined}
+            className="absolute pointer-events-auto cursor-move touch-none"
+            style={{
+              left: selectedElement.position.x - bounds.x,
+              top: selectedElement.position.y - bounds.y,
+              width: selectedElement.size.width,
+              height: selectedElement.size.height,
+            }}
+            onPointerDown={handleDragStart}
+            onDoubleClick={handleDoubleClick}
+          />
+        ))}
 
         {displayCount > 1 && !isGrouped && (
           <div className="absolute -top-7 left-0 px-2 py-0.5 text-xs font-medium rounded bg-[hsl(var(--accent-blue))] text-white pointer-events-auto" style={{ direction: 'rtl' }}>

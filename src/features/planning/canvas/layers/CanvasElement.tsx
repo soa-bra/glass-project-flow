@@ -335,8 +335,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     if (activeTool !== 'selection_tool') return;
     e.stopPropagation();
 
-    const clientX = e.clientX;
-    const clientY = e.clientY;
     // ✅ اللمس: touchMultiSelectMode يعمل كأن Shift مضغوط
     const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey || touchMulti;
@@ -350,46 +348,10 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       });
       return;
     }
-
-
-    // ✅ إذا كان العنصر محدد بالفعل (بدون multi-select) — BoundingBox يتولى السحب، لا نبدأ drag هنا
-    if (isSelected) {
-      return;
-    }
-
-    // عنصر جديد — حدده وابدأ سحبه في نفس الحركة
+    // ✅ CanvasElement مسؤول عن التحديد فقط؛ BoundingBox هو المسار الوحيد للسحب.
+    if (isSelected) return;
     onSelect(false);
-
-    if (isEditingThisText) return;
-
-    // ⛔ لا نطلب القفل عند مجرد التحديد؛ نطلبه فقط عند بدء سحب فعلي (بعد تجاوز عتبة 4px)
-    // هذا يمنع سلاسل إعادة الرندر التي تحدث حين يتحدث سيرفر الحضور بعد كل نقرة.
-    const THRESHOLD = 4;
-    let lockRequested = false;
-    let preDragActive = true;
-    const onPreMove = (ev: MouseEvent) => {
-      if (!preDragActive) return;
-      const dx = ev.clientX - clientX;
-      const dy = ev.clientY - clientY;
-      if (Math.hypot(dx, dy) < THRESHOLD) return;
-      window.removeEventListener('mousemove', onPreMove);
-      window.removeEventListener('mouseup', onPreUp);
-      if (lockRequested) return;
-      lockRequested = true;
-      void ensureEditLock().then((granted) => {
-        if (!preDragActive) return;
-        if (!granted) return;
-        startDrag(clientX, clientY);
-      });
-    };
-    const onPreUp = () => {
-      preDragActive = false;
-      window.removeEventListener('mousemove', onPreMove);
-      window.removeEventListener('mouseup', onPreUp);
-    };
-    window.addEventListener('mousemove', onPreMove);
-    window.addEventListener('mouseup', onPreUp);
-  }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
+  }, [activeTool, element.id, isLocked, isSelected, onSelect]);
 
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
