@@ -118,24 +118,16 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({ element, isSelected
   const path = useMemo(() => {
     if (!positions) return '';
     const { start, end } = positions;
-    const rawStartAnchor = connectorData.startAnchor?.anchor || 'right';
-    const rawEndAnchor = connectorData.endAnchor?.anchor || 'left';
-    const startAnchor: 'top' | 'bottom' | 'left' | 'right' = rawStartAnchor === 'center' ? 'right' : rawStartAnchor;
-    const endAnchor: 'top' | 'bottom' | 'left' | 'right' = rawEndAnchor === 'center' ? 'left' : rawEndAnchor;
-
-    switch (connectorData.curveStyle) {
-      case 'straight':
-        return createStraightPath(start, end);
-      case 'elbow':
-        return createElbowPath(start, end, startAnchor, endAnchor);
-      default:
-        return createBezierPath(start, end, startAnchor, endAnchor);
-    }
+    const rawStart = connectorData.startAnchor?.anchor || 'right';
+    const rawEnd = connectorData.endAnchor?.anchor || 'left';
+    const startAnchor: AnchorSide = rawStart === 'center' ? 'right' : (rawStart as AnchorSide);
+    const endAnchor: AnchorSide = rawEnd === 'center' ? mirrorAnchor(startAnchor) : (rawEnd as AnchorSide);
+    return buildConnectorPath(start, end, startAnchor, endAnchor);
   }, [positions, connectorData]);
 
   const bounds = useMemo(() => {
     if (!positions) return { x: 0, y: 0, width: 100, height: 100 };
-    const padding = 50;
+    const padding = 60;
     const minX = Math.min(positions.start.x, positions.end.x) - padding;
     const minY = Math.min(positions.start.y, positions.end.y) - padding;
     const maxX = Math.max(positions.start.x, positions.end.x) + padding;
