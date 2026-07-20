@@ -159,6 +159,8 @@ const VisualNode: React.FC<VisualNodeProps> = ({
       onSelect(multiSelect);
     }
     
+    if (activeTool === 'selection_tool') return;
+
     setIsDragging(true);
     dragStartRef.current = {
       x: e.clientX,
