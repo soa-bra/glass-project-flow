@@ -1,17 +1,21 @@
 /**
- * مكون الرابط للمخطط البصري
+ * مكون الرابط للمخطط البصري — مظهر موحّد.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { VisualConnectorData } from '@/types/visual-diagram-canvas';
-import { 
-  getVisualAnchorPosition, 
-  createVisualBezierPath, 
-  createVisualStraightPath, 
-  createVisualElbowPath 
-} from '@/types/visual-diagram-canvas';
+import { getVisualAnchorPosition } from '@/types/visual-diagram-canvas';
+import {
+  buildConnectorPath,
+  connectorGradientIds,
+  getConnectorStrokeWidth,
+  mirrorAnchor,
+  CONNECTOR_COLOR_START,
+  CONNECTOR_COLOR_END,
+  type AnchorSide,
+} from '@/features/planning/elements/connectors/connectorAppearance';
 
 interface VisualConnectorProps {
   element: CanvasElement;
