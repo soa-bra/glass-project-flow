@@ -742,40 +742,64 @@ export type Database = {
           board_id: string
           created_at: string
           created_by: string
+          fields_map: Json
           id: string
           label: string | null
           link_kind: string
           mapping: Json
           metadata: Json
           project_id: string | null
+          relation_type: string | null
           source_element_id: string | null
+          source_id: string | null
+          source_type: string | null
+          status: string
+          sync_type: string
           target_element_id: string | null
+          target_id: string | null
+          target_type: string | null
         }
         Insert: {
           board_id: string
           created_at?: string
           created_by: string
+          fields_map?: Json
           id?: string
           label?: string | null
           link_kind: string
           mapping?: Json
           metadata?: Json
           project_id?: string | null
+          relation_type?: string | null
           source_element_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
+          sync_type?: string
           target_element_id?: string | null
+          target_id?: string | null
+          target_type?: string | null
         }
         Update: {
           board_id?: string
           created_at?: string
           created_by?: string
+          fields_map?: Json
           id?: string
           label?: string | null
           link_kind?: string
           mapping?: Json
           metadata?: Json
           project_id?: string | null
+          relation_type?: string | null
           source_element_id?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
+          sync_type?: string
           target_element_id?: string | null
+          target_id?: string | null
+          target_type?: string | null
         }
         Relationships: []
       }
