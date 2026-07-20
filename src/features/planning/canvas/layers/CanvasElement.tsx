@@ -19,7 +19,6 @@ import VisualNode from '@/features/planning/elements/diagram/VisualNode';
 import VisualConnector from '@/features/planning/elements/diagram/VisualConnector';
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
-import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
@@ -129,7 +128,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
   element,
   isSelected,
   onSelect,
-  snapToGrid,
   activeTool,
   requestElementLock,
   releaseElementLock,
@@ -143,18 +141,9 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     startEditingText,
     stopEditingText,
     updateTextContent,
-    moveElements,
-    moveFrame,
-    findFrameAtPoint,
-    addChildToFrame,
-    removeChildFromFrame,
   } = useCanvasStore();
-  const beginLocalElementMutation = useInteractionStore((state) => state.beginLocalElementMutation);
-  const endLocalElementMutation = useInteractionStore((state) => state.endLocalElementMutation);
 
   const elementRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
-  const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -213,108 +202,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     }
     return null;
   }, [element]);
-
-  const getGroupElementIds = useCallback((): string[] => {
-    const groupId = element.metadata?.groupId;
-    if (!groupId) return [element.id];
-    return elements.filter((entry) => entry.metadata?.groupId === groupId).map((entry) => entry.id);
-  }, [element.id, element.metadata?.groupId, elements]);
-
-  const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
-  const handleMouseUpRef = useRef<() => void>();
-  const locallyMutatingIdsRef = useRef<string[]>([]);
-
-  handleMouseMoveRef.current = (e: MouseEvent) => {
-    if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
-
-    const worldDelta = canvasKernel.screenDeltaToWorld(
-      e.clientX - dragStartRef.current.x,
-      e.clientY - dragStartRef.current.y,
-      viewport.zoom,
-    );
-    const deltaX = worldDelta.x;
-    const deltaY = worldDelta.y;
-
-    let newX = dragStartRef.current.elementX + deltaX;
-    let newY = dragStartRef.current.elementY + deltaY;
-
-    if (snapToGrid) {
-      const snapped = snapToGrid(newX, newY);
-      newX = snapped.x;
-      newY = snapped.y;
-    }
-
-    const groupIds = getGroupElementIds();
-    if (groupIds.length > 1) {
-      const finalDeltaX = newX - element.position.x;
-      const finalDeltaY = newY - element.position.y;
-      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        moveElements(groupIds, finalDeltaX, finalDeltaY);
-      }
-    } else {
-      const finalDeltaX = newX - element.position.x;
-      const finalDeltaY = newY - element.position.y;
-      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        if (element.type === 'frame') {
-          moveFrame(element.id, finalDeltaX, finalDeltaY);
-        } else {
-          updateElement(element.id, { position: { x: newX, y: newY } });
-        }
-      }
-    }
-  };
-
-  handleMouseUpRef.current = () => {
-    if (isDraggingRef.current) {
-      if (element.type !== 'frame') {
-        const elementCenterX = element.position.x + element.size.width / 2;
-        const elementCenterY = element.position.y + element.size.height / 2;
-        const frameUnderElement = findFrameAtPoint(elementCenterX, elementCenterY, [element.id]);
-        const frames = elements.filter((entry) => entry.type === 'frame');
-        frames.forEach((frame) => {
-          const children = (frame as any).children || [];
-          if (children.includes(element.id) && frame.id !== frameUnderElement?.id) {
-            removeChildFromFrame(frame.id, element.id);
-          }
-        });
-        if (frameUnderElement) {
-          const children = (frameUnderElement as any).children || [];
-          if (!children.includes(element.id)) {
-            addChildToFrame(frameUnderElement.id, element.id);
-          }
-        }
-      }
-      isDraggingRef.current = false;
-      endLocalElementMutation(locallyMutatingIdsRef.current);
-      locallyMutatingIdsRef.current = [];
-      void releaseElementLock?.();
-    }
-  };
-
-  const stableMouseMove = useCallback((e: MouseEvent) => {
-    handleMouseMoveRef.current?.(e);
-  }, []);
-
-  const stableMouseUp = useCallback(() => {
-    handleMouseUpRef.current?.();
-    window.removeEventListener('mousemove', stableMouseMove);
-    window.removeEventListener('mouseup', stableMouseUp);
-  }, [stableMouseMove]);
-
-  const startDrag = useCallback((clientX: number, clientY: number) => {
-    const groupIds = getGroupElementIds();
-    beginLocalElementMutation(groupIds);
-    locallyMutatingIdsRef.current = groupIds;
-    isDraggingRef.current = true;
-    dragStartRef.current = {
-      x: clientX,
-      y: clientY,
-      elementX: element.position.x,
-      elementY: element.position.y,
-    };
-    window.addEventListener('mousemove', stableMouseMove);
-    window.addEventListener('mouseup', stableMouseUp);
-  }, [beginLocalElementMutation, element.position.x, element.position.y, getGroupElementIds, stableMouseMove, stableMouseUp]);
 
   const ensureEditLock = useCallback(async () => {
     if (isLockedBySelf) return true;
@@ -408,18 +295,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       titleInputRef.current.select();
     }
   }, [isEditingTitle]);
-
-  useEffect(() => {
-    return () => {
-      if (isDraggingRef.current) {
-        window.removeEventListener('mousemove', stableMouseMove);
-        window.removeEventListener('mouseup', stableMouseUp);
-        endLocalElementMutation(locallyMutatingIdsRef.current);
-        locallyMutatingIdsRef.current = [];
-        isDraggingRef.current = false;
-      }
-    };
-  }, [endLocalElementMutation, stableMouseMove, stableMouseUp]);
 
   const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
   const isPdfPreview = Boolean(
