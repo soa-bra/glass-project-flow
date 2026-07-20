@@ -159,38 +159,59 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({ element, isSelected
 
   if (isHiddenByCollapse || !positions) return null;
 
+  const strokeWidth = getConnectorStrokeWidth({ isHovered, isSelected });
+  const { gradientId, glowId } = connectorGradientIds(element.id);
+
   return (
     <>
       <svg
         className="absolute pointer-events-none"
         style={{ left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height, overflow: 'visible', zIndex: 5 }}
       >
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={CONNECTOR_COLOR_START} />
+            <stop offset="100%" stopColor={CONNECTOR_COLOR_END} />
+          </linearGradient>
+          <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        {/* Hit region */}
         <path
           d={path}
           fill="none"
           stroke="transparent"
-          strokeWidth={30}
+          strokeWidth={20}
           className="cursor-text pointer-events-stroke"
           onDoubleClick={handleDoubleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{ transform: `translate(${-bounds.x}px, ${-bounds.y}px)` }}
         />
+        {/* Visible line — unified appearance */}
         <path
           d={path}
           fill="none"
-          stroke={connectorData.color || '#3DA8F5'}
-          strokeWidth={(connectorData.strokeWidth || 2) * (isHovered ? 1.5 : 1)}
+          stroke={`url(#${gradientId})`}
+          strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="transition-all duration-200"
+          className="transition-[stroke-width] duration-150"
           style={{
             transform: `translate(${-bounds.x}px, ${-bounds.y}px)`,
-            opacity: isHovered || isSelected ? 1 : 0.7,
-            filter: isHovered ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none',
+            filter: isHovered ? `url(#${glowId})` : undefined,
           }}
         />
       </svg>
+
+      {/* fallback for older data readers — avoid unused var warning */}
+      {/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */}
+      {CONNECTOR_SOLID_FALLBACK && null}
 
       {labelPosition && (connectorData.label || isEditingLabel) && (
         <div className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto" style={{ left: labelPosition.x, top: labelPosition.y, zIndex: 6 }}>
