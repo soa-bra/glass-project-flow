@@ -318,7 +318,7 @@ const getConnectorActionDisabledReason = (
 const connectorPatchChangesData = (data: RootConnectorData, patch: Partial<RootConnectorData>): boolean => {
   return Object.entries(patch).some(([key, nextValue]) => {
     if (key === 'updatedAt') return false;
-    const currentValue = (data as Record<string, unknown>)[key];
+    const currentValue = (data as unknown as Record<string, unknown>)[key];
     return JSON.stringify(currentValue ?? null) !== JSON.stringify(nextValue ?? null);
   });
 };
