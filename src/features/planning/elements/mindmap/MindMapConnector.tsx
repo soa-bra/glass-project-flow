@@ -2,8 +2,18 @@ import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react'
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapConnectorData, MindMapNodeData } from '@/types/mindmap-canvas';
-import { getAnchorPosition, createBezierPath, createStraightPath, createElbowPath } from '@/types/mindmap-canvas';
+import { getAnchorPosition } from '@/types/mindmap-canvas';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
+import {
+  buildConnectorPath,
+  connectorGradientIds,
+  getConnectorStrokeWidth,
+  mirrorAnchor,
+  CONNECTOR_COLOR_START,
+  CONNECTOR_COLOR_END,
+  CONNECTOR_SOLID_FALLBACK,
+  type AnchorSide,
+} from '@/features/planning/elements/connectors/connectorAppearance';
 
 interface MindMapConnectorProps {
   element: CanvasElement;
