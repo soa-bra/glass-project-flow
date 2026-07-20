@@ -102,9 +102,6 @@ export default function AuthPage() {
     if (!password) {
       setPasswordMsg({ tone: "error", text: "كلمة المرور مطلوبة." });
       ok = false;
-    } else if (password.length < 6) {
-      setPasswordMsg({ tone: "warning", text: "كلمة المرور قصيرة (6 أحرف على الأقل)." });
-      ok = false;
     } else {
       setPasswordMsg(undefined);
     }
