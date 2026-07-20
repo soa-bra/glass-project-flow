@@ -60,6 +60,22 @@
     
     /* Global Radius System */
     --sb-radius-global: 41px;
+
+    /* Input Field Tokens — canonical style for all form fields (Input/Textarea/Label) */
+    --sb-field-radius: 18px;
+    --sb-field-radius-lg: 24px; /* used by textarea / large fields */
+    --sb-field-height: 44px;
+    --sb-field-bg: #FFFFFF;
+    --sb-field-border: #DADCE0;
+    --sb-field-border-focus: #0B0F12;
+    --sb-field-text: #0B0F12;
+    --sb-field-placeholder: rgba(11,15,18,0.40);
+    --sb-field-padding-x: 16px;
+    --sb-field-font-size: 14px;
+    --sb-field-label-size: 12px;
+    --sb-field-label-weight: 500;
+    --sb-field-focus-ring: 0 0 0 2px #0B0F12;
+    --sb-field-transition: all 200ms cubic-bezier(0.22, 1, 0.36, 1);
     
     --backgrounds-active-tab-project-mgmt: #000000;
     --backgrounds-inactive-tab-project-mgmt: transparent;
