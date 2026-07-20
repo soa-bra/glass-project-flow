@@ -2,8 +2,18 @@ import React, { useMemo, useCallback, useState, useRef, useEffect } from 'react'
 import { useCanvasStore } from '@/stores/canvasStore';
 import type { CanvasElement } from '@/types/canvas';
 import type { MindMapConnectorData, MindMapNodeData } from '@/types/mindmap-canvas';
-import { getAnchorPosition, createBezierPath, createStraightPath, createElbowPath } from '@/types/mindmap-canvas';
+import { getAnchorPosition } from '@/types/mindmap-canvas';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
+import {
+  buildConnectorPath,
+  connectorGradientIds,
+  getConnectorStrokeWidth,
+  mirrorAnchor,
+  CONNECTOR_COLOR_START,
+  CONNECTOR_COLOR_END,
+  CONNECTOR_SOLID_FALLBACK,
+  type AnchorSide,
+} from '@/features/planning/elements/connectors/connectorAppearance';
 
 interface MindMapConnectorProps {
   element: CanvasElement;
@@ -108,24 +118,16 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({ element, isSelected
   const path = useMemo(() => {
     if (!positions) return '';
     const { start, end } = positions;
-    const rawStartAnchor = connectorData.startAnchor?.anchor || 'right';
-    const rawEndAnchor = connectorData.endAnchor?.anchor || 'left';
-    const startAnchor: 'top' | 'bottom' | 'left' | 'right' = rawStartAnchor === 'center' ? 'right' : rawStartAnchor;
-    const endAnchor: 'top' | 'bottom' | 'left' | 'right' = rawEndAnchor === 'center' ? 'left' : rawEndAnchor;
-
-    switch (connectorData.curveStyle) {
-      case 'straight':
-        return createStraightPath(start, end);
-      case 'elbow':
-        return createElbowPath(start, end, startAnchor, endAnchor);
-      default:
-        return createBezierPath(start, end, startAnchor, endAnchor);
-    }
+    const rawStart = connectorData.startAnchor?.anchor || 'right';
+    const rawEnd = connectorData.endAnchor?.anchor || 'left';
+    const startAnchor: AnchorSide = rawStart === 'center' ? 'right' : (rawStart as AnchorSide);
+    const endAnchor: AnchorSide = rawEnd === 'center' ? mirrorAnchor(startAnchor) : (rawEnd as AnchorSide);
+    return buildConnectorPath(start, end, startAnchor, endAnchor);
   }, [positions, connectorData]);
 
   const bounds = useMemo(() => {
     if (!positions) return { x: 0, y: 0, width: 100, height: 100 };
-    const padding = 50;
+    const padding = 60;
     const minX = Math.min(positions.start.x, positions.end.x) - padding;
     const minY = Math.min(positions.start.y, positions.end.y) - padding;
     const maxX = Math.max(positions.start.x, positions.end.x) + padding;
@@ -157,38 +159,59 @@ const MindMapConnector: React.FC<MindMapConnectorProps> = ({ element, isSelected
 
   if (isHiddenByCollapse || !positions) return null;
 
+  const strokeWidth = getConnectorStrokeWidth({ isHovered, isSelected });
+  const { gradientId, glowId } = connectorGradientIds(element.id);
+
   return (
     <>
       <svg
         className="absolute pointer-events-none"
         style={{ left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height, overflow: 'visible', zIndex: 5 }}
       >
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={CONNECTOR_COLOR_START} />
+            <stop offset="100%" stopColor={CONNECTOR_COLOR_END} />
+          </linearGradient>
+          <filter id={glowId} x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        {/* Hit region */}
         <path
           d={path}
           fill="none"
           stroke="transparent"
-          strokeWidth={30}
+          strokeWidth={20}
           className="cursor-text pointer-events-stroke"
           onDoubleClick={handleDoubleClick}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
           style={{ transform: `translate(${-bounds.x}px, ${-bounds.y}px)` }}
         />
+        {/* Visible line — unified appearance */}
         <path
           d={path}
           fill="none"
-          stroke={connectorData.color || '#3DA8F5'}
-          strokeWidth={(connectorData.strokeWidth || 2) * (isHovered ? 1.5 : 1)}
+          stroke={`url(#${gradientId})`}
+          strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="transition-all duration-200"
+          className="transition-[stroke-width] duration-150"
           style={{
             transform: `translate(${-bounds.x}px, ${-bounds.y}px)`,
-            opacity: isHovered || isSelected ? 1 : 0.7,
-            filter: isHovered ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none',
+            filter: isHovered ? `url(#${glowId})` : undefined,
           }}
         />
       </svg>
+
+      {/* fallback for older data readers — avoid unused var warning */}
+      {/* eslint-disable-next-line @typescript-eslint/no-unused-expressions */}
+      {CONNECTOR_SOLID_FALLBACK && null}
 
       {labelPosition && (connectorData.label || isEditingLabel) && (
         <div className="absolute transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto" style={{ left: labelPosition.x, top: labelPosition.y, zIndex: 6 }}>
