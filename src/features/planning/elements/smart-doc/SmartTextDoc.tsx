@@ -143,6 +143,28 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   });
   const editorRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
+  const pendingContentRef = useRef<string | null>(null);
+  const contentFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushPendingContent = useCallback(() => {
+    if (contentFlushTimerRef.current) {
+      clearTimeout(contentFlushTimerRef.current);
+      contentFlushTimerRef.current = null;
+    }
+    const nextContent = pendingContentRef.current;
+    pendingContentRef.current = null;
+    if (nextContent === null || nextContent === data.content) return;
+    onUpdate({ content: nextContent });
+  }, [data.content, onUpdate]);
+
+  const scheduleContentUpdate = useCallback((nextContent: string) => {
+    if (nextContent === data.content) return;
+    pendingContentRef.current = nextContent;
+    if (contentFlushTimerRef.current) clearTimeout(contentFlushTimerRef.current);
+    contentFlushTimerRef.current = setTimeout(flushPendingContent, 350);
+  }, [data.content, flushPendingContent]);
+
+  useEffect(() => () => flushPendingContent(), [flushPendingContent]);
 
   // Detect active formats at current cursor position
   const detectActiveFormats = useCallback(() => {
@@ -197,11 +219,11 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
       if (!isPlainTextFormat(data.format)) {
         editorRef.current.innerHTML = newContent;
       }
-      setContent(newContent);
-      onUpdate({ content: newContent });
+      setContent((current) => (current === newContent ? current : newContent));
+      scheduleContentUpdate(newContent);
     }
     detectCurrentFontSize();
-  }, [onUpdate, detectCurrentFontSize, data.format]);
+  }, [detectCurrentFontSize, data.format, scheduleContentUpdate]);
 
   const handleSelectionChange = useCallback(() => {
     detectCurrentFontSize();
@@ -210,9 +232,10 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
 
   const handleTitleChange = useCallback(
     (title: string) => {
+      if (title === data.title) return;
       onUpdate({ title });
     },
-    [onUpdate],
+    [data.title, onUpdate],
   );
 
   const applyFormat = useCallback(
@@ -292,8 +315,9 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
   const toggleDirection = useCallback(() => {
     const newDirection = direction === "rtl" ? "ltr" : "rtl";
     setDirection(newDirection);
+    if (newDirection === data.direction) return;
     onUpdate({ direction: newDirection });
-  }, [direction, onUpdate]);
+  }, [data.direction, direction, onUpdate]);
 
   const insertList = useCallback(
     (ordered: boolean) => {
@@ -445,6 +469,7 @@ export const SmartTextDoc: React.FC<SmartTextDocProps> = ({ data, onUpdate }) =>
           ref={editorRef}
           contentEditable={!data.readOnly}
           onInput={handleContentChange}
+          onBlur={flushPendingContent}
           onKeyDown={handleKeyDown}
           onClick={handleSelectionChange}
           onKeyUp={handleSelectionChange}

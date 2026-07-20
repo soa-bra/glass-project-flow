@@ -170,18 +170,15 @@ export function useFloatingPosition({ activeElements, editingTextId, viewport: _
     observedElementIds.forEach((elementId) => {
       const anchorElement = getAnchorElement(elementId);
       if (!anchorElement) return;
-      mutationObserver.observe(anchorElement, {
-        attributes: true,
-        childList: true,
-        subtree: true,
-        characterData: true,
-      });
       resizeObserver.observe(anchorElement);
     });
 
     if (boardElement) resizeObserver.observe(boardElement);
     if (overlayElement) resizeObserver.observe(overlayElement);
-    if (toolbarElement) resizeObserver.observe(toolbarElement);
+    if (toolbarElement) {
+      resizeObserver.observe(toolbarElement);
+      mutationObserver.observe(toolbarElement, { attributes: true, childList: true });
+    }
 
     window.addEventListener("resize", scheduleUpdate);
     window.addEventListener("scroll", scheduleUpdate, true);

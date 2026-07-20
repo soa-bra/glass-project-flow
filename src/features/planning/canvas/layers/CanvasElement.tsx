@@ -19,7 +19,6 @@ import VisualNode from '@/features/planning/elements/diagram/VisualNode';
 import VisualConnector from '@/features/planning/elements/diagram/VisualConnector';
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
-import { canvasKernel } from '@/engine/canvas/kernel/canvasKernel';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
@@ -54,10 +53,6 @@ interface CanvasElementProps {
   onEndConnection?: (nodeId: string, anchor: 'top' | 'bottom' | 'left' | 'right') => void;
   isConnecting?: boolean;
   nearestAnchor?: { nodeId: string; anchor: string; position: { x: number; y: number } } | null;
-}
-
-interface StandardCanvasElementProps extends CanvasElementProps {
-  elements: CanvasElementType[];
 }
 
 const CanvasElementInner: React.FC<CanvasElementProps> = (props) => {
@@ -122,18 +117,16 @@ const CanvasElementInner: React.FC<CanvasElementProps> = (props) => {
     return <VisualConnector element={element} isSelected={isSelected} onSelect={onSelect} />;
   }
 
-  return <StandardCanvasElement {...props} elements={elements} />;
+  return <StandardCanvasElement {...props} />;
 };
 
-const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
+const StandardCanvasElement: React.FC<CanvasElementProps> = ({
   element,
   isSelected,
   onSelect,
-  snapToGrid,
   activeTool,
   requestElementLock,
   releaseElementLock,
-  elements,
 }) => {
   const {
     updateElement,
@@ -143,18 +136,9 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     startEditingText,
     stopEditingText,
     updateTextContent,
-    moveElements,
-    moveFrame,
-    findFrameAtPoint,
-    addChildToFrame,
-    removeChildFromFrame,
   } = useCanvasStore();
-  const beginLocalElementMutation = useInteractionStore((state) => state.beginLocalElementMutation);
-  const endLocalElementMutation = useInteractionStore((state) => state.endLocalElementMutation);
 
   const elementRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
-  const dragStartRef = useRef({ x: 0, y: 0, elementX: 0, elementY: 0 });
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState('');
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -214,108 +198,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     return null;
   }, [element]);
 
-  const getGroupElementIds = useCallback((): string[] => {
-    const groupId = element.metadata?.groupId;
-    if (!groupId) return [element.id];
-    return elements.filter((entry) => entry.metadata?.groupId === groupId).map((entry) => entry.id);
-  }, [element.id, element.metadata?.groupId, elements]);
-
-  const handleMouseMoveRef = useRef<(e: MouseEvent) => void>();
-  const handleMouseUpRef = useRef<() => void>();
-  const locallyMutatingIdsRef = useRef<string[]>([]);
-
-  handleMouseMoveRef.current = (e: MouseEvent) => {
-    if (!isDraggingRef.current || isLocked || useInteractionStore.getState().isInternalDrag()) return;
-
-    const worldDelta = canvasKernel.screenDeltaToWorld(
-      e.clientX - dragStartRef.current.x,
-      e.clientY - dragStartRef.current.y,
-      viewport.zoom,
-    );
-    const deltaX = worldDelta.x;
-    const deltaY = worldDelta.y;
-
-    let newX = dragStartRef.current.elementX + deltaX;
-    let newY = dragStartRef.current.elementY + deltaY;
-
-    if (snapToGrid) {
-      const snapped = snapToGrid(newX, newY);
-      newX = snapped.x;
-      newY = snapped.y;
-    }
-
-    const groupIds = getGroupElementIds();
-    if (groupIds.length > 1) {
-      const finalDeltaX = newX - element.position.x;
-      const finalDeltaY = newY - element.position.y;
-      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        moveElements(groupIds, finalDeltaX, finalDeltaY);
-      }
-    } else {
-      const finalDeltaX = newX - element.position.x;
-      const finalDeltaY = newY - element.position.y;
-      if (finalDeltaX !== 0 || finalDeltaY !== 0) {
-        if (element.type === 'frame') {
-          moveFrame(element.id, finalDeltaX, finalDeltaY);
-        } else {
-          updateElement(element.id, { position: { x: newX, y: newY } });
-        }
-      }
-    }
-  };
-
-  handleMouseUpRef.current = () => {
-    if (isDraggingRef.current) {
-      if (element.type !== 'frame') {
-        const elementCenterX = element.position.x + element.size.width / 2;
-        const elementCenterY = element.position.y + element.size.height / 2;
-        const frameUnderElement = findFrameAtPoint(elementCenterX, elementCenterY, [element.id]);
-        const frames = elements.filter((entry) => entry.type === 'frame');
-        frames.forEach((frame) => {
-          const children = (frame as any).children || [];
-          if (children.includes(element.id) && frame.id !== frameUnderElement?.id) {
-            removeChildFromFrame(frame.id, element.id);
-          }
-        });
-        if (frameUnderElement) {
-          const children = (frameUnderElement as any).children || [];
-          if (!children.includes(element.id)) {
-            addChildToFrame(frameUnderElement.id, element.id);
-          }
-        }
-      }
-      isDraggingRef.current = false;
-      endLocalElementMutation(locallyMutatingIdsRef.current);
-      locallyMutatingIdsRef.current = [];
-      void releaseElementLock?.();
-    }
-  };
-
-  const stableMouseMove = useCallback((e: MouseEvent) => {
-    handleMouseMoveRef.current?.(e);
-  }, []);
-
-  const stableMouseUp = useCallback(() => {
-    handleMouseUpRef.current?.();
-    window.removeEventListener('mousemove', stableMouseMove);
-    window.removeEventListener('mouseup', stableMouseUp);
-  }, [stableMouseMove]);
-
-  const startDrag = useCallback((clientX: number, clientY: number) => {
-    const groupIds = getGroupElementIds();
-    beginLocalElementMutation(groupIds);
-    locallyMutatingIdsRef.current = groupIds;
-    isDraggingRef.current = true;
-    dragStartRef.current = {
-      x: clientX,
-      y: clientY,
-      elementX: element.position.x,
-      elementY: element.position.y,
-    };
-    window.addEventListener('mousemove', stableMouseMove);
-    window.addEventListener('mouseup', stableMouseUp);
-  }, [beginLocalElementMutation, element.position.x, element.position.y, getGroupElementIds, stableMouseMove, stableMouseUp]);
-
   const ensureEditLock = useCallback(async () => {
     if (isLockedBySelf) return true;
     return requestElementLock ? requestElementLock(element.id) : true;
@@ -335,8 +217,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
     if (activeTool !== 'selection_tool') return;
     e.stopPropagation();
 
-    const clientX = e.clientX;
-    const clientY = e.clientY;
     // ✅ اللمس: touchMultiSelectMode يعمل كأن Shift مضغوط
     const touchMulti = useInteractionStore.getState().touchMultiSelectMode;
     const multiSelect = e.shiftKey || e.ctrlKey || e.metaKey || touchMulti;
@@ -350,46 +230,10 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       });
       return;
     }
-
-
-    // ✅ إذا كان العنصر محدد بالفعل (بدون multi-select) — BoundingBox يتولى السحب، لا نبدأ drag هنا
-    if (isSelected) {
-      return;
-    }
-
-    // عنصر جديد — حدده وابدأ سحبه في نفس الحركة
+    // ✅ CanvasElement مسؤول عن التحديد فقط؛ BoundingBox هو المسار الوحيد للسحب.
+    if (isSelected) return;
     onSelect(false);
-
-    if (isEditingThisText) return;
-
-    // ⛔ لا نطلب القفل عند مجرد التحديد؛ نطلبه فقط عند بدء سحب فعلي (بعد تجاوز عتبة 4px)
-    // هذا يمنع سلاسل إعادة الرندر التي تحدث حين يتحدث سيرفر الحضور بعد كل نقرة.
-    const THRESHOLD = 4;
-    let lockRequested = false;
-    let preDragActive = true;
-    const onPreMove = (ev: MouseEvent) => {
-      if (!preDragActive) return;
-      const dx = ev.clientX - clientX;
-      const dy = ev.clientY - clientY;
-      if (Math.hypot(dx, dy) < THRESHOLD) return;
-      window.removeEventListener('mousemove', onPreMove);
-      window.removeEventListener('mouseup', onPreUp);
-      if (lockRequested) return;
-      lockRequested = true;
-      void ensureEditLock().then((granted) => {
-        if (!preDragActive) return;
-        if (!granted) return;
-        startDrag(clientX, clientY);
-      });
-    };
-    const onPreUp = () => {
-      preDragActive = false;
-      window.removeEventListener('mousemove', onPreMove);
-      window.removeEventListener('mouseup', onPreUp);
-    };
-    window.addEventListener('mousemove', onPreMove);
-    window.addEventListener('mouseup', onPreUp);
-  }, [activeTool, element.id, ensureEditLock, isEditingThisText, isLocked, isSelected, onSelect, startDrag]);
+  }, [activeTool, element.id, isLocked, isSelected, onSelect]);
 
 
   const handleTitleDoubleClick = useCallback((e: React.MouseEvent) => {
@@ -446,18 +290,6 @@ const StandardCanvasElement: React.FC<StandardCanvasElementProps> = ({
       titleInputRef.current.select();
     }
   }, [isEditingTitle]);
-
-  useEffect(() => {
-    return () => {
-      if (isDraggingRef.current) {
-        window.removeEventListener('mousemove', stableMouseMove);
-        window.removeEventListener('mouseup', stableMouseUp);
-        endLocalElementMutation(locallyMutatingIdsRef.current);
-        locallyMutatingIdsRef.current = [];
-        isDraggingRef.current = false;
-      }
-    };
-  }, [endLocalElementMutation, stableMouseMove, stableMouseUp]);
 
   const selectionAnchorProps = { 'data-selection-anchor-id': element.id } as const;
   const isPdfPreview = Boolean(

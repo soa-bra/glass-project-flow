@@ -173,6 +173,9 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
     } else {
       onSelect(multiSelect);
     }
+
+    if (activeTool === "selection_tool") return;
+
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY, elementX: element.position.x, elementY: element.position.y };
   }, [element, onSelect, activeTool, isEditing, isSingleNodeMode, selectMindMapTree, setLastSmartSelectedMindMapNode]);
