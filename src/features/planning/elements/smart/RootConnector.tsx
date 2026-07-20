@@ -1031,67 +1031,13 @@ export const RootConnector: React.FC<RootConnectorProps> = ({
         </>
       )}
 
-      {/* Midpoint quick action opens the compact relationship panel. */}
-      <foreignObject
-        x={midX - 12}
-        y={midY - 28}
-        width="24"
-        height="24"
-        className="overflow-visible"
-        data-interactive-control
-      >
-        <button
-          type="button"
-          className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
-          aria-label="فتح لوحة العلاقة المختصرة"
-          data-interactive-control
-          onMouseDown={(event) => event.stopPropagation()}
-          onClick={(event) => {
-            event.stopPropagation();
-            onSelect?.();
-            setIsQuickPanelOpen((open) => !open);
-          }}
-        >
-          <Settings2 className="h-3.5 w-3.5" />
-        </button>
-      </foreignObject>
+      {/*
+        Quick panel & floating info panel were removed.
+        Connector settings, AI actions, workflow conversion, and editing
+        are now handled exclusively via the Side Panel (ToolZone) to avoid
+        duplicate UIs and the update loop they caused.
+       */}
 
-      <AnimatePresence>
-        {isQuickPanelOpen && (
-          <ConnectorQuickPanel
-            x={midX}
-            y={midY}
-            data={data}
-            onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
-            onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
-            onPatch={patchConnector}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Floating info panel — only when selected or editing */}
-      <AnimatePresence>
-        {(isSelected || isEditing) && (
-          <FloatingPanel
-            x={midX}
-            y={midY + 24}
-            data={data}
-            isEditing={isEditing}
-            onEdit={() => setIsEditing(true)}
-            onSave={handleSave}
-            onCancel={() => {
-              setIsEditing(false);
-            }}
-            onDelete={() => onDelete?.()}
-            onAISuggest={handleAISuggest}
-            onInsertSuggestion={handleInsertSuggestion}
-            onCreateWorkflow={onCreateWorkflow ? () => onCreateWorkflow(data) : undefined}
-            onCreateElement={onCreateElement ? () => onCreateElement(data) : undefined}
-            onPatch={patchConnector}
-            isLoadingAI={isLoadingAI}
-          />
-        )}
-      </AnimatePresence>
     </g>
   );
 };
