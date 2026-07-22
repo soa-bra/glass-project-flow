@@ -5,6 +5,7 @@ import type { MindMapNodeData, NodeAnchorPoint } from "@/types/mindmap-canvas";
 import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from "@/types/mindmap-canvas";
 import { Plus, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Square, Circle, Pill, Edit, Diamond, Hexagon } from "lucide-react";
 import { redistributeUpwards } from "@/utils/mindmap-layout";
+import { dragBridge } from "@/features/planning/canvas/selection/dragBridge";
 interface MindMapNodeProps {
   element: CanvasElement;
   isSelected: boolean;
