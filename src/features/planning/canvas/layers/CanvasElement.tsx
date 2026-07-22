@@ -311,7 +311,7 @@ const StandardCanvasElement: React.FC<CanvasElementProps> = ({
       ref={elementRef}
       data-canvas-element="true"
       data-element-id={element.id}
-      onMouseDown={handleMouseDown}
+      onPointerDown={handlePointerDown}
       className={`absolute select-none ${isLocked ? 'cursor-not-allowed' : activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'} ${isElementArrow(element) ? 'arrow-element' : ''}`}
       style={{
         left: element.position.x,
