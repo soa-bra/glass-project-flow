@@ -204,7 +204,7 @@ const StandardCanvasElement: React.FC<CanvasElementProps> = ({
     return requestElementLock ? requestElementLock(element.id) : true;
   }, [element.id, isLockedBySelf, requestElementLock]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (isLocked) {
       e.stopPropagation();
       e.preventDefault();
@@ -231,9 +231,14 @@ const StandardCanvasElement: React.FC<CanvasElementProps> = ({
       });
       return;
     }
-    // ✅ CanvasElement مسؤول عن التحديد فقط؛ BoundingBox هو المسار الوحيد للسحب.
-    if (isSelected) return;
-    onSelect(false);
+    // إذا لم يكن العنصر محدّدًا، نحدّده ثم نبدأ السحب فورًا عبر الجسر
+    // كي تعمل حركة الإمساك والسحب في نبضة واحدة (grab-and-drag).
+    if (!isSelected) {
+      onSelect(false);
+    }
+    // ابدأ السحب مباشرة من BoundingBox حتى قبل انتظار إعادة الرسم.
+    const currentTarget = e.currentTarget as Element;
+    dragBridge.start(e.nativeEvent, currentTarget);
   }, [activeTool, element.id, isLocked, isSelected, onSelect]);
 
 
