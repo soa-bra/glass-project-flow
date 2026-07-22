@@ -160,7 +160,12 @@ const VisualNode: React.FC<VisualNodeProps> = ({
       onSelect(multiSelect);
     }
     
-    if (activeTool === 'selection_tool') return;
+    if (activeTool === 'selection_tool') {
+      if (e.nativeEvent instanceof PointerEvent) {
+        dragBridge.start(e.nativeEvent, e.currentTarget as Element);
+      }
+      return;
+    }
 
     setIsDragging(true);
     dragStartRef.current = {
