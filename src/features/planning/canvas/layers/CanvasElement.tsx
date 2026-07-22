@@ -20,6 +20,7 @@ import VisualConnector from '@/features/planning/elements/diagram/VisualConnecto
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
+import { dragBridge } from '@/features/planning/canvas/selection/dragBridge';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
 
