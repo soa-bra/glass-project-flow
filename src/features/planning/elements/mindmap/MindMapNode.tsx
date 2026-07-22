@@ -174,7 +174,13 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       onSelect(multiSelect);
     }
 
-    if (activeTool === "selection_tool") return;
+    if (activeTool === "selection_tool") {
+      // بدء السحب فورًا عبر جسر BoundingBox حتى تعمل حركة الإمساك والسحب في نبضة واحدة
+      if (e.nativeEvent instanceof PointerEvent) {
+        dragBridge.start(e.nativeEvent, e.currentTarget as Element);
+      }
+      return;
+    }
 
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY, elementX: element.position.x, elementY: element.position.y };
