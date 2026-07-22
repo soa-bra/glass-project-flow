@@ -5,6 +5,7 @@ import { eventPipeline } from '@/engine/canvas/events/eventPipeline';
 import { canvasKernel, type Bounds, type Point } from '@/engine/canvas/kernel/canvasKernel';
 import { snapEngine, type SnapLine } from '@/engine/canvas/interaction/snapEngine';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
+import { dragBridge } from './dragBridge';
 
 const isArrowShape = (shapeType: string | undefined): boolean => {
   if (!shapeType) return false;
