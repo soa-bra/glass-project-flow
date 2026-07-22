@@ -258,6 +258,41 @@ export const BoundingBox: React.FC<BoundingBoxProps> = ({ onGuidesChange }) => {
     };
   }, [endLocalElementMutation, setDraggedElements, setHoveredFrame]);
   
+  const beginDragImperative = useCallback((
+    pointerEvent: PointerEvent,
+    target: Element,
+  ) => {
+    // اقرأ حالة طازجة من المتجر لأن التحديد قد يكون تم للتو
+    // ولم تنتشر إعادة الرسم بعد.
+    const state = useCanvasStore.getState();
+    const ids = getGroupElementIds(state.selectedElementIds);
+    const els = state.elements.filter(el => ids.includes(el.id) && el.type !== 'mindmap_connector');
+    if (els.length === 0) return;
+    const freshBounds = canvasKernel.calculateBounds(els);
+
+    selectionCoordinator.createSelectionEvent('bounding-box-drag', pointerEvent as unknown as PointerEvent);
+    if (!selectionCoordinator.lockEvent('bounding-box-drag')) return;
+    try {
+      target.setPointerCapture?.(pointerEvent.pointerId);
+      capturedPointerTargetRef.current = target;
+      activePointerIdRef.current = pointerEvent.pointerId;
+    } catch {
+      // pointer capture غير متاح على بعض الأهداف
+    }
+    beginLocalElementMutation(ids);
+    locallyMutatingIdsRef.current = ids;
+    setDraggedElements(ids);
+    setIsDragging(true);
+    dragStart.current = { x: pointerEvent.clientX, y: pointerEvent.clientY };
+    elementStartPos.current = { x: freshBounds.x, y: freshBounds.y };
+    lastAppliedPos.current = { x: freshBounds.x, y: freshBounds.y };
+  }, [beginLocalElementMutation, getGroupElementIds, setDraggedElements]);
+
+  useEffect(() => {
+    dragBridge.register(beginDragImperative);
+    return () => dragBridge.register(null);
+  }, [beginDragImperative]);
+
   const handleDragStart = useCallback((e: React.PointerEvent) => {
     e.stopPropagation();
     e.preventDefault();
