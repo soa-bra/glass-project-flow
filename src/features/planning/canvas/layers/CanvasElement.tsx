@@ -20,6 +20,7 @@ import VisualConnector from '@/features/planning/elements/diagram/VisualConnecto
 
 import type { CanvasSmartElement } from '@/types/canvas-elements';
 import { selectionCoordinator } from '@/engine/canvas/interaction/selectionCoordinator';
+import { dragBridge } from '@/features/planning/canvas/selection/dragBridge';
 import { isAncestorCollapsed } from '@/utils/mindmap-layout';
 import { isVisualAncestorCollapsed } from '@/utils/visual-diagram-layout';
 
@@ -203,7 +204,7 @@ const StandardCanvasElement: React.FC<CanvasElementProps> = ({
     return requestElementLock ? requestElementLock(element.id) : true;
   }, [element.id, isLockedBySelf, requestElementLock]);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (isLocked) {
       e.stopPropagation();
       e.preventDefault();
@@ -230,9 +231,14 @@ const StandardCanvasElement: React.FC<CanvasElementProps> = ({
       });
       return;
     }
-    // ✅ CanvasElement مسؤول عن التحديد فقط؛ BoundingBox هو المسار الوحيد للسحب.
-    if (isSelected) return;
-    onSelect(false);
+    // إذا لم يكن العنصر محدّدًا، نحدّده ثم نبدأ السحب فورًا عبر الجسر
+    // كي تعمل حركة الإمساك والسحب في نبضة واحدة (grab-and-drag).
+    if (!isSelected) {
+      onSelect(false);
+    }
+    // ابدأ السحب مباشرة من BoundingBox حتى قبل انتظار إعادة الرسم.
+    const currentTarget = e.currentTarget as Element;
+    dragBridge.start(e.nativeEvent, currentTarget);
   }, [activeTool, element.id, isLocked, isSelected, onSelect]);
 
 
@@ -305,7 +311,7 @@ const StandardCanvasElement: React.FC<CanvasElementProps> = ({
       ref={elementRef}
       data-canvas-element="true"
       data-element-id={element.id}
-      onMouseDown={handleMouseDown}
+      onPointerDown={handlePointerDown}
       className={`absolute select-none ${isLocked ? 'cursor-not-allowed' : activeTool === 'selection_tool' ? 'cursor-move' : 'cursor-default'} ${isElementArrow(element) ? 'arrow-element' : ''}`}
       style={{
         left: element.position.x,

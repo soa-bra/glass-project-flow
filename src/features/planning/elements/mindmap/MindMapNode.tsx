@@ -5,6 +5,7 @@ import type { MindMapNodeData, NodeAnchorPoint } from "@/types/mindmap-canvas";
 import { getAnchorPosition, NODE_COLORS, calculateConnectorBounds } from "@/types/mindmap-canvas";
 import { Plus, Trash2, Palette, ChevronDown, ChevronRight, RectangleHorizontal, Square, Circle, Pill, Edit, Diamond, Hexagon } from "lucide-react";
 import { redistributeUpwards } from "@/utils/mindmap-layout";
+import { dragBridge } from "@/features/planning/canvas/selection/dragBridge";
 interface MindMapNodeProps {
   element: CanvasElement;
   isSelected: boolean;
@@ -174,7 +175,13 @@ const MindMapNode: React.FC<MindMapNodeProps> = ({
       onSelect(multiSelect);
     }
 
-    if (activeTool === "selection_tool") return;
+    if (activeTool === "selection_tool") {
+      // بدء السحب فورًا عبر جسر BoundingBox حتى تعمل حركة الإمساك والسحب في نبضة واحدة
+      if (e.nativeEvent instanceof PointerEvent) {
+        dragBridge.start(e.nativeEvent, e.currentTarget as Element);
+      }
+      return;
+    }
 
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY, elementX: element.position.x, elementY: element.position.y };

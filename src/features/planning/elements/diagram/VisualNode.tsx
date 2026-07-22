@@ -4,6 +4,7 @@ import type { CanvasElement } from '@/types/canvas';
 import type { VisualNodeData, VisualAnchorPoint } from '@/types/visual-diagram-canvas';
 import { getVisualAnchorPosition, VISUAL_NODE_COLORS, calculateVisualConnectorBounds } from '@/types/visual-diagram-canvas';
 import { Plus, Trash2, Palette, ChevronDown, ChevronRight } from 'lucide-react';
+import { dragBridge } from '@/features/planning/canvas/selection/dragBridge';
 
 interface VisualNodeProps {
   element: CanvasElement;
@@ -159,7 +160,12 @@ const VisualNode: React.FC<VisualNodeProps> = ({
       onSelect(multiSelect);
     }
     
-    if (activeTool === 'selection_tool') return;
+    if (activeTool === 'selection_tool') {
+      if (e.nativeEvent instanceof PointerEvent) {
+        dragBridge.start(e.nativeEvent, e.currentTarget as Element);
+      }
+      return;
+    }
 
     setIsDragging(true);
     dragStartRef.current = {
